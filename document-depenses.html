@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Plan de dépenses — Pronix</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #1a1a2e;
+      background: #fff;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── En-tête ── */
+    .header {
+      background: linear-gradient(135deg, #0f3460 0%, #16213e 60%, #0d7a3e 100%);
+      color: white;
+      padding: 40px 50px 30px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .logo-area h1 {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .logo-area h1 span { color: #22c55e; }
+    .logo-area p {
+      font-size: 12px;
+      opacity: 0.7;
+      margin-top: 4px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .doc-meta {
+      text-align: right;
+      font-size: 11px;
+      opacity: 0.75;
+    }
+    .doc-meta strong { font-size: 13px; display: block; margin-bottom: 4px; }
+    .header-desc {
+      background: rgba(255,255,255,0.08);
+      border-left: 3px solid #22c55e;
+      border-radius: 4px;
+      padding: 12px 18px;
+      font-size: 12.5px;
+      opacity: 0.92;
+      max-width: 620px;
+    }
+
+    /* ── Corps ── */
+    .body { padding: 35px 50px 50px; }
+
+    /* Résumé exécutif */
+    .summary-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 35px;
+    }
+    .s-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .s-card .amount {
+      font-size: 22px;
+      font-weight: 800;
+      color: #0f3460;
+    }
+    .s-card .amount.green { color: #16a34a; }
+    .s-card .amount.orange { color: #d97706; }
+    .s-card .label { font-size: 10.5px; color: #64748b; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .s-card .sub { font-size: 10px; color: #94a3b8; margin-top: 2px; }
+
+    /* Section */
+    .section { margin-bottom: 30px; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f3460;
+      border-bottom: 2px solid #0f3460;
+      padding-bottom: 8px;
+      margin-bottom: 16px;
+    }
+    .section-title .icon {
+      width: 28px;
+      height: 28px;
+      background: #0f3460;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* Tableau */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    thead tr {
+      background: #0f3460;
+      color: white;
+    }
+    thead th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    tbody tr { border-bottom: 1px solid #f1f5f9; }
+    tbody tr:hover { background: #f8fafc; }
+    tbody td { padding: 10px 12px; vertical-align: top; }
+    tbody td:last-child { text-align: right; font-weight: 600; white-space: nowrap; }
+    .td-name { font-weight: 600; color: #1e293b; }
+    .td-desc { color: #64748b; font-size: 11.5px; margin-top: 2px; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .badge-green { background: #dcfce7; color: #16a34a; }
+    .badge-blue  { background: #dbeafe; color: #1d4ed8; }
+    .badge-amber { background: #fef3c7; color: #d97706; }
+    .badge-gray  { background: #f1f5f9; color: #475569; }
+
+    /* Total row */
+    .total-row td {
+      background: #0f3460;
+      color: white !important;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .total-row td:last-child { font-size: 15px; }
+
+    /* Note box */
+    .note {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-left: 4px solid #22c55e;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #166534;
+      margin-top: 12px;
+    }
+    .note strong { display: block; margin-bottom: 4px; }
+
+    .warning {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-left: 4px solid #f59e0b;
+      border-radius: 6px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: #92400e;
+      margin-top: 12px;
+    }
+
+    /* Timeline */
+    .timeline { display: flex; gap: 0; margin-bottom: 30px; }
+    .t-step {
+      flex: 1;
+      border: 1.5px solid #e2e8f0;
+      border-right: none;
+      padding: 14px 16px;
+    }
+    .t-step:first-child { border-radius: 8px 0 0 8px; }
+    .t-step:last-child  { border-radius: 0 8px 8px 0; border-right: 1.5px solid #e2e8f0; }
+    .t-step.active { background: #0f3460; border-color: #0f3460; color: white; }
+    .t-step .t-phase { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+    .t-step .t-name  { font-size: 13px; font-weight: 700; margin: 4px 0; }
+    .t-step .t-cost  { font-size: 18px; font-weight: 800; color: #22c55e; }
+    .t-step.active .t-cost { color: #86efac; }
+    .t-step .t-period { font-size: 10px; opacity: 0.6; margin-top: 2px; }
+
+    /* Revenus */
+    .revenue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .r-card {
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 14px;
+    }
+    .r-card .r-tier { font-size: 11px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+    .r-card .r-name { font-size: 14px; font-weight: 800; color: #0f3460; margin: 4px 0; }
+    .r-card .r-amount { font-size: 20px; font-weight: 800; color: #16a34a; }
+    .r-card .r-calc { font-size: 11px; color: #94a3b8; margin-top: 4px; }
+    .r-card .r-after { font-size: 11px; color: #64748b; margin-top: 6px; padding-top: 6px; border-top: 1px solid #f1f5f9; }
+
+    /* Pied de page */
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      font-size: 11px;
+      color: #94a3b8;
+    }
+    .footer .signature { font-weight: 600; color: #64748b; font-size: 12px; }
+
+    @media print {
+      body { font-size: 12px; }
+      .header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      thead tr { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .total-row td { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .t-step.active { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════ EN-TÊTE -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo-area">
+      <h1>Pro<span>nix</span> &nbsp;·&nbsp; Plan de dépenses</h1>
+      <p>Plateforme mondiale de statistiques football</p>
+    </div>
+    <div class="doc-meta">
+      <strong>Document confidentiel</strong>
+      Préparé le 15 juin 2026<br>
+      Version 1.0
+    </div>
+  </div>
+  <div class="header-desc">
+    Ce document présente l'ensemble des coûts d'infrastructure, d'API et de services tiers
+    nécessaires au lancement et à l'exploitation de la plateforme Pronix —
+    outil de statistiques et de pronostics football à couverture mondiale.
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ CORPS -->
+<div class="body">
+
+  <!-- Résumé -->
+  <div class="summary-cards">
+    <div class="s-card">
+      <div class="amount green">~5 €</div>
+      <div class="label">Coût mensuel</div>
+      <div class="sub">au lancement</div>
+    </div>
+    <div class="s-card">
+      <div class="amount orange">~20 €</div>
+      <div class="label">Coût mensuel</div>
+      <div class="sub">en croissance</div>
+    </div>
+    <div class="s-card">
+      <div class="amount">3 %</div>
+      <div class="label">Commission paiement</div>
+      <div class="sub">par transaction</div>
+    </div>
+    <div class="s-card">
+      <div class="amount green">0 €</div>
+      <div class="label">Coût initial</div>
+      <div class="sub">pas d'investissement fixe</div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon">📅</div>
+      Évolution des coûts par phase
+    </div>
+    <div class="timeline">
+      <div class="t-step active">
+        <div class="t-phase">Phase 1</div>
+        <div class="t-name">Lancement</div>
+        <div class="t-cost">~5 €/mois</div>
+        <div class="t-period">Mois 1 à 3</div>
+      </div>
+      <div class="t-step">
+        <div class="t-phase">Phase 2</div>
+        <div class="t-name">Croissance</div>
+        <div class="t-cost">~20 €/mois</div>
+        <div class="t-period">Dès 500+ utilisateurs</div>
+      </div>
+      <div class="t-step">
+        <div class="t-phase">Phase 3</div>
+        <div class="t-name">Scale</div>
+        <div class="t-cost">~80 €/mois</div>
+        <div class="t-period">Dès 5 000+ utilisateurs</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Section 1 : Infrastructure ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon">🖥️</div>
+      1. Infrastructure &amp; Hébergement
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">Service</th>
+          <th style="width:15%">Fournisseur</th>
+          <th>Description &amp; utilité</th>
+          <th style="width:12%">Coût</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="td-name">Nom de domaine</div>
+            <div class="td-desc"><span class="badge badge-blue">balliq.com</span></div>
+          </td>
+          <td>LWS.fr</td>
+          <td>
+            <div>Adresse web officielle de la plateforme. Nécessaire pour être accessible en ligne et crédibiliser la marque auprès des utilisateurs.</div>
+            <div class="td-desc">Renouvellement annuel automatique</div>
+          </td>
+          <td>~12 €/an<br><span style="color:#94a3b8;font-size:11px">(~1 €/mois)</span></td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Serveur VPS</div>
+            <div class="td-desc"><span class="badge badge-blue">CX22 · 4GB RAM</span></div>
+          </td>
+          <td>Hetzner</td>
+          <td>
+            <div>Serveur dédié Linux hébergeant l'API backend (Node.js) et la base de données (PostgreSQL). Hetzner est l'un des meilleurs rapports qualité/prix en Europe — infrastructure allemande certifiée ISO 27001.</div>
+            <div class="td-desc">2 vCPU · 4 Go RAM · 40 Go SSD NVMe · Ubuntu 24.04</div>
+          </td>
+          <td>~4 €/mois</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Hébergement frontend</div>
+            <div class="td-desc"><span class="badge badge-green">Gratuit</span></div>
+          </td>
+          <td>Vercel</td>
+          <td>
+            <div>Héberge l'interface utilisateur React. Déploiement automatique à chaque modification du code. Inclut CDN mondial, HTTPS automatique et haute disponibilité.</div>
+            <div class="td-desc">Plan Hobby gratuit — aucune limite pour un usage standard</div>
+          </td>
+          <td style="color:#16a34a">0 €/mois</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">DNS &amp; Protection</div>
+            <div class="td-desc"><span class="badge badge-green">Gratuit</span></div>
+          </td>
+          <td>Cloudflare</td>
+          <td>
+            <div>Gestion des enregistrements DNS, certificat SSL/HTTPS gratuit, protection DDoS de base et mise en cache des ressources. Garantit la sécurité et la rapidité d'accès pour tous les pays.</div>
+            <div class="td-desc">Plan Free — plus que suffisant pour le lancement</div>
+          </td>
+          <td style="color:#16a34a">0 €/mois</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Certificat SSL</div>
+            <div class="td-desc"><span class="badge badge-green">Gratuit</span></div>
+          </td>
+          <td>Let's Encrypt</td>
+          <td>
+            <div>Chiffrement HTTPS du domaine API. Standard de sécurité indispensable — protège les données des utilisateurs en transit. Renouvellement automatique tous les 90 jours.</div>
+            <div class="td-desc">Via Certbot sur le VPS Hetzner</div>
+          </td>
+          <td style="color:#16a34a">0 €/mois</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="3">Total infrastructure (lancement)</td>
+          <td>~5 €/mois</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- ── Section 2 : API données ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon">⚽</div>
+      2. API de données football
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">Service</th>
+          <th style="width:15%">Fournisseur</th>
+          <th>Description &amp; utilité</th>
+          <th style="width:12%">Coût</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="td-name">API Football</div>
+            <div class="td-desc"><span class="badge badge-green">Plan Gratuit</span></div>
+          </td>
+          <td>api-sports.io</td>
+          <td>
+            <div>Fournit en temps réel : scores de matchs, calendriers, classements, statistiques par équipe, confrontations directes (H2H), compositions d'équipes. Couverture mondiale : +800 ligues et compétitions.</div>
+            <div class="td-desc">100 requêtes/jour — suffisant pendant la phase de lancement (le cron consomme ~10-15 req/jour)</div>
+          </td>
+          <td style="color:#16a34a">0 €/mois</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">API Football</div>
+            <div class="td-desc"><span class="badge badge-amber">Plan Starter</span></div>
+          </td>
+          <td>api-sports.io</td>
+          <td>
+            <div>À activer dès que la plateforme monte en charge ou que l'on active les scores live en temps réel (polling toutes les 60 secondes). 500 requêtes/jour permettent des rafraîchissements fréquents.</div>
+            <div class="td-desc">À prévoir dès 500+ utilisateurs actifs ou pour les scores live</div>
+          </td>
+          <td>~15 €/mois</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="note">
+      <strong>Pourquoi la consommation API ne dépend pas du nombre d'utilisateurs</strong>
+      Les données football sont synchronisées côté serveur (tâches cron planifiées) et mises en cache en base de données.
+      Les utilisateurs consultent la base de données locale — pas l'API externe. 10 ou 10 000 utilisateurs consomment le même nombre de requêtes API.
+    </div>
+  </div>
+
+  <!-- ── Section 3 : Paiements ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon">💳</div>
+      3. Solution de paiement — FedaPay
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">Méthode</th>
+          <th style="width:15%">Disponibilité</th>
+          <th>Description</th>
+          <th style="width:12%">Commission</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="td-name">Wave</div>
+            <div class="td-desc">Mobile Money</div>
+          </td>
+          <td>Sénégal, CI, Mali</td>
+          <td>Paiement instantané via l'application Wave. Méthode la plus utilisée en Afrique de l'Ouest francophone.</td>
+          <td>~1 %</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Orange Money</div>
+            <div class="td-desc">Mobile Money</div>
+          </td>
+          <td>Afrique de l'Ouest</td>
+          <td>Réseau Orange — large couverture régionale. Idéal pour les marchés où Wave est moins présent.</td>
+          <td>~2 %</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">MTN Mobile Money</div>
+            <div class="td-desc">Mobile Money</div>
+          </td>
+          <td>Afrique centrale &amp; Est</td>
+          <td>Opérateur MTN — permet d'atteindre les marchés camerounais, ivoirien, ghanéen et est-africain.</td>
+          <td>~2 %</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Visa / Mastercard</div>
+            <div class="td-desc">Carte bancaire</div>
+          </td>
+          <td>Mondial</td>
+          <td>Paiement par carte internationale — ouvre la plateforme aux utilisateurs hors Afrique (Europe, diaspora).</td>
+          <td>~3.5 %</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="3">Abonnement mensuel FedaPay (aucun frais fixe)</td>
+          <td>0 €/mois</td>
+        </tr>
+      </tfoot>
+    </table>
+    <div class="note">
+      <strong>Modèle sans abonnement</strong>
+      FedaPay ne facture aucun frais fixe mensuel. La commission est uniquement prélevée sur les transactions réussies.
+      Exemple : un abonnement à 3 000 FCFA/mois avec commission Wave à 1% → 30 FCFA prélevés par FedaPay, 2 970 FCFA reversés.
+    </div>
+  </div>
+
+  <!-- ── Section 4 : Optionnel ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon">📦</div>
+      4. Services optionnels (selon la croissance)
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:22%">Service</th>
+          <th style="width:15%">Fournisseur</th>
+          <th>Utilité</th>
+          <th style="width:12%">Coût</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            <div class="td-name">Emails transactionnels</div>
+            <div class="td-desc"><span class="badge badge-gray">Optionnel</span></div>
+          </td>
+          <td>Gmail SMTP</td>
+          <td>Envoi des emails de confirmation, réinitialisation mot de passe, notifications abonnement. Gmail gratuit jusqu'à 500 emails/jour.</td>
+          <td style="color:#16a34a">0 €/mois</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Emails avancés</div>
+            <div class="td-desc"><span class="badge badge-gray">Si besoin</span></div>
+          </td>
+          <td>Brevo / Mailgun</td>
+          <td>Pour les newsletters et emails marketing à grande échelle. À activer si la liste dépasse 500 destinataires.</td>
+          <td>~0–25 €/mois</td>
+        </tr>
+        <tr>
+          <td>
+            <div class="td-name">Serveur VPS upgrade</div>
+            <div class="td-desc"><span class="badge badge-gray">Phase 3</span></div>
+          </td>
+          <td>Hetzner CX32</td>
+          <td>Montée en puissance du serveur (4 vCPU, 8 Go RAM) si le trafic le nécessite. Opération en 1 clic sans interruption de service.</td>
+          <td>~8 €/mois</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Récapitulatif final ── -->
+  <div class="section">
+    <div class="section-title">
+      <div class="icon">✅</div>
+      5. Récapitulatif — Budget total
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Poste</th>
+          <th>Fournisseur</th>
+          <th>Phase 1 — Lancement</th>
+          <th>Phase 2 — Croissance</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="td-name">Nom de domaine</div></td>
+          <td>LWS.fr</td>
+          <td>1 €/mois</td>
+          <td>1 €/mois</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">Serveur VPS</div></td>
+          <td>Hetzner</td>
+          <td>4 €/mois</td>
+          <td>4–8 €/mois</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">Frontend</div></td>
+          <td>Vercel</td>
+          <td style="color:#16a34a">Gratuit</td>
+          <td style="color:#16a34a">Gratuit</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">DNS &amp; SSL</div></td>
+          <td>Cloudflare + Let's Encrypt</td>
+          <td style="color:#16a34a">Gratuit</td>
+          <td style="color:#16a34a">Gratuit</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">API Football</div></td>
+          <td>api-sports.io</td>
+          <td style="color:#16a34a">Gratuit</td>
+          <td>0–15 €/mois</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">Solution de paiement</div></td>
+          <td>FedaPay</td>
+          <td style="color:#16a34a">0 € fixe (~3% /transaction)</td>
+          <td style="color:#16a34a">0 € fixe (~3% /transaction)</td>
+        </tr>
+        <tr>
+          <td><div class="td-name">Emails</div></td>
+          <td>Gmail SMTP</td>
+          <td style="color:#16a34a">Gratuit</td>
+          <td style="color:#16a34a">Gratuit</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="2">TOTAL MENSUEL ESTIMÉ</td>
+          <td>~5 €/mois</td>
+          <td>~20 €/mois</td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <!-- Pied de page -->
+  <div class="footer">
+    <div>
+      <div class="signature">Pronix — Document interne confidentiel</div>
+      Document préparé le 15 juin 2026 · v1.0<br>
+      Les prix sont indicatifs et peuvent varier selon les offres promotionnelles des fournisseurs.
+    </div>
+    <div style="text-align:right">
+      Toutes les dépenses sont en euros (€).<br>
+      1 € ≈ 655 FCFA (taux fixe XOF/EUR)
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

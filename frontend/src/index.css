@@ -1,0 +1,203 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --color-bg:       #111111;
+    --color-card:     #1a1a1a;
+    --color-card-alt: #222222;
+    --color-border:   rgba(255,255,255,0.07);
+    --color-hover:    rgba(255,255,255,0.04);
+  }
+
+  html { @apply scroll-smooth; }
+
+  body {
+    @apply text-gray-100 font-sans antialiased;
+    background-color: var(--color-bg);
+    min-height: 100dvh;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-surface-500 rounded-full; }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-400 rounded-sm;
+  }
+}
+
+@layer components {
+
+  /* ── Cards ─────────────────────────────────────────────────────── */
+  .card {
+    background-color: var(--color-card);
+    border: 1px solid var(--color-border);
+    @apply rounded-xl transition-all duration-200;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
+  }
+
+  .card-p {
+    @apply card p-4;
+  }
+
+  .card:hover {
+    border-color: rgba(255,255,255,0.11);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+  }
+
+  /* Legacy alias */
+  .bento-card {
+    @apply card p-4;
+  }
+
+  /* ── Match card ─────────────────────────────────────────────────── */
+  .match-row {
+    background-color: var(--color-card);
+    border: 1px solid rgba(255,255,255,0.06);
+    @apply rounded-xl transition-colors duration-150 cursor-pointer select-none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+
+  .match-row:hover {
+    background-color: var(--color-card-alt);
+    border-color: rgba(255,255,255,0.1);
+  }
+
+  /* Mode groupé : dans un .card parent */
+  .card > a.match-row {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+    background: transparent;
+  }
+  .card > a.match-row:first-child { border-top-left-radius: 0.75rem; border-top-right-radius: 0.75rem; }
+  .card > a.match-row:last-child  { border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
+  .card > a.match-row:hover { background: var(--color-hover); }
+
+  /* ── Buttons ────────────────────────────────────────────────────── */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-primary-500 hover:bg-primary-400
+           text-white font-semibold text-sm rounded-lg transition-all duration-150
+           focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed;
+    min-height: 42px;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-white/[0.07] hover:bg-white/[0.11]
+           text-gray-200 font-semibold text-sm rounded-lg transition-all duration-150 border border-white/[0.08]
+           focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed;
+    min-height: 42px;
+  }
+
+  /* Bouton CTA orange — Devenir Premium / S'inscrire */
+  .btn-cta {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           text-white font-semibold text-sm rounded-lg transition-all duration-150
+           disabled:opacity-40 disabled:cursor-not-allowed;
+    background-color: #f97316;
+    min-height: 42px;
+  }
+  .btn-cta:hover { background-color: #fb923c; }
+  .btn-cta:focus-visible { outline: 2px solid #fb923c; outline-offset: 2px; }
+
+  /* ── Input ──────────────────────────────────────────────────────── */
+  .input {
+    background-color: var(--color-card-alt);
+    border: 1px solid rgba(255,255,255,0.08);
+    @apply w-full text-gray-100 placeholder-gray-600
+           rounded-lg px-4 py-3 text-sm transition-colors
+           focus:border-primary-400/60 focus:ring-1 focus:ring-primary-400/30 focus:outline-none;
+    min-height: 42px;
+  }
+
+  /* ── Badge ──────────────────────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold;
+  }
+
+  /* ── Live pill ──────────────────────────────────────────────────── */
+  .live-pill {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500/15 text-red-400 text-[11px] font-bold tracking-wide;
+  }
+
+  /* ── Skeleton ───────────────────────────────────────────────────── */
+  .skeleton {
+    @apply rounded-lg;
+    background: linear-gradient(
+      90deg,
+      var(--color-card-alt) 25%,
+      #2a2a2a 50%,
+      var(--color-card-alt) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+
+  /* ── Section header ─────────────────────────────────────────────── */
+  .section-title {
+    @apply font-display font-bold text-base text-gray-100 tracking-tight;
+  }
+
+  /* ── Disclaimer ─────────────────────────────────────────────────── */
+  .disclaimer {
+    @apply text-[11px] text-gray-600 italic leading-relaxed;
+  }
+
+  /* ── Competition label ──────────────────────────────────────────── */
+  .comp-label {
+    @apply text-[10px] font-semibold text-gray-500 uppercase tracking-widest;
+  }
+
+  /* ── Scrollbar hide ─────────────────────────────────────────────── */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* ── Light mode ──────────────────────────────────────────────────── */
+html.light body {
+  @apply bg-gray-50 text-gray-900;
+}
+html.light .card,
+html.light .bento-card,
+html.light .match-row {
+  @apply bg-white border-gray-100;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+}
+html.light .card > a.match-row {
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  border-radius: 0;
+}
+html.light .card > a.match-row:hover { background: rgba(0,0,0,0.02); }
+html.light .input {
+  @apply bg-white border-gray-200 text-gray-900 placeholder-gray-400;
+}
+html.light .btn-secondary {
+  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200;
+}
+html.light .skeleton {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+}
+
+
+/* ── Reduced motion ──────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton, .animate-shimmer, .animate-fade-in, .animate-slide-up {
+    animation: none !important;
+    transition: none !important;
+  }
+}

@@ -1,0 +1,341 @@
+// Prisma Schema — Statistique Foot
+// Base : PostgreSQL (JSON natif, full-text search, meilleur pour analytics)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── ENUMS ─────────────────────────────────────────────────────────────────────
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum SubStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum BillingCycle {
+  MONTHLY
+  YEARLY
+}
+
+enum PaymentMethod {
+  WAVE
+  CARD
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+enum MatchStatus {
+  SCHEDULED
+  LIVE
+  FINISHED
+  POSTPONED
+  CANCELLED
+}
+
+enum TipPrediction {
+  HOME_WIN
+  DRAW
+  AWAY_WIN
+  OVER_2_5
+  UNDER_2_5
+  BTTS_YES
+  BTTS_NO
+}
+
+enum TipResult {
+  WIN
+  LOSS
+  VOID
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  DISMISSED
+  ACTIONED
+}
+
+// ─── UTILISATEURS ──────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  username  String   @unique
+  role      Role     @default(USER)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  profile       Profile?
+  subscription  Subscription?
+  payments      Payment[]
+  tips          Tip[]
+  tipsterStats  TipsterStats?
+  favorites         Favorite[]
+  reports           Report[]           @relation("Reporter")
+  refreshTokens     RefreshToken[]
+  passwordResets    PasswordReset[]
+  pushSubscriptions PushSubscription[]
+
+  @@map("users")
+}
+
+model Profile {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName     String?
+  bio             String?
+  avatar          String?
+  favoriteTeams   String[] @default([])
+  favoriteLeagues String[] @default([])
+  notifEmail      Boolean  @default(true)
+  notifSms        Boolean  @default(false)
+  onboardingDone  Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("profiles")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model PasswordReset {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("password_resets")
+}
+
+// ─── ABONNEMENTS & PAIEMENTS ───────────────────────────────────────────────────
+
+model Plan {
+  id           String   @id @default(uuid())
+  code         String   @unique // FREE, PREMIUM, PRO
+  displayName  String
+  priceMonthly Int      // en FCFA (0 pour FREE)
+  priceYearly  Int      // en FCFA
+  features     Json     // tableau de chaînes décrivant les fonctionnalités
+  isActive     Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  subscriptions Subscription[]
+
+  @@map("plans")
+}
+
+model Subscription {
+  id           String       @id @default(uuid())
+  userId       String       @unique
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         Plan         @relation(fields: [planId], references: [id])
+  status       SubStatus    @default(ACTIVE)
+  billingCycle BillingCycle @default(MONTHLY)
+  startDate    DateTime     @default(now())
+  endDate      DateTime?    // null pour FREE (sans expiration)
+  autoRenew    Boolean      @default(false)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  payments Payment[]
+
+  @@index([status, endDate])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  userId         String
+  user           User          @relation(fields: [userId], references: [id])
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+  amount         Int           // en FCFA
+  currency       String        @default("XOF")
+  method         PaymentMethod
+  status         PaymentStatus @default(PENDING)
+  provider       String        // "wave" | "cinetpay"
+  providerRef    String?       // ID de transaction chez le provider
+  transactionId  String?       @unique
+  metadata       Json?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@map("payments")
+}
+
+// ─── MATCHS & COMPÉTITIONS ────────────────────────────────────────────────────
+
+model Competition {
+  id          String   @id @default(uuid())
+  externalId  String   @unique
+  name        String
+  country     String
+  logo        String?
+  isDisplayed Boolean  @default(true)
+  season      String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  matches Match[]
+
+  @@map("competitions")
+}
+
+model Match {
+  id            String      @id @default(uuid())
+  externalId    String      @unique
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id])
+  homeTeam      String
+  homeTeamId    String
+  homeTeamLogo  String?
+  awayTeam      String
+  awayTeamId    String
+  awayTeamLogo  String?
+  homeScore     Int?
+  awayScore     Int?
+  status        MatchStatus @default(SCHEDULED)
+  minute        String?     // ex: "67'", "HT", "45+2'" — null si non commencé
+  scheduledAt   DateTime
+  venue         String?
+  round         String?
+  // Données premium (compositions, stats avancées)
+  lineups       Json?
+  statistics    Json?
+  predictions   Json?
+  headToHead    Json?
+  injuries      Json?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  tips Tip[]
+
+  @@index([scheduledAt])
+  @@index([status])
+  @@index([competitionId])
+  @@map("matches")
+}
+
+// ─── TIPSTERS & PRONOSTICS ────────────────────────────────────────────────────
+
+model Tip {
+  id         String        @id @default(uuid())
+  userId     String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matchId    String
+  match      Match         @relation(fields: [matchId], references: [id])
+  prediction    TipPrediction
+  confidence    Int?          // 1 à 5 étoiles
+  analysis      String?       // texte d'analyse (max 500 chars)
+  result        TipResult?    // calculé automatiquement après le match
+  isVisible     Boolean       @default(true)
+  isAiGenerated Boolean       @default(false)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  reports Report[]
+
+  @@unique([userId, matchId]) // un seul pronostic par match par tipster
+  @@index([userId])
+  @@index([matchId])
+  @@map("tips")
+}
+
+model TipsterStats {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  totalTips      Int      @default(0)
+  correctTips    Int      @default(0)
+  successRate    Float    @default(0) // pourcentage 0-100
+  monthlyTips    Int      @default(0)
+  monthlyCorrect Int      @default(0)
+  monthlyRate    Float    @default(0)
+  monthlyRank    Int?
+  globalRank     Int?
+  badges         String[] @default([])
+  lastCalculated DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("tipster_stats")
+}
+
+model Report {
+  id         String       @id @default(uuid())
+  reporterId String
+  reporter   User         @relation("Reporter", fields: [reporterId], references: [id])
+  tipId      String
+  tip        Tip          @relation(fields: [tipId], references: [id])
+  reason     String
+  status     ReportStatus @default(PENDING)
+  adminNote  String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+
+  @@map("reports")
+}
+
+model Favorite {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type       String   // "team" | "league" | "tipster"
+  externalId String   // ID externe ou userId pour tipster
+  name       String
+  logo       String?
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, type, externalId])
+  @@map("favorites")
+}
+
+// ─── PUSH NOTIFICATIONS ───────────────────────────────────────────────────────
+
+model PushSubscription {
+  id        String   @id @default(uuid())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@map("push_subscriptions")
+}

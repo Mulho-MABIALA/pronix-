@@ -1,23 +1,19 @@
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function PlanCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
-  const price = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
-  const monthlyEquiv = billingCycle === 'YEARLY' && plan.priceMonthly > 0
-    ? Math.round(plan.priceYearly / 12)
-    : null;
+export default function PlanCard({ plan, isCurrentPlan, onSelect, loading }) {
   const isFree = plan.code === 'FREE';
-  const isPro = plan.code === 'PRO';
+  const isPremium = plan.code === 'PREMIUM';
 
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       className={`bento-card flex flex-col gap-4 relative ${
-        isPro ? 'border-primary-500 ring-1 ring-primary-500/30' : ''
+        isPremium ? 'border-primary-500 ring-1 ring-primary-500/30' : ''
       } ${isCurrentPlan ? 'border-primary-400' : ''}`}
     >
-      {isPro && (
+      {isPremium && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
           <span className="badge bg-primary-500 text-white text-xs px-3 py-1">Recommandé</span>
         </div>
@@ -32,17 +28,12 @@ export default function PlanCard({ plan, billingCycle, isCurrentPlan, onSelect, 
           ) : (
             <>
               <span className="text-3xl font-display font-bold text-gray-100">
-                {price.toLocaleString('fr-FR')} FCFA
+                ${plan.priceMonthly.toFixed(2)}
               </span>
-              <span className="text-gray-500 pb-1">/{billingCycle === 'YEARLY' ? 'an' : 'mois'}</span>
+              <span className="text-gray-500 pb-1">/mois</span>
             </>
           )}
         </div>
-        {monthlyEquiv && (
-          <p className="text-xs text-primary-400 mt-1">
-            Soit {monthlyEquiv.toLocaleString('fr-FR')} FCFA/mois — économisez 17%
-          </p>
-        )}
       </div>
 
       {/* Fonctionnalités */}

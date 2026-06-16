@@ -200,7 +200,7 @@ export default function Home() {
                   ))}
                 </ul>
                 <Link to="/abonnement" className="btn-cta w-full text-sm shadow-lg shadow-orange-500/15">
-                  Voir les offres — dès 1 500 FCFA/mois
+                  Voir les offres — $8.99/mois
                 </Link>
                 <p className="disclaimer text-center mt-3">Aucune promesse de gain.</p>
               </div>

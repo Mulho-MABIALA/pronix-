@@ -101,7 +101,7 @@ async function main() {
       ],
     },
     {
-      code: 'PREMIUM', displayName: 'Premium', priceMonthly: 1500, priceYearly: 15000, sortOrder: 1,
+      code: 'PREMIUM', displayName: 'Premium', priceMonthly: 8.99, priceYearly: 0, sortOrder: 1,
       features: [
         'Tout du plan Gratuit',
         'Historique des confrontations directes',
@@ -110,19 +110,9 @@ async function main() {
         'Blessures et suspensions',
         'Publication de pronostics',
         'Classement complet des tipsters',
-        'Notifications par email',
-      ],
-    },
-    {
-      code: 'PRO', displayName: 'Pro', priceMonthly: 3000, priceYearly: 30000, sortOrder: 2,
-      features: [
-        'Tout du plan Premium',
         'Statistiques avancées (possession, xG, passes)',
         'Alertes matchs en temps réel',
-        'Export des données',
-        'Badge Pro tipster',
-        'Support prioritaire',
-        'Accès anticipé aux nouvelles fonctionnalités',
+        'Notifications par email',
       ],
     },
   ];
@@ -157,7 +147,7 @@ async function main() {
 
   // ── Compte admin ─────────────────────────────────────────────────────────────
   const adminPassword = await bcrypt.hash('Admin@2024!', 12);
-  const proPlan = await prisma.plan.findUnique({ where: { code: 'PRO' } });
+  const premiumPlan = await prisma.plan.findUnique({ where: { code: 'PREMIUM' } });
   await prisma.user.upsert({
     where: { email: 'admin@statistiquefoot.sn' },
     update: {},
@@ -167,7 +157,7 @@ async function main() {
       username: 'admin',
       role: 'ADMIN',
       profile: { create: { displayName: 'Administrateur' } },
-      subscription: { create: { planId: proPlan.id, status: 'ACTIVE' } },
+      subscription: { create: { planId: premiumPlan.id, status: 'ACTIVE' } },
     },
   });
   console.log('✅ Compte admin créé (admin@statistiquefoot.sn / Admin@2024!)');

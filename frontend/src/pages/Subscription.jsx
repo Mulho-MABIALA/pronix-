@@ -8,7 +8,7 @@ import PlanCard from '../components/subscription/PlanCard';
 export default function Subscription() {
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
-  const [billingCycle, setBillingCycle] = useState('MONTHLY');
+  const billingCycle = 'MONTHLY';
   const [paymentMethod, setPaymentMethod] = useState('FEDAPAY');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -51,27 +51,6 @@ export default function Subscription() {
         <p className="disclaimer mt-2">
           Ceci n'est pas un conseil financier. Aucune garantie de gain. Jouez de façon responsable.
         </p>
-      </div>
-
-      {/* Toggle facturation */}
-      <div className="flex justify-center">
-        <div className="flex gap-1 bg-surface-800 border border-surface-700 rounded-xl p-1" role="group" aria-label="Cycle de facturation">
-          {[
-            { value: 'MONTHLY', label: 'Mensuel' },
-            { value: 'YEARLY', label: 'Annuel  −17%' },
-          ].map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => setBillingCycle(value)}
-              aria-pressed={billingCycle === value}
-              className={`px-5 py-2 rounded-lg text-sm font-medium transition-colors ${
-                billingCycle === value ? 'bg-primary-500 text-white' : 'text-gray-400 hover:text-gray-200'
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Méthode de paiement */}
@@ -120,12 +99,11 @@ export default function Subscription() {
       )}
 
       {/* Plans */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto w-full">
         {plans.map((plan) => (
           <PlanCard
             key={plan.id}
             plan={plan}
-            billingCycle={billingCycle}
             isCurrentPlan={userPlan === plan.code}
             onSelect={handleSelectPlan}
             loading={loading}

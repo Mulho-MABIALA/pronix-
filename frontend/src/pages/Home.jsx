@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ChevronRight, TrendingUp, Users, Trophy, Sparkles, Calendar, Crown, Wand2 } from 'lucide-react';
+import { ChevronRight, Sparkles, Calendar, Crown, Wand2 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import MatchCard from '../components/matches/MatchCard';
@@ -72,27 +72,6 @@ export default function Home() {
               Ceci n'est pas un conseil financier. Aucune garantie de gain. Jouez de façon responsable.
             </p>
           </div>
-        </section>
-      )}
-
-      {/* ── Bande de stats ──────────────────────────────────────── */}
-      {!user && (
-        <section className="grid grid-cols-3 gap-3 md:gap-4">
-          {[
-            { icon: TrendingUp, value: '14+', label: 'Compétitions suivies', color: 'primary' },
-            { icon: Trophy,     value: '100%', label: 'Données en direct', color: 'accent' },
-            { icon: Users,      value: 'Sans filtre', label: 'Communauté tipsters', color: 'primary' },
-          ].map(({ icon: Icon, value, label, color }) => (
-            <div key={label} className="card-p text-center group hover:-translate-y-0.5 cursor-default">
-              <div className={`w-9 h-9 rounded-xl mx-auto mb-2.5 flex items-center justify-center transition-transform group-hover:scale-110 ${
-                color === 'accent' ? 'bg-orange-500/10 text-orange-400' : 'bg-primary-500/10 text-primary-400'
-              }`}>
-                <Icon size={16} />
-              </div>
-              <p className="font-display font-bold text-lg md:text-xl text-white">{value}</p>
-              <p className="text-[11px] md:text-xs text-gray-500 mt-0.5">{label}</p>
-            </div>
-          ))}
         </section>
       )}
 

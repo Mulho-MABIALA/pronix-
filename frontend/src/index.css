@@ -7,11 +7,11 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --color-bg:       #111111;
-    --color-card:     #1a1a1a;
-    --color-card-alt: #222222;
-    --color-border:   rgba(255,255,255,0.07);
-    --color-hover:    rgba(255,255,255,0.04);
+    --color-bg:       #171819;
+    --color-card:     #212327;
+    --color-card-alt: #2b2d31;
+    --color-border:   rgba(255,255,255,0.09);
+    --color-hover:    rgba(255,255,255,0.05);
   }
 
   html { @apply scroll-smooth; }
@@ -46,8 +46,8 @@
   }
 
   .card:hover {
-    border-color: rgba(255,255,255,0.11);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.55);
+    border-color: rgba(255,255,255,0.14);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
   }
 
   /* Legacy alias */
@@ -133,7 +133,7 @@
     background: linear-gradient(
       90deg,
       var(--color-card-alt) 25%,
-      #2a2a2a 50%,
+      #34363b 50%,
       var(--color-card-alt) 75%
     );
     background-size: 200% 100%;

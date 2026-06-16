@@ -26,6 +26,7 @@ function TeamLogo({ logo, teamId, name, size = 20 }) {
 
 // Couleur de confiance
 const CONF_COLOR = { high: 'text-primary-400', medium: 'text-amber-400', low: 'text-gray-500' };
+const CONF_BG    = { high: 'bg-primary-500/10', medium: 'bg-amber-500/10', low: 'bg-white/[0.04]' };
 
 export default function MatchCard({ match }) {
   const isLive     = match.status === 'LIVE';
@@ -39,14 +40,14 @@ export default function MatchCard({ match }) {
   return (
     <Link
       to={`/matchs/${match.id}`}
-      className="match-row flex items-center gap-2 px-3 py-3 animate-fade-in"
+      className={`match-row flex items-center gap-2 px-3 py-3 animate-fade-in ${isLive ? 'bg-red-500/[0.04]' : ''}`}
       aria-label={`${match.homeTeam} vs ${match.awayTeam}`}
     >
       {/* Statut / heure */}
       <div className="w-10 shrink-0 text-center">
         {isLive ? (
-          <div className="flex flex-col items-center gap-0.5">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />
+          <div className="flex flex-col items-center gap-1">
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" aria-hidden="true" />
             <span className="text-[10px] font-bold text-red-400 tabular-nums leading-none">
               {minute || 'LIVE'}
             </span>
@@ -97,11 +98,11 @@ export default function MatchCard({ match }) {
 
       {/* Probabilité & pick — uniquement pour les matchs à venir */}
       {pred && !isFinished && (
-        <div className="shrink-0 text-right pl-2 border-l border-white/[0.05] min-w-[60px]">
+        <div className={`shrink-0 text-center rounded-lg px-2.5 py-1.5 min-w-[58px] ${CONF_BG[pred.confidence]}`}>
           <span className={`block text-sm font-bold tabular-nums ${CONF_COLOR[pred.confidence]}`}>
             {pred.bestPick.prob}%
           </span>
-          <span className="block text-[9px] text-gray-600 leading-tight whitespace-nowrap mt-0.5">
+          <span className="block text-[9px] text-gray-500 leading-tight whitespace-nowrap mt-0.5 font-semibold uppercase tracking-wide">
             {pred.bestPick.type === 'over25' ? 'O2.5' :
              pred.bestPick.type === 'over15' ? 'O1.5' :
              pred.bestPick.type === 'btts'   ? 'BTTS' :

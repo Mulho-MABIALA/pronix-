@@ -20,13 +20,13 @@ export default {
           900: '#094b24',
         },
         surface: {
-          950: '#080808',
-          900: '#111111',   // fond page — gris pur, zéro tint bleu
-          800: '#1a1a1a',   // fond carte
-          700: '#222222',   // hover
-          600: '#2d2d2d',   // bordures, séparateurs
-          500: '#3a3a3a',   // éléments inactifs
-          400: '#4a4a4a',
+          950: '#0d0e10',
+          900: '#171819',   // fond page — gris pur, zéro tint bleu
+          800: '#212327',   // fond carte
+          700: '#2b2d31',   // hover
+          600: '#3a3c41',   // bordures, séparateurs
+          500: '#4a4c52',   // éléments inactifs
+          400: '#5c5e64',
         },
         accent: {
           400: '#fb923c',   // orange clair
@@ -52,6 +52,8 @@ export default {
         'fade-in':  'fadeIn 0.25s ease-out',
         'slide-up': 'slideUp 0.25s ease-out',
         pulse:      'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
+        marquee:          'marquee 38s linear infinite',
+        'marquee-reverse': 'marquee-reverse 32s linear infinite',
       },
       keyframes: {
         shimmer: {
@@ -65,6 +67,14 @@ export default {
         slideUp: {
           '0%':   { opacity: '0', transform: 'translateY(8px)' },
           '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        marquee: {
+          '0%':   { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'marquee-reverse': {
+          '0%':   { transform: 'translateX(-50%)' },
+          '100%': { transform: 'translateX(0)' },
         },
       },
     },

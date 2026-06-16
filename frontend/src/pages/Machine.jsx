@@ -40,7 +40,7 @@ function drawTicketCanvas(ticket, totalOdds) {
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 16px system-ui';
   ctx.textAlign = 'left';
-  ctx.fillText('StatFoot — Mon Ticket', 58, 30);
+  ctx.fillText('Pronix — Mon Ticket', 58, 30);
 
   ctx.fillStyle = '#555555';
   ctx.font = '11px system-ui';
@@ -124,7 +124,7 @@ function drawTicketCanvas(ticket, totalOdds) {
   ctx.fillStyle = '#333333';
   ctx.font = '10px system-ui';
   ctx.textAlign = 'center';
-  ctx.fillText('statistique-foot.com · Pronostics générés par algorithme · Jouez de façon responsable', W / 2, fy + 24);
+  ctx.fillText('pronix.com · Pronostics générés par algorithme · Jouez de façon responsable', W / 2, fy + 24);
 
   return canvas;
 }
@@ -242,7 +242,7 @@ export default function Machine() {
       canvas.toBlob(async (blob) => {
         const file = new File([blob], 'ticket-statfoot.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'Mon ticket StatFoot' });
+          await navigator.share({ files: [file], title: 'Mon ticket Pronix' });
         } else {
           // Fallback : téléchargement direct
           const url = URL.createObjectURL(blob);

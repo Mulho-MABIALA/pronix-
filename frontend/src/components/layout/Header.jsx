@@ -74,10 +74,10 @@ export default function Header() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
           <div className="w-7 h-7 rounded-lg bg-primary-500 flex items-center justify-center text-white text-sm font-bold shadow-glow">
-            SF
+            P
           </div>
           <span className="hidden sm:block font-display font-bold text-[15px] text-white tracking-tight">
-            Stat<span className="text-primary-400">Foot</span>
+            Pro<span className="text-primary-400">nix</span>
           </span>
         </Link>
 

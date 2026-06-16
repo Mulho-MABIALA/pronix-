@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ssh -o BatchMode=yes -i 'C:\\\\Users\\\\HP/.ssh/id_ed25519' root@167.233.132.85 '! pgrep -f 1-setup-server.sh > /dev/null')"
+    ]
+  }
+}

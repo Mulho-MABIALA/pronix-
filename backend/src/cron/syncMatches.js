@@ -175,7 +175,7 @@ function startSyncMatchesCron() {
     syncMatchesForDate(tomorrow.toISOString().split('T')[0]);
   });
 
-  cron.schedule('*/5 * * * *', syncLiveMatches);
+  cron.schedule('*/30 * * * *', syncLiveMatches);
 
   console.log('[Cron] Synchronisation des matchs démarrée');
 

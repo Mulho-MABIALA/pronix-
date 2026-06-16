@@ -6,11 +6,11 @@
 # AVANT : remplace REPO_URL par l'URL de ton repo GitHub
 set -e
 
-REPO_URL="https://github.com/TON_COMPTE_GITHUB/statistique_foot.git"
-APP_DIR="/var/www/statfoot"
+REPO_URL="https://github.com/Mulho-MABIALA/pronix-.git"
+APP_DIR="/var/www/pronix"
 
 echo "═══════════════════════════════════════"
-echo "  StatFoot — Premier déploiement"
+echo "  Pronix — Premier déploiement"
 echo "═══════════════════════════════════════"
 
 # ── 1. Cloner le dépôt ────────────────────────────────────────────
@@ -30,8 +30,8 @@ read -r
 
 # ── 3. Dossier de logs ────────────────────────────────────────────
 echo "[3/6] Création du dossier de logs..."
-mkdir -p /var/log/statfoot
-chown -R root:root /var/log/statfoot
+mkdir -p /var/log/pronix
+chown -R root:root /var/log/pronix
 
 # ── 4. Installer les dépendances ──────────────────────────────────
 echo "[4/6] Installation des dépendances..."
@@ -52,10 +52,10 @@ pm2 save
 echo ""
 echo "✅ Premier déploiement terminé !"
 echo ""
-pm2 status statfoot-api
+pm2 status pronix-api
 echo ""
 echo "Pour voir les logs en temps réel :"
-echo "  pm2 logs statfoot-api"
+echo "  pm2 logs pronix-api"
 echo ""
 echo "Pour mettre à jour l'app à l'avenir :"
 echo "  cd ${APP_DIR} && git pull && bash deploy/deploy.sh"

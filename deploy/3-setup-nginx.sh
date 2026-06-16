@@ -7,19 +7,19 @@
 # !! MODIFIER CES VALEURS AVANT D'EXÉCUTER !!
 set -e
 
-DOMAIN="VOTRE_DOMAINE.com"          # ex: statfoot.com
-API_SUBDOMAIN="api.${DOMAIN}"       # ex: api.statfoot.com
+DOMAIN="VOTRE_DOMAINE.com"          # ex: pronix.com
+API_SUBDOMAIN="api.${DOMAIN}"       # ex: api.pronix.com
 EMAIL="VOTRE_EMAIL@gmail.com"       # email pour Let's Encrypt (alertes expiration)
 BACKEND_PORT=5000
 
 echo "═══════════════════════════════════════"
-echo "  StatFoot — Setup Nginx + SSL"
+echo "  Pronix — Setup Nginx + SSL"
 echo "  API : https://${API_SUBDOMAIN}"
 echo "═══════════════════════════════════════"
 
 # ── 1. Config Nginx pour l'API ─────────────────────────────────────
 echo "[1/3] Création de la config Nginx..."
-cat > /etc/nginx/sites-available/statfoot-api <<NGINX
+cat > /etc/nginx/sites-available/pronix-api <<NGINX
 server {
     listen 80;
     server_name ${API_SUBDOMAIN};
@@ -48,7 +48,7 @@ server {
 }
 NGINX
 
-ln -sf /etc/nginx/sites-available/statfoot-api /etc/nginx/sites-enabled/
+ln -sf /etc/nginx/sites-available/pronix-api /etc/nginx/sites-enabled/
 nginx -t && systemctl reload nginx
 
 # ── 2. Certificat SSL via Certbot ─────────────────────────────────

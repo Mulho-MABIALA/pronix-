@@ -392,7 +392,7 @@ export default function MatchDetail() {
                   Compositions probables, blessures, statistiques avancées
                 </p>
                 <Link to="/abonnement" className="btn-primary mt-4 text-sm">
-                  Passer Premium — 1 500 FCFA/mois
+                  Passer Premium — $8.99/mois
                 </Link>
               </section>
             )}

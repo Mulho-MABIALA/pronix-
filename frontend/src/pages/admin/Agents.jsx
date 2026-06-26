@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { Bot, FileText, Search, BarChart2, HeadphonesIcon, Play, RefreshCw, Check, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Bot, FileText, Search, BarChart2, HeadphonesIcon, Play, RefreshCw, Check, X, ChevronDown, ChevronUp, Bell } from 'lucide-react';
 import api from '../../services/api';
 
 const AGENTS = [
@@ -285,6 +285,83 @@ function OrchestratorCard() {
   );
 }
 
+function PushBroadcastCard() {
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+  const [url, setUrl] = useState('');
+
+  const mutation = useMutation({
+    mutationFn: () => api.post('/admin/push/broadcast', { title, body, url: url || undefined }).then((r) => r.data),
+    onSuccess: () => { setTitle(''); setBody(''); setUrl(''); },
+  });
+
+  return (
+    <div className="bg-surface-800 border border-amber-500/25 rounded-2xl p-5 space-y-4">
+      <div className="flex items-start gap-3">
+        <div className="p-2.5 rounded-xl shrink-0 bg-amber-500/20 text-amber-400">
+          <Bell size={18} />
+        </div>
+        <div>
+          <p className="font-semibold text-gray-100 text-sm">Envoyer une notification push</p>
+          <p className="text-xs text-gray-500 mt-0.5">Diffuse une notification à tous les abonnés aux notifications</p>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">Titre *</label>
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Ex: ⚽ Résultats du soir disponibles"
+            maxLength={80}
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">Message *</label>
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            placeholder="Ex: Consultez les analyses de la journée sur Pronix"
+            maxLength={180}
+            rows={2}
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50 resize-none"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">Lien (optionnel)</label>
+          <input
+            type="text"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="/matchs"
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50"
+          />
+        </div>
+      </div>
+
+      <button
+        onClick={() => mutation.mutate()}
+        disabled={mutation.isPending || !title.trim() || !body.trim()}
+        className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl bg-amber-500/15 border border-amber-500/25 text-amber-400 text-sm font-semibold hover:bg-amber-500/25 transition-colors disabled:opacity-40"
+      >
+        {mutation.isPending
+          ? <><RefreshCw size={14} className="animate-spin" /> Envoi en cours…</>
+          : mutation.isSuccess
+          ? <><Check size={14} /> {mutation.data?.message || 'Envoyé'}</>
+          : <><Bell size={14} /> Envoyer la notification</>
+        }
+      </button>
+
+      {mutation.isError && (
+        <p className="text-xs text-red-400">{mutation.error?.response?.data?.message || 'Erreur lors de l\'envoi'}</p>
+      )}
+    </div>
+  );
+}
+
 export default function AdminAgents() {
   return (
     <div className="space-y-6 max-w-5xl">
@@ -299,6 +376,9 @@ export default function AdminAgents() {
         <p>• <span className="text-gray-300">7h00</span> — Agent Contenu (posts réseaux sociaux du jour)</p>
         <p>• <span className="text-gray-300">Lundi 8h00</span> — Agent Analyse (classement tipsters hebdomadaire)</p>
       </div>
+
+      {/* Push notifications */}
+      <PushBroadcastCard />
 
       {/* Orchestrateur */}
       <OrchestratorCard />

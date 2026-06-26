@@ -25,6 +25,10 @@ import Pronostics from './pages/Pronostics';
 import Filtres from './pages/Filtres';
 import Machine from './pages/Machine';
 import StatsLigues from './pages/StatsLigues';
+import NotFound from './pages/NotFound';
+import CGU from './pages/CGU';
+import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
+import FAQ from './pages/FAQ';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -88,6 +92,10 @@ export default function App() {
                 <Route path="/outils/machine" element={<Machine />} />
                 <Route path="/outils/stats-ligues" element={<StatsLigues />} />
                 <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+                <Route path="/cgu" element={<CGU />} />
+                <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
+                <Route path="/faq" element={<FAQ />} />
+                <Route path="*" element={<NotFound />} />
               </Route>
 
               {/* Back-office admin — layout avec sidebar */}
@@ -109,7 +117,6 @@ export default function App() {
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
 
-              <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
           </BrowserRouter>
         </AuthProvider>

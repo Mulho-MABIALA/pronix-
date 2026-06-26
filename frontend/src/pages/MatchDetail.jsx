@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Lock, ChevronDown, Sparkles } from 'lucide-react';
+import { Lock, ChevronDown, Sparkles, Flag, X } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { MatchStatusBadge, ResultBadge } from '../components/ui/Badge';
@@ -241,6 +241,50 @@ function Tab({ label, active, onClick }) {
   );
 }
 
+const REPORT_REASONS = [
+  'Contenu trompeur ou fausse information',
+  'Contenu inapproprié ou offensant',
+  'Spam ou publicité',
+  'Autre comportement abusif',
+];
+
+function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
+  const [selected, setSelected] = useState('');
+  return (
+    <div className="space-y-2 pt-1">
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-medium text-gray-400">Motif du signalement</p>
+        <button onClick={onCancel} className="text-gray-600 hover:text-gray-400">
+          <X size={13} />
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {REPORT_REASONS.map((r) => (
+          <button
+            key={r}
+            type="button"
+            onClick={() => setSelected(r)}
+            className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
+              selected === r
+                ? 'border-red-500/50 bg-red-500/10 text-red-400'
+                : 'border-surface-600 text-gray-500 hover:border-surface-500'
+            }`}
+          >
+            {r}
+          </button>
+        ))}
+      </div>
+      <button
+        onClick={() => selected && onSubmit(selected)}
+        disabled={!selected || isPending}
+        className="text-xs px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-40"
+      >
+        {isPending ? 'Envoi…' : 'Envoyer le signalement'}
+      </button>
+    </div>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 export default function MatchDetail() {
   const { id }         = useParams();
@@ -255,6 +299,8 @@ export default function MatchDetail() {
   const [aiError,       setAiError]       = useState('');
   const [aiMeta,        setAiMeta]        = useState(null);
   const [isAiGenerated, setIsAiGenerated] = useState(false);
+  const [reportingTipId, setReportingTipId] = useState(null);
+  const [reportedTips,   setReportedTips]   = useState(new Set());
 
   const { data, isLoading } = useQuery({
     queryKey: ['match', id],
@@ -298,6 +344,14 @@ export default function MatchDetail() {
       setAnalysis('');
       setIsAiGenerated(false);
       queryClient.invalidateQueries({ queryKey: ['tips-match', id] });
+    },
+  });
+
+  const reportTip = useMutation({
+    mutationFn: ({ tipId, reason }) => api.post(`/tips/${tipId}/report`, { reason }),
+    onSuccess: (_, { tipId }) => {
+      setReportedTips((prev) => new Set([...prev, tipId]));
+      setReportingTipId(null);
     },
   });
 
@@ -610,6 +664,30 @@ export default function MatchDetail() {
                       {stats && (
                         <div className="pt-2 border-t border-surface-700">
                           <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="sm" />
+                        </div>
+                      )}
+
+                      {/* Signalement */}
+                      {user && tip.userId !== user.id && (
+                        <div className="pt-2">
+                          {reportedTips.has(tip.id) ? (
+                            <p className="text-xs text-gray-600">Signalement envoyé</p>
+                          ) : reportingTipId === tip.id ? (
+                            <ReportForm
+                              tipId={tip.id}
+                              onSubmit={(reason) => reportTip.mutate({ tipId: tip.id, reason })}
+                              onCancel={() => setReportingTipId(null)}
+                              isPending={reportTip.isPending}
+                            />
+                          ) : (
+                            <button
+                              onClick={() => setReportingTipId(tip.id)}
+                              className="flex items-center gap-1 text-xs text-gray-600 hover:text-red-400 transition-colors"
+                            >
+                              <Flag size={11} />
+                              Signaler
+                            </button>
+                          )}
                         </div>
                       )}
                     </div>

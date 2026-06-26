@@ -11,6 +11,7 @@ const {
   syncPredictions,
   triggerSync,
 } = require('../controllers/adminController');
+const { adminBroadcast } = require('../controllers/pushController');
 
 const router = Router();
 
@@ -33,5 +34,6 @@ router.get('/matches', getAdminMatches);
 
 router.post('/sync', triggerSync);
 router.post('/sync-predictions', syncPredictions);
+router.post('/push/broadcast', adminBroadcast);
 
 module.exports = router;

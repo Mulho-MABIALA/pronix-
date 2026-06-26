@@ -92,4 +92,23 @@ async function broadcastNotification(payload) {
   }
 }
 
-module.exports = { subscribe, unsubscribe, getPublicKey, broadcastNotification };
+async function adminBroadcast(req, res, next) {
+  try {
+    const { title, body, url } = req.body;
+    if (!title || !body) {
+      return res.status(400).json({ success: false, message: 'title et body sont requis' });
+    }
+
+    const count = await prisma.pushSubscription.count();
+    if (count === 0) {
+      return res.json({ success: true, message: 'Aucun abonné aux notifications', sent: 0 });
+    }
+
+    await broadcastNotification({ title, body, url: url || '/', icon: '/logo192.png' });
+    res.json({ success: true, message: `Notification envoyée à ${count} abonné(s)`, sent: count });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { subscribe, unsubscribe, getPublicKey, broadcastNotification, adminBroadcast };

@@ -8,7 +8,7 @@ import api from '../../services/api';
 const PLAN_STYLE = {
   FREE:    'bg-gray-500/15 text-gray-400 border border-gray-500/20',
   PREMIUM: 'bg-primary-500/15 text-primary-400 border border-primary-500/20',
-  PRO:     'bg-yellow-500/15 text-yellow-400 border border-yellow-500/20',
+  PRO:     'bg-amber-500/15 text-amber-400 border border-amber-500/20',
 };
 
 export default function AdminUsers() {
@@ -128,7 +128,7 @@ export default function AdminUsers() {
                       <td className="px-4 py-4">
                         <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
                           u.isActive
-                            ? 'bg-green-500/15 text-green-400 border border-green-500/20'
+                            ? 'bg-primary-500/15 text-primary-400 border border-primary-500/20'
                             : 'bg-red-500/15 text-red-400 border border-red-500/20'
                         }`}>
                           {u.isActive
@@ -144,7 +144,7 @@ export default function AdminUsers() {
                           className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
                             u.isActive
                               ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
-                              : 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                              : 'border-primary-500/30 text-primary-400 hover:bg-primary-500/10'
                           }`}
                         >
                           {u.isActive ? 'Suspendre' : 'Réactiver'}

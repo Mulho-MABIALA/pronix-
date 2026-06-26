@@ -61,7 +61,7 @@ export default function HeroBackground() {
       <div className="absolute inset-0"
         style={{ boxShadow: 'inset 0 0 90px 30px rgba(23,24,25,0.65)' }} />
       <div className="absolute inset-0"
-        style={{ background: 'radial-gradient(ellipse 55% 45% at 50% 0%, rgba(9,187,87,0.15) 0%, transparent 70%)' }} />
+        style={{ background: 'radial-gradient(ellipse 55% 45% at 50% 0%, rgba(26,166,86,0.15) 0%, transparent 70%)' }} />
     </div>
   );
 }

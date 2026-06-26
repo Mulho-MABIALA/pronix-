@@ -1,7 +1,7 @@
 // Visualisation du taux de réussite d'un tipster
 export default function SuccessRateBar({ rate = 0, total = 0, size = 'md' }) {
   const pct = Math.round(rate);
-  const color = pct >= 65 ? 'bg-primary-500' : pct >= 50 ? 'bg-yellow-500' : 'bg-red-500';
+  const color = pct >= 65 ? 'bg-primary-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500';
 
   const textSize = size === 'lg' ? 'text-3xl font-display' : size === 'sm' ? 'text-sm' : 'text-xl font-semibold';
 

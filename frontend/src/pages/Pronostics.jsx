@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { TrendingUp, ChevronRight, Info } from 'lucide-react';
+import { TrendingUp, ChevronRight, Info, Zap } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
+import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
+import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
 
 const PICK_LABELS = {
   '1':      'Victoire domicile',
@@ -75,6 +77,11 @@ function PronoCard({ match }) {
     resultIcon = correct ? '✓' : '✗';
   }
 
+  const oddKey = `${match.id}-${pred.bestPick.type}`;
+  const odd    = getOdd(pred.bestPick.prob, oddKey);
+  const edge   = getValueEdge(pred.bestPick.prob, odd);
+  const value  = isValueBet(pred.bestPick.prob, odd);
+
   return (
     <Link to={`/matchs/${match.id}`} className="card p-4 block hover:border-white/10 transition-colors">
       {/* Header : compétition + heure */}
@@ -83,7 +90,7 @@ function PronoCard({ match }) {
         <div className="flex items-center gap-2">
           {isLive && (
             <span className="live-pill">
-              <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+              <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" />
               {match.minute || 'LIVE'}
             </span>
           )}
@@ -131,6 +138,10 @@ function PronoCard({ match }) {
           <div>
             <span className={`block text-xl font-display font-bold ${conf.color}`}>{pred.bestPick.prob}%</span>
             <span className="block text-[10px] text-gray-600">{pred.bestPick.market}</span>
+            <span className="mt-1 flex items-center justify-end gap-1">
+              <OddsChip odd={odd} />
+              {value && <ValueBetBadge edge={edge} />}
+            </span>
           </div>
         </div>
       </div>
@@ -197,6 +208,14 @@ export default function Pronostics() {
     grouped[c]?.push(m);
   }
 
+  // Value bets simulées du jour — cotes au-delà du seuil d'avantage estimé
+  const valueBets = matches.filter((m) => {
+    const p = m.predictions?.bestPick;
+    if (!p) return false;
+    const odd = getOdd(p.prob, `${m.id}-${p.type}`);
+    return isValueBet(p.prob, odd);
+  });
+
   return (
     <div className="max-w-2xl mx-auto py-5 space-y-5">
 
@@ -251,6 +270,21 @@ export default function Pronostics() {
           </div>
         ) : (
           <>
+            {valueBets.length > 0 && (
+              <section>
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap size={14} className="text-amber-400" />
+                  <p className="text-xs font-bold uppercase tracking-wider text-amber-400">
+                    Value bets du jour ({valueBets.length})
+                  </p>
+                </div>
+                <div className="space-y-3">
+                  {valueBets.map((m) => <PronoCard key={`vb-${m.id}`} match={m} />)}
+                </div>
+                <p className="disclaimer mt-2">{ODDS_DISCLAIMER}</p>
+              </section>
+            )}
+
             {['high', 'medium', 'low'].map((lvl) => {
               const group = grouped[lvl];
               if (!group.length) return null;

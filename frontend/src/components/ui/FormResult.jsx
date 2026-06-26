@@ -2,7 +2,7 @@
 export default function FormResult({ results = [] }) {
   const styles = {
     W: 'bg-primary-500 text-white',
-    D: 'bg-yellow-500 text-black',
+    D: 'bg-amber-500 text-black',
     L: 'bg-red-500 text-white',
   };
   const labels = { W: 'Victoire', D: 'Nul', L: 'Défaite' };

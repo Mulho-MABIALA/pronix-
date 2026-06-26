@@ -21,7 +21,7 @@ function KpiCard({ icon: Icon, label, value, sub, trend, color, to }) {
           <Icon size={18} aria-hidden="true" />
         </div>
         {trend !== undefined && trend !== null && (
-          <span className={`flex items-center gap-0.5 text-xs font-semibold px-2 py-1 rounded-lg ${positive ? 'bg-green-500/15 text-green-400' : 'bg-red-500/15 text-red-400'}`}>
+          <span className={`flex items-center gap-0.5 text-xs font-semibold px-2 py-1 rounded-lg ${positive ? 'bg-primary-500/15 text-primary-400' : 'bg-red-500/15 text-red-400'}`}>
             {positive ? <ArrowUpRight size={12} /> : <ArrowDownRight size={12} />}
             {Math.abs(trend)}%
           </span>
@@ -73,7 +73,6 @@ function PlanDistribution({ data }) {
   const items = [
     { code: 'FREE',    label: 'Gratuit',  color: 'bg-gray-500'    },
     { code: 'PREMIUM', label: 'Premium',  color: 'bg-primary-500' },
-    { code: 'PRO',     label: 'Pro',      color: 'bg-yellow-500'  },
   ];
 
   return (
@@ -119,7 +118,7 @@ function TopTipsters({ data }) {
               <p className="text-xs font-medium text-gray-200 truncate">{t.displayName}</p>
               <p className="text-[10px] text-gray-600">{t.totalTips} pronos</p>
             </div>
-            <span className={`text-xs font-bold ${t.successRate >= 60 ? 'text-green-400' : t.successRate >= 45 ? 'text-yellow-400' : 'text-red-400'}`}>
+            <span className={`text-xs font-bold ${t.successRate >= 60 ? 'text-primary-400' : t.successRate >= 45 ? 'text-amber-400' : 'text-red-400'}`}>
               {t.successRate.toFixed(1)}%
             </span>
           </div>
@@ -134,7 +133,6 @@ function RecentUsers({ data }) {
   const PLAN_STYLE = {
     FREE: 'bg-gray-500/15 text-gray-400',
     PREMIUM: 'bg-primary-500/15 text-primary-400',
-    PRO: 'bg-yellow-500/15 text-yellow-400',
   };
 
   return (
@@ -203,7 +201,7 @@ function SyncTools() {
       <button onClick={() => run(id, fn)} disabled={st === 'loading'}
         className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${colors[color]} disabled:opacity-50`}>
         {st === 'loading' ? <RefreshCw size={14} className="animate-spin" /> :
-         st === 'ok'      ? <Check size={14} className="text-green-400" /> :
+         st === 'ok'      ? <Check size={14} className="text-primary-400" /> :
          st === 'error'   ? <X size={14} className="text-red-400" /> :
          <Icon size={14} />}
         {label}
@@ -286,17 +284,17 @@ export default function AdminDashboard() {
             icon={TrendingUp}
             label="Abonnés payants"
             value={kpis?.activeSubscriptions?.toLocaleString('fr-FR')}
-            sub="Actifs (Prem. + Pro)"
+            sub="Abonnements Premium actifs"
             color="bg-primary-500/20 text-primary-400"
             to="/admin/utilisateurs"
           />
           <KpiCard
             icon={DollarSign}
-            label="CA ce mois"
-            value={`${(kpis?.monthlyRevenue || 0).toLocaleString('fr-FR')} FCFA`}
-            sub={`Total : ${(kpis?.totalRevenue || 0).toLocaleString('fr-FR')} FCFA`}
+            label="MRR"
+            value={`$${(kpis?.monthlyRevenue || 0).toFixed(2)}`}
+            sub={`Total : $${(kpis?.totalRevenue || 0).toFixed(2)}`}
             trend={kpis?.revenueGrowth}
-            color="bg-green-500/20 text-green-400"
+            color="bg-primary-500/20 text-primary-400"
             to="/admin/paiements"
           />
           <KpiCard

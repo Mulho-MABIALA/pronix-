@@ -9,7 +9,7 @@ const STATUS_LABELS = {
   PENDING: { label: 'En attente', cls: 'bg-orange-500/15 text-orange-400 border border-orange-500/20' },
   REVIEWED: { label: 'Examiné', cls: 'bg-blue-500/15 text-blue-400 border border-blue-500/20' },
   DISMISSED: { label: 'Ignoré', cls: 'bg-gray-500/15 text-gray-400 border border-gray-500/20' },
-  ACTIONED: { label: 'Traité', cls: 'bg-green-500/15 text-green-400 border border-green-500/20' },
+  ACTIONED: { label: 'Traité', cls: 'bg-primary-500/15 text-primary-400 border border-primary-500/20' },
 };
 
 export default function AdminReports() {
@@ -61,7 +61,7 @@ export default function AdminReports() {
         </div>
       ) : reports.length === 0 ? (
         <div className="bg-surface-800 border border-surface-700 rounded-2xl py-16 text-center">
-          <ShieldCheck size={36} className="mx-auto text-green-500/50 mb-3" />
+          <ShieldCheck size={36} className="mx-auto text-primary-500/50 mb-3" />
           <p className="text-gray-400 font-medium">Aucun signalement</p>
           <p className="text-xs text-gray-600 mt-1">Pour ce filtre</p>
         </div>

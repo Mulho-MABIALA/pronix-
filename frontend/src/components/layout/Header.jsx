@@ -42,8 +42,8 @@ function OutilsDropdown() {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 w-56 rounded-xl border border-white/[0.08] shadow-xl z-50 overflow-hidden"
-          style={{ background: '#1a1a1a' }}>
+        <div className="absolute top-full left-0 mt-1.5 w-56 rounded-xl border border-white/[0.08] shadow-card-hover z-50 overflow-hidden"
+          style={{ background: 'var(--color-card)' }}>
           {OUTILS_ITEMS.map(({ to, label, Icon, desc }) => (
             <Link key={to} to={to} onClick={() => setOpen(false)}
               className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.04] transition-colors border-b border-white/[0.04] last:border-0">
@@ -68,7 +68,7 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05]"
-      style={{ background: 'rgba(17,17,17,0.95)', backdropFilter: 'blur(16px)' }}>
+      style={{ background: 'rgba(23,24,25,0.95)', backdropFilter: 'blur(16px)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
 
         {/* Logo */}

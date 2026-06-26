@@ -7,9 +7,9 @@ import api from '../../services/api';
 
 const STATUS_STYLE = {
   SCHEDULED: 'bg-gray-500/15 text-gray-400',
-  LIVE:      'bg-red-500/15 text-red-400',
-  FINISHED:  'bg-green-500/15 text-green-400',
-  POSTPONED: 'bg-yellow-500/15 text-yellow-400',
+  LIVE:      'bg-live-500/15 text-live-400',
+  FINISHED:  'bg-primary-500/15 text-primary-400',
+  POSTPONED: 'bg-amber-500/15 text-amber-400',
   CANCELLED: 'bg-surface-700 text-gray-600',
 };
 const STATUS_LABELS = {

@@ -30,7 +30,7 @@ export default function Login() {
         <div className="text-center">
           <span className="text-4xl" aria-hidden="true">⚽</span>
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">Connexion</h1>
-          <p className="text-gray-500 text-sm mt-1">Bienvenue sur Statistique Foot</p>
+          <p className="text-gray-500 text-sm mt-1">Bienvenue sur Pronix</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bento-card space-y-4" noValidate>

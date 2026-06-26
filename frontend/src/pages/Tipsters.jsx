@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Trophy } from 'lucide-react';
 import api from '../services/api';
 import TipsterCard from '../components/tipsters/TipsterCard';
 import { SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
@@ -20,7 +21,10 @@ export default function Tipsters() {
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-100">Classement Tipsters</h1>
+        <div className="flex items-center gap-2">
+          <Trophy size={22} className="text-primary-400" />
+          <h1 className="font-display font-bold text-2xl text-gray-100">Classement Tipsters</h1>
+        </div>
         <p className="text-gray-500 text-sm mt-1">
           Taux de réussite calculé automatiquement sur les pronostics vérifiés.
         </p>

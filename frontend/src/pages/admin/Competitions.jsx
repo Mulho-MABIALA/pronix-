@@ -67,7 +67,7 @@ export default function AdminCompetitions() {
                     {c._count?.matches ?? 0}
                   </td>
                   <td className="px-4 py-3.5 text-center">
-                    <span className={`inline-block w-2 h-2 rounded-full ${c.isDisplayed ? 'bg-green-400' : 'bg-gray-600'}`} />
+                    <span className={`inline-block w-2 h-2 rounded-full ${c.isDisplayed ? 'bg-primary-400' : 'bg-gray-600'}`} />
                   </td>
                   <td className="px-5 py-3.5 text-right">
                     <button
@@ -76,7 +76,7 @@ export default function AdminCompetitions() {
                       className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border ml-auto transition-colors ${
                         c.isDisplayed
                           ? 'border-gray-600 text-gray-400 hover:border-red-500/40 hover:text-red-400'
-                          : 'border-green-500/30 text-green-400 hover:bg-green-500/10'
+                          : 'border-primary-500/30 text-primary-400 hover:bg-primary-500/10'
                       }`}
                     >
                       {c.isDisplayed ? <><EyeOff size={12} /> Masquer</> : <><Eye size={12} /> Afficher</>}

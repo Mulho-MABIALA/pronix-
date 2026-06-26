@@ -13,7 +13,7 @@ export default function BottomNav() {
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] safe-area-inset-bottom"
-      style={{ background: 'rgba(17,17,17,0.97)', backdropFilter: 'blur(16px)' }}
+      style={{ background: 'rgba(23,24,25,0.97)', backdropFilter: 'blur(16px)' }}
       aria-label="Navigation mobile"
     >
       <div className="flex items-center justify-around h-16 px-2">

@@ -17,6 +17,7 @@ const adminRoutes = require('./routes/admin');
 const profileRoutes = require('./routes/profiles');
 const newsRoutes = require('./routes/news');
 const pushRoutes = require('./routes/push');
+const agentRoutes = require('./routes/agents');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -56,6 +57,7 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/profiles', profileRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/push', pushRoutes);
+app.use('/api/agents', agentRoutes);
 
 // Santé de l'API
 app.get('/api/health', (req, res) => {

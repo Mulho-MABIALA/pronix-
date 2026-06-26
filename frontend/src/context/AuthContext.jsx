@@ -49,12 +49,11 @@ export function AuthProvider({ children }) {
   const refreshUser = loadUser;
 
   const userPlan = user?.subscription?.plan?.code || 'FREE';
-  const isPremium = ['PREMIUM', 'PRO'].includes(userPlan);
-  const isPro = userPlan === 'PRO';
+  const isPremium = userPlan === 'PREMIUM';
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, userPlan, isPremium, isPro, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, userPlan, isPremium, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

@@ -9,7 +9,7 @@ export default function Subscription() {
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
   const billingCycle = 'MONTHLY';
-  const [paymentMethod, setPaymentMethod] = useState('FEDAPAY');
+  const [paymentMethod] = useState('FEDAPAY');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,16 +26,8 @@ export default function Subscription() {
     setError('');
     setLoading(true);
     try {
-      if (paymentMethod === 'FEDAPAY') {
-        const { data: res } = await api.post('/payments/fedapay/init', { planId: plan.id, billingCycle });
-        window.location.href = res.data.paymentUrl;
-      } else if (paymentMethod === 'WAVE') {
-        const { data: res } = await api.post('/payments/wave/init', { planId: plan.id, billingCycle });
-        window.location.href = res.data.waveUrl;
-      } else {
-        const { data: res } = await api.post('/payments/cinetpay/init', { planId: plan.id, billingCycle });
-        window.location.href = res.data.paymentUrl;
-      }
+      const { data: res } = await api.post('/payments/fedapay/init', { planId: plan.id, billingCycle });
+      window.location.href = res.data.paymentUrl;
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');
     } finally {
@@ -56,39 +48,12 @@ export default function Subscription() {
       {/* Méthode de paiement */}
       <div className="max-w-md mx-auto">
         <p className="text-sm font-medium text-gray-300 mb-3 text-center">Moyen de paiement</p>
-        <div className="grid grid-cols-1 gap-2">
-          {/* FedaPay — option principale recommandée */}
-          <button
-            onClick={() => setPaymentMethod('FEDAPAY')}
-            aria-pressed={paymentMethod === 'FEDAPAY'}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${
-              paymentMethod === 'FEDAPAY'
-                ? 'bg-primary-500/15 border-primary-500/40 text-primary-400'
-                : 'bg-surface-800 border-surface-700 text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <span className="text-lg">💳</span>
-            <div className="text-left">
-              <p className="font-semibold">FedaPay <span className="text-[10px] ml-1 px-1.5 py-0.5 rounded bg-primary-500/20 text-primary-400">Recommandé</span></p>
-              <p className="text-xs text-gray-500 mt-0.5">Wave · Orange Money · MTN · Carte Visa/MC</p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setPaymentMethod('WAVE')}
-            aria-pressed={paymentMethod === 'WAVE'}
-            className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors border ${
-              paymentMethod === 'WAVE'
-                ? 'bg-primary-500/15 border-primary-500/40 text-primary-400'
-                : 'bg-surface-800 border-surface-700 text-gray-400 hover:text-gray-200'
-            }`}
-          >
-            <span className="text-lg">📱</span>
-            <div className="text-left">
-              <p className="font-semibold">Wave direct</p>
-              <p className="text-xs text-gray-500 mt-0.5">Paiement Wave Sénégal uniquement</p>
-            </div>
-          </button>
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl border bg-primary-500/15 border-primary-500/40 text-primary-400">
+          <span className="text-lg">💳</span>
+          <div className="text-left">
+            <p className="font-semibold text-sm">FedaPay</p>
+            <p className="text-xs text-gray-400 mt-0.5">Wave · Orange Money · MTN · Carte Visa/MC</p>
+          </div>
         </div>
       </div>
 

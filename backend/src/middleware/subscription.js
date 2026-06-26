@@ -1,7 +1,6 @@
 const { AppError } = require('./errorHandler');
 
-// Niveaux d'accès : FREE < PREMIUM < PRO
-const PLAN_LEVELS = { FREE: 0, PREMIUM: 1, PRO: 2 };
+const PLAN_LEVELS = { FREE: 0, PREMIUM: 1 };
 
 // Retourne le code plan actif de l'utilisateur authentifié
 function getUserPlanCode(user) {

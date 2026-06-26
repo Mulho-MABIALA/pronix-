@@ -67,7 +67,7 @@ export default function AdminTipsters() {
                 : tipsters.map((t, i) => {
                   const rank = (page - 1) * 20 + i + 1;
                   const rate = t.tipsterStats?.successRate || 0;
-                  const rateColor = rate >= 60 ? 'text-green-400' : rate >= 45 ? 'text-yellow-400' : 'text-red-400';
+                  const rateColor = rate >= 60 ? 'text-primary-400' : rate >= 45 ? 'text-amber-400' : 'text-red-400';
                   const plan = t.subscription?.plan?.code || 'FREE';
 
                   return (
@@ -80,7 +80,7 @@ export default function AdminTipsters() {
                               {t.username?.charAt(0).toUpperCase()}
                             </div>
                             {rank <= 3 && (
-                              <Trophy size={10} className={`absolute -top-1 -right-1 ${rank === 1 ? 'text-yellow-400' : rank === 2 ? 'text-gray-400' : 'text-orange-500'}`} />
+                              <Trophy size={10} className={`absolute -top-1 -right-1 ${rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-gray-400' : 'text-orange-500'}`} />
                             )}
                           </div>
                           <div>
@@ -107,7 +107,7 @@ export default function AdminTipsters() {
                       </td>
                       <td className="px-4 py-4 hidden lg:table-cell">
                         <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
-                          plan === 'PRO' ? 'bg-yellow-500/15 text-yellow-400' :
+                          plan === 'PRO' ? 'bg-amber-500/15 text-amber-400' :
                           plan === 'PREMIUM' ? 'bg-primary-500/15 text-primary-400' :
                           'bg-gray-500/15 text-gray-400'
                         }`}>

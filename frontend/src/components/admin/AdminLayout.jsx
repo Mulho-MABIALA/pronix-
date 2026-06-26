@@ -3,7 +3,7 @@ import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight,
+  ExternalLink, LogOut, ChevronRight, Bot,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -15,6 +15,7 @@ const NAV = [
   { to: '/admin/competitions',  label: 'Compétitions',   Icon: Globe },
   { to: '/admin/matchs',        label: 'Matchs',         Icon: Calendar },
   { to: '/admin/paiements',     label: 'Paiements',      Icon: CreditCard },
+  { to: '/admin/agents',        label: 'Agents IA',      Icon: Bot },
 ];
 
 function SidebarContent({ onClose }) {
@@ -28,7 +29,7 @@ function SidebarContent({ onClose }) {
         <Link to="/admin" className="flex items-center gap-2.5" onClick={onClose}>
           <span className="text-2xl">⚽</span>
           <div>
-            <p className="font-display font-bold text-sm text-white leading-tight">Statistique Foot</p>
+            <p className="font-display font-bold text-sm text-white leading-tight">Pronix</p>
             <p className="text-[10px] text-white/40 uppercase tracking-widest">Admin</p>
           </div>
         </Link>

@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { TipsterBadge, ResultBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
+import { estimateTipsterROI } from '../utils/mockOdds';
 
 const PRED_LABELS = {
   HOME_WIN: '1 — Dom.', DRAW: 'X — Nul', AWAY_WIN: '2 — Ext.',
@@ -37,6 +38,7 @@ export default function TipsterProfile() {
 
   const displayName = tipster.profile?.displayName || tipster.username;
   const isOwn = user?.id === userId;
+  const roi = stats?.totalTips > 0 ? estimateTipsterROI(stats.successRate, userId) : null;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
@@ -92,6 +94,16 @@ export default function TipsterProfile() {
             </p>
             <p className="text-xs text-gray-500 mt-1">Classement du mois</p>
           </div>
+          {roi != null && (
+            <div className="bento-card text-center col-span-2">
+              <p className={`text-2xl font-display font-bold ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}>
+                {roi >= 0 ? '+' : ''}{roi}%
+              </p>
+              <p className="text-xs text-gray-500 mt-1" title="Calculé à partir du taux de réussite et d'une cote moyenne simulée">
+                ROI estimé (simulé)
+              </p>
+            </div>
+          )}
         </div>
       )}
 

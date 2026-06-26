@@ -6,8 +6,8 @@ import { fr } from 'date-fns/locale';
 import api from '../../services/api';
 
 const STATUS = {
-  COMPLETED: { label: 'Complété',  Icon: CheckCircle, cls: 'text-green-400 bg-green-500/15 border-green-500/20' },
-  PENDING:   { label: 'En attente', Icon: Clock,        cls: 'text-yellow-400 bg-yellow-500/15 border-yellow-500/20' },
+  COMPLETED: { label: 'Complété',  Icon: CheckCircle, cls: 'text-primary-400 bg-primary-500/15 border-primary-500/20' },
+  PENDING:   { label: 'En attente', Icon: Clock,        cls: 'text-amber-400 bg-amber-500/15 border-amber-500/20' },
   FAILED:    { label: 'Échoué',    Icon: XCircle,      cls: 'text-red-400 bg-red-500/15 border-red-500/20' },
   REFUNDED:  { label: 'Remboursé', Icon: XCircle,      cls: 'text-gray-400 bg-gray-500/15 border-gray-500/20' },
 };

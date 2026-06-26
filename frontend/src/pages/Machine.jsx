@@ -3,10 +3,12 @@ import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
 import { Zap, Copy, Check, RefreshCw, Share2, Download } from 'lucide-react';
 import api from '../services/api';
+import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
+import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 
 function drawTicketCanvas(ticket, totalOdds) {
   const W = 640;
-  const ROW_H = 64;
+  const ROW_H = 70;
   const HEADER_H = 90;
   const FOOTER_H = 56;
   const H = HEADER_H + ticket.length * ROW_H + FOOTER_H;
@@ -21,15 +23,15 @@ function drawTicketCanvas(ticket, totalOdds) {
   ctx.scale(2, 2);
 
   // Fond
-  ctx.fillStyle = '#111111';
+  ctx.fillStyle = '#171819';
   ctx.fillRect(0, 0, W, H);
 
   // Bande verte en haut
-  ctx.fillStyle = '#09bb57';
+  ctx.fillStyle = '#1aa656';
   ctx.fillRect(0, 0, W, 4);
 
   // Logo + titre
-  ctx.fillStyle = '#09bb57';
+  ctx.fillStyle = '#1aa656';
   roundRect(ctx, 16, 16, 32, 32, 8);
   ctx.fill();
   ctx.fillStyle = '#ffffff';
@@ -61,8 +63,8 @@ function drawTicketCanvas(ticket, totalOdds) {
   ctx.stroke();
 
   // Picks
-  const CONF_BG   = { high: '#09bb5722', medium: '#f59e0b22', low: '#3a3a3a' };
-  const CONF_TEXT = { high: '#16d465',   medium: '#fbbf24',   low: '#888888' };
+  const CONF_BG   = { high: '#1aa65622', medium: '#f59e0b22', low: '#3a3a3a' };
+  const CONF_TEXT = { high: '#2ec16a',   medium: '#fbbf24',   low: '#888888' };
 
   ticket.forEach((t, i) => {
     const y = HEADER_H + i * ROW_H;
@@ -97,11 +99,11 @@ function drawTicketCanvas(ticket, totalOdds) {
     );
 
     // Badge pick
-    const badgeW = 72;
+    const badgeW = 80;
     const badgeX = W - 16 - badgeW;
-    const badgeY = y + 12;
+    const badgeY = y + 9;
     ctx.fillStyle = CONF_BG[t.conf];
-    roundRect(ctx, badgeX, badgeY, badgeW, 36, 8);
+    roundRect(ctx, badgeX, badgeY, badgeW, 46, 8);
     ctx.fill();
 
     ctx.fillStyle = CONF_TEXT[t.conf];
@@ -110,6 +112,9 @@ function drawTicketCanvas(ticket, totalOdds) {
     ctx.fillText(PICK_LABELS[t.pick.type] || t.pick.type, badgeX + badgeW / 2, badgeY + 14);
     ctx.font = 'bold 11px system-ui';
     ctx.fillText(`${t.pick.prob}%`, badgeX + badgeW / 2, badgeY + 28);
+    ctx.fillStyle = t.value ? '#fbbf24' : '#888888';
+    ctx.font = 'bold 10px system-ui';
+    ctx.fillText(`cote ${formatOdd(t.odd)}${t.value ? ' ⚡' : ''}`, badgeX + badgeW / 2, badgeY + 41);
   });
 
   // Footer
@@ -227,7 +232,8 @@ export default function Machine() {
       })
       .map((m) => {
         const pick = getProb(m.predictions, market);
-        return { match: m, pick, conf: getConfidence(pick.prob) };
+        const odd  = getOdd(pick.prob, `${m.id}-${pick.type}`);
+        return { match: m, pick, conf: getConfidence(pick.prob), odd, value: isValueBet(pick.prob, odd) };
       })
       .sort((a, b) => b.pick.prob - a.pick.prob);
 
@@ -263,15 +269,16 @@ export default function Machine() {
     if (!ticket) return;
     const lines = ticket.map((t, i) => {
       const time = format(new Date(t.match.scheduledAt), 'dd/MM HH:mm');
-      return `${i + 1}. ${t.match.homeTeam} vs ${t.match.awayTeam} — ${PICK_LABELS[t.pick.type] || t.pick.type} (${t.pick.prob}%) — ${time}`;
+      return `${i + 1}. ${t.match.homeTeam} vs ${t.match.awayTeam} — ${PICK_LABELS[t.pick.type] || t.pick.type} (${t.pick.prob}% · cote ${formatOdd(t.odd)}${t.value ? ' ⚡value' : ''}) — ${time}`;
     });
+    if (totalOdds) lines.push(`\nCote totale simulée : × ${totalOdds}`);
     navigator.clipboard.writeText(lines.join('\n'));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
-  const totalOdds = ticket
-    ? ticket.reduce((acc, t) => acc * (100 / t.pick.prob), 1).toFixed(2)
+  const totalOdds = ticket && ticket.length
+    ? ticket.reduce((acc, t) => acc * t.odd, 1).toFixed(2)
     : null;
 
   return (
@@ -382,7 +389,7 @@ export default function Machine() {
             <div className="flex items-center gap-2">
               {totalOdds && (
                 <span className="text-xs text-gray-500">
-                  Cote indicative : <span className="text-amber-400 font-semibold">× {totalOdds}</span>
+                  Cote simulée : <span className="text-amber-400 font-semibold">× {totalOdds}</span>
                 </span>
               )}
               <button onClick={generateTicket}
@@ -427,15 +434,17 @@ export default function Machine() {
                       <span className={`block text-xs font-bold ${c.text}`}>{PICK_LABELS[t.pick.type] || t.pick.type}</span>
                       <span className={`block text-[10px] font-semibold ${c.text}`}>{t.pick.prob}%</span>
                     </div>
+                    <div className="shrink-0 flex flex-col items-center gap-1">
+                      <OddsChip odd={t.odd} />
+                      {t.value && <ValueBetBadge edge={getValueEdge(t.pick.prob, t.odd)} />}
+                    </div>
                   </div>
                 );
               })}
             </div>
           )}
 
-          <p className="text-[10px] text-gray-600 text-center">
-            La cote indicative est calculée à partir des probabilités algorithmiques. Les cotes réelles varient selon le bookmaker.
-          </p>
+          <p className="text-[10px] text-gray-600 text-center">{ODDS_DISCLAIMER}</p>
         </div>
       )}
     </div>

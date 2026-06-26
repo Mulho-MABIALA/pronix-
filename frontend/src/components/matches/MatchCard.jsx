@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { Zap } from 'lucide-react';
+import { getOdd, isValueBet, formatOdd } from '../../utils/mockOdds';
 
 const FOTMOB_CDN = (id) =>
   id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png` : null;
@@ -40,15 +42,15 @@ export default function MatchCard({ match }) {
   return (
     <Link
       to={`/matchs/${match.id}`}
-      className={`match-row flex items-center gap-2 px-3 py-3 animate-fade-in ${isLive ? 'bg-red-500/[0.04]' : ''}`}
+      className={`match-row flex items-center gap-2 px-3 py-3 animate-fade-in ${isLive ? 'bg-live-500/[0.04]' : ''}`}
       aria-label={`${match.homeTeam} vs ${match.awayTeam}`}
     >
       {/* Statut / heure */}
       <div className="w-10 shrink-0 text-center">
         {isLive ? (
           <div className="flex flex-col items-center gap-1">
-            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" aria-hidden="true" />
-            <span className="text-[10px] font-bold text-red-400 tabular-nums leading-none">
+            <span className="w-2 h-2 rounded-full bg-live-500 animate-pulse shadow-[0_0_8px_rgba(239,68,68,0.6)]" aria-hidden="true" />
+            <span className="text-[10px] font-bold text-live-400 tabular-nums leading-none">
               {minute || 'LIVE'}
             </span>
           </div>
@@ -96,20 +98,32 @@ export default function MatchCard({ match }) {
         )}
       </div>
 
-      {/* Probabilité & pick — uniquement pour les matchs à venir */}
-      {pred && !isFinished && (
-        <div className={`shrink-0 text-center rounded-lg px-2.5 py-1.5 min-w-[58px] ${CONF_BG[pred.confidence]}`}>
-          <span className={`block text-sm font-bold tabular-nums ${CONF_COLOR[pred.confidence]}`}>
-            {pred.bestPick.prob}%
-          </span>
-          <span className="block text-[9px] text-gray-500 leading-tight whitespace-nowrap mt-0.5 font-semibold uppercase tracking-wide">
-            {pred.bestPick.type === 'over25' ? 'O2.5' :
-             pred.bestPick.type === 'over15' ? 'O1.5' :
-             pred.bestPick.type === 'btts'   ? 'BTTS' :
-             pred.bestPick.type}
-          </span>
-        </div>
-      )}
+      {/* Probabilité, pick & cote simulée — uniquement pour les matchs à venir */}
+      {pred && !isFinished && (() => {
+        const oddKey = `${match.id}-${pred.bestPick.type}`;
+        const odd = getOdd(pred.bestPick.prob, oddKey);
+        const value = isValueBet(pred.bestPick.prob, odd);
+        return (
+          <div className={`shrink-0 text-center rounded-lg px-2.5 py-1.5 min-w-[58px] ${CONF_BG[pred.confidence]}`}>
+            <span className={`block text-sm font-bold tabular-nums ${CONF_COLOR[pred.confidence]}`}>
+              {pred.bestPick.prob}%
+            </span>
+            <span className="block text-[9px] text-gray-500 leading-tight whitespace-nowrap mt-0.5 font-semibold uppercase tracking-wide">
+              {pred.bestPick.type === 'over25' ? 'O2.5' :
+               pred.bestPick.type === 'over15' ? 'O1.5' :
+               pred.bestPick.type === 'btts'   ? 'BTTS' :
+               pred.bestPick.type}
+            </span>
+            <span
+              className={`mt-1 flex items-center justify-center gap-0.5 font-mono font-semibold tabular-nums text-[10px] ${value ? 'text-amber-400' : 'text-gray-500'}`}
+              title="Cote simulée"
+            >
+              {value && <Zap size={9} className="shrink-0" aria-hidden="true" />}
+              {formatOdd(odd)}
+            </span>
+          </div>
+        );
+      })()}
     </Link>
   );
 }

@@ -2,9 +2,11 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Filter, ChevronRight } from 'lucide-react';
+import { Filter, ChevronRight, Zap } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
+import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
+import { getOdd, isValueBet, getValueEdge } from '../utils/mockOdds';
 
 const MARKET_FILTERS = [
   { value: '',       label: 'Tous les marchés' },
@@ -63,9 +65,10 @@ function FilterChips({ options, value, onChange }) {
 }
 
 export default function Filtres() {
-  const [market, setMarket]   = useState('');
-  const [conf, setConf]       = useState('');
-  const [minProb, setMinProb] = useState(50);
+  const [market, setMarket]     = useState('');
+  const [conf, setConf]         = useState('');
+  const [minProb, setMinProb]   = useState(50);
+  const [valueOnly, setValueOnly] = useState(false);
 
   const today = format(new Date(), 'yyyy-MM-dd');
   const tomorrow = format(new Date(Date.now() + 86400000), 'yyyy-MM-dd');
@@ -84,8 +87,12 @@ export default function Filtres() {
     if (market && p.bestPick.type !== market) return false;
     if (conf && p.confidence !== conf) return false;
     if (p.bestPick.prob < minProb) return false;
+    if (valueOnly) {
+      const odd = getOdd(p.bestPick.prob, `${m.id}-${p.bestPick.type}`);
+      if (!isValueBet(p.bestPick.prob, odd)) return false;
+    }
     return true;
-  }), [allMatches, market, conf, minProb]);
+  }), [allMatches, market, conf, minProb, valueOnly]);
 
   const isLoading = !todayData || !tomorrowData;
 
@@ -137,6 +144,24 @@ export default function Filtres() {
             <span>40%</span><span>90%</span>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => setValueOnly((v) => !v)}
+          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-semibold transition-colors ${
+            valueOnly
+              ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
+              : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+          }`}
+        >
+          <span className="flex items-center gap-2">
+            <Zap size={14} className={valueOnly ? 'text-amber-400' : 'text-gray-600'} />
+            Value bets uniquement (cotes simulées)
+          </span>
+          <span className={`w-9 h-5 rounded-full relative transition-colors ${valueOnly ? 'bg-amber-500' : 'bg-surface-600'}`}>
+            <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${valueOnly ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
+          </span>
+        </button>
       </div>
 
       {/* Résultats */}
@@ -163,6 +188,10 @@ export default function Filtres() {
             {filtered.map((m) => {
               const pred = m.predictions;
               const isToday = format(new Date(m.scheduledAt), 'yyyy-MM-dd') === today;
+              const oddKey = `${m.id}-${pred.bestPick.type}`;
+              const odd    = getOdd(pred.bestPick.prob, oddKey);
+              const edge   = getValueEdge(pred.bestPick.prob, odd);
+              const value  = isValueBet(pred.bestPick.prob, odd);
               return (
                 <Link key={m.id} to={`/matchs/${m.id}`}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors">
@@ -185,6 +214,10 @@ export default function Filtres() {
                   <div className={`shrink-0 text-center px-3 py-1.5 rounded-lg border ${CONF_COLORS[pred.confidence]}`}>
                     <span className="block text-sm font-bold">{pred.bestPick.prob}%</span>
                     <span className="block text-[10px] font-semibold">{PICK_LABELS[pred.bestPick.type] || pred.bestPick.type}</span>
+                  </div>
+                  <div className="shrink-0 flex flex-col items-center gap-1">
+                    <OddsChip odd={odd} />
+                    {value && <ValueBetBadge edge={edge} />}
                   </div>
                   <ChevronRight size={14} className="text-gray-600 shrink-0" />
                 </Link>

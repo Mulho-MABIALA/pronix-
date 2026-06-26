@@ -11,7 +11,7 @@ const TOOLS = [
     cta: 'Essayer',
     to: '/outils/filtres',
     icon: SlidersHorizontal,
-    gradient: 'linear-gradient(135deg, #0a1f14 0%, #103322 55%, #09bb57 130%)',
+    gradient: 'linear-gradient(135deg, #0a1f14 0%, #103322 55%, #1aa656 130%)',
   },
   {
     id: 'machine',

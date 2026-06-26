@@ -9,6 +9,65 @@ import { useAuth } from '../context/AuthContext';
 import { MatchStatusBadge, ResultBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
+import Alert from '../components/ui/Alert';
+import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
+import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER } from '../utils/mockOdds';
+
+const PICK_MARKET_LABELS = {
+  '1': 'Victoire domicile', 'X': 'Match nul', '2': 'Victoire extérieur',
+  '1X': 'Double chance 1X', 'X2': 'Double chance X2',
+  over25: 'Plus de 2.5 buts', over15: 'Plus de 1.5 buts', btts: 'Les 2 équipes marquent',
+};
+
+// ── Cotes simulées & value bet — comparateur style BetMines ───────────────────
+function OddsAndValueSection({ match }) {
+  const pred = match.predictions;
+  if (!pred?.bestPick) return null;
+
+  const oddKey = `${match.id}-${pred.bestPick.type}`;
+  const panel  = getOddsPanel(pred.bestPick.prob, oddKey);
+  const best   = panel[0];
+  const edge   = getValueEdge(pred.bestPick.prob, best.odd);
+  const value  = isValueBet(pred.bestPick.prob, best.odd);
+
+  return (
+    <section className="card p-4 space-y-3">
+      <div className="flex items-center justify-between gap-2">
+        <h2 className="font-semibold text-gray-100 text-sm flex items-center gap-2">
+          <span className="w-1 h-4 rounded-full bg-amber-400 shrink-0" />
+          Pronostic algorithmique & cotes
+        </h2>
+        {value && <ValueBetBadge edge={edge} showEdge size="md" />}
+      </div>
+
+      <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border bg-primary-500/5 border-primary-500/15">
+        <div className="min-w-0">
+          <p className="text-xs text-gray-500">Pick recommandé</p>
+          <p className="text-sm font-semibold text-gray-100 mt-0.5 truncate">
+            {PICK_MARKET_LABELS[pred.bestPick.type] || pred.bestPick.market || pred.bestPick.label}
+          </p>
+        </div>
+        <span className="text-xl font-display font-bold text-primary-400 shrink-0 ml-3">{pred.bestPick.prob}%</span>
+      </div>
+
+      <div>
+        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+          Comparateur de cotes (simulé)
+        </p>
+        <div className="space-y-1.5">
+          {panel.map((b, i) => (
+            <div key={b.bookmaker} className="flex items-center justify-between text-sm">
+              <span className={i === 0 ? 'font-semibold text-gray-200' : 'text-gray-500'}>{b.bookmaker}</span>
+              <OddsChip odd={b.odd} size="md" muted={i !== 0} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <p className="disclaimer">{ODDS_DISCLAIMER}</p>
+    </section>
+  );
+}
 
 const PREDICTIONS = [
   { value: 'HOME_WIN',   label: '1 — Victoire domicile' },
@@ -54,8 +113,8 @@ function TeamLogoLarge({ logo, teamId, name }) {
 }
 
 const RESULT_STYLE = {
-  W: 'bg-green-500 text-white',
-  D: 'bg-yellow-500 text-black',
+  W: 'bg-primary-500 text-white',
+  D: 'bg-amber-500 text-black',
   L: 'bg-red-500 text-white',
 };
 
@@ -307,13 +366,13 @@ export default function MatchDetail() {
           <div className="text-center shrink-0 px-2">
             {['FINISHED', 'LIVE'].includes(match.status) ? (
               <>
-                <p className={`font-display font-bold text-4xl ${match.status === 'LIVE' ? 'text-red-400' : 'text-gray-100'}`}>
+                <p className={`font-display font-bold text-4xl ${match.status === 'LIVE' ? 'text-live-400' : 'text-gray-100'}`}>
                   {match.homeScore} — {match.awayScore}
                 </p>
                 {match.status === 'LIVE' && (
                   <p className="flex items-center justify-center gap-1.5 mt-1.5">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" aria-hidden="true" />
-                    <span className="text-sm font-bold text-red-400">
+                    <span className="w-2 h-2 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
+                    <span className="text-sm font-bold text-live-400">
                       {match.minute ? (match.minute === 'HT' ? 'Mi-temps' : match.minute) : 'En direct'}
                     </span>
                   </p>
@@ -383,6 +442,9 @@ export default function MatchDetail() {
         {/* ── Onglet : Pronostics ─────────────────────────────────────── */}
         {activeTab === 'tips' && (
           <>
+            {/* Cotes simulées & value bet */}
+            <OddsAndValueSection match={match} />
+
             {/* Données premium */}
             {!isPremium && (
               <section className="card border-dashed border-surface-600 p-6 text-center">
@@ -416,26 +478,24 @@ export default function MatchDetail() {
                 <p className="disclaimer">Ceci n'est pas un conseil financier. Aucune garantie de gain.</p>
 
                 {aiError && (
-                  <div role="alert" className="bg-red-500/10 border border-red-500/30 text-red-400 rounded-xl px-4 py-3 text-sm">
+                  <Alert variant="error" onClose={() => setAiError('')}>
                     {aiError}
-                  </div>
+                  </Alert>
                 )}
 
                 {generateAi.isSuccess && (
-                  <div className="bg-violet-500/10 border border-violet-500/30 rounded-xl px-4 py-3 text-sm space-y-1">
-                    <p className="text-violet-300 font-semibold flex items-center gap-1.5">
-                      <Sparkles size={13} /> Pronostic généré par IA — vérifiez avant de publier
-                    </p>
+                  <Alert variant="ai">
+                    <p className="font-semibold">Pronostic généré par IA — vérifiez avant de publier</p>
                     {aiMeta && (
-                      <p className="text-violet-500 text-xs">{aiMeta.usedToday}/{aiMeta.dailyLimit} analyses utilisées aujourd'hui</p>
+                      <p className="text-violet-500/80 text-xs mt-0.5">{aiMeta.usedToday}/{aiMeta.dailyLimit} analyses utilisées aujourd'hui</p>
                     )}
-                  </div>
+                  </Alert>
                 )}
 
                 {tipSuccess && (
-                  <div role="alert" className="bg-primary-500/10 border border-primary-500/30 text-primary-400 rounded-xl px-4 py-3 text-sm">
-                    ✓ Pronostic publié avec succès
-                  </div>
+                  <Alert variant="success" onClose={() => setTipSuccess(false)}>
+                    Pronostic publié avec succès
+                  </Alert>
                 )}
 
                 <div>

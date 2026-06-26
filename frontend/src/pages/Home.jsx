@@ -26,6 +26,7 @@ export default function Home() {
 
   const matches   = matchesData?.data    || [];
   const tipsters  = leaderboardData?.data || [];
+  const liveCount = matches.filter((m) => m.status === 'LIVE').length;
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-10 animate-fade-in">
@@ -41,9 +42,17 @@ export default function Home() {
             style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.12) 0%, transparent 70%)' }} />
 
           <div className="relative">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-semibold mb-6">
-              <Sparkles size={13} className="shrink-0" />
-              Plateforme football mondiale
+            <div className="flex items-center justify-center gap-2 flex-wrap mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-semibold">
+                <Sparkles size={13} className="shrink-0" />
+                Plateforme football mondiale
+              </div>
+              {liveCount > 0 && (
+                <Link to="/matchs" className="live-pill animate-pop">
+                  <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
+                  {liveCount} match{liveCount > 1 ? 's' : ''} en direct
+                </Link>
+              )}
             </div>
 
             <h1 className="font-display font-bold text-4xl md:text-6xl text-white mb-4 leading-[1.08] tracking-tight"
@@ -84,6 +93,12 @@ export default function Home() {
           <h2 className="section-title flex items-center gap-2.5">
             <span className="w-1 h-4 rounded-full bg-primary-400" />
             Matchs du jour
+            {liveCount > 0 && (
+              <span className="live-pill">
+                <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
+                {liveCount} en direct
+              </span>
+            )}
           </h2>
           <Link to="/matchs" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
             Tout voir <ChevronRight size={14} />
@@ -150,7 +165,7 @@ export default function Home() {
               Passez Premium
             </h2>
             <div className="relative overflow-hidden card p-5 h-full border-orange-500/10"
-              style={{ background: 'linear-gradient(135deg, rgba(9,187,87,0.08) 0%, rgba(249,115,22,0.07) 100%)' }}>
+              style={{ background: 'linear-gradient(135deg, rgba(26,166,86,0.08) 0%, rgba(249,115,22,0.07) 100%)' }}>
               <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none"
                 style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.18) 0%, transparent 70%)' }} />
 
@@ -192,7 +207,7 @@ export default function Home() {
               Votre espace
             </h2>
             <div className="relative overflow-hidden card-p space-y-4 h-full"
-              style={{ background: 'linear-gradient(135deg, rgba(9,187,87,0.05) 0%, transparent 60%)' }}>
+              style={{ background: 'linear-gradient(135deg, rgba(26,166,86,0.05) 0%, transparent 60%)' }}>
               <div className="w-10 h-10 rounded-xl bg-primary-500/15 border border-primary-500/25 flex items-center justify-center">
                 <Wand2 size={18} className="text-primary-400" />
               </div>

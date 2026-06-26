@@ -52,10 +52,10 @@ function StandingsTable({ standings, competitionName }) {
                 </div>
               </td>
               <td className="text-center py-2.5 text-gray-400">{team.MP}</td>
-              <td className="text-center py-2.5 text-green-400">{team.W}</td>
+              <td className="text-center py-2.5 text-primary-400">{team.W}</td>
               <td className="text-center py-2.5 text-gray-400">{team.D}</td>
               <td className="text-center py-2.5 text-red-400">{team.L}</td>
-              <td className={`text-center py-2.5 text-xs ${team.GD > 0 ? 'text-green-400' : team.GD < 0 ? 'text-red-400' : 'text-gray-500'}`}>
+              <td className={`text-center py-2.5 text-xs ${team.GD > 0 ? 'text-primary-400' : team.GD < 0 ? 'text-red-400' : 'text-gray-500'}`}>
                 {team.GD > 0 ? '+' : ''}{team.GD}
               </td>
               <td className="text-center py-2.5 font-bold text-gray-100">{team.Pts}</td>

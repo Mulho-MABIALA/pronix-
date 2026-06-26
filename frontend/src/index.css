@@ -38,7 +38,7 @@
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
     @apply rounded-xl transition-all duration-200;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.5), 0 4px 16px rgba(0,0,0,0.3);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -6px rgba(0,0,0,0.35);
   }
 
   .card-p {
@@ -47,7 +47,7 @@
 
   .card:hover {
     border-color: rgba(255,255,255,0.14);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    box-shadow: 0 10px 28px -8px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.06);
   }
 
   /* Legacy alias */
@@ -99,13 +99,46 @@
   /* Bouton CTA orange — Devenir Premium / S'inscrire */
   .btn-cta {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
+           bg-accent-500 hover:bg-accent-400
            text-white font-semibold text-sm rounded-lg transition-all duration-150
-           disabled:opacity-40 disabled:cursor-not-allowed;
-    background-color: #f97316;
+           focus-visible:outline-accent-400 disabled:opacity-40 disabled:cursor-not-allowed;
     min-height: 42px;
   }
-  .btn-cta:hover { background-color: #fb923c; }
-  .btn-cta:focus-visible { outline: 2px solid #fb923c; outline-offset: 2px; }
+
+  /* ── Filter chip — façon BeSoccer (Tous / Live / Favoris) avec compteur ─── */
+  .filter-chip {
+    @apply inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border
+           transition-colors duration-150 whitespace-nowrap;
+    color: theme('colors.gray.500');
+    border-color: rgba(255,255,255,0.06);
+  }
+  .filter-chip:hover { color: theme('colors.gray.300'); }
+  .filter-chip[data-active="true"] {
+    @apply bg-primary-500/15 text-primary-400;
+    border-color: rgba(26,166,86,0.3);
+  }
+  .filter-chip[data-active="true"][data-variant="live"] {
+    @apply bg-live-500/15 text-live-400;
+    border-color: rgba(239,68,68,0.3);
+  }
+  .filter-chip .chip-count {
+    @apply text-[10px] font-bold rounded-full px-1.5 py-px;
+    background: rgba(255,255,255,0.06);
+    color: theme('colors.gray.500');
+  }
+  .filter-chip[data-active="true"] .chip-count {
+    background: rgba(26,166,86,0.2);
+    color: inherit;
+  }
+  .filter-chip[data-active="true"][data-variant="live"] .chip-count {
+    background: rgba(239,68,68,0.2);
+  }
+
+  /* ── "Voir plus / Voir moins" — repli des groupes longs ──────────────── */
+  .see-more-btn {
+    @apply w-full flex items-center justify-center gap-1 py-2.5 text-xs font-semibold
+           text-gray-500 hover:text-primary-400 transition-colors;
+  }
 
   /* ── Input ──────────────────────────────────────────────────────── */
   .input {
@@ -124,7 +157,7 @@
 
   /* ── Live pill ──────────────────────────────────────────────────── */
   .live-pill {
-    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-red-500/15 text-red-400 text-[11px] font-bold tracking-wide;
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-live-500/15 text-live-400 text-[11px] font-bold tracking-wide;
   }
 
   /* ── Skeleton ───────────────────────────────────────────────────── */
@@ -196,7 +229,7 @@ html.light .skeleton {
 
 /* ── Reduced motion ──────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .skeleton, .animate-shimmer, .animate-fade-in, .animate-slide-up {
+  .skeleton, .animate-shimmer, .animate-fade-in, .animate-slide-up, .animate-pop {
     animation: none !important;
     transition: none !important;
   }

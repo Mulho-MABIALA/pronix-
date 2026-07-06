@@ -78,6 +78,9 @@ FOOTBALL_API_BASE_URL="https://v3.football.api-sports.io"
 # Claude / Anthropic (Haiku 4.5 — ~$0.002/analyse)
 ANTHROPIC_API_KEY="sk-ant-..."
 
+# The Odds API (cotes bookmakers réelles — gratuit 500 req/mois → https://the-odds-api.com)
+ODDS_API_KEY="..."
+
 # Google OAuth
 GOOGLE_CLIENT_ID="362490521978-mv57n5..."
 
@@ -177,9 +180,9 @@ fpronix.com  ──►  Nginx (Hetzner 167.233.132.85)
 - [ ] Email transactionnel — configurer Resend.com
 - [ ] Crédits Claude — recharger console.anthropic.com
 - [x] Google OAuth production — `https://fpronix.com` ajouté dans Google Console
+- [x] Cotes bookmakers réelles — The Odds API intégrée (500 req/mois gratuit) — ajouter `ODDS_API_KEY` dans `.env`
 
 ### Moyenne priorité
-- [ ] Vraies cotes bookmakers — The Odds API (gratuit 500 req/mois)
 - [ ] API-Football PRO ($19/mois) pour production
 
 ### Basse priorité

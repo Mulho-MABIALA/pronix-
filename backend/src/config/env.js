@@ -38,6 +38,7 @@ const envSchema = z.object({
   BCRYPT_ROUNDS: z.string().default('12').transform(Number),
   APP_NAME: z.string().default('Statistique Foot'),
   ANTHROPIC_API_KEY: z.string().optional(),
+  ODDS_API_KEY: z.string().optional(),       // The Odds API — https://the-odds-api.com (500 req/mois gratuit)
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
 });

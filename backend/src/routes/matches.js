@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { authenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
-const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats } = require('../controllers/matchController');
+const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds } = require('../controllers/matchController');
 
 const router = Router();
 
@@ -23,5 +23,8 @@ router.get('/:id/context', getMatchContext);
 
 // Statistiques du match (possession, tirs, etc.) — public
 router.get('/:id/stats', getMatchStats);
+
+// Cotes bookmakers réelles (The Odds API, cache in-memory) — public
+router.get('/:id/odds', getMatchOdds);
 
 module.exports = router;

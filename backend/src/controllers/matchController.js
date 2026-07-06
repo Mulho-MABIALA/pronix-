@@ -3,6 +3,7 @@ const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { syncMatchesForDate } = require('../cron/syncMatches');
 const footballApi = require('../services/footballApi');
+const oddsService = require('../services/oddsService');
 
 // ─── Liste des matchs ──────────────────────────────────────────────────────────
 async function getMatches(req, res, next) {
@@ -398,4 +399,31 @@ async function getLeagueStats(req, res, next) {
   }
 }
 
-module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats };
+// ─── Cotes réelles (The Odds API) ────────────────────────────────────────────
+async function getMatchOdds(req, res, next) {
+  try {
+    const match = await prisma.match.findUnique({
+      where: { id: req.params.id },
+      select: { id: true, homeTeam: true, awayTeam: true, scheduledAt: true, status: true },
+    });
+
+    if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
+
+    // Cotes uniquement pour les matchs à venir ou en direct
+    if (!['SCHEDULED', 'LIVE'].includes(match.status)) {
+      return res.json({ success: true, data: null, reason: 'match_ended' });
+    }
+
+    const odds = oddsService.getOddsForMatch(match.homeTeam, match.awayTeam, match.scheduledAt);
+
+    res.json({
+      success: true,
+      data: odds,
+      status: oddsService.getStatus(),
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds };

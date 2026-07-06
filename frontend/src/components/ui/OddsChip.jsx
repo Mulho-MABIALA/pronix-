@@ -5,7 +5,7 @@ import { formatOdd, formatEdge } from '../../utils/mockOdds';
  * Cote (simulée) affichée sous forme de petit chip — ex: "2.10".
  * Les cotes sont générées côté client à titre indicatif (voir utils/mockOdds.js).
  */
-export function OddsChip({ odd, size = 'sm', muted = false, className = '' }) {
+export function OddsChip({ odd, size = 'sm', muted = false, isReal = false, className = '' }) {
   if (!odd) return null;
   const sizing = size === 'md' ? 'px-2.5 py-1 text-xs' : 'px-1.5 py-0.5 text-[11px]';
   return (
@@ -13,7 +13,7 @@ export function OddsChip({ odd, size = 'sm', muted = false, className = '' }) {
       className={`inline-flex items-center justify-center rounded-md border font-mono font-semibold tabular-nums
         ${muted ? 'border-white/[0.06] bg-white/[0.02] text-gray-500' : 'border-white/[0.08] bg-white/[0.04] text-gray-200'}
         ${sizing} ${className}`}
-      title="Cote simulée — donnée indicative"
+      title={isReal ? 'Cote bookmaker réelle' : 'Cote simulée — donnée indicative'}
     >
       {formatOdd(odd)}
     </span>

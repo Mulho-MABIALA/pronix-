@@ -13,6 +13,7 @@ import Alert from '../components/ui/Alert';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useOdds } from '../hooks/useOdds';
 
 const PICK_MARKET_LABELS = {
   '1': 'Victoire domicile', 'X': 'Match nul', '2': 'Victoire extérieur',
@@ -68,16 +69,34 @@ function ProbabilitySection({ match }) {
   );
 }
 
-// ── Cotes simulées & value bet — comparateur style BetMines ───────────────────
-function OddsAndValueSection({ match }) {
+// ── Cotes réelles ou simulées — comparateur style BetMines ───────────────────
+function OddsAndValueSection({ match, realOdds }) {
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
 
-  const oddKey = `${match.id}-${pred.bestPick.type}`;
-  const panel  = getOddsPanel(pred.bestPick.prob, oddKey);
-  const best   = panel[0];
-  const edge   = getValueEdge(pred.bestPick.prob, best.odd);
-  const value  = isValueBet(pred.bestPick.prob, best.odd);
+  // ── Construire le panel de cotes ──────────────────────────────────────────
+  let panel, isReal;
+
+  if (realOdds?.bookmakers?.length) {
+    // Sélectionner la colonne selon le pick recommandé
+    const pickType = pred.bestPick.type;
+    const col = pickType === '2' ? 'away' : pickType === 'X' ? 'draw' : 'home';
+
+    panel = realOdds.bookmakers
+      .filter((b) => b[col])
+      .map((b) => ({ bookmaker: b.bookmaker, odd: b[col] }))
+      .sort((a, b) => b.odd - a.odd);
+
+    isReal = true;
+  } else {
+    const oddKey = `${match.id}-${pred.bestPick.type}`;
+    panel = getOddsPanel(pred.bestPick.prob, oddKey);
+    isReal = false;
+  }
+
+  const best  = panel[0];
+  const edge  = getValueEdge(pred.bestPick.prob, best.odd);
+  const value = isValueBet(pred.bestPick.prob, best.odd);
 
   return (
     <section className="card p-4 space-y-3">
@@ -86,7 +105,14 @@ function OddsAndValueSection({ match }) {
           <span className="w-1 h-4 rounded-full bg-amber-400 shrink-0" />
           Pronostic algorithmique & cotes
         </h2>
-        {value && <ValueBetBadge edge={edge} showEdge size="md" />}
+        <div className="flex items-center gap-2">
+          {isReal && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary-500/15 text-primary-400 border border-primary-500/20 font-semibold">
+              Bookmakers réels
+            </span>
+          )}
+          {value && <ValueBetBadge edge={edge} showEdge size="md" />}
+        </div>
       </div>
 
       <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border bg-primary-500/5 border-primary-500/15">
@@ -101,19 +127,22 @@ function OddsAndValueSection({ match }) {
 
       <div>
         <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-          Comparateur de cotes (simulé)
+          {isReal ? 'Comparateur de cotes — bookmakers' : 'Comparateur de cotes (simulé)'}
         </p>
         <div className="space-y-1.5">
           {panel.map((b, i) => (
             <div key={b.bookmaker} className="flex items-center justify-between text-sm">
               <span className={i === 0 ? 'font-semibold text-gray-200' : 'text-gray-500'}>{b.bookmaker}</span>
-              <OddsChip odd={b.odd} size="md" muted={i !== 0} />
+              <OddsChip odd={b.odd} size="md" muted={i !== 0} isReal={isReal} />
             </div>
           ))}
         </div>
       </div>
 
-      <p className="disclaimer">{ODDS_DISCLAIMER}</p>
+      {isReal
+        ? <p className="disclaimer">Cotes fournies à titre informatif — pas un conseil de pari.</p>
+        : <p className="disclaimer">{ODDS_DISCLAIMER}</p>
+      }
     </section>
   );
 }
@@ -375,6 +404,8 @@ export default function MatchDetail() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: realOdds } = useOdds(id);
+
   const match = data?.data;
   const tips  = tipsData?.data || [];
 
@@ -553,8 +584,8 @@ export default function MatchDetail() {
         {/* ── Onglet : Pronostics ─────────────────────────────────────── */}
         {activeTab === 'tips' && (
           <>
-            {/* Cotes simulées & value bet */}
-            <OddsAndValueSection match={match} />
+            {/* Cotes réelles ou simulées */}
+            <OddsAndValueSection match={match} realOdds={realOdds} />
 
             {/* Données premium */}
             {!isPremium && (

@@ -9,6 +9,7 @@ import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useOdds } from '../hooks/useOdds';
 
 const PICK_LABELS = {
   '1':      'Victoire domicile',
@@ -78,10 +79,17 @@ function PronoCard({ match }) {
     resultIcon = correct ? '✓' : '✗';
   }
 
-  const oddKey = `${match.id}-${pred.bestPick.type}`;
-  const odd    = getOdd(pred.bestPick.prob, oddKey);
-  const edge   = getValueEdge(pred.bestPick.prob, odd);
-  const value  = isValueBet(pred.bestPick.prob, odd);
+  const { data: realOdds } = useOdds(match.id, { enabled: match.status === 'SCHEDULED' });
+
+  // Cote réelle si dispo, sinon mock
+  const pickType = pred.bestPick.type;
+  const col = pickType === '2' ? 'away' : pickType === 'X' ? 'draw' : 'home';
+  const realOdd = realOdds?.best?.[col] ?? null;
+  const isReal  = !!realOdd;
+  const oddKey  = `${match.id}-${pickType}`;
+  const odd     = realOdd ?? getOdd(pred.bestPick.prob, oddKey);
+  const edge    = getValueEdge(pred.bestPick.prob, odd);
+  const value   = isValueBet(pred.bestPick.prob, odd);
 
   return (
     <Link to={`/matchs/${match.id}`} className="card p-4 block hover:border-white/10 transition-colors">
@@ -140,7 +148,7 @@ function PronoCard({ match }) {
             <span className={`block text-xl font-display font-bold ${conf.color}`}>{pred.bestPick.prob}%</span>
             <span className="block text-[10px] text-gray-600">{pred.bestPick.market}</span>
             <span className="mt-1 flex items-center justify-end gap-1">
-              <OddsChip odd={odd} />
+              <OddsChip odd={odd} isReal={isReal} />
               {value && <ValueBetBadge edge={edge} />}
             </span>
           </div>

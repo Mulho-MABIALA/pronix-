@@ -171,12 +171,12 @@ fpronix.com  ──►  Nginx (Hetzner 167.233.132.85)
 ## Reste à faire
 
 ### Haute priorité
-- [ ] Déploiement production Nginx + PM2 + SSL sur Hetzner
+- [x] Déploiement production Nginx + PM2 + SSL sur Hetzner (`https://fpronix.com` live)
+- [x] Boîte mail `support@fpronix.com` créée sur LWS + forwarding → Gmail + Send-as Gmail
 - [ ] Clés GeniusPay production (KYC en cours sur onboarding.geniuspay.ci)
 - [ ] Email transactionnel — configurer Resend.com
 - [ ] Crédits Claude — recharger console.anthropic.com
-- [ ] Google OAuth production — ajouter `https://fpronix.com` dans Google Console
-- [x] Boîte mail `support@fpronix.com` créée sur LWS (Standard 1Go, Webmail : webmail.fpronix.com)
+- [x] Google OAuth production — `https://fpronix.com` ajouté dans Google Console
 
 ### Moyenne priorité
 - [ ] Vraies cotes bookmakers — The Odds API (gratuit 500 req/mois)

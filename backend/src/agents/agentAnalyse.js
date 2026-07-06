@@ -13,7 +13,7 @@ async function runAgentAnalyse() {
 
   // Récupérer les tipsters avec leurs stats
   const tipsters = await prisma.user.findMany({
-    where: { role: { in: ['TIPSTER', 'ADMIN'] } },
+    where: { role: 'ADMIN' },
     select: {
       id: true,
       username: true,
@@ -55,9 +55,8 @@ async function runAgentAnalyse() {
   const dataStr = JSON.stringify(tipsterData, null, 2);
 
   const stream = await client.messages.stream({
-    model: 'claude-opus-4-8',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 2000,
-    thinking: { type: 'adaptive' },
     messages: [
       {
         role: 'user',

@@ -8,7 +8,7 @@ export default function PolitiqueConfidentialite() {
 
       <Section title="1. Responsable du traitement">
         <p>
-          Pronix SN, éditeur de la plateforme Pronix, est responsable du traitement de vos
+          fpronix SN, éditeur de la plateforme fpronix, est responsable du traitement de vos
           données personnelles. Contact : <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
         </p>
       </Section>

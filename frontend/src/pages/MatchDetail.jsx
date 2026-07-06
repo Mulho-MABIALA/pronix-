@@ -11,13 +11,62 @@ import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import Alert from '../components/ui/Alert';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
-import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const PICK_MARKET_LABELS = {
   '1': 'Victoire domicile', 'X': 'Match nul', '2': 'Victoire extérieur',
   '1X': 'Double chance 1X', 'X2': 'Double chance X2',
   over25: 'Plus de 2.5 buts', over15: 'Plus de 1.5 buts', btts: 'Les 2 équipes marquent',
 };
+
+// ── Probabilités 1X2 style Visifoot ─────────────────────────────────────────
+function ProbabilitySection({ match }) {
+  if (match.status !== 'SCHEDULED') return null;
+  const { home, draw, away, predictedHome, predictedAway } = getMock1X2(match.id);
+
+  return (
+    <section className="px-4 pb-1">
+      <div className="bento-card p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Probabilités 1X2</h2>
+          <span className="text-[10px] text-gray-600 bg-surface-700 px-2 py-0.5 rounded-full">Simulé · indicatif</span>
+        </div>
+
+        {/* Gros chiffres */}
+        <div className="grid grid-cols-3 text-center gap-2">
+          <div>
+            <p className="text-4xl font-display font-bold text-primary-400">{home}%</p>
+            <p className="text-xs text-gray-500 mt-1.5">1 · Domicile</p>
+          </div>
+          <div>
+            <p className="text-4xl font-display font-bold text-gray-400">{draw}%</p>
+            <p className="text-xs text-gray-500 mt-1.5">X · Nul</p>
+          </div>
+          <div>
+            <p className="text-4xl font-display font-bold text-primary-400/70">{away}%</p>
+            <p className="text-xs text-gray-500 mt-1.5">2 · Extérieur</p>
+          </div>
+        </div>
+
+        {/* Barre tricolore */}
+        <div className="flex h-2 rounded-full overflow-hidden">
+          <div className="bg-primary-500 transition-all duration-500" style={{ width: `${home}%` }} />
+          <div className="bg-surface-500 transition-all duration-500" style={{ width: `${draw}%` }} />
+          <div className="bg-primary-400/50 transition-all duration-500" style={{ width: `${away}%` }} />
+        </div>
+
+        {/* Score prédit */}
+        <div className="flex items-center justify-center gap-3 border-t border-surface-700 pt-3">
+          <span className="text-xs text-gray-500">Score prédit</span>
+          <span className="font-display font-bold text-xl text-gray-200 tabular-nums">
+            {predictedHome} — {predictedAway}
+          </span>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 // ── Cotes simulées & value bet — comparateur style BetMines ───────────────────
 function OddsAndValueSection({ match }) {
@@ -331,6 +380,11 @@ export default function MatchDetail() {
 
   const isFinishedOrLive = match && ['FINISHED', 'LIVE'].includes(match.status);
 
+  usePageMeta(
+    match ? `${match.homeTeam} vs ${match.awayTeam}` : 'Match',
+    match ? `Pronostics et statistiques : ${match.homeTeam} vs ${match.awayTeam} — ${match.competition?.name || 'Football'}.` : undefined,
+  );
+
   // Onglet par défaut : "data" pour les matchs terminés/en direct
   useEffect(() => {
     if (isFinishedOrLive) setActiveTab('data');
@@ -448,6 +502,9 @@ export default function MatchDetail() {
         </div>
       </section>
 
+      {/* ── Probabilités 1X2 ──────────────────────────────────────────── */}
+      <ProbabilitySection match={match} />
+
       {/* ── Onglets — style BetMines ──────────────────────────────────── */}
       <div className="border-b border-white/[0.06] overflow-x-auto scrollbar-hide">
         <div className="flex px-4 min-w-max">
@@ -513,38 +570,64 @@ export default function MatchDetail() {
               </section>
             )}
 
+            {/* ── Carte Analyse IA ── */}
+            {user && isPremium && isScheduled && (
+              <section className="card overflow-hidden">
+                {/* Header dégradé violet */}
+                <div className="flex items-center justify-between gap-3 px-4 py-3 bg-gradient-to-r from-violet-500/10 to-transparent border-b border-violet-500/10">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0">
+                      <Sparkles size={15} className="text-violet-400" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-100">Analyse IA</p>
+                      <p className="text-xs text-gray-500">Claude analyse la forme, le H2H et les stats</p>
+                    </div>
+                  </div>
+                  {aiMeta && (
+                    <span className="text-[10px] text-gray-600 shrink-0">{aiMeta.usedToday}/{aiMeta.dailyLimit} aujourd'hui</span>
+                  )}
+                </div>
+
+                <div className="p-4 space-y-3">
+                  {aiError && (
+                    <Alert variant="error" onClose={() => setAiError('')}>{aiError}</Alert>
+                  )}
+
+                  {!generateAi.isSuccess ? (
+                    <button
+                      onClick={() => generateAi.mutate()}
+                      disabled={generateAi.isPending || (aiMeta && aiMeta.usedToday >= aiMeta.dailyLimit)}
+                      className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-400 hover:bg-violet-500/25 active:scale-[0.98] transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <Sparkles size={15} className={generateAi.isPending ? 'animate-spin' : ''} />
+                      {generateAi.isPending ? 'Analyse en cours…' : 'Analyser ce match'}
+                    </button>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
+                        <p className="text-xs font-semibold text-violet-400">Analyse prête</p>
+                        {aiMeta && (
+                          <span className="text-[10px] text-gray-600 ml-auto">{aiMeta.usedToday}/{aiMeta.dailyLimit} analyses utilisées</span>
+                        )}
+                      </div>
+                      {analysis && (
+                        <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl px-4 py-3">
+                          <p className="text-sm text-gray-300 leading-relaxed italic">"{analysis}"</p>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  <p className="disclaimer">Ceci n'est pas un conseil financier. Aucune garantie de gain.</p>
+                </div>
+              </section>
+            )}
+
             {/* Formulaire de pronostic */}
             {user && isPremium && isScheduled && (
               <section className="card p-4 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold text-gray-100 text-sm">Publier un pronostic</h2>
-                  <button
-                    onClick={() => generateAi.mutate()}
-                    disabled={generateAi.isPending || (aiMeta && aiMeta.usedToday >= aiMeta.dailyLimit)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-violet-500/10 border border-violet-500/30 text-violet-400 hover:bg-violet-500/20 transition-colors text-xs font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
-                    title="Générer un pronostic avec l'IA Claude"
-                  >
-                    <Sparkles size={13} className={generateAi.isPending ? 'animate-spin' : ''} />
-                    {generateAi.isPending ? 'Analyse…' : 'Analyser avec IA'}
-                  </button>
-                </div>
-
-                <p className="disclaimer">Ceci n'est pas un conseil financier. Aucune garantie de gain.</p>
-
-                {aiError && (
-                  <Alert variant="error" onClose={() => setAiError('')}>
-                    {aiError}
-                  </Alert>
-                )}
-
-                {generateAi.isSuccess && (
-                  <Alert variant="ai">
-                    <p className="font-semibold">Pronostic généré par IA — vérifiez avant de publier</p>
-                    {aiMeta && (
-                      <p className="text-violet-500/80 text-xs mt-0.5">{aiMeta.usedToday}/{aiMeta.dailyLimit} analyses utilisées aujourd'hui</p>
-                    )}
-                  </Alert>
-                )}
+                <h2 className="font-semibold text-gray-100 text-sm">Publier un pronostic</h2>
 
                 {tipSuccess && (
                   <Alert variant="success" onClose={() => setTipSuccess(false)}>

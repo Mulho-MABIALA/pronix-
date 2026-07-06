@@ -29,9 +29,8 @@ async function runAgentSEO({ matchId } = {}) {
     : 'Match à venir';
 
   const stream = await client.messages.stream({
-    model: 'claude-opus-4-8',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 2000,
-    thinking: { type: 'adaptive' },
     messages: [
       {
         role: 'user',

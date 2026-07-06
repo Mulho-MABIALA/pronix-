@@ -12,8 +12,8 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
   FOOTBALL_API_KEY: z.string().optional(),
-  FOOTBALL_API_HOST: z.string().default('api-football-v1.p.rapidapi.com'),
-  FOOTBALL_API_BASE_URL: z.string().default('https://api-football-v1.p.rapidapi.com/v3'),
+  FOOTBALL_API_HOST: z.string().default('v3.football.api-sports.io'),
+  FOOTBALL_API_BASE_URL: z.string().default('https://v3.football.api-sports.io'),
   WAVE_API_KEY: z.string().optional(),
   WAVE_BASE_URL: z.string().default('https://api.wave.com/v1'),
   WAVE_WEBHOOK_SECRET: z.string().optional(),
@@ -24,12 +24,17 @@ const envSchema = z.object({
   CINETPAY_RETURN_URL: z.string().optional(),
   FEDAPAY_SECRET_KEY: z.string().optional(), // sk_live_xxx (prod) ou sk_sandbox_xxx (test)
   FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
+  GENIUSPAY_API_KEY: z.string().optional(),        // pk_sandbox_xxx ou pk_live_xxx
+  GENIUSPAY_API_SECRET: z.string().optional(),     // sk_sandbox_xxx ou sk_live_xxx
+  GENIUSPAY_WEBHOOK_SECRET: z.string().optional(), // whsec_sandbox_xxx ou whsec_live_xxx
+  GENIUSPAY_BASE_URL: z.string().default('https://geniuspay.ci/api/v1/merchant'),
   SMTP_HOST: z.string().default('smtp.gmail.com'),
   SMTP_PORT: z.string().default('587').transform(Number),
   SMTP_SECURE: z.string().default('false').transform((v) => v === 'true'),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   EMAIL_FROM: z.string().default('Statistique Foot <noreply@statistiquefoot.sn>'),
+  GOOGLE_CLIENT_ID: z.string().optional(),
   BCRYPT_ROUNDS: z.string().default('12').transform(Number),
   APP_NAME: z.string().default('Statistique Foot'),
   ANTHROPIC_API_KEY: z.string().optional(),

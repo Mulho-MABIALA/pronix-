@@ -1,5 +1,6 @@
 const prisma = require('../config/database');
 const { generateMatchPrediction } = require('../services/claudeService');
+const footballApi = require('../services/footballApi');
 const { AppError } = require('../middleware/errorHandler');
 
 // Limite : max 5 générations IA par utilisateur par jour
@@ -89,15 +90,38 @@ async function generateAiTip(req, res, next) {
       }),
     ]);
 
-    const homeForm = homeMatches.map((m) => ({ ...m, result: getResult(m, match.homeTeam) }));
-    const awayForm = awayMatches.map((m) => ({ ...m, result: getResult(m, match.awayTeam) }));
+    const homeFormLocal = homeMatches.map((m) => ({ ...m, result: getResult(m, match.homeTeam) }));
+    const awayFormLocal = awayMatches.map((m) => ({ ...m, result: getResult(m, match.awayTeam) }));
 
-    // Appel Claude
+    // Enrichissement API-Football si clé disponible
+    const hasExternalId = match.externalId && !String(match.externalId).startsWith('mock');
+    let apiHomeForm = null, apiAwayForm = null, apiH2h = null, injuries = null;
+
+    if (hasExternalId && match.homeTeamId && match.awayTeamId) {
+      const results = await Promise.allSettled([
+        footballApi.getTeamRecentForm(match.homeTeamId, 5),
+        footballApi.getTeamRecentForm(match.awayTeamId, 5),
+        footballApi.getHeadToHead(match.homeTeamId, match.awayTeamId, 10),
+        footballApi.getInjuries(match.externalId),
+      ]);
+      apiHomeForm = results[0].status === 'fulfilled' ? results[0].value : null;
+      apiAwayForm = results[1].status === 'fulfilled' ? results[1].value : null;
+      apiH2h     = results[2].status === 'fulfilled' ? results[2].value : null;
+      injuries   = results[3].status === 'fulfilled' ? results[3].value : null;
+    }
+
+    // Utiliser les données API si disponibles, sinon fallback DB locale
+    const homeForm = apiHomeForm?.length ? apiHomeForm.map(m => ({ ...m, result: getResult(m, match.homeTeam) })) : homeFormLocal;
+    const awayForm = apiAwayForm?.length ? apiAwayForm.map(m => ({ ...m, result: getResult(m, match.awayTeam) })) : awayFormLocal;
+    const h2h = apiH2h?.length ? apiH2h : h2hMatches;
+
+    // Appel Claude avec données enrichies
     const prediction = await generateMatchPrediction({
       match,
       homeForm,
       awayForm,
-      h2h: h2hMatches,
+      h2h,
+      injuries,
     });
 
     incrementDailyLimit(req.user.id);

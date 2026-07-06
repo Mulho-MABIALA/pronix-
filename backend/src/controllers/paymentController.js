@@ -4,6 +4,7 @@ const prisma = require('../config/database');
 const waveService = require('../services/waveService');
 const cinetpayService = require('../services/cinetpayService');
 const fedapayService = require('../services/fedapayService');
+const geniuspayService = require('../services/geniuspayService');
 const { AppError } = require('../middleware/errorHandler');
 const env = require('../config/env');
 
@@ -195,7 +196,7 @@ async function verifyPayment(req, res, next) {
     if (mock === '1' && process.env.NODE_ENV !== 'production') {
       const payment = await prisma.payment.findFirst({
         where: { providerRef: ref, userId: req.user.id },
-        include: { metadata: true },
+        // metadata est un champ JSON scalaire, pas une relation (pas d'include)
       });
 
       if (payment && payment.status === 'PENDING') {
@@ -316,9 +317,117 @@ async function handleFedapayWebhook(req, res) {
   }
 }
 
+// ─── Initier un paiement Geniuspay (checkout unifié : Wave, Orange, Airtel…) ──
+async function initiateGeniuspayPayment(req, res, next) {
+  try {
+    const schema = z.object({
+      planId:       z.string().uuid(),
+      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+    });
+    const { planId, billingCycle } = schema.parse(req.body);
+
+    const plan = await prisma.plan.findUnique({ where: { id: planId } });
+    if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
+
+    const amount = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+
+    // Créer le paiement en BDD d'abord (pour avoir l'ID)
+    const payment = await prisma.payment.create({
+      data: {
+        userId:     req.user.id,
+        amount,
+        method:     'MOBILE_MONEY',
+        status:     'PENDING',
+        provider:   'geniuspay',
+        providerRef: `GP-${Date.now()}-${req.user.id.slice(0, 8)}`,
+        metadata:   { planId, billingCycle },
+      },
+    });
+
+    const successUrl = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${payment.providerRef}`;
+    const errorUrl   = `${env.FRONTEND_URL}/abonnement/erreur?ref=${payment.providerRef}`;
+
+    // Appel API Geniuspay (ou mock si clés absentes)
+    const isSandbox = !env.GENIUSPAY_API_KEY;
+    const gpData = isSandbox
+      ? geniuspayService.mockCheckout({ amount, description: `Abonnement ${plan.displayName}`, successUrl, metadata: { paymentId: payment.id, planId, billingCycle, userId: req.user.id } })
+      : await geniuspayService.createCheckout({
+          amount,
+          description: `Abonnement fpronix ${plan.displayName} — ${billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel'}`,
+          successUrl,
+          errorUrl,
+          metadata: { paymentId: payment.id, planId, billingCycle, userId: req.user.id },
+        });
+
+    // Stocker la référence Geniuspay
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data:  { transactionId: gpData.reference },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId:   payment.id,
+        checkoutUrl: gpData.checkout_url || gpData.payment_url,
+        reference:   gpData.reference,
+        sandbox:     isSandbox,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Webhook Geniuspay ─────────────────────────────────────────────────────────
+async function handleGeniuspayWebhook(req, res) {
+  try {
+    const signature = req.headers['x-webhook-signature'];
+    const timestamp = req.headers['x-webhook-timestamp'];
+    const event     = req.headers['x-webhook-event'];
+
+    // Vérifier la signature (req.rawBody injecté par express.json({ verify }) si configuré)
+    const rawBody = req.rawBody || JSON.stringify(req.body);
+    if (!geniuspayService.verifyWebhookSignature(rawBody, timestamp, signature)) {
+      return res.status(401).json({ error: 'Signature invalide' });
+    }
+
+    if (event !== 'payment.success') {
+      return res.json({ received: true });
+    }
+
+    const { metadata, status, reference } = req.body?.data || {};
+
+    if (status !== 'completed') return res.json({ received: true });
+
+    // Récupérer le paiement via metadata.paymentId ou transactionId (référence)
+    const payment = await prisma.payment.findFirst({
+      where: {
+        OR: [
+          { transactionId: reference },
+          { id: metadata?.paymentId },
+        ],
+        status: 'PENDING',
+        provider: 'geniuspay',
+      },
+    });
+
+    if (!payment) return res.json({ received: true });
+
+    const { planId, billingCycle } = payment.metadata;
+    await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+
+    res.json({ received: true });
+  } catch (err) {
+    console.error('[Webhook Geniuspay] Erreur:', err.message);
+    res.status(500).json({ error: 'Erreur interne' });
+  }
+}
+
 module.exports = {
   initiateWavePayment, handleWaveWebhook,
   initiateCinetpayPayment, handleCinetpayWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
+  initiateGeniuspayPayment, handleGeniuspayWebhook,
   verifyPayment,
 };

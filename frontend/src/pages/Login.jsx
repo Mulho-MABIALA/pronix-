@@ -1,13 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleGoogleSuccess = async (credential) => {
+    setError('');
+    setLoading(true);
+    try {
+      const user = await loginWithGoogle(credential);
+      navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Échec de la connexion avec Google');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,7 +44,7 @@ export default function Login() {
         <div className="text-center">
           <span className="text-4xl" aria-hidden="true">⚽</span>
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">Connexion</h1>
-          <p className="text-gray-500 text-sm mt-1">Bienvenue sur Pronix</p>
+          <p className="text-gray-500 text-sm mt-1">Bienvenue sur fpronix</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bento-card space-y-4" noValidate>
@@ -81,6 +95,26 @@ export default function Login() {
             {loading ? 'Connexion…' : 'Se connecter'}
           </button>
         </form>
+
+        {/* Séparateur */}
+        <div className="relative flex items-center gap-3">
+          <div className="flex-grow border-t border-surface-600" />
+          <span className="text-xs text-gray-500 shrink-0">ou</span>
+          <div className="flex-grow border-t border-surface-600" />
+        </div>
+
+        {/* Connexion Google */}
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={(res) => handleGoogleSuccess(res.credential)}
+            onError={() => setError('Échec de la connexion avec Google')}
+            theme="filled_black"
+            shape="rectangular"
+            text="continue_with"
+            locale="fr"
+            width="320"
+          />
+        </div>
 
         <p className="text-center text-sm text-gray-500">
           Pas encore de compte ?{' '}

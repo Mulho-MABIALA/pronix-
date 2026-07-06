@@ -80,13 +80,63 @@ async function getMatchById(req, res, next) {
 
     const userPlan = req.userPlan || 'FREE';
     const isPremium = ['PREMIUM', 'PRO'].includes(userPlan);
+    const hasExternalId = match.externalId && !String(match.externalId).startsWith('mock');
+
+    // Enrichissement API-Football (fetch lazy + cache en DB) pour les premium
+    if (isPremium && hasExternalId) {
+      const fetches = [];
+
+      // Compositions : seulement si match en direct ou terminé
+      if (!match.lineups && ['LIVE', 'FINISHED'].includes(match.status)) {
+        fetches.push(
+          footballApi.getFixtureLineups(match.externalId)
+            .then((lineups) => {
+              if (lineups) {
+                match.lineups = lineups;
+                return prisma.match.update({ where: { id: match.id }, data: { lineups } });
+              }
+            })
+            .catch(() => {})
+        );
+      }
+
+      // H2H : toujours utile (pré-match, live, terminé)
+      if (!match.headToHead && match.homeTeamId && match.awayTeamId) {
+        fetches.push(
+          footballApi.getHeadToHead(match.homeTeamId, match.awayTeamId, 10)
+            .then((h2h) => {
+              if (h2h?.length) {
+                match.headToHead = h2h;
+                return prisma.match.update({ where: { id: match.id }, data: { headToHead: h2h } });
+              }
+            })
+            .catch(() => {})
+        );
+      }
+
+      // Blessures : utile avant et pendant le match
+      if (!match.injuries && ['SCHEDULED', 'LIVE'].includes(match.status)) {
+        fetches.push(
+          footballApi.getInjuries(match.externalId)
+            .then((injuries) => {
+              if (injuries?.length) {
+                match.injuries = injuries;
+                return prisma.match.update({ where: { id: match.id }, data: { injuries } });
+              }
+            })
+            .catch(() => {})
+        );
+      }
+
+      if (fetches.length > 0) await Promise.allSettled(fetches);
+    }
 
     const response = { ...match };
     if (!isPremium) {
-      response.lineups = null;
+      response.lineups    = null;
       response.statistics = null;
       response.headToHead = null;
-      response.injuries = null;
+      response.injuries   = null;
     }
 
     res.json({ success: true, data: response });

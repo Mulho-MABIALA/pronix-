@@ -2,10 +2,13 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { z } = require('zod');
+const { OAuth2Client } = require('google-auth-library');
 const prisma = require('../config/database');
 const env = require('../config/env');
 const { AppError } = require('../middleware/errorHandler');
 const { sendWelcomeEmail, sendPasswordResetEmail } = require('../services/emailService');
+
+const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 // ─── Schémas de validation ──────────────────────────────────────────────────
 const registerSchema = z.object({
@@ -40,6 +43,21 @@ function getRefreshExpiryDate() {
   const d = new Date();
   d.setDate(d.getDate() + days);
   return d;
+}
+
+// ─── Helper : username unique depuis email Google ────────────────────────────
+async function generateUniqueUsername(email) {
+  const base = email.split('@')[0]
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, '_')
+    .slice(0, 20) || 'user';
+  let username = base;
+  let counter = 1;
+  while (await prisma.user.findUnique({ where: { username } })) {
+    username = `${base}${counter}`;
+    counter++;
+  }
+  return username;
 }
 
 // ─── Inscription ─────────────────────────────────────────────────────────────
@@ -101,6 +119,10 @@ async function login(req, res, next) {
 
     if (!user || !user.isActive) {
       throw new AppError('Email ou mot de passe incorrect', 401, 'INVALID_CREDENTIALS');
+    }
+
+    if (!user.password) {
+      throw new AppError('Ce compte utilise la connexion Google. Cliquez sur "Continuer avec Google".', 401, 'GOOGLE_AUTH_REQUIRED');
     }
 
     const isValid = await bcrypt.compare(password, user.password);
@@ -227,10 +249,84 @@ async function resetPassword(req, res, next) {
   }
 }
 
+// ─── Connexion / Inscription via Google ─────────────────────────────────────
+async function googleAuth(req, res, next) {
+  try {
+    if (!env.GOOGLE_CLIENT_ID) {
+      throw new AppError('Google OAuth non configuré', 500, 'GOOGLE_NOT_CONFIGURED');
+    }
+
+    const { credential } = z.object({ credential: z.string() }).parse(req.body);
+
+    let ticket;
+    try {
+      ticket = await googleClient.verifyIdToken({
+        idToken: credential,
+        audience: env.GOOGLE_CLIENT_ID,
+      });
+    } catch {
+      throw new AppError('Token Google invalide ou expiré', 401, 'INVALID_GOOGLE_TOKEN');
+    }
+
+    const payload = ticket.getPayload();
+    const { email, name, sub: googleId, picture } = payload;
+
+    if (!email) {
+      throw new AppError('Impossible de récupérer l\'email depuis Google', 400, 'GOOGLE_NO_EMAIL');
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email },
+      include: { profile: true, subscription: { include: { plan: true } } },
+    });
+
+    if (user) {
+      if (!user.isActive) {
+        throw new AppError('Compte désactivé', 403, 'ACCOUNT_DISABLED');
+      }
+      // Lier le googleId si ce n'est pas encore fait
+      if (!user.googleId) {
+        await prisma.user.update({ where: { id: user.id }, data: { googleId } });
+      }
+    } else {
+      // Créer un nouveau compte via Google
+      const username = await generateUniqueUsername(email);
+      const freePlan = await prisma.plan.findUnique({ where: { code: 'FREE' } });
+
+      user = await prisma.user.create({
+        data: {
+          email,
+          googleId,
+          username,
+          profile: { create: { displayName: name || username, avatar: picture } },
+          subscription: { create: { planId: freePlan.id, status: 'ACTIVE' } },
+        },
+        include: { profile: true, subscription: { include: { plan: true } } },
+      });
+
+      sendWelcomeEmail(user).catch(console.error);
+    }
+
+    const accessToken = generateAccessToken(user.id);
+    const refreshTokenValue = generateRefreshToken();
+    await prisma.refreshToken.create({
+      data: { userId: user.id, token: refreshTokenValue, expiresAt: getRefreshExpiryDate() },
+    });
+
+    const { password: _, ...userSafe } = user;
+    res.json({
+      success: true,
+      data: { user: userSafe, accessToken, refreshToken: refreshTokenValue },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ─── Profil de l'utilisateur connecté ────────────────────────────────────────
 async function me(req, res) {
   const { password: _, ...userSafe } = req.user;
   res.json({ success: true, data: userSafe });
 }
 
-module.exports = { register, login, refreshToken, logout, forgotPassword, resetPassword, me };
+module.exports = { register, login, refreshToken, logout, forgotPassword, resetPassword, me, googleAuth };

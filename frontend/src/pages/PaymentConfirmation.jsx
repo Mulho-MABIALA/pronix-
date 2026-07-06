@@ -7,10 +7,10 @@ import { useAuth } from '../context/AuthContext';
 const MAX_ATTEMPTS = 12;  // 12 × 2s = 24 secondes max
 const POLL_INTERVAL = 2000;
 
-export default function PaymentConfirmation() {
+export default function PaymentConfirmation({ error: isErrorPage = false }) {
   const [params] = useSearchParams();
   const { refreshUser } = useAuth();
-  const [status, setStatus] = useState('loading'); // loading | success | timeout | error
+  const [status, setStatus] = useState(isErrorPage ? 'error' : 'loading');
   const attemptsRef = useRef(0);
   const timerRef = useRef(null);
 
@@ -44,6 +44,8 @@ export default function PaymentConfirmation() {
       timerRef.current = setTimeout(poll, POLL_INTERVAL);
     }
 
+    if (isErrorPage) return; // page erreur — pas de polling
+
     if (ref) {
       poll();
     } else {
@@ -64,6 +66,24 @@ export default function PaymentConfirmation() {
           <Loader size={40} className="text-primary-400 animate-spin mx-auto" />
           <p className="text-gray-400 font-medium">Vérification du paiement…</p>
           <p className="text-gray-600 text-sm">Cela peut prendre quelques secondes</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (status === 'error') {
+    return (
+      <div className="min-h-dvh flex items-center justify-center px-4">
+        <div className="bento-card max-w-sm w-full text-center space-y-4 py-10">
+          <XCircle size={48} className="text-red-400 mx-auto" />
+          <h1 className="font-display font-bold text-2xl text-gray-100">Paiement annulé</h1>
+          <p className="text-gray-400 text-sm">
+            Votre paiement n'a pas abouti. Aucun montant n'a été débité.
+          </p>
+          <div className="flex flex-col gap-2 pt-4">
+            <Link to="/abonnement" className="btn-primary">Réessayer</Link>
+            <Link to="/" className="btn-secondary">Retour à l'accueil</Link>
+          </div>
         </div>
       </div>
     );

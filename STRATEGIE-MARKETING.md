@@ -1,5 +1,5 @@
-# Stratégie Marketing 12 mois — Pronix
-Version 1.1 — Juin 2026
+# Stratégie Marketing 12 mois — fpronix
+Version 1.2 — Juillet 2026
 
 ---
 
@@ -14,7 +14,7 @@ Version 1.1 — Juin 2026
 **Priorités 90 jours :**
 
 - Lancer les réseaux sociaux (Facebook + WhatsApp broadcast)
-- Configurer FedaPay pour accepter les premiers abonnés (Wave, Orange Money, MTN, Visa/MC)
+- Finaliser l'inscription GeniusPay pour accepter les premiers abonnés (Wave, Orange Money, Airtel Money, MTN, Visa/MC)
 - Publier du contenu quotidien autour du Mondial 2026 (jackpot d'audience)
 
 **Objectif 12 mois :**
@@ -50,12 +50,12 @@ Version 1.1 — Juin 2026
 
 | Dimension | Score /5 | Commentaire |
 |---|---|---|
-| Produit | 4/5 | V1 opérationnelle, données réelles, auth + FedaPay à finaliser |
+| Produit | 4/5 | V1 opérationnelle, données réelles, auth + GeniusPay à finaliser |
 | Acquisition | 1/5 | Aucune présence sociale, aucun SEO en place |
 | Activation | 2/5 | Onboarding basique, pas d'email de bienvenue |
 | Rétention | 1/5 | Pas de lifecycle email, pas de push |
 | Référral | 1/5 | Aucun mécanisme en place |
-| Revenu | 2/5 | Plan Premium défini, FedaPay non encore activé |
+| Revenu | 2/5 | Plan Premium défini, GeniusPay non encore activé (en attente clés API) |
 | Ops marketing | 1/5 | Pas d'analytics, pas d'outil email |
 
 **Contrainte principale :** budget bootstrappé (quasi zéro cash marketing), 1 fondateur, pas d'équipe dédiée. Toute la stratégie doit être exécutable seul, gratuitement ou quasi-gratuitement.
@@ -70,7 +70,7 @@ Version 1.1 — Juin 2026
 **Pourquoi :** Canal numéro 1 en Afrique de l'Ouest pour partager le foot. Coût zéro. Viral naturel.
 
 **Tactique :**
-- Créer un groupe WhatsApp broadcast "Pronix — Stats du Jour" (250 membres max par groupe)
+- Créer un groupe WhatsApp broadcast "fpronix — Stats du Jour" (250 membres max par groupe)
 - Publier chaque soir : score + 3 stats clés du match du jour (tiré de la plateforme)
 - Lien vers la plateforme en bas de chaque message
 - Viser 3 groupes broadcast en 90 jours → 750 abonnés WhatsApp
@@ -82,14 +82,14 @@ Version 1.1 — Juin 2026
 • Possession : 58% PSG
 • Tirs cadrés : 6 vs 3
 • xG : 1.8 vs 0.9
-🔗 Analyse complète sur pronix.com
+🔗 Analyse complète sur fpronix.com
 ```
 
 #### B. Facebook Page (Now — semaine 1)
 **Pourquoi :** Facebook reste dominant chez les 25-35 ans en Afrique de l'Ouest et diaspora francophone.
 
 **Tactique :**
-- Page "Pronix" — publier 1x/jour
+- Page "fpronix" — publier 1x/jour
 - 3 types de posts : Stats avant-match (veille), Résumé stats post-match, "Tip du tipster" (teaser — résultat visible sur la plateforme)
 - Rejoindre et participer activement dans 5+ groupes foot francophones — partager les analyses sans spammer
 - Objectif 1 000 abonnés page à 3 mois
@@ -99,7 +99,7 @@ Version 1.1 — Juin 2026
 
 **Tactique :**
 - Créer des pages statiques optimisées par compétition : `/ligue1`, `/premier-league`, `/can-2025`
-- Balises title : "Classement Premier League 2025-26 | Pronix"
+- Balises title : "Classement Premier League 2025-26 | fpronix"
 - Inscription Google Search Console dès semaine 2
 - 1 article blog/semaine autour du Mondial 2026 (Juin–Juillet 2026 = momentum maximal)
 
@@ -109,7 +109,7 @@ Version 1.1 — Juin 2026
 **Tactique spéciale Mondial :**
 - Page dédiée `/coupe-du-monde-2026` avec tous les matchs + stats en temps réel (ID FotMob 894790 confirmé)
 - Post Facebook/WhatsApp avant chaque match avec les stats des adversaires
-- Hashtags : `#Mondial2026`, `#Pronix`, `#LionsDeLaTeranga`
+- Hashtags : `#Mondial2026`, `#fpronix`, `#LionsDeLaTeranga`
 - Viser 500 nouveaux visiteurs/semaine pendant la phase de groupes
 
 #### E. Canaux à activer à 6 mois (si traction confirmée)
@@ -135,14 +135,14 @@ Version 1.1 — Juin 2026
 **1. Email de bienvenue (Mois 1)**
 Dès inscription, envoyer un email automatique :
 - Outil : Brevo (gratuit jusqu'à 300 emails/jour) ou Resend (déjà dans la stack)
-- Contenu : "Voici les 3 choses à faire sur Pronix" + lien vers les tipsters
+- Contenu : "Voici les 3 choses à faire sur fpronix" + lien vers les tipsters
 
 **2. Onboarding in-app (Mois 2)**
 - Ajouter une modale de bienvenue : "Choisis tes compétitions favorites" → personnalise le feed
 - Objectif : réduire le taux de rebond des nouveaux inscrits
 
 **3. Paywall clair (Mois 1 — priorité absolue)**
-- Le bouton "S'abonner Premium" doit être visible avant que FedaPay soit finalisé
+- Le bouton "S'abonner Premium" doit être visible avant que GeniusPay soit finalisé
 - Page `/premium` expliquant les avantages concrets (accès tipsters, stats avancées, alertes)
 - CTA : **"Rejoindre — $8.99/mois"**
 
@@ -150,7 +150,7 @@ Dès inscription, envoyer un email automatique :
 ```
 Visiteur → Inscription gratuite → Email bienvenue →
 Explore 3 jours → Voit le contenu premium bloqué →
-Page abonnement → Paiement FedaPay (Wave / Orange Money / Visa)
+Page abonnement → Paiement GeniusPay (Wave / Orange Money / Airtel / MTN / Visa)
 ```
 
 ---
@@ -178,7 +178,7 @@ Outil recommandé : **Brevo** (plan gratuit suffisant au stade 1)
 ## 7. Référral — Les utilisateurs amènent d'autres utilisateurs
 
 **Mécanique 1 — Partage viral organique (Mois 1)**
-Bouton "Partager sur WhatsApp" sur chaque fiche match → génère un message pré-rempli avec les stats et le lien Pronix. C'est la mécanique la plus puissante dans le contexte francophone.
+Bouton "Partager sur WhatsApp" sur chaque fiche match → génère un message pré-rempli avec les stats et le lien fpronix. C'est la mécanique la plus puissante dans le contexte francophone.
 
 **Mécanique 2 — Programme tipster (Mois 3)**
 Les tipsters ont intérêt à promouvoir leur profil public → ils ramènent leur audience.
@@ -200,7 +200,7 @@ Les tipsters ont intérêt à promouvoir leur profil public → ils ramènent le
 | FREE | Gratuit |
 | PREMIUM | **$8.99/mois** |
 
-Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Orange Money, MTN, Carte Visa/Mastercard.
+Un seul plan payant, simple et universel. Accessible via **GeniusPay** : Wave, Orange Money, Airtel Money, MTN, Carte Visa/Mastercard.
 
 ### Objectifs revenus
 
@@ -211,7 +211,7 @@ Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Ora
 | M9 | 150 | ~$1 350 |
 | M12 | 200 | ~$1 798 |
 
-**Action bloquante — à faire cette semaine :** Finaliser l'activation du compte FedaPay (upload passeport + RIB). Sans paiement, il n'y a pas de revenu. C'est la priorité numéro 1.
+**Action bloquante — à faire cette semaine :** Finaliser l'inscription GeniusPay (en attente retour support) et obtenir les clés API sandbox. Sans paiement, il n'y a pas de revenu. C'est la priorité numéro 1.
 
 ### Upsell futur (M6+)
 - Pack "Analyse avant-match" — rapport PDF hebdomadaire (génération automatisée)
@@ -225,8 +225,8 @@ Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Ora
 
 | Action | AARRR | Owner |
 |---|---|---|
-| Finaliser activation FedaPay | Revenu | Fondateur |
-| Créer page Facebook Pronix + 1er post | Acquisition | Fondateur |
+| Finaliser inscription GeniusPay + obtenir clés API | Revenu | Fondateur |
+| Créer page Facebook fpronix + 1er post | Acquisition | Fondateur |
 | Créer 3 groupes WhatsApp broadcast | Acquisition | Fondateur |
 | Configurer Brevo + email bienvenue | Activation | Fondateur |
 | Inscrire sur Google Search Console | Acquisition | Fondateur |
@@ -266,7 +266,7 @@ Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Ora
 
 | Trimestre | Milestone clé | Débloqué par |
 |---|---|---|
-| Q3 2026 | 50 abonnés payants, FedaPay actif | Mondial 2026 + paiement actif |
+| Q3 2026 | 50 abonnés payants, GeniusPay actif | Mondial 2026 + paiement actif |
 | Q4 2026 | 120 abonnés, 10 tipsters actifs | Communauté + CAN momentum |
 | Q1 2027 | 200 abonnés, SEO organique visible | Contenu blog + Google Search Console |
 | Q2 2027 | Extension CI/Togo, 300 abonnés | Si MRR > $1 500 = autofinancement |
@@ -283,7 +283,7 @@ Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Ora
 | Canva | Visuels Facebook/WhatsApp | Gratuit |
 | WhatsApp Business | Broadcast + lien bio | Gratuit |
 | Facebook Pages | Acquisition organique | Gratuit |
-| **FedaPay** | Paiement abonnements (Wave, OM, MTN, Visa) | Commission % |
+| **GeniusPay** | Paiement abonnements (Wave, Orange Money, Airtel, MTN, Visa) | 1% / transaction |
 
 **Budget marketing mois 1–6 :** quasi zéro (temps fondateur + outils gratuits)
 
@@ -296,7 +296,7 @@ Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Ora
 | Idée | AARRR | Statut |
 |---|---|---|
 | WhatsApp broadcast quotidien | Acquisition | Now |
-| Page Facebook Pronix | Acquisition | Now |
+| Page Facebook fpronix | Acquisition | Now |
 | SEO pages compétitions | Acquisition | Now |
 | Contenu Mondial 2026 | Acquisition | Now — urgent |
 | Email de bienvenue | Activation | Now |
@@ -333,7 +333,7 @@ Un seul plan payant, simple et universel. Accessible via **FedaPay** : Wave, Ora
 | Revenu | Abonnés payants | 20 | 200 |
 
 ### Décisions ouvertes (bloquantes)
-1. **FedaPay** — compte non encore activé → zéro revenu possible. Priorité 1 cette semaine.
+1. **GeniusPay** — compte en attente validation support → zéro revenu possible sans les clés API. Priorité 1 cette semaine.
 2. **SMTP configuré ?** — Emails lifecycle impossibles sans SMTP prod
 3. **Nom de domaine** — SEO et crédibilité impossibles sans domaine + HTTPS
 4. **Cloudflare Tunnel** — solution temporaire pour connecter frontend Vercel au backend Hetzner sans domaine

@@ -93,7 +93,7 @@ export default function Header() {
         <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
           <FootballLogo className="w-7 h-7 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)]" />
           <span className="hidden sm:block font-display font-bold text-[15px] text-white tracking-tight">
-            Pro<span className="text-primary-400">nix</span>
+            fp<span className="text-primary-400">ronix</span>
           </span>
         </Link>
 

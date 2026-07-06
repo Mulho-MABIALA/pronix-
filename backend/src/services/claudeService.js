@@ -23,7 +23,14 @@ function formatForm(matches) {
 function formatH2H(matches) {
   if (!matches || matches.length === 0) return 'Aucune confrontation disponible';
   return matches.map((m) =>
-    `  ${m.homeTeam} ${m.homeScore}-${m.awayScore} ${m.awayTeam}`
+    `  ${m.homeTeam} ${m.homeScore}-${m.awayScore} ${m.awayTeam} (${m.competition || ''})`
+  ).join('\n');
+}
+
+function formatInjuries(injuries) {
+  if (!injuries || injuries.length === 0) return 'Aucune blessure/absence signalée';
+  return injuries.map((i) =>
+    `  ${i.team}: ${i.player} — ${i.type || i.reason || 'blessé'}`
   ).join('\n');
 }
 
@@ -80,7 +87,7 @@ function generateMockPrediction({ match, homeForm, awayForm, h2h }) {
   return { prediction, confidence, analysis, _mock: true };
 }
 
-async function generateMatchPrediction({ match, homeForm, awayForm, h2h }) {
+async function generateMatchPrediction({ match, homeForm, awayForm, h2h, injuries = null }) {
   const anthropic = getClient();
   if (!anthropic) {
     console.warn('[Claude] Pas de clé API — mode simulation');
@@ -103,14 +110,18 @@ ${formatForm(homeForm, match.homeTeam)}
 FORME RÉCENTE — ${match.awayTeam} (5 derniers matchs) :
 ${formatForm(awayForm, match.awayTeam)}
 
-CONFRONTATIONS DIRECTES (H2H) :
+CONFRONTATIONS DIRECTES (H2H — 10 derniers matchs) :
 ${formatH2H(h2h)}
 
+BLESSURES / ABSENCES CONFIRMÉES :
+${formatInjuries(injuries)}
+
+Analyse tous les éléments : forme récente, historique H2H, avantage domicile, blessures importantes.
 Réponds UNIQUEMENT avec un objet JSON valide, sans markdown, sans texte avant ou après :
 {
   "prediction": "HOME_WIN" | "DRAW" | "AWAY_WIN" | "OVER_2_5" | "UNDER_2_5" | "BTTS_YES" | "BTTS_NO",
   "confidence": entier entre 1 et 5,
-  "analysis": "2 à 3 phrases en français expliquant les raisons clés du pronostic"
+  "analysis": "2 à 3 phrases en français expliquant les raisons clés du pronostic, en mentionnant les données clés utilisées"
 }`;
 
   let text;

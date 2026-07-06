@@ -39,6 +39,14 @@ export function AuthProvider({ children }) {
     return data.data.user;
   };
 
+  const loginWithGoogle = async (credential) => {
+    const { data } = await api.post('/auth/google', { credential });
+    localStorage.setItem('accessToken', data.data.accessToken);
+    localStorage.setItem('refreshToken', data.data.refreshToken);
+    setUser(data.data.user);
+    return data.data.user;
+  };
+
   const logout = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
     try { await api.post('/auth/logout', { refreshToken }); } catch {}
@@ -53,7 +61,7 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshUser, userPlan, isPremium, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, logout, refreshUser, userPlan, isPremium, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

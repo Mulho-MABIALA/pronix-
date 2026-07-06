@@ -85,7 +85,7 @@ export default function ToolsCarousel() {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="section-title">Outils Pronix</h2>
+        <h2 className="section-title">Outils fpronix</h2>
         <div className="hidden sm:flex items-center gap-1.5">
           <button
             onClick={prev}

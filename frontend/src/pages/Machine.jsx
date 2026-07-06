@@ -42,7 +42,7 @@ function drawTicketCanvas(ticket, totalOdds) {
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 16px system-ui';
   ctx.textAlign = 'left';
-  ctx.fillText('Pronix — Mon Ticket', 58, 30);
+  ctx.fillText('fpronix — Mon Ticket', 58, 30);
 
   ctx.fillStyle = '#555555';
   ctx.font = '11px system-ui';
@@ -248,7 +248,7 @@ export default function Machine() {
       canvas.toBlob(async (blob) => {
         const file = new File([blob], 'ticket-statfoot.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'Mon ticket Pronix' });
+          await navigator.share({ files: [file], title: 'Mon ticket fpronix' });
         } else {
           // Fallback : téléchargement direct
           const url = URL.createObjectURL(blob);

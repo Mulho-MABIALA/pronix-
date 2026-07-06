@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Business Plan — fpronix</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11pt;
+    color: #1a1a1a;
+    background: #fff;
+    padding: 40px;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .header {
+    border-bottom: 3px solid #1aa656;
+    padding-bottom: 20px;
+    margin-bottom: 30px;
+  }
+  .logo {
+    font-size: 28pt;
+    font-weight: 900;
+    color: #1aa656;
+    letter-spacing: -1px;
+  }
+  .logo span { color: #1a1a1a; }
+  .tagline {
+    font-size: 11pt;
+    color: #555;
+    margin-top: 4px;
+  }
+  .meta {
+    margin-top: 12px;
+    font-size: 10pt;
+    color: #777;
+  }
+  h1 {
+    font-size: 18pt;
+    color: #1aa656;
+    margin: 28px 0 8px 0;
+    border-left: 4px solid #1aa656;
+    padding-left: 12px;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #222;
+    margin: 18px 0 6px 0;
+    font-weight: 700;
+  }
+  p { margin-bottom: 8px; }
+  ul { margin: 8px 0 12px 20px; }
+  ul li { margin-bottom: 4px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10pt;
+  }
+  th {
+    background: #1aa656;
+    color: white;
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  tr:nth-child(even) td { background: #f9fafb; }
+  .highlight {
+    background: #f0fdf4;
+    border-left: 3px solid #1aa656;
+    padding: 12px 16px;
+    margin: 12px 0;
+    border-radius: 0 6px 6px 0;
+  }
+  .footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    font-size: 9pt;
+    color: #999;
+    text-align: center;
+  }
+  @media print {
+    body { padding: 20px; }
+    @page { margin: 1.5cm; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">fp<span>ronix</span></div>
+  <div class="tagline">Plateforme de statistiques football &amp; communauté de pronostics</div>
+  <div class="meta">
+    Site web : fpronix.com &nbsp;|&nbsp; Email : support@fpronix.com &nbsp;|&nbsp; Date : Juillet 2026
+  </div>
+</div>
+
+<h1>1. Présentation du Projet</h1>
+
+<p><strong>fpronix</strong> est une plateforme web de statistiques football et de pronostics destinée aux francophones du monde entier, avec un focus particulier sur l'Afrique de l'Ouest, l'Afrique centrale, le Maghreb et l'Europe francophone.</p>
+
+<p>La plateforme combine des données footballistiques en temps réel, des pronostics générés par intelligence artificielle, et une communauté transparente de tipsters (pronostiqueurs) vérifiés.</p>
+
+<div class="highlight">
+  <strong>Mission :</strong> Démocratiser l'accès aux statistiques football de qualité pour les fans francophones, avec des outils d'analyse fiables et une communauté engagée.
+</div>
+
+<h1>2. Produit &amp; Fonctionnalités</h1>
+
+<h2>Fonctionnalités principales</h2>
+<ul>
+  <li>Statistiques des matchs en temps réel (scores, compositions, head-to-head)</li>
+  <li>Pronostics algorithmiques (1X2, Over/Under, BTTS) basés sur la forme des équipes</li>
+  <li>Analyse IA par match via API Claude (Anthropic)</li>
+  <li>Générateur de ticket optimisé automatiquement</li>
+  <li>Classement des tipsters avec taux de réussite vérifié et historique complet</li>
+  <li>Couverture : Premier League, Ligue 1, Bundesliga, Serie A, La Liga, Champions League, CAN, Coupe du Monde 2026</li>
+</ul>
+
+<h2>Compétitions couvertes</h2>
+<ul>
+  <li>Ligues européennes majeures (Angleterre, France, Espagne, Allemagne, Italie)</li>
+  <li>Compétitions africaines (CAN, CAF Champions League)</li>
+  <li>Coupe du Monde FIFA 2026</li>
+  <li>Championnats régionaux africains</li>
+</ul>
+
+<h1>3. Marché Cible</h1>
+
+<table>
+  <tr>
+    <th>Segment</th>
+    <th>Description</th>
+    <th>Taille estimée</th>
+  </tr>
+  <tr>
+    <td>Afrique de l'Ouest</td>
+    <td>Fans de foot, communautés WhatsApp football</td>
+    <td>~180 millions</td>
+  </tr>
+  <tr>
+    <td>Afrique centrale</td>
+    <td>Utilisateurs mobiles, passionnés de foot</td>
+    <td>~100 millions</td>
+  </tr>
+  <tr>
+    <td>Maghreb</td>
+    <td>Fans Ligue 1, Premier League</td>
+    <td>~90 millions</td>
+  </tr>
+  <tr>
+    <td>Europe francophone</td>
+    <td>Diaspora africaine, Belgique, Suisse</td>
+    <td>~30 millions</td>
+  </tr>
+</table>
+
+<p>Le marché total adressable (francophone) représente plus de <strong>400 millions de personnes</strong>, avec une pénétration mobile croissante et un intérêt fort pour le football.</p>
+
+<h1>4. Modèle Économique</h1>
+
+<table>
+  <tr>
+    <th>Plan</th>
+    <th>Prix</th>
+    <th>Contenu</th>
+  </tr>
+  <tr>
+    <td><strong>FREE</strong></td>
+    <td>Gratuit</td>
+    <td>Accès limité aux stats, 2 pronostics/mois</td>
+  </tr>
+  <tr>
+    <td><strong>PREMIUM</strong></td>
+    <td>$8.99 / mois</td>
+    <td>Stats complètes, pronostics illimités, analyse IA, toutes compétitions, suivi tipsters</td>
+  </tr>
+</table>
+
+<div class="highlight">
+  <strong>Revenus projetés (an 1) :</strong> 500 abonnés Premium × $8.99 × 12 mois = <strong>~$53 940</strong>
+</div>
+
+<h2>Sources de revenus</h2>
+<ul>
+  <li>Abonnements Premium mensuels (principal)</li>
+  <li>Partenariats médias football francophones</li>
+  <li>API data pour tiers (futur)</li>
+</ul>
+
+<h1>5. Intégration GeniusPay</h1>
+
+<p>L'intégration GeniusPay est essentielle pour permettre aux utilisateurs africains de payer leur abonnement Premium via les moyens de paiement locaux :</p>
+
+<ul>
+  <li><strong>Wave</strong> — principal portefeuille mobile en Sénégal, Côte d'Ivoire, Mali</li>
+  <li><strong>Orange Money</strong> — présent dans 17 pays africains</li>
+  <li><strong>MTN Mobile Money</strong> — Afrique centrale et de l'Ouest</li>
+  <li><strong>Cartes Visa/Mastercard</strong> — diaspora et Europe francophone</li>
+</ul>
+
+<p>Le montant moyen par transaction est de <strong>$8.99/mois</strong> (abonnement récurrent). Le volume mensuel estimé en phase de lancement est de <strong>100 à 500 transactions/mois</strong>.</p>
+
+<h1>6. Stratégie de Croissance</h1>
+
+<h2>Phase 1 — Lancement (Mois 1-3)</h2>
+<ul>
+  <li>Déploiement production sur domaine fpronix.com</li>
+  <li>Activation des paiements GeniusPay</li>
+  <li>Campagne WhatsApp dans les groupes football</li>
+  <li>Objectif : 100 premiers abonnés Premium</li>
+</ul>
+
+<h2>Phase 2 — Croissance (Mois 4-12)</h2>
+<ul>
+  <li>Partenariats avec influenceurs football francophones</li>
+  <li>Programme de parrainage (1 mois gratuit par ami invité)</li>
+  <li>Contenu SEO (articles matchs, analyses compétitions)</li>
+  <li>Objectif : 500 abonnés Premium</li>
+</ul>
+
+<h2>Phase 3 — Expansion (An 2)</h2>
+<ul>
+  <li>Application mobile iOS/Android</li>
+  <li>Couverture championnats supplémentaires</li>
+  <li>Objectif : 2 000 abonnés Premium</li>
+</ul>
+
+<h1>7. Équipe</h1>
+
+<table>
+  <tr>
+    <th>Rôle</th>
+    <th>Responsabilité</th>
+  </tr>
+  <tr>
+    <td>Fondateur / CEO</td>
+    <td>Stratégie produit, développement, relations partenaires</td>
+  </tr>
+  <tr>
+    <td>Développement</td>
+    <td>Backend Node.js/Prisma, Frontend React, intégrations API</td>
+  </tr>
+  <tr>
+    <td>Community Management</td>
+    <td>Réseaux sociaux, WhatsApp, contenus football</td>
+  </tr>
+</table>
+
+<h1>8. Conformité &amp; Responsabilité</h1>
+
+<div class="highlight">
+  <strong>Important :</strong> fpronix ne propose PAS de services de paris en ligne. La plateforme est un outil d'information et d'analyse statistique. Tous les pronostics sont clairement étiquetés "à titre indicatif uniquement". Le jeu responsable est promu sur toutes les pages de la plateforme.
+</div>
+
+<ul>
+  <li>Aucune licence de pari n'est requise (service d'information uniquement)</li>
+  <li>Conformité RGPD pour les utilisateurs européens</li>
+  <li>Mentions légales et CGU complètes sur la plateforme</li>
+  <li>Politique de remboursement claire</li>
+</ul>
+
+<div class="footer">
+  fpronix — fpronix.com — support@fpronix.com — Business Plan Juillet 2026
+</div>
+
+</body>
+</html>

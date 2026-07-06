@@ -1,6 +1,7 @@
 // Service de calcul des probabilités 1X2, Over/Under, BTTS
 // Algorithme probabiliste basé sur la forme récente des équipes (10 derniers matchs)
 const prisma = require('../config/database');
+const { Prisma } = require('@prisma/client');
 
 const HOME_ADV = 0.10; // avantage domicile
 
@@ -114,6 +115,41 @@ async function calculateMatchPredictions(match) {
   };
 }
 
+// Pronostic neutre quand pas assez de données historiques
+function generateFallbackPrediction() {
+  const homeAdv = Math.round(Math.random() * 10 - 5); // légère variation
+  const home    = Math.max(25, Math.min(50, 35 + homeAdv));
+  const away    = Math.max(25, Math.min(50, 33 - homeAdv));
+  const draw    = 100 - home - away;
+  const over25  = Math.round(50 + Math.random() * 10);
+  const over15  = Math.round(70 + Math.random() * 8);
+  const btts    = Math.round(45 + Math.random() * 10);
+  const dc1x    = Math.min(99, home + draw);
+  const dc2x    = Math.min(99, away + draw);
+
+  const candidates = [
+    { type: '1',      label: 'Victoire domicile',       prob: home,   market: '1X2' },
+    { type: 'X',      label: 'Match nul',                prob: draw,   market: '1X2' },
+    { type: '2',      label: 'Victoire extérieur',       prob: away,   market: '1X2' },
+    { type: 'over25', label: 'Plus de 2.5 buts',         prob: over25, market: 'Over/Under' },
+    { type: 'over15', label: 'Plus de 1.5 buts',         prob: over15, market: 'Over/Under' },
+    { type: 'btts',   label: 'Les 2 équipes marquent',   prob: btts,   market: 'BTTS' },
+    { type: '1X',     label: 'Double chance 1X',         prob: dc1x,   market: 'Double chance' },
+    { type: 'X2',     label: 'Double chance X2',         prob: dc2x,   market: 'Double chance' },
+  ].sort((a, b) => b.prob - a.prob);
+
+  return {
+    home, draw, away,
+    over25, over15, under25: 100 - over25, under15: 100 - over15,
+    btts, nobtts: 100 - btts,
+    dc1x, dc2x,
+    bestPick:   candidates[0],
+    confidence: 'low',
+    allPicks:   candidates.slice(0, 5),
+    sampleSize: 0,
+  };
+}
+
 async function calculateAndSavePredictions(matchId) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
@@ -121,8 +157,8 @@ async function calculateAndSavePredictions(matchId) {
   });
   if (!match) return null;
 
-  const predictions = await calculateMatchPredictions(match);
-  if (!predictions) return null;
+  // Essayer l'algorithme statistique, sinon fallback neutre
+  const predictions = (await calculateMatchPredictions(match)) || generateFallbackPrediction();
 
   await prisma.match.update({ where: { id: matchId }, data: { predictions } });
   return predictions;
@@ -133,14 +169,15 @@ async function calculatePredictionsForDate(dateStr) {
   const dNext = new Date(dateStr);
   dNext.setDate(dNext.getDate() + 1);
 
-  const matches = await prisma.match.findMany({
+  // Filtre JS pour éviter les subtilités Prisma JSON null
+  const allScheduled = await prisma.match.findMany({
     where: {
       scheduledAt: { gte: d, lt: dNext },
       status: 'SCHEDULED',
-      predictions: null,
     },
-    select: { id: true },
+    select: { id: true, predictions: true },
   });
+  const matches = allScheduled.filter((m) => m.predictions === null);
 
   console.log(`[Predictions] Calcul pour ${matches.length} matchs du ${dateStr}`);
   for (const { id } of matches) {

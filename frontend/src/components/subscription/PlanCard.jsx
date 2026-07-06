@@ -1,9 +1,12 @@
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export default function PlanCard({ plan, isCurrentPlan, onSelect, loading }) {
+export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billingCycle = 'MONTHLY' }) {
   const isFree = plan.code === 'FREE';
   const isPremium = plan.code === 'PREMIUM';
+  const isYearly = billingCycle === 'YEARLY';
+  const displayPrice = isYearly ? plan.priceYearly : plan.priceMonthly;
+  const monthlyEquiv = isYearly ? (plan.priceYearly / 12).toFixed(2) : null;
 
   return (
     <motion.div
@@ -22,15 +25,18 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading }) {
       {/* En-tête */}
       <div>
         <h3 className="font-display font-bold text-xl text-gray-100">{plan.displayName}</h3>
-        <div className="mt-2 flex items-end gap-1">
+        <div className="mt-2 flex items-end gap-1 flex-wrap">
           {isFree ? (
             <span className="text-3xl font-display font-bold text-gray-100">Gratuit</span>
           ) : (
             <>
               <span className="text-3xl font-display font-bold text-gray-100">
-                ${plan.priceMonthly.toFixed(2)}
+                ${displayPrice?.toFixed(2)}
               </span>
-              <span className="text-gray-500 pb-1">/mois</span>
+              <span className="text-gray-500 pb-1">{isYearly ? '/an' : '/mois'}</span>
+              {monthlyEquiv && (
+                <span className="text-xs text-primary-400 pb-1 ml-1">(≈ ${monthlyEquiv}/mois)</span>
+              )}
             </>
           )}
         </div>

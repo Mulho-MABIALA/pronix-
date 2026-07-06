@@ -3,7 +3,7 @@ export default function Disclaimer() {
     <footer className="bg-surface-800 border-t border-surface-700 py-4 px-4 hidden md:block">
       <div className="max-w-6xl mx-auto space-y-2">
         <p className="disclaimer text-center">
-          Pronix fournit des données et statistiques à titre informatif uniquement.{' '}
+          fpronix fournit des données et statistiques à titre informatif uniquement.{' '}
           <strong>Ceci n'est pas un conseil financier. Aucune garantie de gain n'est promise.</strong>{' '}
           Jouez de manière responsable. 18+ uniquement.
         </p>

@@ -7,15 +7,15 @@ const QUESTIONS = [
     category: 'Général',
     items: [
       {
-        q: "C'est quoi Pronix ?",
-        a: "Pronix est une plateforme de statistiques et de pronostics footballistiques. Elle vous permet de suivre les matchs en temps réel, de consulter des analyses de tipsters, et d'utiliser des outils d'aide à la décision basés sur les données.",
+        q: "C'est quoi fpronix ?",
+        a: "fpronix est une plateforme de statistiques et de pronostics footballistiques. Elle vous permet de suivre les matchs en temps réel, de consulter des analyses de tipsters, et d'utiliser des outils d'aide à la décision basés sur les données.",
       },
       {
-        q: "Pronix propose-t-il des paris sportifs ?",
-        a: "Non. Pronix est exclusivement une plateforme d'informations et de statistiques. Nous ne proposons aucun service de paris sportifs et ne sommes affiliés à aucun opérateur de jeux. Les pronostics publiés sont des opinions personnelles, pas des garanties.",
+        q: "fpronix propose-t-il des paris sportifs ?",
+        a: "Non. fpronix est exclusivement une plateforme d'informations et de statistiques. Nous ne proposons aucun service de paris sportifs et ne sommes affiliés à aucun opérateur de jeux. Les pronostics publiés sont des opinions personnelles, pas des garanties.",
       },
       {
-        q: "Qui peut utiliser Pronix ?",
+        q: "Qui peut utiliser fpronix ?",
         a: "Toute personne âgée de 18 ans ou plus. Certaines fonctionnalités (publier des pronostics, accès aux données avancées) nécessitent un compte Premium.",
       },
     ],
@@ -58,7 +58,7 @@ const QUESTIONS = [
       },
       {
         q: "Quelles ligues sont disponibles ?",
-        a: "Pronix couvre les principales ligues africaines (Sénégal, Côte d'Ivoire, Mali, Ghana, Égypte…) ainsi que les grandes compétitions européennes (Premier League, Ligue 1, Liga, Serie A, Champions League). La liste s'enrichit régulièrement.",
+        a: "fpronix couvre les principales ligues africaines (Sénégal, Côte d'Ivoire, Mali, Ghana, Égypte…) ainsi que les grandes compétitions européennes (Premier League, Ligue 1, Liga, Serie A, Champions League). La liste s'enrichit régulièrement.",
       },
     ],
   },
@@ -96,7 +96,7 @@ const QUESTIONS = [
       },
       {
         q: "Les notifications fonctionnent-elles sur mobile ?",
-        a: "Oui, sur Android et iOS (Safari) à condition d'avoir ajouté Pronix à votre écran d'accueil ou d'utiliser un navigateur compatible (Chrome, Edge, Firefox).",
+        a: "Oui, sur Android et iOS (Safari) à condition d'avoir ajouté fpronix à votre écran d'accueil ou d'utiliser un navigateur compatible (Chrome, Edge, Firefox).",
       },
     ],
   },

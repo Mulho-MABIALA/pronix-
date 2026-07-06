@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { BarChart2 } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const RESULT_COLORS = {
   W: 'bg-green-500',
@@ -71,6 +72,7 @@ function StandingsTable({ standings, competitionName }) {
 }
 
 export default function Standings() {
+  usePageMeta('Classements', 'Classements des ligues de football — points, buts, forme récente. Liga, Premier League, Ligue 1, Serie A et plus.');
   const [selectedCompId, setSelectedCompId] = useState('');
 
   // Charger la liste des compétitions + classement de la compétition sélectionnée

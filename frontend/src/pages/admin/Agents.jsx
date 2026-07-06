@@ -324,7 +324,7 @@ function PushBroadcastCard() {
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            placeholder="Ex: Consultez les analyses de la journée sur Pronix"
+            placeholder="Ex: Consultez les analyses de la journée sur fpronix"
             maxLength={180}
             rows={2}
             className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50 resize-none"

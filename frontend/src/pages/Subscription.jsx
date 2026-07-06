@@ -4,12 +4,18 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import PlanCard from '../components/subscription/PlanCard';
+import { usePageMeta } from '../hooks/usePageMeta';
+
+const BILLING_OPTIONS = [
+  { value: 'MONTHLY', label: 'Mensuel' },
+  { value: 'YEARLY',  label: 'Annuel', badge: '-20%' },
+];
 
 export default function Subscription() {
+  usePageMeta('Abonnement Premium', 'Passez à Premium fpronix — cotes en temps réel, value bets, données avancées. Paiement via Wave, Orange Money, Carte bancaire.');
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
-  const billingCycle = 'MONTHLY';
-  const [paymentMethod] = useState('FEDAPAY');
+  const [billingCycle, setBillingCycle] = useState('MONTHLY');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -26,8 +32,8 @@ export default function Subscription() {
     setError('');
     setLoading(true);
     try {
-      const { data: res } = await api.post('/payments/fedapay/init', { planId: plan.id, billingCycle });
-      window.location.href = res.data.paymentUrl;
+      const { data: res } = await api.post('/payments/geniuspay/init', { planId: plan.id, billingCycle });
+      window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');
     } finally {
@@ -45,15 +51,40 @@ export default function Subscription() {
         </p>
       </div>
 
+      {/* Cycle de facturation */}
+      <div className="flex items-center justify-center gap-2">
+        {BILLING_OPTIONS.map(({ value, label, badge }) => (
+          <button
+            key={value}
+            onClick={() => setBillingCycle(value)}
+            className={`relative px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+              billingCycle === value
+                ? 'bg-primary-500/20 border border-primary-500/40 text-primary-400'
+                : 'text-gray-400 border border-white/[0.08] hover:border-white/20'
+            }`}
+          >
+            {label}
+            {badge && (
+              <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-primary-500/20 text-primary-400">
+                {badge}
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
+
       {/* Méthode de paiement */}
       <div className="max-w-md mx-auto">
         <p className="text-sm font-medium text-gray-300 mb-3 text-center">Moyen de paiement</p>
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl border bg-primary-500/15 border-primary-500/40 text-primary-400">
-          <span className="text-lg">💳</span>
+          <span className="text-lg">📱</span>
           <div className="text-left">
-            <p className="font-semibold text-sm">FedaPay</p>
-            <p className="text-xs text-gray-400 mt-0.5">Wave · Orange Money · MTN · Carte Visa/MC</p>
+            <p className="font-semibold text-sm">GeniusPay</p>
+            <p className="text-xs text-gray-400 mt-0.5">Wave · Orange Money · Airtel Money · MTN · Carte Visa/MC</p>
           </div>
+          <span className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary-500/20 text-primary-400 shrink-0">
+            Sécurisé
+          </span>
         </div>
       </div>
 
@@ -69,6 +100,7 @@ export default function Subscription() {
           <PlanCard
             key={plan.id}
             plan={plan}
+            billingCycle={billingCycle}
             isCurrentPlan={userPlan === plan.code}
             onSelect={handleSelectPlan}
             loading={loading}

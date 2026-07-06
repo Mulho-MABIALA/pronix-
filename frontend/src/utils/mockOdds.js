@@ -75,6 +75,30 @@ export function formatEdge(edge) {
 
 export const ODDS_DISCLAIMER = 'Cotes simulées à titre indicatif — non fournies par un bookmaker réel.';
 
+// ── Probabilités 1X2 simulées + score prédit ──────────────────────────────────
+const PREDICTED_SCORES = [
+  [1,0],[2,0],[2,1],[1,1],[0,0],[0,1],[1,2],[0,2],[3,1],[2,2],[3,0],[1,3],
+];
+
+/**
+ * Génère des probabilités 1X2 simulées et un score prédit, stables par matchId.
+ * Purement indicatif — aucune donnée réelle.
+ */
+export function getMock1X2(matchId) {
+  const r1 = seededRandom(`1x2::home::${matchId}`);
+  const r2 = seededRandom(`1x2::draw::${matchId}`);
+
+  const home = Math.round(35 + r1 * 37);                    // 35-72 %
+  const drawRaw = Math.round(13 + r2 * 15);                 // 13-28 %
+  const draw = Math.min(drawRaw, 100 - home - 5);           // away >= 5 %
+  const away = 100 - home - draw;
+
+  const scoreIdx = Math.floor(seededRandom(`score::${matchId}`) * PREDICTED_SCORES.length);
+  const [ph, pa] = PREDICTED_SCORES[scoreIdx];
+
+  return { home, draw, away, predictedHome: ph, predictedAway: pa };
+}
+
 /**
  * ROI estimé d'un tipster, dérivé de son taux de réussite réel + d'une cote moyenne
  * simulée (stable par tipster). ROI = winRate * coteMoyenne - 1.

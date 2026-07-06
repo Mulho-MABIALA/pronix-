@@ -44,6 +44,10 @@ app.use(rateLimit({
 // Parser JSON — raw pour les webhooks paiement (signature HMAC)
 app.use('/api/payments/wave/webhook', express.raw({ type: 'application/json' }));
 app.use('/api/payments/cinetpay/webhook', express.raw({ type: 'application/json' }));
+app.use('/api/payments/geniuspay/webhook', express.json({
+  limit: '10kb',
+  verify: (req, _res, buf) => { req.rawBody = buf.toString(); },
+}));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 

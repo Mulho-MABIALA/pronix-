@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 const { authenticate } = require('../middleware/auth');
 const {
   register, login, refreshToken, logout,
-  forgotPassword, resetPassword, me,
+  forgotPassword, resetPassword, me, googleAuth,
 } = require('../controllers/authController');
 
 const router = Router();
@@ -17,6 +17,7 @@ const authLimit = rateLimit({
 
 router.post('/register', authLimit, register);
 router.post('/login', authLimit, login);
+router.post('/google', authLimit, googleAuth);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', logout);
 router.post('/forgot-password', authLimit, forgotPassword);

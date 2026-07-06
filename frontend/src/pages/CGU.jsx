@@ -8,8 +8,8 @@ export default function CGU() {
 
       <Section title="1. Objet">
         <p>
-          Pronix (ci-après "la Plateforme") est un service d'informations et de statistiques
-          footballistiques édité par Pronix SN. Les présentes Conditions Générales d'Utilisation (CGU)
+          fpronix (ci-après "la Plateforme") est un service d'informations et de statistiques
+          footballistiques édité par fpronix SN. Les présentes Conditions Générales d'Utilisation (CGU)
           régissent l'accès et l'utilisation de la Plateforme par tout utilisateur (ci-après "l'Utilisateur").
         </p>
       </Section>
@@ -23,7 +23,7 @@ export default function CGU() {
 
       <Section title="3. Description du service">
         <p>
-          Pronix propose :
+          fpronix propose :
         </p>
         <ul>
           <li>Des statistiques et données relatives aux matchs de football</li>
@@ -32,7 +32,7 @@ export default function CGU() {
           <li>Un abonnement Premium donnant accès à des fonctionnalités avancées</li>
         </ul>
         <p className="mt-3 font-medium text-amber-400">
-          IMPORTANT : Pronix ne propose en aucun cas des services de paris sportifs. Les informations
+          IMPORTANT : fpronix ne propose en aucun cas des services de paris sportifs. Les informations
           publiées sur la Plateforme sont fournies à titre purement informatif et éducatif.
           Elles ne constituent pas des conseils financiers ou des recommandations d'investissement.
         </p>
@@ -64,24 +64,24 @@ export default function CGU() {
       <Section title="6. Contenu des utilisateurs">
         <p>
           Les pronostics publiés par les utilisateurs (tipsters) n'engagent que leurs auteurs.
-          Pronix ne garantit pas l'exactitude, la pertinence ou la performance passée ou future
+          fpronix ne garantit pas l'exactitude, la pertinence ou la performance passée ou future
           de ces pronostics.
         </p>
         <p>
           L'Utilisateur s'interdit de publier tout contenu illicite, offensant, trompeur ou
-          portant atteinte aux droits de tiers. Pronix se réserve le droit de supprimer tout
+          portant atteinte aux droits de tiers. fpronix se réserve le droit de supprimer tout
           contenu non conforme et de suspendre le compte contrevenant.
         </p>
       </Section>
 
       <Section title="7. Responsabilité">
         <p>
-          Pronix ne saurait être tenu responsable de toute perte financière liée à l'utilisation
+          fpronix ne saurait être tenu responsable de toute perte financière liée à l'utilisation
           des informations publiées sur la Plateforme. L'Utilisateur utilise ces informations
           sous sa seule responsabilité.
         </p>
         <p>
-          Pronix ne garantit pas la disponibilité continue de la Plateforme et se réserve le
+          fpronix ne garantit pas la disponibilité continue de la Plateforme et se réserve le
           droit de la modifier ou de l'interrompre à tout moment.
         </p>
       </Section>

@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../services/api';
 import MatchCard from '../components/matches/MatchCard';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const GROUP_LIMIT = 5;
 
@@ -17,6 +18,7 @@ function formatTabLabel(d) {
 }
 
 export default function Matches() {
+  usePageMeta('Matchs du jour', 'Scores en direct, résultats et calendrier de tous les matchs de football. Consultez les statistiques et pronostics.');
   const [date, setDate]                       = useState(new Date());
   const [liveOnly, setLiveOnly]               = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState('');

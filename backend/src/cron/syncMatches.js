@@ -1,11 +1,11 @@
-// Cron : synchronisation des matchs depuis Free API Live Football Data
+// Cron : synchronisation des matchs depuis API-Football (api-sports.io)
 const cron = require('node-cron');
 const prisma = require('../config/database');
 const footballApi = require('../services/footballApi');
 const { broadcastNotification } = require('../controllers/pushController');
 const { calculatePredictionsForDate } = require('../services/predictionService');
 
-// Cache des dates déjà synchronisées (protection quota RapidAPI)
+// Cache des dates déjà synchronisées (protection quota api-sports)
 const syncCache = new Map();
 const SYNC_COOLDOWN_MS = 15 * 60 * 1000;
 
@@ -17,10 +17,8 @@ function isCoolingDown(dateStr) {
 // Cache local compétition : évite N requêtes DB par sync (externalId → Competition)
 const compCache = new Map();
 
-// Groupes WC2026 : FotMob crée un ID par groupe (894790=A, 894791=B…)
+// Pour API-Football, l'ID de ligue est stable — pas besoin de mapping spécifique
 function resolveLeagueId(rawLeagueId) {
-  const n = Number(rawLeagueId);
-  if (n >= 894790 && n <= 894810) return '894790';
   return rawLeagueId;
 }
 
@@ -33,15 +31,12 @@ async function findOrCreateCompetition(fixture, leagueExternalId) {
   });
 
   if (!competition) {
-    const name = fixture.leagueName
-      || fixture.league?.name
+    // Format API-Football : fixture.league.name / fixture.league.country
+    const name = fixture.league?.name
       || fixture.competition?.name
-      || fixture.tournament?.name
       || null;
 
-    const country = fixture.countryName
-      || fixture.country?.name
-      || fixture.league?.country
+    const country = fixture.league?.country
       || fixture.competition?.country
       || 'International';
 
@@ -82,9 +77,8 @@ async function syncMatchesForDate(dateStr) {
     }
 
     for (const fixture of fixtures) {
-      const rawLeagueId = String(
-        fixture.leagueId || fixture.league?.id || fixture.competition?.id || ''
-      );
+      // Format API-Football : fixture.league.id
+      const rawLeagueId = String(fixture.league?.id || fixture.competition?.id || '');
       if (!rawLeagueId) continue;
 
       const leagueExternalId = resolveLeagueId(rawLeagueId);
@@ -128,7 +122,8 @@ async function syncLiveMatches() {
     if (!Array.isArray(liveRaw) || liveRaw.length === 0) return;
 
     for (const fixture of liveRaw) {
-      const externalId = String(fixture.id || fixture.matchId || '');
+      // Format API-Football : fixture.fixture.id
+      const externalId = String(fixture.fixture?.id || fixture.id || '');
       if (!externalId) continue;
 
       const match = await prisma.match.findUnique({ where: { externalId } });

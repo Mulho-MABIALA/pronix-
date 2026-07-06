@@ -1,13 +1,27 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', username: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const handleGoogleSuccess = async (credential) => {
+    setError('');
+    setLoading(true);
+    try {
+      const user = await loginWithGoogle(credential);
+      navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
+    } catch (err) {
+      setError(err.response?.data?.message || 'Échec de l\'inscription avec Google');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -76,6 +90,26 @@ export default function Register() {
             {loading ? 'Création…' : 'Créer mon compte'}
           </button>
         </form>
+
+        {/* Séparateur */}
+        <div className="relative flex items-center gap-3">
+          <div className="flex-grow border-t border-surface-600" />
+          <span className="text-xs text-gray-500 shrink-0">ou</span>
+          <div className="flex-grow border-t border-surface-600" />
+        </div>
+
+        {/* Inscription Google */}
+        <div className="flex justify-center">
+          <GoogleLogin
+            onSuccess={(res) => handleGoogleSuccess(res.credential)}
+            onError={() => setError('Échec de l\'inscription avec Google')}
+            theme="filled_black"
+            shape="rectangular"
+            text="signup_with"
+            locale="fr"
+            width="320"
+          />
+        </div>
 
         <p className="text-center text-sm text-gray-500">
           Déjà un compte ?{' '}

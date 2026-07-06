@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 
@@ -29,6 +30,7 @@ import NotFound from './pages/NotFound';
 import CGU from './pages/CGU';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
 import FAQ from './pages/FAQ';
+import CoupeDuMonde2026 from './pages/CoupeDuMonde2026';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -71,6 +73,7 @@ function AdminGuard({ children }) {
 
 export default function App() {
   return (
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
@@ -85,9 +88,11 @@ export default function App() {
                 <Route path="/tipsters/:userId" element={<TipsterProfile />} />
                 <Route path="/abonnement" element={<Subscription />} />
                 <Route path="/abonnement/confirmation" element={<PaymentConfirmation />} />
+                <Route path="/abonnement/erreur" element={<PaymentConfirmation error />} />
                 <Route path="/actualites" element={<News />} />
                 <Route path="/classements" element={<Standings />} />
                 <Route path="/pronostics" element={<Pronostics />} />
+                <Route path="/coupe-du-monde-2026" element={<CoupeDuMonde2026 />} />
                 <Route path="/outils/filtres" element={<Filtres />} />
                 <Route path="/outils/machine" element={<Machine />} />
                 <Route path="/outils/stats-ligues" element={<StatsLigues />} />
@@ -122,5 +127,6 @@ export default function App() {
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>
+    </GoogleOAuthProvider>
   );
 }

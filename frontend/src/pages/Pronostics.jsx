@@ -8,6 +8,7 @@ import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 const PICK_LABELS = {
   '1':      'Victoire domicile',
@@ -190,6 +191,7 @@ function PronoCard({ match }) {
 }
 
 export default function Pronostics() {
+  usePageMeta('Pronostics', 'Pronostics football du jour avec probabilités 1X2, value bets et picks algorithmiques. Analyse IA des matchs.');
   const [date, setDate] = useState(new Date());
   const dateStr = format(date, 'yyyy-MM-dd');
   const tabs = [subDays(new Date(), 1), new Date(), addDays(new Date(), 1), addDays(new Date(), 2)];

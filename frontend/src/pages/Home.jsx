@@ -9,8 +9,10 @@ import ToolsCarousel from '../components/home/ToolsCarousel';
 import HeroBackground from '../components/home/HeroBackground';
 import TipsterCard from '../components/tipsters/TipsterCard';
 import { SkeletonMatchCard, SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
+import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function Home() {
+  usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
   const { user, isPremium } = useAuth();
   const today = format(new Date(), 'yyyy-MM-dd');
 
@@ -127,7 +129,7 @@ export default function Home() {
       </section>
 
       {/* ── Grille : tipsters + premium ─────────────────────────── */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-6 items-start">
 
         {/* Top tipsters */}
         <section>
@@ -164,7 +166,7 @@ export default function Home() {
               <span className="w-1 h-4 rounded-full bg-orange-400" />
               Passez Premium
             </h2>
-            <div className="relative overflow-hidden card p-5 h-full border-orange-500/10"
+            <div className="relative overflow-hidden card p-5 border-orange-500/10"
               style={{ background: 'linear-gradient(135deg, rgba(26,166,86,0.08) 0%, rgba(249,115,22,0.07) 100%)' }}>
               <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full pointer-events-none"
                 style={{ background: 'radial-gradient(circle, rgba(249,115,22,0.18) 0%, transparent 70%)' }} />

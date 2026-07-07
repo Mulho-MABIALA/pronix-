@@ -1,24 +1,40 @@
-const nodemailer = require('nodemailer');
 const env = require('../config/env');
 
-const transporter = nodemailer.createTransport({
-  host: env.SMTP_HOST,
-  port: env.SMTP_PORT,
-  secure: env.SMTP_SECURE,
-  auth: {
-    user: env.SMTP_USER,
-    pass: env.SMTP_PASS,
-  },
-});
+// ── Client Resend (SDK officiel) ──────────────────────────────────────────────
+let resendClient = null;
+function getResend() {
+  if (!resendClient && env.RESEND_API_KEY) {
+    const { Resend } = require('resend');
+    resendClient = new Resend(env.RESEND_API_KEY);
+  }
+  return resendClient;
+}
 
+// Expéditeur : noreply@fpronix.com (domaine vérifié sur Resend)
+// En attendant la vérification de domaine → utiliser onboarding@resend.dev
+const FROM = env.EMAIL_FROM || 'fpronix <noreply@fpronix.com>';
+
+// ── Envoi générique ───────────────────────────────────────────────────────────
 async function sendEmail({ to, subject, html }) {
-  if (!env.SMTP_USER) {
+  const resend = getResend();
+
+  if (!resend) {
+    // Pas de clé → log console (mode dev ou avant config)
     console.log(`[Email simulé] À: ${to} | Sujet: ${subject}`);
     return;
   }
-  await transporter.sendMail({ from: env.EMAIL_FROM, to, subject, html });
+
+  const { error } = await resend.emails.send({ from: FROM, to, subject, html });
+
+  if (error) {
+    console.error('[Email] Erreur Resend:', error);
+    throw new Error(error.message);
+  }
+
+  console.log(`[Email] Envoyé → ${to} | ${subject}`);
 }
 
+// ── Email de bienvenue ────────────────────────────────────────────────────────
 async function sendWelcomeEmail(user) {
   const appUrl = env.FRONTEND_URL || 'https://fpronix.com';
   await sendEmail({
@@ -39,7 +55,7 @@ async function sendWelcomeEmail(user) {
       <td align="center" style="padding:32px 16px;">
         <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:560px;width:100%;">
 
-          <!-- Logo header -->
+          <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:32px;">
               <table cellpadding="0" cellspacing="0" role="presentation">
@@ -54,23 +70,17 @@ async function sendWelcomeEmail(user) {
             </td>
           </tr>
 
-          <!-- Main card -->
+          <!-- Card -->
           <tr>
             <td style="background:#111214;border:1px solid rgba(255,255,255,0.07);border-radius:20px;overflow:hidden;">
-
-              <!-- Green accent bar -->
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
-                  <td style="height:3px;background:linear-gradient(90deg,#1aa656,#16c666,rgba(26,166,86,0.2));border-radius:0;"></td>
+                  <td style="height:3px;background:linear-gradient(90deg,#1aa656,#16c666,rgba(26,166,86,0.2));"></td>
                 </tr>
               </table>
-
-              <!-- Content -->
               <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                 <tr>
                   <td style="padding:40px 36px 32px;">
-
-                    <!-- Emoji + greeting -->
                     <p style="margin:0 0 8px;font-size:32px;line-height:1;">⚽</p>
                     <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#ffffff;line-height:1.25;letter-spacing:-0.3px;">
                       Bienvenue, ${user.username} !
@@ -78,11 +88,9 @@ async function sendWelcomeEmail(user) {
                     <p style="margin:0 0 28px;font-size:15px;color:#6b7280;line-height:1.6;">
                       Ton compte fpronix est créé. Tu es maintenant prêt à plonger dans l'univers des statistiques football et des pronostics.
                     </p>
-
-                    <!-- Features list -->
                     <table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin-bottom:28px;">
                       ${[
-                        ['📊', 'Statistiques en temps réel', 'Scores en direct, compositions, H2H et form récente.'],
+                        ['📊', 'Statistiques en temps réel', 'Scores en direct, compositions, H2H et forme récente.'],
                         ['🏆', 'Tipsters & pronostics', 'Suis les meilleurs pronostiqueurs et publie tes propres picks.'],
                         ['🤖', 'Analyse IA', 'Génère des pronostics assistés par intelligence artificielle.'],
                         ['💎', 'Premium disponible', 'Accède aux cotes, value bets et données avancées.'],
@@ -101,23 +109,19 @@ async function sendWelcomeEmail(user) {
                         </td>
                       </tr>`).join('')}
                     </table>
-
-                    <!-- CTA Button -->
                     <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
                       <tr>
                         <td align="center">
                           <a href="${appUrl}"
-                            style="display:inline-block;padding:14px 32px;background:#1aa656;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:12px;letter-spacing:0.1px;">
+                            style="display:inline-block;padding:14px 32px;background:#1aa656;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;border-radius:12px;">
                             Accéder à fpronix →
                           </a>
                         </td>
                       </tr>
                     </table>
-
                   </td>
                 </tr>
               </table>
-
             </td>
           </tr>
 
@@ -130,7 +134,7 @@ async function sendWelcomeEmail(user) {
               </p>
               <p style="margin:0;font-size:10px;color:#1f2937;line-height:1.6;">
                 ⚠️ Ceci n'est pas un conseil financier. Les pronostics sont fournis à titre indicatif.<br />
-                Aucune garantie de résultat. Jouer avec modération.
+                Aucune garantie de résultat. Jouez avec modération.
               </p>
             </td>
           </tr>
@@ -139,45 +143,101 @@ async function sendWelcomeEmail(user) {
       </td>
     </tr>
   </table>
-
 </body>
-</html>
-    `,
+</html>`,
   });
 }
 
+// ── Reset mot de passe ────────────────────────────────────────────────────────
 async function sendPasswordResetEmail(user, resetToken) {
   const resetUrl = `${env.FRONTEND_URL}/reset-password?token=${resetToken}`;
   await sendEmail({
     to: user.email,
-    subject: 'Réinitialisation de votre mot de passe',
+    subject: 'Réinitialisation de ton mot de passe — fpronix',
     html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:auto">
-        <h1>Réinitialisation du mot de passe</h1>
-        <p>Cliquez sur le lien ci-dessous (valable 1 heure) :</p>
-        <a href="${resetUrl}" style="background:#10b981;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none">
-          Réinitialiser mon mot de passe
-        </a>
-        <p style="margin-top:16px">Si vous n'avez pas fait cette demande, ignorez cet email.</p>
-      </div>
-    `,
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#0a0b0d;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0b0d;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table style="max-width:520px;width:100%;">
+        <tr><td align="center" style="padding-bottom:24px;">
+          <span style="background:rgba(26,166,86,0.15);border:1px solid rgba(26,166,86,0.3);border-radius:12px;padding:8px 14px;font-size:18px;font-weight:800;color:#fff;">
+            fp<span style="color:#1aa656;">ronix</span>
+          </span>
+        </td></tr>
+        <tr><td style="background:#111214;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:36px;">
+          <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#fff;">🔐 Réinitialisation du mot de passe</h1>
+          <p style="margin:0 0 24px;font-size:14px;color:#6b7280;line-height:1.6;">
+            Bonjour ${user.username},<br />
+            Clique sur le bouton ci-dessous pour réinitialiser ton mot de passe. Ce lien est valable <strong style="color:#e5e7eb;">1 heure</strong>.
+          </p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center">
+              <a href="${resetUrl}"
+                style="display:inline-block;padding:14px 32px;background:#1aa656;color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:12px;">
+                Réinitialiser mon mot de passe →
+              </a>
+            </td></tr>
+          </table>
+          <p style="margin:24px 0 0;font-size:12px;color:#4b5563;text-align:center;">
+            Si tu n'as pas fait cette demande, ignore cet email. Ton mot de passe ne sera pas modifié.
+          </p>
+        </td></tr>
+        <tr><td style="padding:20px 0;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#374151;">
+            <a href="${env.FRONTEND_URL}" style="color:#1aa656;text-decoration:none;">fpronix.com</a> — Statistiques football & pronostics
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
   });
 }
 
+// ── Rappel expiration abonnement ──────────────────────────────────────────────
 async function sendSubscriptionExpiryReminder(user, daysLeft) {
   await sendEmail({
     to: user.email,
-    subject: `Votre abonnement expire dans ${daysLeft} jour(s)`,
+    subject: `Ton abonnement expire dans ${daysLeft} jour(s) — fpronix`,
     html: `
-      <div style="font-family:sans-serif;max-width:600px;margin:auto">
-        <h1 style="color:#f59e0b">Abonnement bientôt expiré</h1>
-        <p>Bonjour ${user.username},</p>
-        <p>Votre abonnement <strong>${user.subscription?.plan?.displayName}</strong> expire dans <strong>${daysLeft} jour(s)</strong>.</p>
-        <a href="${env.FRONTEND_URL}/abonnement" style="background:#10b981;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none">
-          Renouveler mon abonnement
-        </a>
-      </div>
-    `,
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8" /></head>
+<body style="margin:0;padding:0;background:#0a0b0d;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0b0d;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table style="max-width:520px;width:100%;">
+        <tr><td align="center" style="padding-bottom:24px;">
+          <span style="background:rgba(26,166,86,0.15);border:1px solid rgba(26,166,86,0.3);border-radius:12px;padding:8px 14px;font-size:18px;font-weight:800;color:#fff;">
+            fp<span style="color:#1aa656;">ronix</span>
+          </span>
+        </td></tr>
+        <tr><td style="background:#111214;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:36px;">
+          <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#f59e0b;">⏰ Abonnement bientôt expiré</h1>
+          <p style="margin:0 0 24px;font-size:14px;color:#6b7280;line-height:1.6;">
+            Bonjour ${user.username},<br />
+            Ton abonnement <strong style="color:#e5e7eb;">${user.subscription?.plan?.displayName || 'Premium'}</strong>
+            expire dans <strong style="color:#f59e0b;">${daysLeft} jour(s)</strong>.
+            Renouvelle-le pour continuer à profiter de toutes les fonctionnalités.
+          </p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center">
+              <a href="${env.FRONTEND_URL}/abonnement"
+                style="display:inline-block;padding:14px 32px;background:#1aa656;color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:12px;">
+                Renouveler mon abonnement →
+              </a>
+            </td></tr>
+          </table>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
   });
 }
 

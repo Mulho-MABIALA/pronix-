@@ -1,6 +1,7 @@
 // Validation des variables d'environnement au démarrage
+const path = require('path');
 const { z } = require('zod');
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -39,6 +40,7 @@ const envSchema = z.object({
   APP_NAME: z.string().default('Statistique Foot'),
   ANTHROPIC_API_KEY: z.string().optional(),
   ODDS_API_KEY: z.string().optional(),       // The Odds API — https://the-odds-api.com (500 req/mois gratuit)
+  RESEND_API_KEY: z.string().optional(),     // Resend — https://resend.com (3000 mails/mois gratuit)
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
 });

@@ -44,7 +44,8 @@ async function getTipsByMatch(req, res, next) {
   try {
     const { matchId } = req.params;
     const { page = '1', limit = '20' } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
+    const limitNum = Math.min(Number(limit), 100);
+    const skip = (Number(page) - 1) * limitNum;
 
     const [total, tips] = await prisma.$transaction([
       prisma.tip.count({ where: { matchId, isVisible: true } }),
@@ -55,11 +56,11 @@ async function getTipsByMatch(req, res, next) {
         },
         orderBy: [{ user: { tipsterStats: { successRate: 'desc' } } }, { createdAt: 'desc' }],
         skip,
-        take: Number(limit),
+        take: limitNum,
       }),
     ]);
 
-    res.json({ success: true, data: tips, pagination: { total, page: Number(page), limit: Number(limit) } });
+    res.json({ success: true, data: tips, pagination: { total, page: Number(page), limit: limitNum } });
   } catch (err) {
     next(err);
   }
@@ -69,10 +70,10 @@ async function getTipsByMatch(req, res, next) {
 async function getLeaderboard(req, res, next) {
   try {
     const { period = 'global', page = '1', limit = '20' } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
+    const limitNum = Math.min(Number(limit), 100);
+    const skip = (Number(page) - 1) * limitNum;
 
     const orderField = period === 'monthly' ? 'monthlyRate' : 'successRate';
-    const rankField = period === 'monthly' ? 'monthlyRank' : 'globalRank';
     const minTips = 1;
     const tipsField = period === 'monthly' ? 'monthlyTips' : 'totalTips';
 
@@ -85,11 +86,11 @@ async function getLeaderboard(req, res, next) {
         },
         orderBy: [{ [orderField]: 'desc' }, { [tipsField]: 'desc' }],
         skip,
-        take: Number(limit),
+        take: limitNum,
       }),
     ]);
 
-    res.json({ success: true, data: stats, pagination: { total, page: Number(page), limit: Number(limit) } });
+    res.json({ success: true, data: stats, pagination: { total, page: Number(page), limit: limitNum } });
   } catch (err) {
     next(err);
   }
@@ -149,7 +150,8 @@ async function reportTip(req, res, next) {
 async function getMyTips(req, res, next) {
   try {
     const { page = '1', limit = '20' } = req.query;
-    const skip = (Number(page) - 1) * Number(limit);
+    const limitNum = Math.min(Number(limit), 100);
+    const skip = (Number(page) - 1) * limitNum;
 
     const [total, tips] = await prisma.$transaction([
       prisma.tip.count({ where: { userId: req.user.id } }),
@@ -158,11 +160,11 @@ async function getMyTips(req, res, next) {
         include: { match: { include: { competition: true } } },
         orderBy: { createdAt: 'desc' },
         skip,
-        take: Number(limit),
+        take: limitNum,
       }),
     ]);
 
-    res.json({ success: true, data: tips, pagination: { total, page: Number(page), limit: Number(limit) } });
+    res.json({ success: true, data: tips, pagination: { total, page: Number(page), limit: limitNum } });
   } catch (err) {
     next(err);
   }

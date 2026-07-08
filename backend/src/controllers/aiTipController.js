@@ -1,3 +1,4 @@
+const { z } = require('zod');
 const prisma = require('../config/database');
 const { generateMatchPrediction } = require('../services/claudeService');
 const footballApi = require('../services/footballApi');
@@ -34,8 +35,8 @@ function getResult(m, teamName) {
 
 async function generateAiTip(req, res, next) {
   try {
-    const { matchId } = req.body;
-    if (!matchId) throw new AppError('matchId requis', 400, 'VALIDATION_ERROR');
+    const { matchId } = z.object({ matchId: z.string().uuid('matchId invalide') }).parse(req.body);
+
 
     // Vérif quota journalier
     const usedToday = checkDailyLimit(req.user.id);

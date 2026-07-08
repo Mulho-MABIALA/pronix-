@@ -13,7 +13,7 @@ async function getMatches(req, res, next) {
       competitionId: z.string().optional(),
       status: z.enum(['SCHEDULED', 'LIVE', 'FINISHED', 'POSTPONED', 'CANCELLED']).optional(),
       page: z.string().default('1').transform(Number),
-      limit: z.string().default('20').transform(Number),
+      limit: z.string().default('20').transform((v) => Math.min(Number(v), 100)),
     });
     const { date, competitionId, status, page, limit } = schema.parse(req.query);
 

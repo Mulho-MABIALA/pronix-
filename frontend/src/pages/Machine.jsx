@@ -148,6 +148,55 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+// ─── Templates prédéfinis ──────────────────────────────────────────────────────
+const TEMPLATES = [
+  {
+    id: 'safe',
+    emoji: '🛡️',
+    label: 'Safe',
+    sub: 'Picks très fiables · cote modeste',
+    color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
+    config: {
+      nbPicks: 3,
+      marketGroup: 'overunder',
+      market: 'over15',
+      minConf: 'high',
+      dateOpt: 'today',
+      leagues: [],
+    },
+  },
+  {
+    id: 'equilibre',
+    emoji: '⚖️',
+    label: 'Équilibré',
+    sub: 'Bon compromis cote / sécurité',
+    color: 'text-amber-400 border-amber-500/30 bg-amber-500/10',
+    config: {
+      nbPicks: 6,
+      marketGroup: 'resultats',
+      market: 'auto',
+      minConf: 'medium',
+      dateOpt: '3days',
+      leagues: [],
+    },
+  },
+  {
+    id: 'ambitieux',
+    emoji: '🔥',
+    label: 'Ambitieux',
+    sub: 'Grosse cote · plus risqué',
+    color: 'text-rose-400 border-rose-500/30 bg-rose-500/10',
+    config: {
+      nbPicks: 12,
+      marketGroup: 'resultats',
+      market: 'auto',
+      minConf: 'low',
+      dateOpt: 'week',
+      leagues: [],
+    },
+  },
+];
+
 const DATE_PRESETS = [
   { value: 'today',    label: "Aujourd'hui", days: 0  },
   { value: 'tomorrow', label: 'Demain',      days: 1  },
@@ -399,6 +448,22 @@ export default function Machine() {
   const [ticket, setTicket]           = useState(null);
   const [copied, setCopied]           = useState(false);
   const [sharing, setSharing]         = useState(false);
+  const [mise, setMise]               = useState('');
+  const [activeTemplate, setActiveTemplate] = useState(null);
+
+  // Appliquer un template — configure tous les filtres d'un coup
+  function applyTemplate(tpl) {
+    const c = tpl.config;
+    setNbPicks(c.nbPicks);
+    setMarketGroup(c.marketGroup);
+    setMarket(c.market);
+    setMinConf(c.minConf);
+    setDateOpt(c.dateOpt);
+    setLeagues(c.leagues);
+    setPinnedMatchIds(new Set());
+    setActiveTemplate(tpl.id);
+    setTicket(null);
+  }
 
   // Calcul de la plage de dates selon le preset choisi
   function getDateRange(opt) {
@@ -531,6 +596,35 @@ export default function Machine() {
 
       {/* Paramètres */}
       <div className="px-4 card p-4 space-y-4">
+
+        {/* ── Templates prédéfinis ──────────────────────────────────── */}
+        <div>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+            Démarrage rapide
+          </p>
+          <div className="grid grid-cols-3 gap-2">
+            {TEMPLATES.map((tpl) => (
+              <button key={tpl.id} onClick={() => applyTemplate(tpl)}
+                className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl border transition-all ${
+                  activeTemplate === tpl.id
+                    ? tpl.color
+                    : 'border-white/[0.07] text-gray-500 hover:border-white/[0.15] hover:text-gray-300'
+                }`}>
+                <span className="text-lg leading-none">{tpl.emoji}</span>
+                <span className="text-xs font-bold">{tpl.label}</span>
+                <span className="text-[9px] text-center leading-tight opacity-70">{tpl.sub}</span>
+              </button>
+            ))}
+          </div>
+          {activeTemplate && (
+            <button onClick={() => setActiveTemplate(null)}
+              className="mt-1.5 text-[10px] text-gray-600 hover:text-gray-400 transition-colors">
+              Personnaliser manuellement →
+            </button>
+          )}
+        </div>
+
+        <div className="border-t border-white/[0.06]" />
 
         {/* Nombre de picks */}
         <div>
@@ -782,27 +876,54 @@ export default function Machine() {
           )}
         </div>
 
+        {/* Compteur de matchs disponibles */}
+        <div className="flex items-center justify-center gap-2 py-1">
+          {isLoading ? (
+            <span className="text-[10px] text-gray-600">Recherche des matchs…</span>
+          ) : (
+            <>
+              <span className={`text-[11px] font-semibold ${
+                availableCandidates.length === 0
+                  ? 'text-rose-400'
+                  : availableCandidates.length < nbPicks
+                    ? 'text-amber-400'
+                    : 'text-primary-400'
+              }`}>
+                {availableCandidates.length} match{availableCandidates.length !== 1 ? 's' : ''} disponible{availableCandidates.length !== 1 ? 's' : ''}
+              </span>
+              <span className="text-gray-700">·</span>
+              <span className="text-[10px] text-gray-600">
+                {pinnedMatchIds.size > 0
+                  ? `${pinnedMatchIds.size} sélectionné${pinnedMatchIds.size > 1 ? 's' : ''} manuellement`
+                  : `meilleurs ${Math.min(nbPicks, availableCandidates.length)} retenus`}
+              </span>
+              {availableCandidates.length < nbPicks && availableCandidates.length > 0 && (
+                <span className="text-[10px] text-amber-500">
+                  · ticket réduit à {availableCandidates.length}
+                </span>
+              )}
+            </>
+          )}
+        </div>
+
         {/* Bouton générer */}
-        <button onClick={generateTicket} disabled={isLoading}
-          className="btn-primary w-full flex items-center justify-center gap-2 py-3">
+        <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
+          className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed">
           <Zap size={16} />
-          {isLoading ? 'Chargement…' : 'Générer le ticket'}
+          {isLoading ? 'Chargement…' : availableCandidates.length === 0 ? 'Aucun match disponible' : 'Générer le ticket'}
         </button>
       </div>
 
       {/* Résultat */}
       {ticket && (
         <div className="px-4 space-y-3">
+
+          {/* ── Barre résultat ────────────────────────────────────────── */}
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-gray-200">
               {ticket.length} sélection{ticket.length > 1 ? 's' : ''} générée{ticket.length > 1 ? 's' : ''}
             </p>
             <div className="flex items-center gap-2">
-              {totalOdds && (
-                <span className="text-xs text-gray-500">
-                  Cote simulée : <span className="text-amber-400 font-semibold">× {totalOdds}</span>
-                </span>
-              )}
               <button onClick={generateTicket}
                 className="p-1.5 rounded-lg border border-white/[0.06] text-gray-500 hover:text-gray-300 transition-colors">
                 <RefreshCw size={13} />
@@ -821,6 +942,52 @@ export default function Machine() {
               </button>
             </div>
           </div>
+
+          {/* ── Simulation de mise ────────────────────────────────────── */}
+          {totalOdds && ticket.length > 0 && (
+            <div className="card p-3 flex items-center gap-3">
+              {/* Cote totale */}
+              <div className="shrink-0 text-center">
+                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">Cote totale</p>
+                <p className="text-lg font-black text-amber-400">×{totalOdds}</p>
+              </div>
+
+              <div className="w-px h-10 bg-white/[0.06] shrink-0" />
+
+              {/* Input mise */}
+              <div className="flex-1 flex items-center gap-2">
+                <div className="flex-1">
+                  <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">Votre mise</p>
+                  <div className="flex items-center gap-1">
+                    <input
+                      type="number"
+                      min="0"
+                      placeholder="1 000"
+                      value={mise}
+                      onChange={(e) => setMise(e.target.value)}
+                      className="w-full bg-transparent text-sm font-semibold text-gray-200 outline-none placeholder:text-gray-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    />
+                    <span className="text-[10px] text-gray-600 shrink-0">FCFA</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="w-px h-10 bg-white/[0.06] shrink-0" />
+
+              {/* Gain potentiel */}
+              <div className="shrink-0 text-center">
+                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">Gain potentiel</p>
+                {mise && Number(mise) > 0 ? (
+                  <p className="text-base font-black text-primary-400">
+                    {Math.round(Number(mise) * Number(totalOdds)).toLocaleString('fr-FR')}
+                    <span className="text-[9px] font-normal text-gray-600 ml-0.5">FCFA</span>
+                  </p>
+                ) : (
+                  <p className="text-sm font-bold text-gray-700">—</p>
+                )}
+              </div>
+            </div>
+          )}
 
           {ticket.length === 0 ? (
             <div className="card-p text-center py-8">

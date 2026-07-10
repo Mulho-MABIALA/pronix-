@@ -9,34 +9,45 @@ const oddsService = require('../services/oddsService');
 async function getMatches(req, res, next) {
   try {
     const schema = z.object({
-      date: z.string().optional(),
+      date:          z.string().optional(),
+      dateFrom:      z.string().optional(),
+      dateTo:        z.string().optional(),
       competitionId: z.string().optional(),
       status: z.enum(['SCHEDULED', 'LIVE', 'FINISHED', 'POSTPONED', 'CANCELLED']).optional(),
-      page: z.string().default('1').transform(Number),
-      limit: z.string().default('20').transform((v) => Math.min(Number(v), 100)),
+      page:  z.string().default('1').transform(Number),
+      limit: z.string().default('20').transform((v) => Math.min(Number(v), 500)),
     });
-    const { date, competitionId, status, page, limit } = schema.parse(req.query);
+    const { date, dateFrom, dateTo, competitionId, status, page, limit } = schema.parse(req.query);
 
-    const targetDate = date || new Date().toISOString().split('T')[0];
-    const d = new Date(targetDate);
-    const dNext = new Date(targetDate);
-    dNext.setDate(dNext.getDate() + 1);
+    let startDate, endDate;
+    if (dateFrom) {
+      // Requête sur une plage de dates (jusqu'à 1 mois)
+      startDate = new Date(dateFrom);
+      endDate   = dateTo ? new Date(dateTo) : new Date(dateFrom);
+      endDate.setDate(endDate.getDate() + 1); // inclure le dernier jour complet
+    } else {
+      // Requête sur une seule journée (comportement historique)
+      const targetDate = date || new Date().toISOString().split('T')[0];
+      startDate = new Date(targetDate);
+      endDate   = new Date(targetDate);
+      endDate.setDate(endDate.getDate() + 1);
 
-    const where = { scheduledAt: { gte: d, lt: dNext } };
-    if (competitionId) where.competitionId = competitionId;
-    if (status) where.status = status;
-
-    const existingCount = await prisma.match.count({ where: { scheduledAt: { gte: d, lt: dNext } } });
-
-    if (existingCount === 0) {
-      const diffDays = Math.round((d - new Date()) / (1000 * 60 * 60 * 24));
-      if (diffDays >= -1 && diffDays <= 7) {
-        console.log(`[Matches] Sync à la volée pour ${targetDate}`);
-        await syncMatchesForDate(targetDate).catch((e) =>
-          console.error('[Matches] Sync à la volée échouée:', e.message)
-        );
+      // Sync à la volée uniquement pour les requêtes jour par jour
+      const existingCount = await prisma.match.count({ where: { scheduledAt: { gte: startDate, lt: endDate } } });
+      if (existingCount === 0) {
+        const diffDays = Math.round((startDate - new Date()) / (1000 * 60 * 60 * 24));
+        if (diffDays >= -1 && diffDays <= 7) {
+          console.log(`[Matches] Sync à la volée pour ${targetDate}`);
+          await syncMatchesForDate(targetDate).catch((e) =>
+            console.error('[Matches] Sync à la volée échouée:', e.message)
+          );
+        }
       }
     }
+
+    const where = { scheduledAt: { gte: startDate, lt: endDate } };
+    if (competitionId) where.competitionId = competitionId;
+    if (status) where.status = status;
 
     const [total, matches] = await prisma.$transaction([
       prisma.match.count({ where }),

@@ -148,6 +148,15 @@ function roundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+const DATE_PRESETS = [
+  { value: 'today',    label: "Aujourd'hui", days: 0  },
+  { value: 'tomorrow', label: 'Demain',      days: 1  },
+  { value: '3days',    label: '3 jours',     days: 3  },
+  { value: 'week',     label: '1 semaine',   days: 7  },
+  { value: '2weeks',   label: '2 semaines',  days: 14 },
+  { value: 'month',    label: '1 mois',      days: 30 },
+];
+
 const LEAGUES_OPTIONS = [
   { value: 'all',    label: 'Toutes les ligues' },
   { value: '47',     label: 'Premier League' },
@@ -207,18 +216,34 @@ export default function Machine() {
   const [copied, setCopied]       = useState(false);
   const [sharing, setSharing]     = useState(false);
 
-  const today    = format(new Date(), 'yyyy-MM-dd');
-  const tomorrow = format(addDays(new Date(), 1), 'yyyy-MM-dd');
+  // Calcul de la plage de dates selon le preset choisi
+  function getDateRange(opt) {
+    const base    = new Date();
+    const preset  = DATE_PRESETS.find((p) => p.value === opt) || DATE_PRESETS[0];
+    const dateFrom = format(base, 'yyyy-MM-dd');
+    if (opt === 'today') {
+      return { dateFrom, dateTo: dateFrom };
+    }
+    if (opt === 'tomorrow') {
+      const tom = format(addDays(base, 1), 'yyyy-MM-dd');
+      return { dateFrom: tom, dateTo: tom };
+    }
+    const dateTo = format(addDays(base, preset.days - 1), 'yyyy-MM-dd');
+    return { dateFrom, dateTo };
+  }
 
-  const todayQ    = useQuery({ queryKey: ['machine', today],    queryFn: () => api.get(`/matches?date=${today}&limit=100`).then(r => r.data),    staleTime: 5 * 60 * 1000 });
-  const tomorrowQ = useQuery({ queryKey: ['machine', tomorrow], queryFn: () => api.get(`/matches?date=${tomorrow}&limit=100`).then(r => r.data), staleTime: 5 * 60 * 1000 });
+  const { dateFrom, dateTo } = getDateRange(dateOpt);
 
-  const isLoading = todayQ.isLoading || tomorrowQ.isLoading;
+  const rangeQ = useQuery({
+    queryKey: ['machine-range', dateFrom, dateTo],
+    queryFn:  () => api.get(`/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=500`).then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const isLoading = rangeQ.isLoading;
 
   function generateTicket() {
-    const todayMatches    = dateOpt !== 'tomorrow' ? (todayQ.data?.data    || []) : [];
-    const tomorrowMatches = dateOpt !== 'today'    ? (tomorrowQ.data?.data || []) : [];
-    const allMatches = [...todayMatches, ...tomorrowMatches];
+    const allMatches = rangeQ.data?.data || [];
     const candidates = allMatches
       .filter((m) => {
         if (m.status !== 'SCHEDULED') return false;
@@ -302,11 +327,11 @@ export default function Machine() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Nombre de sélections</p>
             <span className="text-sm font-bold text-primary-400">{nbPicks}</span>
           </div>
-          <input type="range" min="2" max="12" step="1" value={nbPicks}
+          <input type="range" min="2" max="45" step="1" value={nbPicks}
             onChange={(e) => setNbPicks(Number(e.target.value))}
             className="w-full accent-primary-500 h-1.5 cursor-pointer" />
           <div className="flex justify-between text-[10px] text-gray-600 mt-1">
-            <span>2</span><span>12</span>
+            <span>2</span><span>45</span>
           </div>
         </div>
 
@@ -350,24 +375,22 @@ export default function Machine() {
           </div>
         </div>
 
-        {/* Date */}
+        {/* Date / Période */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Journée</p>
-          <div className="flex gap-2">
-            {[
-              { value: 'today',    label: "Aujourd'hui" },
-              { value: 'tomorrow', label: 'Demain' },
-              { value: 'both',     label: 'Les deux' },
-            ].map((o) => (
-              <button key={o.value} onClick={() => setDateOpt(o.value)}
-                className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
-                  dateOpt === o.value
-                    ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
-                    : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
-                }`}>
-                {o.label}
-              </button>
-            ))}
+          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Période</p>
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 min-w-max">
+              {DATE_PRESETS.map((o) => (
+                <button key={o.value} onClick={() => { setDateOpt(o.value); setTicket(null); }}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
+                    dateOpt === o.value
+                      ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                  }`}>
+                  {o.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -415,7 +438,7 @@ export default function Machine() {
             <div className="card-p text-center py-8">
               <p className="text-2xl mb-2">🎯</p>
               <p className="text-gray-500 text-sm">Aucune sélection ne correspond à ces critères</p>
-              <p className="text-gray-600 text-xs mt-1">Essayez de baisser le niveau de confiance ou de changer la journée</p>
+              <p className="text-gray-600 text-xs mt-1">Essayez de baisser le niveau de confiance ou d'élargir la période</p>
             </div>
           ) : (
             <div className="card overflow-hidden divide-y divide-white/[0.04]">

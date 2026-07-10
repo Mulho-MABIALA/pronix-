@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
-import { Zap, Copy, Check, RefreshCw, Share2, Download } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter } from 'lucide-react';
 import api from '../services/api';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
@@ -170,26 +170,148 @@ const LEAGUES_OPTIONS = [
   { value: '526',    label: 'CAF Champions League' },
 ];
 
-const MARKETS = [
-  // ── Picks automatiques ──────────────────────────────────────────
-  { value: 'auto',     label: 'Meilleur pick auto',          group: null },
-  // ── 1X2 ────────────────────────────────────────────────────────
-  { value: '1',        label: '1 — Domicile',                group: '1X2' },
-  { value: 'X',        label: 'X — Nul',                     group: '1X2' },
-  { value: '2',        label: '2 — Extérieur',               group: '1X2' },
-  // ── Double chance ───────────────────────────────────────────────
-  { value: '1X',       label: 'DC 1X',                       group: 'DC' },
-  { value: 'X2',       label: 'DC X2',                       group: 'DC' },
-  { value: '12',       label: 'DC 12 (sans nul)',             group: 'DC' },
-  // ── Over / Under ────────────────────────────────────────────────
-  { value: 'over15',   label: 'O 1.5 buts',                  group: 'O/U' },
-  { value: 'under15',  label: 'U 1.5 buts',                  group: 'O/U' },
-  { value: 'over25',   label: 'O 2.5 buts',                  group: 'O/U' },
-  { value: 'under25',  label: 'U 2.5 buts',                  group: 'O/U' },
-  { value: 'over35',   label: 'O 3.5 buts',                  group: 'O/U' },
-  // ── BTTS ────────────────────────────────────────────────────────
-  { value: 'btts',     label: 'BTTS Oui',                    group: 'BTTS' },
-  { value: 'nobtts',   label: 'BTTS Non',                    group: 'BTTS' },
+// ─── Marchés inspirés 1xbet ────────────────────────────────────────────────────
+const MARKET_GROUPS = [
+  {
+    id: 'resultats',
+    label: 'Résultat',
+    emoji: '🏆',
+    subtitle: 'Qui remporte le match à la fin du temps réglementaire ?',
+    markets: [
+      {
+        value: 'auto',
+        label: 'Meilleur pick auto',
+        desc: "L'algorithme sélectionne automatiquement le marché avec la plus haute probabilité parmi tous ceux disponibles pour ce match.",
+      },
+      {
+        value: '1',
+        label: '1 — Victoire domicile',
+        desc: "L'équipe qui joue à domicile gagne le match à la fin du temps réglementaire. Perdu si nul ou victoire extérieur.",
+      },
+      {
+        value: 'X',
+        label: 'X — Match nul',
+        desc: "Les deux équipes terminent le match avec le même nombre de buts. Perdu si l'une des deux équipes l'emporte.",
+      },
+      {
+        value: '2',
+        label: '2 — Victoire extérieur',
+        desc: "L'équipe visiteuse gagne le match. Perdu si nul ou victoire domicile.",
+      },
+    ],
+  },
+  {
+    id: 'doublechance',
+    label: 'Double chance',
+    emoji: '🔀',
+    subtitle: 'Tu couvres 2 résultats sur 3 — plus sécurisé, cote réduite.',
+    markets: [
+      {
+        value: '1X',
+        label: '1X — Domicile ou Nul',
+        desc: "Gagné si victoire domicile OU match nul. Perdu uniquement si l'équipe extérieure gagne. Idéal pour miser sur une équipe forte à domicile sans risque du nul.",
+      },
+      {
+        value: 'X2',
+        label: 'X2 — Nul ou Extérieur',
+        desc: "Gagné si match nul OU victoire extérieure. Perdu uniquement si l'équipe à domicile gagne. Bon choix quand l'extérieur est favori ou l'équipe est solide.",
+      },
+      {
+        value: '12',
+        label: '12 — Domicile ou Extérieur (sans nul)',
+        desc: "Gagné si l'une des deux équipes gagne. Perdu uniquement en cas de match nul. Parfait quand un nul semble improbable entre deux équipes offensives.",
+      },
+    ],
+  },
+  {
+    id: 'dnb',
+    label: 'Résultat sans nul',
+    emoji: '🛡️',
+    subtitle: 'Draw No Bet — ton mise est remboursée si match nul.',
+    markets: [
+      {
+        value: 'dnb1',
+        label: 'DNB Domicile — Pari annulé si nul',
+        desc: "Gagné si domicile gagne. Mise remboursée si nul. Perdu si extérieur gagne. Moins risqué qu'un simple 1 — couverture contre le nul.",
+      },
+      {
+        value: 'dnb2',
+        label: 'DNB Extérieur — Pari annulé si nul',
+        desc: "Gagné si extérieur gagne. Mise remboursée si nul. Perdu si domicile gagne. Idéal pour miser sur une équipe visiteuse sans craindre le nul.",
+      },
+    ],
+  },
+  {
+    id: 'overunder',
+    label: 'Total buts',
+    emoji: '⚽',
+    subtitle: 'Parie sur le nombre total de buts marqués dans le match.',
+    markets: [
+      {
+        value: 'over05',
+        label: 'Plus de 0.5 but — Au moins 1 but',
+        desc: "Il suffit qu'un seul but soit marqué dans le match pour gagner. Probabilité très haute (~97%). Cote faible mais sécurisée.",
+      },
+      {
+        value: 'over15',
+        label: 'Plus de 1.5 buts — Au moins 2 buts',
+        desc: "Le match doit compter au moins 2 buts au total. Très fréquent dans les rencontres offensives. Pari solide sur des équipes qui marquent.",
+      },
+      {
+        value: 'over25',
+        label: 'Plus de 2.5 buts — Au moins 3 buts',
+        desc: "Le match doit totaliser 3 buts ou plus (ex. 2-1, 3-0, 2-2). Le marché Over/Under le plus populaire sur 1xbet.",
+      },
+      {
+        value: 'over35',
+        label: 'Plus de 3.5 buts — Au moins 4 buts',
+        desc: "Match prolifique avec 4 buts ou plus (ex. 2-2, 3-1, 4-0). Bonne cote, recommandé pour les derbies ou matchs à forte attaque.",
+      },
+      {
+        value: 'over45',
+        label: 'Plus de 4.5 buts — Au moins 5 buts',
+        desc: "Match très ouvert avec 5 buts ou plus. Cote élevée, recommandé sur les matchs entre équipes très offensives ou en mauvaise défense.",
+      },
+      {
+        value: 'under15',
+        label: 'Moins de 1.5 but — Maximum 1 but',
+        desc: "Le match se termine avec 0 ou 1 seul but. Pari sur un match fermé et défensif. Gagné si score 0-0, 1-0 ou 0-1.",
+      },
+      {
+        value: 'under25',
+        label: 'Moins de 2.5 buts — Maximum 2 buts',
+        desc: "Au maximum 2 buts dans le match (0-0, 1-0, 0-1, 1-1, 2-0, 0-2). Adapté aux matchs tendus, coupe, ou entre grandes défenses.",
+      },
+      {
+        value: 'under35',
+        label: 'Moins de 3.5 buts — Maximum 3 buts',
+        desc: "Le match a 3 buts ou moins. Bonne probabilité dans les matchs équilibrés. Gagné si le score final est 2-1, 1-1, 2-0, etc.",
+      },
+      {
+        value: 'under45',
+        label: 'Moins de 4.5 buts — Maximum 4 buts',
+        desc: "Le match ne dépasse pas 4 buts. Probabilité élevée (~80%). Perdu uniquement pour les matchs très prolifiques (5 buts ou plus).",
+      },
+    ],
+  },
+  {
+    id: 'btts',
+    label: 'Les 2 marquent',
+    emoji: '🥅',
+    subtitle: 'Both Teams To Score — est-ce que chaque équipe marque au moins une fois ?',
+    markets: [
+      {
+        value: 'btts',
+        label: 'BTTS Oui — Les 2 équipes marquent',
+        desc: "Les deux équipes marquent au moins 1 but chacune (ex. 1-1, 2-1, 1-2, 2-2). Le score exact n'importe pas, seulement que les 2 équipes trouvent le filet.",
+      },
+      {
+        value: 'nobtts',
+        label: 'BTTS Non — Au moins une équipe ne marque pas',
+        desc: "Au moins une des deux équipes termine la rencontre sans marquer. Gagné si score 1-0, 0-2, 2-0, ou 0-0. Recommandé quand une équipe a une défense très solide.",
+      },
+    ],
+  },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -200,30 +322,60 @@ const CONF_COLORS = {
 };
 const PICK_LABELS = {
   '1': 'Dom.', 'X': 'Nul', '2': 'Ext.',
-  '1X': 'DC1X', 'X2': 'DCX2', '12': 'DC12',
-  'over15': 'O1.5', 'under15': 'U1.5',
-  'over25': 'O2.5', 'under25': 'U2.5',
-  'over35': 'O3.5',
-  'btts': 'BTTS', 'nobtts': 'No BTTS',
+  '1X': '1X', 'X2': 'X2', '12': '12',
+  'dnb1': 'DNB1', 'dnb2': 'DNB2',
+  'over05': 'O0.5', 'over15': 'O1.5', 'over25': 'O2.5', 'over35': 'O3.5', 'over45': 'O4.5',
+  'under15': 'U1.5', 'under25': 'U2.5', 'under35': 'U3.5', 'under45': 'U4.5',
+  'btts': 'BTTS✓', 'nobtts': 'BTTSx',
 };
 
 function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
+
+  // Valeurs de base
+  const h  = pred.home  ?? 33;
+  const d  = pred.draw  ?? 33;
+  const a  = pred.away  ?? 33;
+  const o15 = pred.over15 ?? 70;
+  const o25 = pred.over25 ?? 50;
+  const o35 = pred.over35 ?? 25;
+  const bt  = pred.btts  ?? 50;
+  const sum = (h + a) || 1;
+
+  // Dérivations pour marchés absents de la DB (matchs anciens sans ces champs)
+  const over05  = pred.over05  ?? Math.min(99, Math.round(82 + (o15 - 70) * 0.8));
+  const over45  = pred.over45  ?? Math.max(2,  Math.round(o35 * 0.42));
+  const under45 = 100 - over45;
+  const under35 = pred.under35 ?? (100 - o35);
+  const under25 = pred.under25 ?? (100 - o25);
+  const under15 = pred.under15 ?? (100 - o15);
+  const dc12    = pred.dc12    ?? Math.min(99, h + a);
+  const nobtts  = pred.nobtts  ?? (100 - bt);
+  const dnb1    = Math.round((h / sum) * 100); // Draw No Bet domicile
+  const dnb2    = Math.round((a / sum) * 100); // Draw No Bet extérieur
+
   const probMap = {
-    '1':       pred.home,
-    'X':       pred.draw,
-    '2':       pred.away,
-    '1X':      pred.dc1x,
-    'X2':      pred.dc2x,
-    '12':      pred.dc12 ?? (pred.home != null && pred.draw != null ? Math.min(99, (pred.home + pred.away)) : null),
-    'over15':  pred.over15,
-    'under15': pred.under15 ?? (pred.over15 != null ? 100 - pred.over15 : null),
-    'over25':  pred.over25,
-    'under25': pred.under25 ?? (pred.over25 != null ? 100 - pred.over25 : null),
-    'over35':  pred.over35,
-    'btts':    pred.btts,
-    'nobtts':  pred.nobtts ?? (pred.btts != null ? 100 - pred.btts : null),
+    '1':       h,
+    'X':       d,
+    '2':       a,
+    '1X':      pred.dc1x ?? Math.min(99, h + d),
+    'X2':      pred.dc2x ?? Math.min(99, a + d),
+    '12':      dc12,
+    'dnb1':    dnb1,
+    'dnb2':    dnb2,
+    'over05':  over05,
+    'over15':  o15,
+    'over25':  o25,
+    'over35':  o35,
+    'over45':  over45,
+    'under15': under15,
+    'under25': under25,
+    'under35': under35,
+    'under45': under45,
+    'btts':    bt,
+    'nobtts':  nobtts,
   };
+
   const prob = probMap[market];
   if (prob == null) return pred.bestPick;
   return { type: market, prob };
@@ -236,14 +388,17 @@ function getConfidence(prob) {
 }
 
 export default function Machine() {
-  const [nbPicks, setNbPicks]     = useState(5);
-  const [market, setMarket]       = useState('auto');
-  const [minConf, setMinConf]     = useState('medium');
-  const [dateOpt, setDateOpt]     = useState('today');
-  const [leagues, setLeagues]     = useState([]);
-  const [ticket, setTicket]       = useState(null);
-  const [copied, setCopied]       = useState(false);
-  const [sharing, setSharing]     = useState(false);
+  const [nbPicks, setNbPicks]         = useState(5);
+  const [marketGroup, setMarketGroup] = useState('resultats');
+  const [market, setMarket]           = useState('auto');
+  const [minConf, setMinConf]         = useState('medium');
+  const [dateOpt, setDateOpt]         = useState('today');
+  const [leagues, setLeagues]         = useState([]);
+  const [pinnedMatchIds, setPinnedMatchIds] = useState(new Set());
+  const [showMatchPicker, setShowMatchPicker] = useState(false);
+  const [ticket, setTicket]           = useState(null);
+  const [copied, setCopied]           = useState(false);
+  const [sharing, setSharing]         = useState(false);
 
   // Calcul de la plage de dates selon le preset choisi
   function getDateRange(opt) {
@@ -271,17 +426,17 @@ export default function Machine() {
 
   const isLoading = rangeQ.isLoading;
 
-  function generateTicket() {
+  // ── Candidats filtrés (avant sélection manuelle et limite nbPicks) ─────────
+  const availableCandidates = (() => {
     const allMatches = rangeQ.data?.data || [];
-    const candidates = allMatches
+    return allMatches
       .filter((m) => {
         if (m.status !== 'SCHEDULED') return false;
         if (!m.predictions) return false;
         const pick = getProb(m.predictions, market);
-        const conf = getConfidence(pick.prob);
-        const minProb = CONF_THRESHOLDS[minConf];
-        if (pick.prob < minProb) return false;
-        if (leagues.length > 0 && !leagues.includes(m.competition?.externalId)) return false;
+        if (!pick) return false;
+        if (pick.prob < CONF_THRESHOLDS[minConf]) return false;
+        if (leagues.length > 0 && !leagues.includes(String(m.competition?.externalId))) return false;
         return true;
       })
       .map((m) => {
@@ -290,7 +445,34 @@ export default function Machine() {
         return { match: m, pick, conf: getConfidence(pick.prob), odd, value: isValueBet(pick.prob, odd) };
       })
       .sort((a, b) => b.pick.prob - a.pick.prob);
+  })();
 
+  function togglePin(matchId) {
+    setPinnedMatchIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(matchId)) next.delete(matchId);
+      else next.add(matchId);
+      return next;
+    });
+    setTicket(null);
+  }
+
+  function selectAllCandidates() {
+    setPinnedMatchIds(new Set(availableCandidates.map((c) => c.match.id)));
+    setTicket(null);
+  }
+
+  function clearPinnedMatches() {
+    setPinnedMatchIds(new Set());
+    setTicket(null);
+  }
+
+  function generateTicket() {
+    let candidates = availableCandidates;
+    // Si des matchs ont été épinglés manuellement, limiter à ceux-là
+    if (pinnedMatchIds.size > 0) {
+      candidates = candidates.filter((c) => pinnedMatchIds.has(c.match.id));
+    }
     setTicket(candidates.slice(0, nbPicks));
   }
 
@@ -364,23 +546,53 @@ export default function Machine() {
           </div>
         </div>
 
-        {/* Marché */}
-        <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Marché</p>
+        {/* Marché — sélecteur 2 niveaux (catégorie → marché) */}
+        <div className="space-y-2">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Marché</p>
+
+          {/* Niveau 1 : catégories */}
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
-              {MARKETS.map((o) => (
-                <button key={o.value} onClick={() => setMarket(o.value)}
+              {MARKET_GROUPS.map((g) => (
+                <button key={g.id}
+                  onClick={() => {
+                    setMarketGroup(g.id);
+                    setMarket(g.markets[0].value);
+                    setTicket(null);
+                  }}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
-                    market === o.value
+                    marketGroup === g.id
                       ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
                       : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                   }`}>
-                  {o.label}
+                  {g.emoji} {g.label}
                 </button>
               ))}
             </div>
           </div>
+
+          {/* Niveau 2 : marchés de la catégorie avec description */}
+          {MARKET_GROUPS.filter((g) => g.id === marketGroup).map((g) => (
+            <div key={g.id} className="space-y-1.5">
+              <p className="text-[10px] text-gray-600 leading-snug">{g.subtitle}</p>
+              <div className="grid grid-cols-1 gap-1.5">
+                {g.markets.map((m) => (
+                  <button key={m.value}
+                    onClick={() => { setMarket(m.value); setTicket(null); }}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
+                      market === m.value
+                        ? 'bg-primary-500/10 border-primary-500/30'
+                        : 'border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]'
+                    }`}>
+                    <span className={`block text-xs font-semibold mb-0.5 ${market === m.value ? 'text-primary-400' : 'text-gray-300'}`}>
+                      {m.label}
+                    </span>
+                    <span className="block text-[10px] text-gray-500 leading-snug">{m.desc}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
         {/* Confiance minimale */}
@@ -421,6 +633,153 @@ export default function Machine() {
               ))}
             </div>
           </div>
+        </div>
+
+        {/* ── Championnat ─────────────────────────────────────────────── */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5">
+              <Trophy size={11} className="text-gray-500" />
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Championnat</p>
+            </div>
+            {leagues.length > 0 && (
+              <button onClick={() => { setLeagues([]); setTicket(null); }}
+                className="text-[10px] text-gray-600 hover:text-primary-400 transition-colors">
+                Tout afficher
+              </button>
+            )}
+          </div>
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 min-w-max">
+              {LEAGUES_OPTIONS.map((l) => {
+                const isActive = l.value === 'all'
+                  ? leagues.length === 0
+                  : leagues.includes(l.value);
+                return (
+                  <button key={l.value}
+                    onClick={() => {
+                      if (l.value === 'all') {
+                        setLeagues([]);
+                      } else {
+                        setLeagues((prev) =>
+                          prev.includes(l.value)
+                            ? prev.filter((x) => x !== l.value)
+                            : [...prev, l.value]
+                        );
+                      }
+                      setPinnedMatchIds(new Set());
+                      setTicket(null);
+                    }}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
+                      isActive
+                        ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                        : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                    }`}>
+                    {l.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Sélection manuelle de matchs ────────────────────────────── */}
+        <div>
+          <button
+            onClick={() => setShowMatchPicker((p) => !p)}
+            className="w-full flex items-center justify-between py-2 group">
+            <div className="flex items-center gap-1.5">
+              <ListFilter size={11} className="text-gray-500" />
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider group-hover:text-gray-300 transition-colors">
+                Choisir des matchs précis
+              </p>
+              {pinnedMatchIds.size > 0 && (
+                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-primary-500/20 text-primary-400">
+                  {pinnedMatchIds.size} fixé{pinnedMatchIds.size > 1 ? 's' : ''}
+                </span>
+              )}
+            </div>
+            <div className="text-gray-600 group-hover:text-gray-400 transition-colors">
+              {showMatchPicker ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+            </div>
+          </button>
+
+          {showMatchPicker && (
+            <div className="mt-1 space-y-2">
+              {isLoading ? (
+                <p className="text-[10px] text-gray-600 py-2 text-center">Chargement des matchs…</p>
+              ) : availableCandidates.length === 0 ? (
+                <p className="text-[10px] text-gray-600 py-2 text-center">
+                  Aucun match disponible avec ces filtres
+                </p>
+              ) : (
+                <>
+                  {/* Barre actions rapides */}
+                  <div className="flex items-center gap-2">
+                    <button onClick={selectAllCandidates}
+                      className="text-[10px] text-gray-500 hover:text-gray-300 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
+                      Tout cocher ({availableCandidates.length})
+                    </button>
+                    {pinnedMatchIds.size > 0 && (
+                      <button onClick={clearPinnedMatches}
+                        className="text-[10px] text-gray-500 hover:text-gray-300 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
+                        Tout décocher
+                      </button>
+                    )}
+                    <span className="ml-auto text-[10px] text-gray-600">
+                      {pinnedMatchIds.size > 0
+                        ? `${pinnedMatchIds.size} sélectionné${pinnedMatchIds.size > 1 ? 's' : ''}`
+                        : 'Algo choisit'}
+                    </span>
+                  </div>
+
+                  {/* Liste des matchs scrollable */}
+                  <div className="max-h-60 overflow-y-auto space-y-1 pr-0.5">
+                    {availableCandidates.map((c) => {
+                      const pinned = pinnedMatchIds.has(c.match.id);
+                      const cc = CONF_COLORS[c.conf];
+                      return (
+                        <button key={c.match.id} onClick={() => togglePin(c.match.id)}
+                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-colors ${
+                            pinned
+                              ? 'bg-primary-500/10 border-primary-500/25'
+                              : 'border-white/[0.05] hover:border-white/[0.10]'
+                          }`}>
+                          {/* Checkbox */}
+                          <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
+                            pinned ? 'bg-primary-500 border-primary-500' : 'border-white/[0.2]'
+                          }`}>
+                            {pinned && <Check size={9} className="text-white" strokeWidth={3} />}
+                          </div>
+
+                          {/* Infos match */}
+                          <div className="flex-1 min-w-0">
+                            <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
+                              {c.match.homeTeam} vs {c.match.awayTeam}
+                            </p>
+                            <p className="text-[10px] text-gray-600 mt-0.5">
+                              {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
+                            </p>
+                          </div>
+
+                          {/* Probabilité + confiance */}
+                          <div className={`shrink-0 text-center px-2 py-0.5 rounded border text-[10px] font-bold ${cc.bg} ${cc.text}`}>
+                            {c.pick.prob}%
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <p className="text-[10px] text-gray-600">
+                    {pinnedMatchIds.size > 0
+                      ? 'Le ticket sera généré uniquement avec les matchs cochés.'
+                      : "Aucun match coché → l'algorithme choisit les meilleurs automatiquement."}
+                  </p>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Bouton générer */}

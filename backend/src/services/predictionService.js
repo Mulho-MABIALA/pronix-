@@ -1,7 +1,9 @@
 // Service de calcul des probabilités 1X2, Over/Under, BTTS
 // Algorithme probabiliste basé sur la forme récente des équipes (10 derniers matchs)
+// Fallback 2 : Claude IA quand données insuffisantes (< 3 matchs d'historique)
 const prisma = require('../config/database');
 const { Prisma } = require('@prisma/client');
+const { generateAIPrediction } = require('./aiPredictionService');
 
 const HOME_ADV = 0.10; // avantage domicile
 
@@ -169,12 +171,40 @@ function generateFallbackPrediction() {
 async function calculateAndSavePredictions(matchId) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
-    select: { id: true, homeTeam: true, awayTeam: true, status: true },
+    select: {
+      id: true,
+      homeTeam: true,
+      awayTeam: true,
+      status: true,
+      scheduledAt: true,
+      competition: { select: { name: true } },
+    },
   });
   if (!match) return null;
 
-  // Essayer l'algorithme statistique, sinon fallback neutre
-  const predictions = (await calculateMatchPredictions(match)) || generateFallbackPrediction();
+  // 1️⃣ Algorithme statistique (forme récente — 10 matchs)
+  let predictions = await calculateMatchPredictions(match);
+
+  // 2️⃣ Fallback IA (Claude Haiku) — uniquement si pas amical et dans les 14 jours
+  if (!predictions) {
+    const compName   = (match.competition?.name || '').toLowerCase();
+    const isFriendly = compName.includes('friend') || compName.includes('amical');
+    const daysAhead  = match.scheduledAt
+      ? (new Date(match.scheduledAt) - Date.now()) / 86_400_000
+      : 99;
+
+    if (!isFriendly && daysAhead <= 14) {
+      predictions = await generateAIPrediction(match);
+      if (predictions) {
+        console.log(`[AI] Prédiction IA pour : ${match.homeTeam} vs ${match.awayTeam}`);
+      }
+    }
+  }
+
+  // 3️⃣ Fallback neutre si tout échoue
+  if (!predictions) {
+    predictions = generateFallbackPrediction();
+  }
 
   await prisma.match.update({ where: { id: matchId }, data: { predictions } });
   return predictions;

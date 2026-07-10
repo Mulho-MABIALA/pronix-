@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
-import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot } from 'lucide-react';
 import api from '../services/api';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
@@ -450,6 +450,7 @@ export default function Machine() {
   const [sharing, setSharing]         = useState(false);
   const [mise, setMise]               = useState('');
   const [activeTemplate, setActiveTemplate] = useState(null);
+  const [excludeFriendly, setExcludeFriendly] = useState(true);
 
   // Appliquer un template — configure tous les filtres d'un coup
   function applyTemplate(tpl) {
@@ -491,6 +492,9 @@ export default function Machine() {
 
   const isLoading = rangeQ.isLoading;
 
+  // Mots-clés identifiant les matchs amicaux
+  const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club friendly', 'test match'];
+
   // ── Candidats filtrés (avant sélection manuelle et limite nbPicks) ─────────
   const availableCandidates = (() => {
     const allMatches = rangeQ.data?.data || [];
@@ -498,6 +502,11 @@ export default function Machine() {
       .filter((m) => {
         if (m.status !== 'SCHEDULED') return false;
         if (!m.predictions) return false;
+        // Exclure les matchs amicaux si l'option est activée
+        if (excludeFriendly) {
+          const compName = (m.competition?.name || '').toLowerCase();
+          if (FRIENDLY_KEYWORDS.some((kw) => compName.includes(kw))) return false;
+        }
         const pick = getProb(m.predictions, market);
         if (!pick) return false;
         if (pick.prob < CONF_THRESHOLDS[minConf]) return false;
@@ -777,6 +786,21 @@ export default function Machine() {
           </div>
         </div>
 
+        {/* ── Filtre amicaux ──────────────────────────────────────────── */}
+        <div className="flex items-center justify-between py-1">
+          <div className="flex items-center gap-2">
+            <Bot size={12} className="text-gray-500" />
+            <span className="text-xs text-gray-400">Exclure matchs amicaux</span>
+            <span className="text-[10px] text-gray-600">(picks peu fiables sans historique)</span>
+          </div>
+          <button
+            onClick={() => { setExcludeFriendly((v) => !v); setTicket(null); }}
+            className={`relative w-9 h-5 rounded-full transition-colors ${excludeFriendly ? 'bg-primary-500' : 'bg-surface-600'}`}
+            role="switch" aria-checked={excludeFriendly}>
+            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${excludeFriendly ? 'translate-x-4' : ''}`} />
+          </button>
+        </div>
+
         {/* ── Sélection manuelle de matchs ────────────────────────────── */}
         <div>
           <button
@@ -848,9 +872,14 @@ export default function Machine() {
 
                           {/* Infos match */}
                           <div className="flex-1 min-w-0">
-                            <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
-                              {c.match.homeTeam} vs {c.match.awayTeam}
-                            </p>
+                            <div className="flex items-center gap-1">
+                              <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
+                                {c.match.homeTeam} vs {c.match.awayTeam}
+                              </p>
+                              {c.match.predictions?.aiGenerated && (
+                                <span className="shrink-0 text-[8px] font-bold text-violet-400 bg-violet-500/10 px-1 rounded">IA</span>
+                              )}
+                            </div>
                             <p className="text-[10px] text-gray-600 mt-0.5">
                               {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
                             </p>
@@ -1003,7 +1032,14 @@ export default function Machine() {
                   <div key={t.match.id} className="flex items-center gap-3 px-4 py-3">
                     <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-600">{idx + 1}</span>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-200 truncate">{t.match.homeTeam} vs {t.match.awayTeam}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-sm font-medium text-gray-200 truncate">{t.match.homeTeam} vs {t.match.awayTeam}</p>
+                        {t.match.predictions?.aiGenerated && (
+                          <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
+                            <Bot size={8} />IA
+                          </span>
+                        )}
+                      </div>
                       <p className="text-[10px] text-gray-600 mt-0.5">
                         {t.match.competition?.name} · {format(new Date(t.match.scheduledAt), 'dd/MM HH:mm')}
                       </p>

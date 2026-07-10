@@ -10,7 +10,7 @@ function getTeamStats(matches, teamName) {
   if (!played.length) return null;
 
   let wins = 0, draws = 0, losses = 0;
-  let totalGoals = 0, btts = 0, over25 = 0, over15 = 0;
+  let totalGoals = 0, btts = 0, over25 = 0, over15 = 0, over35 = 0;
 
   for (const m of played) {
     const isHome = m.homeTeam === teamName;
@@ -19,6 +19,7 @@ function getTeamStats(matches, teamName) {
     const total    = gFor + gAgainst;
 
     totalGoals += total;
+    if (total > 3.5) over35++;
     if (total > 2.5) over25++;
     if (total > 1.5) over15++;
     if (gFor > 0 && gAgainst > 0) btts++;
@@ -34,7 +35,8 @@ function getTeamStats(matches, teamName) {
     drawRate:  draws  / n,
     lossRate:  losses / n,
     avgGoals:  totalGoals / n,
-    bttsRate:  btts   / n,
+    bttsRate:   btts   / n,
+    over35Rate: over35 / n,
     over25Rate: over25 / n,
     over15Rate: over15 / n,
     sampleSize: n,
@@ -80,6 +82,7 @@ async function calculateMatchPredictions(match) {
   const away = Math.max(1, 100 - home - draw);
 
   // ── Over/Under & BTTS ──────────────────────────────────────────
+  const over35 = Math.min(85, Math.round(((hs.over35Rate + as.over35Rate) / 2) * 100));
   const over25 = Math.min(95, Math.round(((hs.over25Rate + as.over25Rate) / 2) * 100));
   const over15 = Math.min(98, Math.round(((hs.over15Rate + as.over15Rate) / 2) * 100));
   const btts   = Math.min(95, Math.round(((hs.bttsRate   + as.bttsRate)   / 2) * 100));
@@ -87,17 +90,22 @@ async function calculateMatchPredictions(match) {
   // ── Double chance ──────────────────────────────────────────────
   const dc1x = Math.min(99, home + draw);
   const dc2x = Math.min(99, away + draw);
+  const dc12 = Math.min(99, home + away); // 12 : pas de nul
 
   // ── Meilleur pick (probabilité la plus élevée) ─────────────────
   const candidates = [
-    { type: '1',      label: 'Victoire domicile',      prob: home,   market: '1X2' },
-    { type: 'X',      label: 'Match nul',               prob: draw,   market: '1X2' },
-    { type: '2',      label: 'Victoire extérieur',      prob: away,   market: '1X2' },
-    { type: 'over25', label: 'Plus de 2.5 buts',        prob: over25, market: 'Over/Under' },
-    { type: 'over15', label: 'Plus de 1.5 buts',        prob: over15, market: 'Over/Under' },
-    { type: 'btts',   label: 'Les 2 équipes marquent',  prob: btts,   market: 'BTTS' },
-    { type: '1X',     label: 'Double chance 1X',        prob: dc1x,   market: 'Double chance' },
-    { type: 'X2',     label: 'Double chance X2',        prob: dc2x,   market: 'Double chance' },
+    { type: '1',       label: 'Victoire domicile',           prob: home,    market: '1X2' },
+    { type: 'X',       label: 'Match nul',                    prob: draw,    market: '1X2' },
+    { type: '2',       label: 'Victoire extérieur',           prob: away,    market: '1X2' },
+    { type: 'over25',  label: 'Plus de 2.5 buts',             prob: over25,  market: 'Over/Under' },
+    { type: 'over15',  label: 'Plus de 1.5 buts',             prob: over15,  market: 'Over/Under' },
+    { type: 'btts',    label: 'Les 2 équipes marquent',       prob: btts,    market: 'BTTS' },
+    { type: '1X',      label: 'Double chance 1X',             prob: dc1x,    market: 'Double chance' },
+    { type: 'X2',      label: 'Double chance X2',             prob: dc2x,    market: 'Double chance' },
+    { type: '12',      label: 'Double chance 12 (sans nul)',  prob: dc12,    market: 'Double chance' },
+    { type: 'under25', label: 'Moins de 2.5 buts',            prob: 100 - over25, market: 'Over/Under' },
+    { type: 'nobtts',  label: 'Les 2 équipes ne marquent pas', prob: 100 - btts,  market: 'BTTS' },
+    { type: 'over35',  label: 'Plus de 3.5 buts',             prob: over35,  market: 'Over/Under' },
   ].sort((a, b) => b.prob - a.prob);
 
   const bestPick = candidates[0];
@@ -105,9 +113,10 @@ async function calculateMatchPredictions(match) {
 
   return {
     home, draw, away,
+    over35, under35: 100 - over35,
     over25, over15, under25: 100 - over25, under15: 100 - over15,
     btts, nobtts: 100 - btts,
-    dc1x, dc2x,
+    dc1x, dc2x, dc12,
     bestPick,
     confidence,
     allPicks: candidates.slice(0, 5),
@@ -121,28 +130,35 @@ function generateFallbackPrediction() {
   const home    = Math.max(25, Math.min(50, 35 + homeAdv));
   const away    = Math.max(25, Math.min(50, 33 - homeAdv));
   const draw    = 100 - home - away;
+  const over35  = Math.round(20 + Math.random() * 10);
   const over25  = Math.round(50 + Math.random() * 10);
   const over15  = Math.round(70 + Math.random() * 8);
   const btts    = Math.round(45 + Math.random() * 10);
   const dc1x    = Math.min(99, home + draw);
   const dc2x    = Math.min(99, away + draw);
+  const dc12    = Math.min(99, home + away);
 
   const candidates = [
-    { type: '1',      label: 'Victoire domicile',       prob: home,   market: '1X2' },
-    { type: 'X',      label: 'Match nul',                prob: draw,   market: '1X2' },
-    { type: '2',      label: 'Victoire extérieur',       prob: away,   market: '1X2' },
-    { type: 'over25', label: 'Plus de 2.5 buts',         prob: over25, market: 'Over/Under' },
-    { type: 'over15', label: 'Plus de 1.5 buts',         prob: over15, market: 'Over/Under' },
-    { type: 'btts',   label: 'Les 2 équipes marquent',   prob: btts,   market: 'BTTS' },
-    { type: '1X',     label: 'Double chance 1X',         prob: dc1x,   market: 'Double chance' },
-    { type: 'X2',     label: 'Double chance X2',         prob: dc2x,   market: 'Double chance' },
+    { type: '1',       label: 'Victoire domicile',           prob: home,          market: '1X2' },
+    { type: 'X',       label: 'Match nul',                    prob: draw,          market: '1X2' },
+    { type: '2',       label: 'Victoire extérieur',           prob: away,          market: '1X2' },
+    { type: 'over25',  label: 'Plus de 2.5 buts',             prob: over25,        market: 'Over/Under' },
+    { type: 'over15',  label: 'Plus de 1.5 buts',             prob: over15,        market: 'Over/Under' },
+    { type: 'btts',    label: 'Les 2 équipes marquent',       prob: btts,          market: 'BTTS' },
+    { type: '1X',      label: 'Double chance 1X',             prob: dc1x,          market: 'Double chance' },
+    { type: 'X2',      label: 'Double chance X2',             prob: dc2x,          market: 'Double chance' },
+    { type: '12',      label: 'Double chance 12 (sans nul)',  prob: dc12,          market: 'Double chance' },
+    { type: 'under25', label: 'Moins de 2.5 buts',            prob: 100 - over25,  market: 'Over/Under' },
+    { type: 'nobtts',  label: 'Les 2 équipes ne marquent pas', prob: 100 - btts,   market: 'BTTS' },
+    { type: 'over35',  label: 'Plus de 3.5 buts',             prob: over35,        market: 'Over/Under' },
   ].sort((a, b) => b.prob - a.prob);
 
   return {
     home, draw, away,
+    over35, under35: 100 - over35,
     over25, over15, under25: 100 - over25, under15: 100 - over15,
     btts, nobtts: 100 - btts,
-    dc1x, dc2x,
+    dc1x, dc2x, dc12,
     bestPick:   candidates[0],
     confidence: 'low',
     allPicks:   candidates.slice(0, 5),

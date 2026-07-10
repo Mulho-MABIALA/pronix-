@@ -54,7 +54,7 @@ function FilterChips({ options, value, onChange }) {
         <button key={o.value} onClick={() => onChange(o.value === value ? '' : o.value)}
           className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
             value === o.value
-              ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+              ? 'bg-select-500/15 text-select-400 border-select-500/30'
               : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
           }`}>
           {o.label}
@@ -118,7 +118,7 @@ export default function Filtres() {
                 <button key={o.value} onClick={() => setMarket(o.value === market ? '' : o.value)}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     market === o.value
-                      ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                      ? 'bg-select-500/15 text-select-400 border-select-500/30'
                       : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                   }`}>
                   {o.label}

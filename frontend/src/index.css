@@ -7,10 +7,11 @@
 @layer base {
   :root {
     color-scheme: dark;
-    --color-bg:       #171819;
-    --color-card:     #212327;
-    --color-card-alt: #2b2d31;
-    --color-border:   rgba(255,255,255,0.09);
+    --color-bg:       #131415;   /* fond page — légèrement plus foncé pour mieux faire ressortir les cartes */
+    --color-card:     #1e2023;   /* fond carte — +30% contraste vs bg */
+    --color-card-alt: #272a2e;   /* fond carte secondaire */
+    --color-border:   rgba(255,255,255,0.10);
+    --color-border-strong: rgba(255,255,255,0.16); /* bordure active / focus */
     --color-hover:    rgba(255,255,255,0.05);
   }
 
@@ -38,7 +39,7 @@
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
     @apply rounded-xl transition-all duration-200;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 8px 24px -6px rgba(0,0,0,0.35);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.4);
   }
 
   .card-p {
@@ -113,9 +114,10 @@
     border-color: rgba(255,255,255,0.06);
   }
   .filter-chip:hover { color: theme('colors.gray.300'); }
+  /* État actif = bleu (sélection UI) — distinct du vert marque/haute-confiance */
   .filter-chip[data-active="true"] {
-    @apply bg-primary-500/15 text-primary-400;
-    border-color: rgba(26,166,86,0.3);
+    @apply bg-select-500/15 text-select-400;
+    border-color: rgba(59,130,246,0.35);
   }
   .filter-chip[data-active="true"][data-variant="live"] {
     @apply bg-live-500/15 text-live-400;
@@ -127,7 +129,7 @@
     color: theme('colors.gray.500');
   }
   .filter-chip[data-active="true"] .chip-count {
-    background: rgba(26,166,86,0.2);
+    background: rgba(59,130,246,0.2);
     color: inherit;
   }
   .filter-chip[data-active="true"][data-variant="live"] .chip-count {

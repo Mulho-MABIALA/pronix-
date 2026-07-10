@@ -248,7 +248,7 @@ export default function Pronostics() {
               <button key={i} onClick={() => setDate(d)}
                 className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-colors ${
                   isSelected
-                    ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                    ? 'bg-select-500/15 text-select-400 border-select-500/30'
                     : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                 }`}>
                 {formatTabDate(d)}

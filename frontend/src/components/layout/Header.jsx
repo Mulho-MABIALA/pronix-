@@ -53,7 +53,7 @@ function OutilsDropdown() {
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors duration-150 ${
-          open ? 'text-primary-400 bg-primary-500/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
+          open ? 'text-select-400 bg-select-500/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
         }`}>
         Outils
         <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -104,7 +104,7 @@ export default function Header() {
               className={({ isActive }) =>
                 `px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors duration-150 ${
                   isActive
-                    ? 'text-primary-400 bg-primary-500/10'
+                    ? 'text-select-400 bg-select-500/10'
                     : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
                 }`
               }>

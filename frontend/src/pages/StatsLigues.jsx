@@ -68,7 +68,7 @@ export default function StatsLigues() {
     return (
       <button onClick={() => toggleSort(k)}
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-          active ? 'bg-primary-500/15 text-primary-400 border-primary-500/25' : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+          active ? 'bg-select-500/15 text-select-400 border-select-500/25' : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
         }`}>
         {label}
         {active ? (asc ? <ChevronUp size={11} /> : <ChevronDown size={11} />) : null}

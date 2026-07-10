@@ -44,6 +44,12 @@ export default {
           400: '#f87171',
           500: '#ef4444',   // rouge "en direct" — cohérent avec les codes du secteur
         },
+        // Bleu pour les états UI actifs/sélectionnés (nav, filtres, tabs)
+        // distinct du vert marque et de l'ambre confiance-moyenne
+        select: {
+          400: '#60a5fa',   // blue-400 — texte actif
+          500: '#3b82f6',   // blue-500 — fond teinté
+        },
       },
       fontFamily: {
         sans:    ['Inter', 'system-ui', 'sans-serif'],

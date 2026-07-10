@@ -656,7 +656,7 @@ export default function Machine() {
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     marketGroup === g.id
-                      ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                      ? 'bg-select-500/15 text-select-400 border-select-500/30'
                       : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                   }`}>
                   {g.emoji} {g.label}
@@ -675,10 +675,10 @@ export default function Machine() {
                     onClick={() => { setMarket(m.value); setTicket(null); }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
                       market === m.value
-                        ? 'bg-primary-500/10 border-primary-500/30'
+                        ? 'bg-select-500/10 border-select-500/30'
                         : 'border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]'
                     }`}>
-                    <span className={`block text-xs font-semibold mb-0.5 ${market === m.value ? 'text-primary-400' : 'text-gray-300'}`}>
+                    <span className={`block text-xs font-semibold mb-0.5 ${market === m.value ? 'text-select-400' : 'text-gray-300'}`}>
                       {m.label}
                     </span>
                     <span className="block text-[10px] text-gray-500 leading-snug">{m.desc}</span>
@@ -694,14 +694,14 @@ export default function Machine() {
           <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Confiance minimale</p>
           <div className="flex gap-2">
             {[
-              { value: 'high',   label: '🟢 Élevée' },
-              { value: 'medium', label: '🟡 Moyenne' },
-              { value: 'low',    label: '⚪ Toutes' },
+              { value: 'high',   label: '🟢 Élevée',  active: 'bg-primary-500/15 text-primary-400 border-primary-500/30' },
+              { value: 'medium', label: '🟡 Moyenne',  active: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+              { value: 'low',    label: '⚪ Toutes',   active: 'bg-white/[0.08] text-gray-300 border-white/[0.20]' },
             ].map((o) => (
               <button key={o.value} onClick={() => setMinConf(o.value)}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
                   minConf === o.value
-                    ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                    ? o.active
                     : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                 }`}>
                 {o.label}
@@ -719,7 +719,7 @@ export default function Machine() {
                 <button key={o.value} onClick={() => { setDateOpt(o.value); setTicket(null); }}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     dateOpt === o.value
-                      ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                      ? 'bg-select-500/15 text-select-400 border-select-500/30'
                       : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                   }`}>
                   {o.label}
@@ -766,7 +766,7 @@ export default function Machine() {
                     }}
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                       isActive
-                        ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                        ? 'bg-select-500/15 text-select-400 border-select-500/30'
                         : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                     }`}>
                     {l.label}
@@ -788,7 +788,7 @@ export default function Machine() {
                 Choisir des matchs précis
               </p>
               {pinnedMatchIds.size > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-primary-500/20 text-primary-400">
+                <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-select-500/20 text-select-400">
                   {pinnedMatchIds.size} fixé{pinnedMatchIds.size > 1 ? 's' : ''}
                 </span>
               )}
@@ -836,12 +836,12 @@ export default function Machine() {
                         <button key={c.match.id} onClick={() => togglePin(c.match.id)}
                           className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-colors ${
                             pinned
-                              ? 'bg-primary-500/10 border-primary-500/25'
+                              ? 'bg-select-500/10 border-select-500/25'
                               : 'border-white/[0.05] hover:border-white/[0.10]'
                           }`}>
                           {/* Checkbox */}
                           <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-                            pinned ? 'bg-primary-500 border-primary-500' : 'border-white/[0.2]'
+                            pinned ? 'bg-select-500 border-select-500' : 'border-white/[0.2]'
                           }`}>
                             {pinned && <Check size={9} className="text-white" strokeWidth={3} />}
                           </div>
@@ -887,7 +887,7 @@ export default function Machine() {
                   ? 'text-rose-400'
                   : availableCandidates.length < nbPicks
                     ? 'text-amber-400'
-                    : 'text-primary-400'
+                    : 'text-select-400'
               }`}>
                 {availableCandidates.length} match{availableCandidates.length !== 1 ? 's' : ''} disponible{availableCandidates.length !== 1 ? 's' : ''}
               </span>

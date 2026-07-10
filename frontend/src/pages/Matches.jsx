@@ -90,7 +90,7 @@ export default function Matches() {
                 onClick={() => { setDate(d); setLiveOnly(false); }}
                 className={`flex flex-col items-center px-3 py-1.5 rounded-lg min-w-[44px] border transition-colors ${
                   isSelected
-                    ? 'bg-primary-500/15 text-primary-400 border-primary-500/30'
+                    ? 'bg-select-500/15 text-select-400 border-select-500/30'
                     : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                 }`}
               >

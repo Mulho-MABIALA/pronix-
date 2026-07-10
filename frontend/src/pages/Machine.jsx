@@ -171,15 +171,25 @@ const LEAGUES_OPTIONS = [
 ];
 
 const MARKETS = [
-  { value: 'auto',   label: 'Meilleur pick auto' },
-  { value: '1',      label: '1 — Domicile' },
-  { value: 'X',      label: 'X — Nul' },
-  { value: '2',      label: '2 — Extérieur' },
-  { value: '1X',     label: 'Double chance 1X' },
-  { value: 'X2',     label: 'Double chance X2' },
-  { value: 'over25', label: 'Plus de 2.5 buts' },
-  { value: 'over15', label: 'Plus de 1.5 buts' },
-  { value: 'btts',   label: 'Les 2 équipes marquent' },
+  // ── Picks automatiques ──────────────────────────────────────────
+  { value: 'auto',     label: 'Meilleur pick auto',          group: null },
+  // ── 1X2 ────────────────────────────────────────────────────────
+  { value: '1',        label: '1 — Domicile',                group: '1X2' },
+  { value: 'X',        label: 'X — Nul',                     group: '1X2' },
+  { value: '2',        label: '2 — Extérieur',               group: '1X2' },
+  // ── Double chance ───────────────────────────────────────────────
+  { value: '1X',       label: 'DC 1X',                       group: 'DC' },
+  { value: 'X2',       label: 'DC X2',                       group: 'DC' },
+  { value: '12',       label: 'DC 12 (sans nul)',             group: 'DC' },
+  // ── Over / Under ────────────────────────────────────────────────
+  { value: 'over15',   label: 'O 1.5 buts',                  group: 'O/U' },
+  { value: 'under15',  label: 'U 1.5 buts',                  group: 'O/U' },
+  { value: 'over25',   label: 'O 2.5 buts',                  group: 'O/U' },
+  { value: 'under25',  label: 'U 2.5 buts',                  group: 'O/U' },
+  { value: 'over35',   label: 'O 3.5 buts',                  group: 'O/U' },
+  // ── BTTS ────────────────────────────────────────────────────────
+  { value: 'btts',     label: 'BTTS Oui',                    group: 'BTTS' },
+  { value: 'nobtts',   label: 'BTTS Non',                    group: 'BTTS' },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -189,12 +199,31 @@ const CONF_COLORS = {
   low:    { text: 'text-gray-500',    bg: 'bg-surface-700/50 border-white/[0.05]',   dot: 'bg-gray-500' },
 };
 const PICK_LABELS = {
-  '1': 'Dom.', 'X': 'Nul', '2': 'Ext.', 'over25': 'O2.5', 'over15': 'O1.5', 'btts': 'BTTS', '1X': '1X', 'X2': 'X2',
+  '1': 'Dom.', 'X': 'Nul', '2': 'Ext.',
+  '1X': 'DC1X', 'X2': 'DCX2', '12': 'DC12',
+  'over15': 'O1.5', 'under15': 'U1.5',
+  'over25': 'O2.5', 'under25': 'U2.5',
+  'over35': 'O3.5',
+  'btts': 'BTTS', 'nobtts': 'No BTTS',
 };
 
 function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
-  const probMap = { '1': pred.home, 'X': pred.draw, '2': pred.away, over25: pred.over25, over15: pred.over15, btts: pred.btts, '1X': pred.dc1x, 'X2': pred.dc2x };
+  const probMap = {
+    '1':       pred.home,
+    'X':       pred.draw,
+    '2':       pred.away,
+    '1X':      pred.dc1x,
+    'X2':      pred.dc2x,
+    '12':      pred.dc12 ?? (pred.home != null && pred.draw != null ? Math.min(99, (pred.home + pred.away)) : null),
+    'over15':  pred.over15,
+    'under15': pred.under15 ?? (pred.over15 != null ? 100 - pred.over15 : null),
+    'over25':  pred.over25,
+    'under25': pred.under25 ?? (pred.over25 != null ? 100 - pred.over25 : null),
+    'over35':  pred.over35,
+    'btts':    pred.btts,
+    'nobtts':  pred.nobtts ?? (pred.btts != null ? 100 - pred.btts : null),
+  };
   const prob = probMap[market];
   if (prob == null) return pred.bestPick;
   return { type: market, prob };

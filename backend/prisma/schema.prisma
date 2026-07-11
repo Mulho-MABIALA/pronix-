@@ -95,6 +95,7 @@ model User {
   refreshTokens     RefreshToken[]
   passwordResets    PasswordReset[]
   pushSubscriptions PushSubscription[]
+  chatQuotas        ChatQuota[]
 
   @@map("users")
 }
@@ -326,6 +327,20 @@ model Favorite {
 
   @@unique([userId, type, externalId])
   @@map("favorites")
+}
+
+// ─── QUOTAS CHAT IA ──────────────────────────────────────────────────────────
+
+model ChatQuota {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String   // format YYYY-MM-DD
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("chat_quotas")
 }
 
 // ─── PUSH NOTIFICATIONS ───────────────────────────────────────────────────────

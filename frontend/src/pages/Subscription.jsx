@@ -2,42 +2,12 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, RefreshCw, Check, Star, Users, TrendingUp, Zap } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 
-const TRUST_BADGES = [
-  { icon: Lock,       label: 'Paiement 100% sécurisé' },
-  { icon: RefreshCw,  label: 'Annulation à tout moment' },
-  { icon: Shield,     label: 'Sans engagement' },
-];
-
 const PAYMENT_METHODS = ['Wave', 'Orange Money', 'Airtel Money', 'MTN', 'Visa / Mastercard'];
-
-const STATS = [
-  { value: '500+',  label: 'Tipsters actifs' },
-  { value: '10K+',  label: 'Pronostics publiés' },
-  { value: '68%',   label: 'Taux de réussite moyen' },
-];
-
-const FAQ_ITEMS = [
-  {
-    q: 'Les pronostics sont-ils garantis ?',
-    a: 'Non. Les pronostics sont générés par algorithme et publiés par la communauté. Aucune garantie de gain n\'est promise ou sous-entendue. Jouez de façon responsable.',
-  },
-  {
-    q: 'Comment fonctionne le taux de réussite ?',
-    a: 'Il est calculé automatiquement après chaque match en comparant le pronostic au résultat réel. Impossible de le manipuler manuellement.',
-  },
-  {
-    q: 'Comment annuler mon abonnement ?',
-    a: 'Depuis votre profil, à tout moment, en un clic. Votre accès reste actif jusqu\'à la fin de la période payée — aucun remboursement au prorata.',
-  },
-  {
-    q: 'Quels moyens de paiement sont acceptés ?',
-    a: 'Wave, Orange Money, Airtel Money, MTN Mobile Money, et carte bancaire Visa/Mastercard — via GeniusPay, plateforme certifiée.',
-  },
-];
 
 // Couleurs par plan
 const PLAN_STYLE = {
@@ -47,6 +17,7 @@ const PLAN_STYLE = {
 };
 
 function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
+  const { t } = useTranslation();
   const isFree     = plan.code === 'FREE';
   const isLifetime = plan.code === 'LIFETIME';
   const style      = PLAN_STYLE[plan.code] || PLAN_STYLE.FREE;
@@ -98,11 +69,11 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
       {/* CTA */}
       {isCurrentPlan ? (
         <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-gray-400 border border-white/[0.08] bg-surface-700/40">
-          ✓ Plan actuel
+          {t('common.currentPlan')}
         </div>
       ) : isFree ? (
         <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-gray-500 border border-white/[0.06]">
-          Plan par défaut
+          {t('common.defaultPlan')}
         </div>
       ) : (
         <button
@@ -110,7 +81,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
           disabled={loading}
           className="btn-primary w-full"
         >
-          {loading ? 'Chargement…' : `Commencer avec ${plan.displayName}`}
+          {loading ? t('common.loading') : t('common.startWith', { plan: plan.displayName })}
         </button>
       )}
     </div>
@@ -119,11 +90,31 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
 
 export default function Subscription() {
   usePageMeta('Abonnement Premium', 'Passez à Premium fpronix — pronostics IA, value bets, données temps réel. Paiement sécurisé via Wave, Orange Money, Carte bancaire.');
+  const { t } = useTranslation();
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState('MONTHLY');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const TRUST_BADGES = [
+    { icon: Lock,      label: t('subscription.trust.secure') },
+    { icon: RefreshCw, label: t('subscription.trust.cancel') },
+    { icon: Shield,    label: t('subscription.trust.noCommit') },
+  ];
+
+  const STATS = [
+    { value: '500+', label: t('subscription.stats.tipsters') },
+    { value: '10K+', label: t('subscription.stats.pronostics') },
+    { value: '68%',  label: t('subscription.stats.successRate') },
+  ];
+
+  const FAQ_ITEMS = [
+    { q: t('subscription.faq.q1'), a: t('subscription.faq.a1') },
+    { q: t('subscription.faq.q2'), a: t('subscription.faq.a2') },
+    { q: t('subscription.faq.q3'), a: t('subscription.faq.a3') },
+    { q: t('subscription.faq.q4'), a: t('subscription.faq.a4') },
+  ];
 
   const { data } = useQuery({
     queryKey: ['plans'],
@@ -159,14 +150,14 @@ export default function Subscription() {
       <div className="text-center space-y-3">
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-semibold mb-2">
           <Zap size={12} />
-          Propulsé par IA + données temps réel
+          {t('subscription.pageBadge')}
         </div>
         <h1 className="font-display font-bold text-3xl text-gray-100 leading-tight">
-          Passez au niveau supérieur<br />
-          <span className="text-primary-400">avec les vraies données</span>
+          {t('subscription.title')}<br />
+          <span className="text-primary-400">{t('subscription.titleHighlight')}</span>
         </h1>
         <p className="text-gray-400 text-sm max-w-md mx-auto">
-          Forme récente, confrontations directes, classements, blessures — tout ça analysé par IA pour des pronostics fiables.
+          {t('subscription.description')}
         </p>
       </div>
 
@@ -183,8 +174,8 @@ export default function Subscription() {
       {/* Cycle de facturation */}
       <div className="flex items-center justify-center gap-2">
         {[
-          { value: 'MONTHLY', label: 'Mensuel' },
-          { value: 'YEARLY',  label: 'Annuel', badge: '-20%' },
+          { value: 'MONTHLY', label: t('subscription.billing.monthly') },
+          { value: 'YEARLY',  label: t('subscription.billing.yearly'), badge: t('subscription.billing.yearlyBadge') },
         ].map(({ value, label, badge }) => (
           <button
             key={value}
@@ -229,7 +220,7 @@ export default function Subscription() {
       <div className="bento-card">
         <div className="flex items-center gap-2 mb-4">
           <Lock size={14} className="text-primary-400" />
-          <p className="text-sm font-semibold text-gray-200">Paiement sécurisé via GeniusPay</p>
+          <p className="text-sm font-semibold text-gray-200">{t('subscription.payment.title')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           {PAYMENT_METHODS.map((m) => (
@@ -254,12 +245,15 @@ export default function Subscription() {
 
       {/* Disclaimer */}
       <p className="disclaimer text-center">
-        fpronix ne garantit aucun gain. Les pronostics sont fournis à titre informatif uniquement. Jouez de façon responsable — <a href="https://www.joueurs-info-service.fr" target="_blank" rel="noopener noreferrer" className="underline">aide aux joueurs</a>.
+        {t('subscription.disclaimer')}{' '}
+        <a href="https://www.joueurs-info-service.fr" target="_blank" rel="noopener noreferrer" className="underline">
+          {t('subscription.disclaimerLink')}
+        </a>.
       </p>
 
       {/* FAQ */}
       <section className="space-y-3">
-        <h2 className="font-semibold text-gray-100 text-center text-base mb-4">Questions fréquentes</h2>
+        <h2 className="font-semibold text-gray-100 text-center text-base mb-4">{t('subscription.faq.title')}</h2>
         {FAQ_ITEMS.map(({ q, a }) => (
           <div key={q} className="bento-card">
             <p className="font-medium text-gray-200 text-sm">{q}</p>

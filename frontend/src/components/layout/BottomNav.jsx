@@ -1,15 +1,18 @@
 import { NavLink } from 'react-router-dom';
 import { Home, Calendar, TrendingUp, Zap, User } from 'lucide-react';
-
-const NAV_ITEMS = [
-  { to: '/',               label: 'Accueil',    Icon: Home,        end: true },
-  { to: '/matchs',         label: 'Matchs',     Icon: Calendar,    end: false },
-  { to: '/pronostics',     label: 'Pronos',     Icon: TrendingUp,  end: false },
-  { to: '/outils/machine', label: 'Générateur', Icon: Zap,         end: false },
-  { to: '/profil',         label: 'Profil',     Icon: User,        end: false },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function BottomNav() {
+  const { t } = useTranslation();
+
+  const NAV_ITEMS = [
+    { to: '/',               label: t('nav.home'),      Icon: Home,       end: true },
+    { to: '/matchs',         label: t('nav.matches'),   Icon: Calendar,   end: false },
+    { to: '/pronostics',     label: t('nav.pronostics'),Icon: TrendingUp, end: false },
+    { to: '/outils/machine', label: t('nav.generator'), Icon: Zap,        end: false },
+    { to: '/profil',         label: t('nav.profile'),   Icon: User,       end: false },
+  ];
+
   return (
     <nav
       className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06] safe-area-inset-bottom"

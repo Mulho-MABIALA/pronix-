@@ -1,23 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Sun, Moon, User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import NotificationBell from '../ui/NotificationBell';
-
-const NAV_LINKS = [
-  { to: '/matchs',      label: 'Matchs' },
-  { to: '/pronostics',  label: 'Pronostics' },
-  { to: '/classements', label: 'Classements' },
-  { to: '/tipsters',    label: 'Tipsters' },
-];
-
-const OUTILS_ITEMS = [
-  { to: '/outils/filtres',       label: 'Filtres avancés', Icon: Filter,    desc: 'Filtrez par marché et confiance' },
-  { to: '/outils/machine',       label: 'Générateur',      Icon: Zap,       desc: 'Créez votre ticket optimisé' },
-  { to: '/pronostics',           label: 'Pronostics',      Icon: TrendingUp, desc: 'Picks du jour par confiance' },
-  { to: '/outils/stats-ligues',  label: 'Stats ligues',    Icon: BarChart2,  desc: 'Buts, BTTS, O2.5 par compétition' },
-];
 
 function FootballLogo({ className }) {
   return (
@@ -37,7 +24,37 @@ function FootballLogo({ className }) {
   );
 }
 
+/** Switcher FR / EN compact */
+function LangSwitcher() {
+  const { i18n } = useTranslation();
+  const lang = i18n.language?.startsWith('en') ? 'en' : 'fr';
+
+  const toggle = () => i18n.changeLanguage(lang === 'fr' ? 'en' : 'fr');
+
+  return (
+    <button
+      onClick={toggle}
+      className="flex items-center gap-0 rounded-lg border border-white/[0.08] overflow-hidden text-[11px] font-bold"
+      aria-label="Changer de langue / Change language"
+    >
+      {['fr', 'en'].map((l) => (
+        <span
+          key={l}
+          className={`px-2 py-1.5 transition-colors ${
+            lang === l
+              ? 'bg-primary-500/20 text-primary-400'
+              : 'text-gray-500 hover:text-gray-300'
+          }`}
+        >
+          {l.toUpperCase()}
+        </span>
+      ))}
+    </button>
+  );
+}
+
 function OutilsDropdown() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
 
@@ -49,13 +66,20 @@ function OutilsDropdown() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  const OUTILS_ITEMS = [
+    { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,     desc: t('tools.filtersDesc') },
+    { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,        desc: t('tools.generatorDesc') },
+    { to: '/pronostics',          label: t('tools.pronostics'),   Icon: TrendingUp, desc: t('tools.pronosticsDesc') },
+    { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2,  desc: t('tools.statsLeaguesDesc') },
+  ];
+
   return (
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors duration-150 ${
           open ? 'text-select-400 bg-select-500/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
         }`}>
-        Outils
+        {t('nav.tools')}
         <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
@@ -81,8 +105,16 @@ function OutilsDropdown() {
 }
 
 export default function Header() {
+  const { t } = useTranslation();
   const { user, logout, isAdmin } = useAuth();
   const { theme, toggleTheme } = useTheme();
+
+  const NAV_LINKS = [
+    { to: '/matchs',      label: t('nav.matches') },
+    { to: '/pronostics',  label: t('nav.pronostics') },
+    { to: '/classements', label: t('nav.standings') },
+    { to: '/tipsters',    label: t('nav.tipsters') },
+  ];
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/[0.05]"
@@ -118,9 +150,12 @@ export default function Header() {
         <div className="flex items-center gap-1 ml-auto">
           <NotificationBell />
 
+          {/* Switcher de langue */}
+          <LangSwitcher />
+
           <button onClick={toggleTheme}
             className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
-            aria-label={`Mode ${theme === 'dark' ? 'clair' : 'sombre'}`}>
+            aria-label={theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}>
             {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
           </button>
 
@@ -129,28 +164,28 @@ export default function Header() {
               {isAdmin && (
                 <Link to="/admin"
                   className="p-2 rounded-lg text-amber-400 hover:bg-white/[0.05] transition-colors"
-                  aria-label="Admin">
+                  aria-label={t('nav.admin')}>
                   <Shield size={17} />
                 </Link>
               )}
               <Link to="/profil"
                 className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.05] transition-colors"
-                aria-label="Profil">
+                aria-label={t('nav.profile')}>
                 <User size={17} />
               </Link>
               <button onClick={logout}
                 className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-white/[0.05] transition-colors"
-                aria-label="Déconnexion">
+                aria-label={t('nav.logout')}>
                 <LogOut size={17} />
               </button>
             </>
           ) : (
             <div className="flex items-center gap-2 ml-1">
               <Link to="/connexion" className="btn-secondary text-[13px] px-3 py-1.5" style={{ minHeight: 34 }}>
-                Connexion
+                {t('nav.login')}
               </Link>
               <Link to="/inscription" className="btn-cta text-[13px] px-4 py-1.5 hidden sm:flex" style={{ minHeight: 34 }}>
-                S'inscrire
+                {t('nav.register')}
               </Link>
             </div>
           )}

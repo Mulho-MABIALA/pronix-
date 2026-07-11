@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import BottomNav from './BottomNav';
 import Disclaimer from './Disclaimer';
+import PWABanner from '../ui/PWABanner';
 
 export default function Layout() {
   return (
@@ -12,6 +13,7 @@ export default function Layout() {
       </main>
       <Disclaimer />
       <BottomNav />
+      <PWABanner />
     </div>
   );
 }

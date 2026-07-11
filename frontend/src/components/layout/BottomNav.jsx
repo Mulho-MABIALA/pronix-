@@ -32,29 +32,29 @@ function ExplorerDrawer({ open, onClose }) {
     <>
       {/* Overlay */}
       <div
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm"
         onClick={onClose}
       />
 
       {/* Drawer */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl border-t border-white/[0.08] animate-slide-up"
-        style={{ background: 'rgba(23,24,25,0.98)', backdropFilter: 'blur(20px)', maxHeight: '80vh', overflowY: 'auto' }}>
+      <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-2xl border-t border-white/[0.08] animate-slide-up flex flex-col"
+        style={{ background: 'rgba(23,24,25,0.98)', backdropFilter: 'blur(20px)', maxHeight: '85vh' }}>
 
-        {/* Handle */}
-        <div className="flex justify-center pt-3 pb-1">
+        {/* Handle — fixe, ne scrolle pas */}
+        <div className="flex justify-center pt-3 pb-1 shrink-0">
           <div className="w-10 h-1 rounded-full bg-white/20" />
         </div>
 
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06]">
+        {/* Header — fixe, ne scrolle pas */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06] shrink-0">
           <p className="font-semibold text-gray-100 text-sm">Explorer fpronix</p>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors">
             <X size={16} />
           </button>
         </div>
 
-        {/* Sections */}
-        <div className="px-4 py-4 pb-8 space-y-5">
+        {/* Sections — scrollable */}
+        <div className="overflow-y-auto flex-1 px-4 py-4 space-y-5" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
           {SECTIONS.map((section) => (
             <div key={section.label}>
               <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2 px-1">{section.label}</p>

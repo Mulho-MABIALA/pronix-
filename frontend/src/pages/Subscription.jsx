@@ -70,13 +70,13 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
         ) : (
           <div className="flex items-end gap-1.5 flex-wrap">
             <span className="text-4xl font-display font-bold text-gray-100">
-              {price?.toLocaleString('fr-FR')} FCFA
+              ${price?.toFixed(2)}
             </span>
             <span className="text-gray-500 pb-1 text-sm">/{billingCycle === 'YEARLY' ? 'an' : 'mois'}</span>
           </div>
         )}
         {monthly && (
-          <p className="text-xs text-primary-400 mt-1">≈ {parseFloat(monthly).toLocaleString('fr-FR')} FCFA/mois</p>
+          <p className="text-xs text-primary-400 mt-1">≈ ${parseFloat(monthly).toFixed(2)}/mois</p>
         )}
       </div>
 

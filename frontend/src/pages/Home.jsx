@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { ChevronRight, Sparkles, Calendar, Crown, Wand2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import MatchCard from '../components/matches/MatchCard';
@@ -12,6 +13,7 @@ import { SkeletonMatchCard, SkeletonTipsterRow } from '../components/ui/Skeleton
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function Home() {
+  const { t } = useTranslation();
   usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
   const { user, isPremium } = useAuth();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -30,6 +32,14 @@ export default function Home() {
   const tipsters  = leaderboardData?.data || [];
   const liveCount = matches.filter((m) => m.status === 'LIVE').length;
 
+  const PREMIUM_FEATURES = [
+    t('home.premiumFeature1'),
+    t('home.premiumFeature2'),
+    t('home.premiumFeature3'),
+    t('home.premiumFeature4'),
+    t('home.premiumFeature5'),
+  ];
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-10 animate-fade-in">
 
@@ -47,40 +57,40 @@ export default function Home() {
             <div className="flex items-center justify-center gap-2 flex-wrap mb-6">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-xs font-semibold">
                 <Sparkles size={13} className="shrink-0" />
-                Plateforme football mondiale
+                {t('home.hero.platformBadge')}
               </div>
               {liveCount > 0 && (
                 <Link to="/matchs" className="live-pill animate-pop">
                   <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
-                  {liveCount} match{liveCount > 1 ? 's' : ''} en direct
+                  {liveCount} {t('home.liveMatches')}
                 </Link>
               )}
             </div>
 
             <h1 className="font-display font-bold text-4xl md:text-6xl text-white mb-4 leading-[1.08] tracking-tight"
               style={{ textShadow: '0 2px 24px rgba(0,0,0,0.6)' }}>
-              Données football.<br />
+              {t('home.hero.title')}<br />
               <span className="bg-gradient-to-r from-primary-400 to-primary-300 bg-clip-text text-transparent">
-                Pronostics fiables.
+                {t('home.hero.titleHighlight')}
               </span>
             </h1>
 
             <p className="text-gray-200 text-sm md:text-base mb-8 max-w-lg mx-auto leading-relaxed"
               style={{ textShadow: '0 1px 12px rgba(0,0,0,0.7)' }}>
-              Statistiques en temps réel, classements et pronostics transparents sur les meilleures ligues du monde.
+              {t('home.hero.description')}
             </p>
 
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Link to="/inscription" className="btn-primary px-7 text-[15px] shadow-lg shadow-primary-500/20">
-                Commencer gratuitement
+                {t('home.hero.ctaRegister')}
               </Link>
               <Link to="/matchs" className="btn-secondary px-7 text-[15px]">
-                Voir les matchs
+                {t('home.hero.ctaMatches')}
               </Link>
             </div>
 
             <p className="disclaimer mt-6">
-              Ceci n'est pas un conseil financier. Aucune garantie de gain. Jouez de façon responsable.
+              {t('home.hero.disclaimer')}
             </p>
           </div>
         </section>
@@ -94,16 +104,16 @@ export default function Home() {
         <div className="flex items-center justify-between mb-3">
           <h2 className="section-title flex items-center gap-2.5">
             <span className="w-1 h-4 rounded-full bg-primary-400" />
-            Matchs du jour
+            {t('home.todayMatches')}
             {liveCount > 0 && (
               <span className="live-pill">
                 <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
-                {liveCount} en direct
+                {liveCount} {t('matches.live')}
               </span>
             )}
           </h2>
           <Link to="/matchs" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
-            Tout voir <ChevronRight size={14} />
+            {t('common.seeAll')} <ChevronRight size={14} />
           </Link>
         </div>
 
@@ -116,9 +126,9 @@ export default function Home() {
             <div className="w-12 h-12 rounded-full bg-white/[0.04] flex items-center justify-center mx-auto mb-3">
               <Calendar size={20} className="text-gray-500" />
             </div>
-            <p className="text-gray-500 text-sm">Aucun match programmé aujourd'hui</p>
+            <p className="text-gray-500 text-sm">{t('home.noMatchesToday')}</p>
             <Link to="/matchs" className="btn-secondary mt-4 text-sm">
-              Voir les autres jours
+              {t('home.seeOtherDays')}
             </Link>
           </div>
         ) : (
@@ -136,10 +146,10 @@ export default function Home() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="section-title flex items-center gap-2.5">
               <span className="w-1 h-4 rounded-full bg-primary-400" />
-              Top Tipsters
+              {t('home.topTipsters')}
             </h2>
             <Link to="/tipsters" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
-              Classement <ChevronRight size={14} />
+              {t('tipsters.title')} <ChevronRight size={14} />
             </Link>
           </div>
 
@@ -149,7 +159,7 @@ export default function Home() {
               : tipsters.length === 0
                 ? (
                   <div className="card-p text-center py-6">
-                    <p className="text-gray-500 text-sm">Aucun tipster classé pour le moment</p>
+                    <p className="text-gray-500 text-sm">{t('home.noTipsters')}</p>
                   </div>
                 )
                 : tipsters.map((stat, i) => (
@@ -164,7 +174,7 @@ export default function Home() {
           <section>
             <h2 className="section-title mb-3 flex items-center gap-2.5">
               <span className="w-1 h-4 rounded-full bg-orange-400" />
-              Passez Premium
+              {t('home.premiumCta')}
             </h2>
             <div className="relative overflow-hidden card p-5 border-orange-500/10"
               style={{ background: 'linear-gradient(135deg, rgba(26,166,86,0.08) 0%, rgba(249,115,22,0.07) 100%)' }}>
@@ -177,16 +187,10 @@ export default function Home() {
                 </div>
 
                 <p className="text-sm text-gray-300 mb-4 leading-relaxed">
-                  Accédez aux stats avancées, publiez vos pronostics et utilisez l'analyse IA.
+                  {t('home.premiumDesc')}
                 </p>
                 <ul className="space-y-2.5 mb-5">
-                  {[
-                    'Historique H2H complet',
-                    'Forme des 10 derniers matchs',
-                    'Publication de pronostics',
-                    'Analyse IA par match',
-                    'Classements en temps réel',
-                  ].map((f) => (
+                  {PREMIUM_FEATURES.map((f) => (
                     <li key={f} className="text-sm text-gray-400 flex items-center gap-2.5">
                       <span className="w-4 h-4 rounded-full bg-primary-500/15 border border-primary-500/30 flex items-center justify-center shrink-0">
                         <span className="w-1.5 h-1.5 rounded-full bg-primary-400" />
@@ -196,9 +200,9 @@ export default function Home() {
                   ))}
                 </ul>
                 <Link to="/abonnement" className="btn-cta w-full text-sm shadow-lg shadow-orange-500/15">
-                  Voir les offres — $8.99/mois
+                  {t('home.premiumBtn')}
                 </Link>
-                <p className="disclaimer text-center mt-3">Aucune promesse de gain.</p>
+                <p className="disclaimer text-center mt-3">{t('pronostics.noPicksDesc')}</p>
               </div>
             </div>
           </section>
@@ -206,7 +210,7 @@ export default function Home() {
           <section>
             <h2 className="section-title mb-3 flex items-center gap-2.5">
               <span className="w-1 h-4 rounded-full bg-primary-400" />
-              Votre espace
+              {t('home.yourSpace')}
             </h2>
             <div className="relative overflow-hidden card-p space-y-4 h-full"
               style={{ background: 'linear-gradient(135deg, rgba(26,166,86,0.05) 0%, transparent 60%)' }}>
@@ -214,11 +218,11 @@ export default function Home() {
                 <Wand2 size={18} className="text-primary-400" />
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Analysez un match avec l'IA, publiez votre pronostic et suivez votre taux de réussite.
+                {t('home.yourSpaceDesc')}
               </p>
               <div className="grid grid-cols-2 gap-2">
-                <Link to="/profil"  className="btn-secondary text-sm">Mon profil</Link>
-                <Link to="/matchs"  className="btn-primary text-sm">Pronostiquer</Link>
+                <Link to="/profil"  className="btn-secondary text-sm">{t('home.myProfile')}</Link>
+                <Link to="/matchs"  className="btn-primary text-sm">{t('home.predict')}</Link>
               </div>
             </div>
           </section>

@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { format, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { ChevronDown, ChevronUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import MatchCard from '../components/matches/MatchCard';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
@@ -10,14 +11,10 @@ import { usePageMeta } from '../hooks/usePageMeta';
 
 const GROUP_LIMIT = 5;
 
-function formatTabLabel(d) {
-  if (isToday(d))     return { top: "Auj.",  bottom: format(d, 'dd') };
-  if (isYesterday(d)) return { top: 'Hier',  bottom: format(d, 'dd') };
-  if (isTomorrow(d))  return { top: 'Dem.',  bottom: format(d, 'dd') };
-  return { top: format(d, 'EEE', { locale: fr }), bottom: format(d, 'dd') };
-}
-
 export default function Matches() {
+  const { t, i18n } = useTranslation();
+  const isEN = i18n.language?.startsWith('en');
+
   usePageMeta('Matchs du jour', 'Scores en direct, résultats et calendrier de tous les matchs de football. Consultez les statistiques et pronostics.');
   const [date, setDate]                       = useState(new Date());
   const [liveOnly, setLiveOnly]               = useState(false);
@@ -26,6 +23,13 @@ export default function Matches() {
 
   function toggleGroup(name) {
     setExpandedGroups((prev) => ({ ...prev, [name]: !prev[name] }));
+  }
+
+  function formatTabLabel(d) {
+    if (isToday(d))     return { top: t('matches.todayShort'),    bottom: format(d, 'dd') };
+    if (isYesterday(d)) return { top: t('matches.yesterdayShort'), bottom: format(d, 'dd') };
+    if (isTomorrow(d))  return { top: t('matches.tomorrowShort'), bottom: format(d, 'dd') };
+    return { top: format(d, 'EEE', { locale: isEN ? undefined : fr }), bottom: format(d, 'dd') };
   }
 
   const dateStr    = format(date, 'yyyy-MM-dd');
@@ -61,7 +65,7 @@ export default function Matches() {
   return (
     <div className="max-w-2xl mx-auto py-5 space-y-4">
 
-      {/* ── Date tabs — façon BeSoccer, affinée ─────────────────────── */}
+      {/* ── Date tabs ─────────────────────────────────────────────── */}
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex items-center gap-1.5 px-4 min-w-max">
 
@@ -73,7 +77,7 @@ export default function Matches() {
             className="filter-chip"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
-            Live
+            {t('matches.live')}
             {liveCount > 0 && <span className="chip-count">{liveCount}</span>}
           </button>
 
@@ -111,7 +115,7 @@ export default function Matches() {
               data-active={!selectedCompetition}
               className="filter-chip rounded-full"
             >
-              Toutes
+              {t('matches.all')}
               {matches.length > 0 && <span className="chip-count">{matches.length}</span>}
             </button>
             {competitions.map((c) => {
@@ -142,7 +146,7 @@ export default function Matches() {
           <div className="card-p text-center py-14">
             <p className="text-3xl mb-3">📅</p>
             <p className="text-gray-500 text-sm">
-              {liveOnly ? 'Aucun match en direct' : 'Aucun match pour cette date'}
+              {liveOnly ? t('matches.noLive') : t('matches.noMatchesDate')}
             </p>
           </div>
         ) : (
@@ -165,9 +169,9 @@ export default function Matches() {
                   {hasMore && (
                     <button onClick={() => toggleGroup(compName)} className="see-more-btn">
                       {isExpanded ? (
-                        <>Voir moins <ChevronUp size={14} /></>
+                        <>{t('matches.seeLess')} <ChevronUp size={14} /></>
                       ) : (
-                        <>Voir {compMatches.length - GROUP_LIMIT} de plus <ChevronDown size={14} /></>
+                        <>{t('matches.seeMoreCount', { count: compMatches.length - GROUP_LIMIT })} <ChevronDown size={14} /></>
                       )}
                     </button>
                   )}

@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Sun, Moon, User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2 } from 'lucide-react';
+import { Sun, Moon, User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import NotificationBell from '../ui/NotificationBell';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 function FootballLogo({ className }) {
   return (
@@ -108,6 +109,7 @@ export default function Header() {
   const { t } = useTranslation();
   const { user, logout, isAdmin } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const { isInstallable, install } = usePWAInstall();
 
   const NAV_LINKS = [
     { to: '/matchs',      label: t('nav.matches') },
@@ -149,6 +151,18 @@ export default function Header() {
         {/* Actions droite */}
         <div className="flex items-center gap-1 ml-auto">
           <NotificationBell />
+
+          {/* Bouton installer PWA (visible seulement si installable) */}
+          {isInstallable && (
+            <button
+              onClick={install}
+              className="p-2 rounded-lg text-primary-400 hover:text-primary-300 hover:bg-primary-500/10 transition-colors"
+              aria-label={t('pwa.installHeader')}
+              title={t('pwa.installHeader')}
+            >
+              <Download size={17} />
+            </button>
+          )}
 
           {/* Switcher de langue */}
           <LangSwitcher />

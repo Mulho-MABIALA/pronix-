@@ -1,46 +1,35 @@
 /**
  * PWABanner — Invite l'utilisateur à installer l'app sur l'écran d'accueil.
- * Apparaît automatiquement quand le navigateur déclenche beforeinstallprompt.
- * Disparaît définitivement si l'utilisateur clique "Plus tard" (stocké en localStorage).
+ * Utilise sessionStorage pour le dismiss : réapparaît à chaque nouvelle session.
  */
 
 import { useState, useEffect } from 'react';
 import { Download, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 const DISMISSED_KEY = 'fpronix_pwa_dismissed';
 
 export default function PWABanner() {
   const { t } = useTranslation();
-  const [deferredPrompt, setDeferredPrompt] = useState(null);
+  const { isInstallable, install } = usePWAInstall();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Ne pas afficher si déjà refusé
-    if (localStorage.getItem(DISMISSED_KEY)) return;
-
-    const handler = (e) => {
-      e.preventDefault();
-      setDeferredPrompt(e);
-      setVisible(true);
-    };
-
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
+    // sessionStorage : réapparaît à chaque nouvelle session de navigation
+    if (isInstallable && !sessionStorage.getItem(DISMISSED_KEY)) {
+      const timer = setTimeout(() => setVisible(true), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isInstallable]);
 
   const handleInstall = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === 'accepted') {
-      setVisible(false);
-    }
-    setDeferredPrompt(null);
+    const accepted = await install();
+    if (accepted) setVisible(false);
   };
 
   const handleDismiss = () => {
-    localStorage.setItem(DISMISSED_KEY, '1');
+    sessionStorage.setItem(DISMISSED_KEY, '1');
     setVisible(false);
   };
 

@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 
 export default function Register() {
+  const { t } = useTranslation();
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', username: '', password: '', confirm: '' });
@@ -17,7 +19,7 @@ export default function Register() {
       const user = await loginWithGoogle(credential);
       navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
     } catch (err) {
-      setError(err.response?.data?.message || 'Échec de l\'inscription avec Google');
+      setError(err.response?.data?.message || t('errors.serverError'));
     } finally {
       setLoading(false);
     }
@@ -27,7 +29,7 @@ export default function Register() {
     e.preventDefault();
     setError('');
     if (form.password !== form.confirm) {
-      setError('Les mots de passe ne correspondent pas');
+      setError(t('auth.passwordMismatch'));
       return;
     }
     setLoading(true);
@@ -35,7 +37,7 @@ export default function Register() {
       await register(form.email, form.password, form.username);
       navigate('/onboarding');
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de l\'inscription');
+      setError(err.response?.data?.message || t('errors.serverError'));
     } finally {
       setLoading(false);
     }
@@ -46,8 +48,8 @@ export default function Register() {
       <div className="w-full max-w-sm space-y-6 animate-slide-up">
         <div className="text-center">
           <span className="text-4xl" aria-hidden="true">⚽</span>
-          <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">Créer un compte</h1>
-          <p className="text-gray-500 text-sm mt-1">Gratuit, sans engagement</p>
+          <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.registerTitle')}</h1>
+          <p className="text-gray-500 text-sm mt-1">{t('auth.freeNoCommit')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bento-card space-y-4" noValidate>
@@ -58,43 +60,43 @@ export default function Register() {
           )}
 
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1.5">Pseudo</label>
+            <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.usernameLabel')}</label>
             <input id="username" type="text" autoComplete="username" required className="input"
               value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
               placeholder="MonPseudo" pattern="^[a-zA-Z0-9_]+$" />
-            <p className="text-xs text-gray-500 mt-1">Lettres, chiffres et _ uniquement</p>
+            <p className="text-xs text-gray-500 mt-1">{t('auth.usernameHint')}</p>
           </div>
 
           <div>
-            <label htmlFor="reg-email" className="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+            <label htmlFor="reg-email" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.email')}</label>
             <input id="reg-email" type="email" autoComplete="email" required className="input"
               value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="vous@exemple.com" />
           </div>
 
           <div>
-            <label htmlFor="reg-password" className="block text-sm font-medium text-gray-300 mb-1.5">Mot de passe</label>
+            <label htmlFor="reg-password" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.password')}</label>
             <input id="reg-password" type="password" autoComplete="new-password" required className="input"
               value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="Min. 8 car., 1 majuscule, 1 chiffre" minLength={8} />
           </div>
 
           <div>
-            <label htmlFor="confirm" className="block text-sm font-medium text-gray-300 mb-1.5">Confirmer le mot de passe</label>
+            <label htmlFor="confirm" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.confirmPassword')}</label>
             <input id="confirm" type="password" autoComplete="new-password" required className="input"
               value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })}
               placeholder="••••••••" />
           </div>
 
           <button type="submit" disabled={loading} className="btn-primary w-full">
-            {loading ? 'Création…' : 'Créer mon compte'}
+            {loading ? '…' : t('auth.registerCta')}
           </button>
         </form>
 
         {/* Séparateur */}
         <div className="relative flex items-center gap-3">
           <div className="flex-grow border-t border-surface-600" />
-          <span className="text-xs text-gray-500 shrink-0">ou</span>
+          <span className="text-xs text-gray-500 shrink-0">{t('common.or')}</span>
           <div className="flex-grow border-t border-surface-600" />
         </div>
 
@@ -102,7 +104,7 @@ export default function Register() {
         <div className="flex justify-center">
           <GoogleLogin
             onSuccess={(res) => handleGoogleSuccess(res.credential)}
-            onError={() => setError('Échec de l\'inscription avec Google')}
+            onError={() => setError(t('errors.serverError'))}
             theme="filled_black"
             shape="rectangular"
             text="signup_with"
@@ -112,13 +114,13 @@ export default function Register() {
         </div>
 
         <p className="text-center text-sm text-gray-500">
-          Déjà un compte ?{' '}
-          <Link to="/connexion" className="text-primary-400 hover:underline font-medium">Se connecter</Link>
+          {t('auth.hasAccount')}{' '}
+          <Link to="/connexion" className="text-primary-400 hover:underline font-medium">{t('auth.loginLink')}</Link>
         </p>
 
         <p className="disclaimer text-center">
-          En vous inscrivant, vous acceptez nos <Link to="/cgu" className="underline">CGU</Link>.
-          Plateforme réservée aux 18+. Ceci n'est pas un conseil financier.
+          {t('auth.termsReg')} <Link to="/cgu" className="underline">{t('auth.termsLink')}</Link>.{' '}
+          {t('auth.disclaimer18')}
         </p>
       </div>
     </div>

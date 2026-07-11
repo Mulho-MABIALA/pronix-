@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { TrendingUp, ChevronRight, Info, Zap } from 'lucide-react';
+import { TrendingUp, ChevronRight, Info, Zap, Bot } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
@@ -34,6 +34,12 @@ function formatTabDate(d) {
   if (isTomorrow(d))  return 'Demain';
   return format(d, 'EEE dd', { locale: fr });
 }
+
+const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club friendly', 'test match'];
+const isFriendlyMatch = (m) => {
+  const name = (m.competition?.name || '').toLowerCase();
+  return FRIENDLY_KEYWORDS.some((kw) => name.includes(kw));
+};
 
 const FOTMOB_CDN = (id) =>
   id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png` : null;
@@ -121,6 +127,11 @@ function PronoCard({ match }) {
         <div className="flex items-center gap-2 flex-1 min-w-0">
           <TeamLogo logo={match.homeTeamLogo} teamId={match.homeTeamId} name={match.homeTeam} />
           <span className="text-sm font-semibold text-gray-200 truncate">{match.homeTeam}</span>
+          {pred.aiGenerated && (
+            <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
+              <Bot size={8} />IA
+            </span>
+          )}
         </div>
         <span className="text-gray-700 text-xs shrink-0">vs</span>
         <div className="flex items-center gap-2 flex-1 min-w-0 justify-end">
@@ -209,7 +220,7 @@ export default function Pronostics() {
     queryFn: () => api.get(`/matches?date=${dateStr}&limit=50`).then((r) => r.data),
   });
 
-  const matches = (data?.data || []).filter((m) => m.predictions);
+  const matches = (data?.data || []).filter((m) => m.predictions && !isFriendlyMatch(m));
 
   // Grouper par confiance
   const grouped = { high: [], medium: [], low: [] };
@@ -235,7 +246,7 @@ export default function Pronostics() {
           <TrendingUp size={18} className="text-primary-400" />
           <h1 className="section-title">Pronostics</h1>
         </div>
-        <p className="text-xs text-gray-500">Picks générés par algorithme basé sur la forme récente</p>
+        <p className="text-xs text-gray-500">Picks générés par algorithme statistique &amp; IA — hors matchs amicaux</p>
       </div>
 
       {/* Date tabs */}

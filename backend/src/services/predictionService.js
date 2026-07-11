@@ -4,6 +4,7 @@
 const prisma = require('../config/database');
 const { Prisma } = require('@prisma/client');
 const { generateAIPrediction } = require('./aiPredictionService');
+const { getMatchContext } = require('./footballContextService');
 
 const HOME_ADV = 0.10; // avantage domicile
 
@@ -174,10 +175,13 @@ async function calculateAndSavePredictions(matchId) {
     select: {
       id: true,
       homeTeam: true,
+      homeTeamId: true,
       awayTeam: true,
+      awayTeamId: true,
+      externalId: true,
       status: true,
       scheduledAt: true,
-      competition: { select: { name: true } },
+      competition: { select: { name: true, externalId: true } },
     },
   });
   if (!match) return null;
@@ -194,9 +198,18 @@ async function calculateAndSavePredictions(matchId) {
       : 99;
 
     if (!isFriendly && daysAhead <= 14) {
-      predictions = await generateAIPrediction(match);
+      // Récupérer le contexte temps réel (forme, H2H, classement, blessures)
+      let context = null;
+      try {
+        context = await getMatchContext(match);
+      } catch (e) {
+        console.warn('[Context] Impossible de récupérer le contexte:', e.message);
+      }
+
+      predictions = await generateAIPrediction(match, context);
       if (predictions) {
-        console.log(`[AI] Prédiction IA pour : ${match.homeTeam} vs ${match.awayTeam}`);
+        const dataFlag = predictions.hasRealData ? ' (avec données temps réel)' : ' (sans données)';
+        console.log(`[AI] Prédiction IA pour : ${match.homeTeam} vs ${match.awayTeam}${dataFlag}`);
       }
     }
   }

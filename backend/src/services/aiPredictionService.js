@@ -14,10 +14,11 @@ try {
 
 /**
  * Génère une prédiction via Claude Haiku pour un match sans données statistiques.
- * @param {Object} match  — { homeTeam, awayTeam, scheduledAt, competition: { name } }
- * @returns {Object|null} — prédictions au même format que predictionService, avec aiGenerated: true
+ * @param {Object} match    — { homeTeam, awayTeam, scheduledAt, competition: { name } }
+ * @param {Object} context  — { hasData, text } retourné par footballContextService (optionnel)
+ * @returns {Object|null}   — prédictions au même format que predictionService, avec aiGenerated: true
  */
-async function generateAIPrediction(match) {
+async function generateAIPrediction(match, context = null) {
   if (!client) return null;
 
   const competition = match.competition?.name || 'Compétition inconnue';
@@ -30,12 +31,17 @@ async function generateAIPrediction(match) {
       })
     : 'Date inconnue';
 
+  // Bloc de données temps réel (forme, H2H, classement, blessures)
+  const contextBlock = context?.hasData
+    ? `\n📊 Données temps réel :\n${context.text}\n`
+    : '';
+
   const prompt = `Tu es un expert en analyse footballistique. Donne des probabilités réalistes pour ce match à venir.
 
 Match : ${match.homeTeam} (domicile) vs ${match.awayTeam} (extérieur)
 Compétition : ${competition}
 Date : ${dateStr}
-
+${contextBlock}
 Réponds UNIQUEMENT avec ce JSON valide — aucun autre texte avant ou après :
 {
   "home": <entier 10-75>,
@@ -44,12 +50,13 @@ Réponds UNIQUEMENT avec ce JSON valide — aucun autre texte avant ou après :
   "over25": <entier 25-75>,
   "over15": <entier 45-92>,
   "btts": <entier 25-70>,
-  "reasoning": "<une phrase courte expliquant le pronostic favori>"
+  "reasoning": "<une phrase courte expliquant le pronostic favori, en français>"
 }
 
 Règles :
 - home + draw + away ≈ 100 (±2 accepté)
-- Tiens compte du niveau des équipes si tu les connais, sinon léger avantage domicile
+- Si des données temps réel sont fournies, base-toi PRINCIPALEMENT sur elles
+- Sans données : tiens compte du niveau des équipes si connu, sinon léger avantage domicile
 - Si c'est une équipe réserve, amateur ou inconnue, utilise une distribution équilibrée`;
 
   try {
@@ -109,6 +116,7 @@ Règles :
       sampleSize: 0,
       aiGenerated: true,
       aiReasoning: typeof data.reasoning === 'string' ? data.reasoning.slice(0, 200) : null,
+      hasRealData: context?.hasData ?? false,
     };
   } catch (e) {
     console.error('[AI Prediction] Erreur:', e.message);

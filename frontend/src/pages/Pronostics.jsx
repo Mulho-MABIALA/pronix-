@@ -3,13 +3,14 @@ import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { TrendingUp, ChevronRight, Info, Zap, Bot } from 'lucide-react';
+import { TrendingUp, ChevronRight, Info, Zap, Bot, Lock } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
+import { useAuth } from '../context/AuthContext';
 
 const PICK_LABELS = {
   '1':      'Victoire domicile',
@@ -209,8 +210,11 @@ function PronoCard({ match }) {
   );
 }
 
+const FREE_DAILY_LIMIT = 3;
+
 export default function Pronostics() {
   usePageMeta('Pronostics', 'Pronostics football du jour avec probabilités 1X2, value bets et picks algorithmiques. Analyse IA des matchs.');
+  const { isPremium } = useAuth();
   const [date, setDate] = useState(new Date());
   const dateStr = format(date, 'yyyy-MM-dd');
   const tabs = [subDays(new Date(), 1), new Date(), addDays(new Date(), 1), addDays(new Date(), 2)];
@@ -306,24 +310,49 @@ export default function Pronostics() {
               </section>
             )}
 
-            {['high', 'medium', 'low'].map((lvl) => {
-              const group = grouped[lvl];
-              if (!group.length) return null;
-              const conf = CONF[lvl];
-              return (
-                <section key={lvl}>
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`w-2 h-2 rounded-full ${conf.dot}`} />
-                    <p className={`text-xs font-bold uppercase tracking-wider ${conf.color}`}>
-                      {conf.label} ({group.length})
-                    </p>
-                  </div>
-                  <div className="space-y-3">
-                    {group.map((m) => <PronoCard key={m.id} match={m} />)}
-                  </div>
-                </section>
-              );
-            })}
+            {(() => {
+              // Compte le nombre de cards déjà affichées pour appliquer le paywall
+              let shownCount = valueBets.length;
+              return ['high', 'medium', 'low'].map((lvl) => {
+                const group = grouped[lvl];
+                if (!group.length) return null;
+                const conf = CONF[lvl];
+                return (
+                  <section key={lvl}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className={`w-2 h-2 rounded-full ${conf.dot}`} />
+                      <p className={`text-xs font-bold uppercase tracking-wider ${conf.color}`}>
+                        {conf.label} ({group.length})
+                      </p>
+                    </div>
+                    <div className="space-y-3">
+                      {group.map((m) => {
+                        shownCount++;
+                        const isBlurred = !isPremium && shownCount > FREE_DAILY_LIMIT;
+                        return (
+                          <div key={m.id} className={`relative ${isBlurred ? 'select-none' : ''}`}>
+                            <div className={isBlurred ? 'blur-sm pointer-events-none' : ''}>
+                              <PronoCard match={m} />
+                            </div>
+                            {isBlurred && (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center rounded-2xl bg-surface-800/80 backdrop-blur-[2px] border border-white/[0.07] gap-2 z-10">
+                                <Lock size={18} className="text-primary-400" />
+                                <p className="text-xs font-semibold text-gray-200 text-center px-4">
+                                  Limite gratuite atteinte ({FREE_DAILY_LIMIT} pronostics/jour)
+                                </p>
+                                <Link to="/abonnement" className="btn-primary py-1.5 px-4 text-xs mt-1">
+                                  Premium — illimité
+                                </Link>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              });
+            })()}
 
             <div className="text-center pt-2">
               <Link to="/matchs" className="text-xs text-primary-400 hover:underline flex items-center justify-center gap-1">

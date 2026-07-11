@@ -2,6 +2,7 @@ const { Router } = require('express');
 const { authenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
 const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds } = require('../controllers/matchController');
+const { askAboutMatch } = require('../services/chatService');
 
 const router = Router();
 
@@ -26,5 +27,23 @@ router.get('/:id/stats', getMatchStats);
 
 // Cotes bookmakers réelles (The Odds API, cache in-memory) — public
 router.get('/:id/odds', getMatchOdds);
+
+// Chat IA — question sur un match (authentification requise, quota par plan)
+router.post('/:id/chat', authenticate, attachPlan, async (req, res) => {
+  const { question } = req.body;
+  if (!question || typeof question !== 'string' || question.trim().length < 3) {
+    return res.status(400).json({ success: false, message: 'Question trop courte.' });
+  }
+  if (question.length > 500) {
+    return res.status(400).json({ success: false, message: 'Question trop longue (500 caractères max).' });
+  }
+  try {
+    const result = await askAboutMatch(req.params.id, question.trim(), req.user);
+    return res.json({ success: true, data: result });
+  } catch (err) {
+    const status = err.statusCode || 500;
+    return res.status(status).json({ success: false, message: err.message });
+  }
+});
 
 module.exports = router;

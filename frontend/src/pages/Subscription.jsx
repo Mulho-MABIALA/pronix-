@@ -41,15 +41,17 @@ const FAQ_ITEMS = [
 
 // Couleurs par plan
 const PLAN_STYLE = {
-  FREE:    { ring: '', badge: null,                               btn: 'btn-secondary opacity-60 cursor-default justify-center' },
-  PREMIUM: { ring: 'ring-1 ring-primary-500/50 border-primary-500/60', badge: '⭐ Recommandé', btn: 'btn-primary w-full' },
+  FREE:     { ring: '', badge: null, btn: 'btn-secondary opacity-60 cursor-default justify-center' },
+  PREMIUM:  { ring: 'ring-1 ring-primary-500/50 border-primary-500/60', badge: '⭐ Recommandé', btn: 'btn-primary w-full' },
+  LIFETIME: { ring: 'ring-1 ring-amber-500/50 border-amber-500/60', badge: '🏆 Meilleure valeur', btn: 'w-full py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 transition-all active:scale-[0.98]' },
 };
 
 function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
-  const isFree   = plan.code === 'FREE';
-  const style    = PLAN_STYLE[plan.code] || PLAN_STYLE.FREE;
-  const price    = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
-  const monthly  = billingCycle === 'YEARLY' ? (plan.priceYearly / 12).toFixed(2) : null;
+  const isFree     = plan.code === 'FREE';
+  const isLifetime = plan.code === 'LIFETIME';
+  const style      = PLAN_STYLE[plan.code] || PLAN_STYLE.FREE;
+  const price      = isLifetime ? plan.priceMonthly : billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+  const monthly    = !isLifetime && billingCycle === 'YEARLY' ? (plan.priceYearly / 12).toFixed(2) : null;
 
   return (
     <div className={`bento-card flex flex-col gap-5 relative ${style.ring}`}>
@@ -72,7 +74,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
             <span className="text-4xl font-display font-bold text-gray-100">
               ${price?.toFixed(2)}
             </span>
-            <span className="text-gray-500 pb-1 text-sm">/{billingCycle === 'YEARLY' ? 'an' : 'mois'}</span>
+            <span className="text-gray-500 pb-1 text-sm">{isLifetime ? '· paiement unique' : `/${billingCycle === 'YEARLY' ? 'an' : 'mois'}`}</span>
           </div>
         )}
         {monthly && (
@@ -129,11 +131,12 @@ export default function Subscription() {
     staleTime: Infinity,
   });
 
-  // N'afficher que FREE + PREMIUM (le premier plan payant)
-  const allPlans = data?.data || [];
+  // Afficher FREE + PREMIUM + LIFETIME
+  const allPlans    = data?.data || [];
   const freePlan    = allPlans.find((p) => p.code === 'FREE');
-  const premiumPlan = allPlans.find((p) => p.code === 'PREMIUM') || allPlans.filter((p) => p.code !== 'FREE')[0];
-  const plans = [freePlan, premiumPlan].filter(Boolean);
+  const premiumPlan = allPlans.find((p) => p.code === 'PREMIUM');
+  const lifetimePlan = allPlans.find((p) => p.code === 'LIFETIME');
+  const plans = [freePlan, premiumPlan, lifetimePlan].filter(Boolean);
 
   const handleSelectPlan = async (plan) => {
     if (!user) { navigate('/connexion'); return; }
@@ -209,7 +212,7 @@ export default function Subscription() {
       )}
 
       {/* Plans */}
-      <div className={`grid gap-5 ${plans.length === 2 ? 'md:grid-cols-2' : 'grid-cols-1 max-w-sm mx-auto'}`}>
+      <div className={`grid gap-5 ${plans.length >= 3 ? 'md:grid-cols-3' : plans.length === 2 ? 'md:grid-cols-2' : 'grid-cols-1 max-w-sm mx-auto'}`}>
         {plans.map((plan) => (
           <PricingCard
             key={plan.id}

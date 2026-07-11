@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Lock, ChevronDown, Sparkles, Flag, X } from 'lucide-react';
+import ChatIA from '../components/match/ChatIA';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { MatchStatusBadge, ResultBadge } from '../components/ui/Badge';
@@ -20,6 +21,42 @@ const PICK_MARKET_LABELS = {
   '1X': 'Double chance 1X', 'X2': 'Double chance X2',
   over25: 'Plus de 2.5 buts', over15: 'Plus de 1.5 buts', btts: 'Les 2 équipes marquent',
 };
+
+// ── Scénarios de score probable ──────────────────────────────────────────────
+function ScorelineSection({ match }) {
+  const scorelines = match.predictions?.scorelines;
+  if (!scorelines?.length || match.status !== 'SCHEDULED') return null;
+
+  const max = scorelines[0]?.prob || 1;
+
+  return (
+    <section className="px-4 pb-1">
+      <div className="bento-card p-4 space-y-3">
+        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+          <span className="w-1 h-3.5 rounded-full bg-violet-400 shrink-0" />
+          Scénarios de score probables
+        </h2>
+        <div className="grid grid-cols-2 gap-x-4 gap-y-2">
+          {scorelines.map(({ score, prob, homeGoals, awayGoals }) => {
+            const outcome = homeGoals > awayGoals ? 'home' : homeGoals < awayGoals ? 'away' : 'draw';
+            const barColor = outcome === 'home' ? 'bg-primary-500' : outcome === 'draw' ? 'bg-surface-400' : 'bg-primary-400/50';
+            const textColor = outcome === 'home' ? 'text-primary-400' : outcome === 'draw' ? 'text-gray-400' : 'text-primary-300';
+            return (
+              <div key={score} className="flex items-center gap-2">
+                <span className={`w-10 text-center text-xs font-bold font-display tabular-nums ${textColor} shrink-0`}>{score}</span>
+                <div className="flex-1 h-1.5 bg-surface-600 rounded-full overflow-hidden">
+                  <div className={`h-full ${barColor} rounded-full`} style={{ width: `${(prob / max) * 100}%` }} />
+                </div>
+                <span className="text-[11px] text-gray-500 w-7 text-right shrink-0">{prob}%</span>
+              </div>
+            );
+          })}
+        </div>
+        <p className="text-[10px] text-gray-600">Calculé par distribution de Poisson · indicatif</p>
+      </div>
+    </section>
+  );
+}
 
 // ── Probabilités 1X2 style Visifoot ─────────────────────────────────────────
 function ProbabilitySection({ match }) {
@@ -535,6 +572,16 @@ export default function MatchDetail() {
 
       {/* ── Probabilités 1X2 ──────────────────────────────────────────── */}
       <ProbabilitySection match={match} />
+
+      {/* ── Scénarios de score ────────────────────────────────────────── */}
+      <ScorelineSection match={match} />
+
+      {/* ── Chat IA ───────────────────────────────────────────────────── */}
+      {match.status === 'SCHEDULED' && (
+        <div className="px-4">
+          <ChatIA matchId={match.id} matchLabel={`${match.homeTeam} vs ${match.awayTeam}`} />
+        </div>
+      )}
 
       {/* ── Onglets — style BetMines ──────────────────────────────────── */}
       <div className="border-b border-white/[0.06] overflow-x-auto scrollbar-hide">

@@ -46,6 +46,37 @@ function getTeamStats(matches, teamName) {
   };
 }
 
+// ── Distribution de Poisson ────────────────────────────────────────────────────
+function poisson(lambda, k) {
+  if (lambda <= 0) return k === 0 ? 1 : 0;
+  let p = Math.exp(-lambda);
+  for (let i = 1; i <= k; i++) p *= lambda / i;
+  return p;
+}
+
+/**
+ * Retourne les 6 scorelines les plus probables.
+ * @param {number} lambdaHome — buts attendus domicile
+ * @param {number} lambdaAway — buts attendus extérieur
+ * @returns {Array} [{ score: '2-1', prob: 18, homeGoals: 2, awayGoals: 1 }, …]
+ */
+function calculateScorelines(lambdaHome, lambdaAway) {
+  const lH = Math.max(0.3, Math.min(4, lambdaHome));
+  const lA = Math.max(0.3, Math.min(4, lambdaAway));
+  const results = [];
+
+  for (let h = 0; h <= 5; h++) {
+    for (let a = 0; a <= 5; a++) {
+      const prob = poisson(lH, h) * poisson(lA, a);
+      results.push({ score: `${h}-${a}`, prob: Math.round(prob * 100), homeGoals: h, awayGoals: a });
+    }
+  }
+
+  return results
+    .sort((a, b) => b.prob - a.prob)
+    .slice(0, 6);
+}
+
 async function calculateMatchPredictions(match) {
   const fields = {
     select: {
@@ -95,6 +126,9 @@ async function calculateMatchPredictions(match) {
   const dc2x = Math.min(99, away + draw);
   const dc12 = Math.min(99, home + away); // 12 : pas de nul
 
+  // ── Scénarios de score (distribution de Poisson) ──────────────
+  const scorelines = calculateScorelines(hs.avgGoals * (1 + HOME_ADV), as.avgGoals * (1 - HOME_ADV * 0.5));
+
   // ── Meilleur pick (probabilité la plus élevée) ─────────────────
   const candidates = [
     { type: '1',       label: 'Victoire domicile',           prob: home,    market: '1X2' },
@@ -124,6 +158,7 @@ async function calculateMatchPredictions(match) {
     confidence,
     allPicks: candidates.slice(0, 5),
     sampleSize: Math.min(hs.sampleSize, as.sampleSize),
+    scorelines,
   };
 }
 

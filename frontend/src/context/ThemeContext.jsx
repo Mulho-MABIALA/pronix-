@@ -1,21 +1,17 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect } from 'react';
 
 const ThemeContext = createContext(null);
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
-
   useEffect(() => {
-    const root = document.documentElement;
-    root.classList.toggle('dark', theme === 'dark');
-    root.classList.toggle('light', theme === 'light');
-    localStorage.setItem('theme', theme);
-  }, [theme]);
-
-  const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'));
+    // Mode sombre forcé — supprime l'ancienne préférence stockée
+    localStorage.removeItem('theme');
+    document.documentElement.classList.add('dark');
+    document.documentElement.classList.remove('light');
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme: 'dark', toggleTheme: () => {} }}>
       {children}
     </ThemeContext.Provider>
   );

@@ -43,13 +43,17 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
         ) : (
           <div className="flex items-end gap-1.5 flex-wrap">
             <span className="text-4xl font-display font-bold text-gray-100">
-              ${price?.toFixed(2)}
+              {new Intl.NumberFormat('fr-FR').format(price)}
             </span>
-            <span className="text-gray-500 pb-1 text-sm">{isLifetime ? '· paiement unique' : `/${billingCycle === 'YEARLY' ? 'an' : 'mois'}`}</span>
+            <span className="text-gray-500 pb-1 text-sm">
+              {' '}FCFA{isLifetime ? ' · paiement unique' : `/${billingCycle === 'YEARLY' ? 'an' : 'mois'}`}
+            </span>
           </div>
         )}
         {monthly && (
-          <p className="text-xs text-primary-400 mt-1">≈ ${parseFloat(monthly).toFixed(2)}/mois</p>
+          <p className="text-xs text-primary-400 mt-1">
+            ≈ {new Intl.NumberFormat('fr-FR').format(Math.round(plan.priceYearly / 12))} FCFA/mois
+          </p>
         )}
       </div>
 

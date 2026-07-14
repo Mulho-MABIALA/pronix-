@@ -1,12 +1,24 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight } from 'lucide-react';
+import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
+
+// Détecte iOS
+function isIOS() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+}
+// Détecte si l'app est déjà installée (standalone)
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+}
 
 /** Drawer "Explorer" — liste tous les outils et sections */
 function ExplorerDrawer({ open, onClose }) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { isInstallable, install } = usePWAInstall();
+  const [showIOSHint, setShowIOSHint] = useState(false);
 
   const SECTIONS = [
     {
@@ -78,6 +90,69 @@ function ExplorerDrawer({ open, onClose }) {
               </div>
             </div>
           ))}
+
+          {/* ── Installer l'application ─────────────────────── */}
+          {!isStandalone() && (
+            <div>
+              <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2 px-1">Application</p>
+              <div className="space-y-1.5">
+                {isInstallable ? (
+                  /* Android Chrome / Edge — prompt natif */
+                  <button
+                    onClick={async () => { await install(); onClose(); }}
+                    className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary-500/10 border border-primary-500/20 hover:bg-primary-500/15 transition-colors text-left"
+                  >
+                    <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-primary-400 bg-primary-500/15">
+                      <Download size={17} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-primary-300">Installer l'app</p>
+                      <p className="text-xs text-gray-500">Accès rapide depuis l'écran d'accueil</p>
+                    </div>
+                    <ChevronRight size={14} className="text-primary-500 shrink-0" />
+                  </button>
+                ) : isIOS() ? (
+                  /* iOS Safari — instructions manuelles */
+                  <div>
+                    <button
+                      onClick={() => setShowIOSHint((v) => !v)}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl bg-primary-500/10 border border-primary-500/20 hover:bg-primary-500/15 transition-colors text-left"
+                    >
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-primary-400 bg-primary-500/15">
+                        <Smartphone size={17} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-primary-300">Installer l'app</p>
+                        <p className="text-xs text-gray-500">Ajouter à l'écran d'accueil</p>
+                      </div>
+                      <ChevronRight size={14} className={`text-primary-500 shrink-0 transition-transform ${showIOSHint ? 'rotate-90' : ''}`} />
+                    </button>
+                    {showIOSHint && (
+                      <div className="mt-2 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-gray-300 space-y-2">
+                        <p className="font-semibold text-gray-100">Comment installer :</p>
+                        <p>1. Appuie sur <span className="text-primary-400 font-semibold">Partager</span> <Share size={11} className="inline" /> en bas de Safari</p>
+                        <p>2. Fais défiler et sélectionne <span className="text-primary-400 font-semibold">"Sur l'écran d'accueil"</span></p>
+                        <p>3. Appuie sur <span className="text-primary-400 font-semibold">Ajouter</span></p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  /* Autre navigateur — instructions génériques */
+                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-gray-400 bg-white/[0.06]">
+                        <Smartphone size={17} />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-300">Installer l'app</p>
+                        <p className="text-xs text-gray-500">Utilise le menu de ton navigateur → "Ajouter à l'écran d'accueil"</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

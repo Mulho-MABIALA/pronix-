@@ -14,7 +14,8 @@ function getHeaders() {
 
 // ─── Créer un paiement (mode checkout — le client choisit son moyen) ─────────
 async function createCheckout({ amount, description, successUrl, errorUrl, metadata }) {
-  const response = await fetch(`${BASE_URL}/payments`, {
+  const url = `${BASE_URL}/payments`;
+  const response = await fetch(url, {
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({
@@ -27,11 +28,26 @@ async function createCheckout({ amount, description, successUrl, errorUrl, metad
     }),
   });
 
+  const { AppError } = require('../middleware/errorHandler');
+
+  // Vérifier que la réponse est bien du JSON (pas une page HTML d'erreur)
+  const contentType = response.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    const text = await response.text().catch(() => '');
+    console.error(`[GeniusPay] Réponse non-JSON (${response.status}) depuis ${url}:`, text.slice(0, 300));
+    throw new AppError(
+      `L'API GeniusPay est inaccessible (${response.status}). Vérifiez l'URL et les clés API.`,
+      502,
+      'PAYMENT_GATEWAY_ERROR'
+    );
+  }
+
   const json = await response.json();
 
   if (!response.ok || !json.success) {
-    const msg = json?.error?.message || `Geniuspay error ${response.status}`;
-    throw new Error(msg);
+    const msg = json?.error?.message || json?.message || `Geniuspay error ${response.status}`;
+    console.error('[GeniusPay] Erreur API:', response.status, JSON.stringify(json));
+    throw new AppError(`Paiement GeniusPay : ${msg}`, 502, 'PAYMENT_GATEWAY_ERROR');
   }
 
   return json.data; // { id, reference, checkout_url, ... }

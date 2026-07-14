@@ -343,6 +343,19 @@ model ChatQuota {
   @@map("chat_quotas")
 }
 
+// ─── DÉPENSES (SORTIES) ───────────────────────────────────────────────────────
+
+model Expense {
+  id          String   @id @default(uuid())
+  amount      Int
+  description String
+  category    String   @default("other") // hosting, domain, api, marketing, salary, other
+  date        DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@map("expenses")
+}
+
 // ─── PUSH NOTIFICATIONS ───────────────────────────────────────────────────────
 
 model PushSubscription {

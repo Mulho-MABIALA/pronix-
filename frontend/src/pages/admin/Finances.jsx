@@ -1,15 +1,19 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { TrendingUp, TrendingDown, DollarSign, Users, CreditCard, CheckCircle, XCircle, Clock, ArrowUpRight } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  TrendingUp, TrendingDown, DollarSign, Users, CreditCard,
+  CheckCircle, XCircle, Clock, ArrowDownLeft, ArrowUpRight,
+  PlusCircle, Trash2,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
 
 const STATUS_STYLE = {
-  COMPLETED: { label: 'Complété',  cls: 'text-primary-400 bg-primary-500/15', Icon: CheckCircle },
-  PENDING:   { label: 'En attente', cls: 'text-amber-400 bg-amber-500/15',   Icon: Clock },
-  FAILED:    { label: 'Échoué',    cls: 'text-red-400 bg-red-500/15',         Icon: XCircle },
-  REFUNDED:  { label: 'Remboursé', cls: 'text-gray-400 bg-gray-500/15',       Icon: XCircle },
+  COMPLETED: { label: 'Complété',   cls: 'text-primary-400 bg-primary-500/15', Icon: CheckCircle },
+  PENDING:   { label: 'En attente', cls: 'text-amber-400 bg-amber-500/15',      Icon: Clock },
+  FAILED:    { label: 'Échoué',     cls: 'text-red-400 bg-red-500/15',          Icon: XCircle },
+  REFUNDED:  { label: 'Remboursé',  cls: 'text-gray-400 bg-gray-500/15',        Icon: XCircle },
 };
 
 const PROVIDER_LABEL = {
@@ -17,6 +21,15 @@ const PROVIDER_LABEL = {
   wave:      'Wave',
   cinetpay:  'CinetPay',
   fedapay:   'FedaPay',
+};
+
+const CATEGORY_LABEL = {
+  hosting:   { label: 'Hébergement', color: 'text-blue-400 bg-blue-500/15' },
+  domain:    { label: 'Domaine',     color: 'text-purple-400 bg-purple-500/15' },
+  api:       { label: 'API',         color: 'text-cyan-400 bg-cyan-500/15' },
+  marketing: { label: 'Marketing',   color: 'text-orange-400 bg-orange-500/15' },
+  salary:    { label: 'Salaire',     color: 'text-yellow-400 bg-yellow-500/15' },
+  other:     { label: 'Autre',       color: 'text-gray-400 bg-gray-500/15' },
 };
 
 function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
@@ -41,17 +54,42 @@ function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-
 }
 
 function formatAmount(amount, currency = 'XOF') {
-  if (!amount) return '0 XOF';
+  if (!amount && amount !== 0) return '— XOF';
   return new Intl.NumberFormat('fr-FR').format(amount) + ' ' + currency;
 }
 
+const TABS = [
+  { key: 'overview',     label: 'Vue d\'ensemble' },
+  { key: 'transactions', label: 'Entrées' },
+  { key: 'expenses',     label: 'Sorties' },
+];
+
+const CATEGORIES = ['hosting', 'domain', 'api', 'marketing', 'salary', 'other'];
+
 export default function AdminFinances() {
   const [activeTab, setActiveTab] = useState('overview');
+  const [showForm, setShowForm]   = useState(false);
+  const [formData, setFormData]   = useState({ amount: '', description: '', category: 'other', date: '' });
+  const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-finances'],
-    queryFn: () => api.get('/admin/finances').then((r) => r.data.data),
+    queryFn:  () => api.get('/admin/finances').then((r) => r.data.data),
     refetchInterval: 60_000,
+  });
+
+  const addMutation = useMutation({
+    mutationFn: (payload) => api.post('/admin/expenses', payload),
+    onSuccess: () => {
+      qc.invalidateQueries(['admin-finances']);
+      setShowForm(false);
+      setFormData({ amount: '', description: '', category: 'other', date: '' });
+    },
+  });
+
+  const delMutation = useMutation({
+    mutationFn: (id) => api.delete(`/admin/expenses/${id}`),
+    onSuccess:  () => qc.invalidateQueries(['admin-finances']),
   });
 
   if (isLoading) {
@@ -62,7 +100,7 @@ export default function AdminFinances() {
     );
   }
 
-  const { summary = {}, byMethod = [], byStatus = [], recentPayments = [] } = data || {};
+  const { summary = {}, byMethod = [], byStatus = [], recentPayments = [], expenses = [] } = data || {};
 
   const totalByProvider = byMethod.reduce((acc, m) => {
     acc[m.provider] = { amount: m._sum?.amount || 0, count: m._count || 0 };
@@ -74,13 +112,26 @@ export default function AdminFinances() {
     return acc;
   }, {});
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.amount || !formData.description) return;
+    addMutation.mutate({
+      amount:      parseInt(formData.amount, 10),
+      description: formData.description,
+      category:    formData.category,
+      date:        formData.date || undefined,
+    });
+  };
+
+  const netProfit = (summary.netProfit || 0);
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Finances</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Revenus, abonnements et transactions</p>
+          <p className="text-sm text-gray-500 mt-0.5">Revenus, dépenses et bilan</p>
         </div>
         <span className="text-xs text-gray-600 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
           Mis à jour toutes les minutes
@@ -89,10 +140,7 @@ export default function AdminFinances() {
 
       {/* Onglets */}
       <div className="flex gap-1 border-b border-white/[0.06]">
-        {[
-          { key: 'overview', label: 'Vue d\'ensemble' },
-          { key: 'transactions', label: 'Transactions récentes' },
-        ].map(({ key, label }) => (
+        {TABS.map(({ key, label }) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
@@ -107,33 +155,32 @@ export default function AdminFinances() {
         ))}
       </div>
 
+      {/* ── VUE D'ENSEMBLE ── */}
       {activeTab === 'overview' && (
         <>
-          {/* KPIs */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard
-              label="Revenu total"
+              label="Revenus totaux"
               value={formatAmount(summary.totalRevenue)}
               sub={`${summary.totalPayments || 0} paiements`}
-              icon={DollarSign}
+              icon={ArrowDownLeft}
               color="text-primary-400"
               bg="bg-primary-500/10"
             />
             <StatCard
-              label="Ce mois"
-              value={formatAmount(summary.monthRevenue)}
-              sub={`${summary.monthPayments || 0} paiements`}
-              trend={summary.growth}
-              icon={TrendingUp}
-              color="text-green-400"
-              bg="bg-green-500/10"
+              label="Dépenses totales"
+              value={formatAmount(summary.totalExpenses)}
+              sub={`${summary.totalExpensesCount || 0} sorties`}
+              icon={ArrowUpRight}
+              color="text-red-400"
+              bg="bg-red-500/10"
             />
             <StatCard
-              label="Mois dernier"
-              value={formatAmount(summary.lastMonthRevenue)}
-              icon={TrendingDown}
-              color="text-blue-400"
-              bg="bg-blue-500/10"
+              label="Bénéfice net"
+              value={formatAmount(netProfit)}
+              icon={DollarSign}
+              color={netProfit >= 0 ? 'text-green-400' : 'text-red-400'}
+              bg={netProfit >= 0 ? 'bg-green-500/10' : 'bg-red-500/10'}
             />
             <StatCard
               label="Abonnements actifs"
@@ -144,7 +191,26 @@ export default function AdminFinances() {
             />
           </div>
 
-          {/* Répartition par méthode */}
+          <div className="grid grid-cols-2 gap-4">
+            <StatCard
+              label="Revenus ce mois"
+              value={formatAmount(summary.monthRevenue)}
+              sub={`${summary.monthPayments || 0} paiements`}
+              trend={summary.growth}
+              icon={TrendingUp}
+              color="text-green-400"
+              bg="bg-green-500/10"
+            />
+            <StatCard
+              label="Dépenses ce mois"
+              value={formatAmount(summary.monthExpenses)}
+              sub={`${summary.monthExpensesCount || 0} sorties`}
+              icon={TrendingDown}
+              color="text-red-400"
+              bg="bg-red-500/10"
+            />
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="rounded-2xl border border-white/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
               <h2 className="text-sm font-semibold text-gray-300 mb-4">Par méthode de paiement</h2>
@@ -177,7 +243,6 @@ export default function AdminFinances() {
               </div>
             </div>
 
-            {/* Répartition par statut */}
             <div className="rounded-2xl border border-white/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
               <h2 className="text-sm font-semibold text-gray-300 mb-4">Par statut</h2>
               <div className="space-y-2.5">
@@ -198,6 +263,7 @@ export default function AdminFinances() {
         </>
       )}
 
+      {/* ── ENTRÉES ── */}
       {activeTab === 'transactions' && (
         <div className="rounded-2xl border border-white/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
           <div className="overflow-x-auto">
@@ -221,7 +287,7 @@ export default function AdminFinances() {
                         <p className="text-xs text-gray-600">{p.user?.email}</p>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm font-semibold text-white">{formatAmount(p.amount)}</span>
+                        <span className="text-sm font-semibold text-primary-400">{formatAmount(p.amount)}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm text-gray-400">{PROVIDER_LABEL[p.provider] || p.provider}</span>
@@ -242,13 +308,154 @@ export default function AdminFinances() {
                 })}
                 {recentPayments.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-600">
-                      Aucune transaction
-                    </td>
+                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-600">Aucune transaction</td>
                   </tr>
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ── SORTIES ── */}
+      {activeTab === 'expenses' && (
+        <div className="space-y-4">
+          <div className="flex justify-end">
+            <button
+              onClick={() => setShowForm((v) => !v)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-500/15 text-primary-400 hover:bg-primary-500/25 transition-colors text-sm font-medium"
+            >
+              <PlusCircle size={15} />
+              Ajouter une dépense
+            </button>
+          </div>
+
+          {showForm && (
+            <form onSubmit={handleSubmit} className="rounded-2xl border border-white/[0.08] p-5 space-y-4" style={{ background: 'var(--color-card)' }}>
+              <h3 className="text-sm font-semibold text-gray-200">Nouvelle dépense</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1.5">Montant (XOF) *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={formData.amount}
+                    onChange={(e) => setFormData((d) => ({ ...d, amount: e.target.value }))}
+                    placeholder="Ex: 15000"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1.5">Catégorie</label>
+                  <select
+                    value={formData.category}
+                    onChange={(e) => setFormData((d) => ({ ...d, category: e.target.value }))}
+                    className="w-full border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                    style={{ background: 'var(--color-card)' }}
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>{CATEGORY_LABEL[c]?.label || c}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1.5">Description *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.description}
+                    onChange={(e) => setFormData((d) => ({ ...d, description: e.target.value }))}
+                    placeholder="Ex: Serveur OVH mensuel"
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-500 mb-1.5">Date (optionnel)</label>
+                  <input
+                    type="date"
+                    value={formData.date}
+                    onChange={(e) => setFormData((d) => ({ ...d, date: e.target.value }))}
+                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                    style={{ colorScheme: 'dark' }}
+                  />
+                </div>
+              </div>
+              <div className="flex gap-3 pt-1">
+                <button
+                  type="submit"
+                  disabled={addMutation.isLoading}
+                  className="px-5 py-2 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-600 transition-colors disabled:opacity-50"
+                >
+                  {addMutation.isLoading ? 'Enregistrement…' : 'Enregistrer'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="px-5 py-2 rounded-xl bg-white/[0.06] text-gray-400 text-sm font-medium hover:bg-white/[0.10] transition-colors"
+                >
+                  Annuler
+                </button>
+              </div>
+            </form>
+          )}
+
+          <div className="rounded-2xl border border-white/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-white/[0.06]">
+                    {['Description', 'Catégorie', 'Montant', 'Date', ''].map((h) => (
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-white/[0.04]">
+                  {expenses.map((exp) => {
+                    const cat = CATEGORY_LABEL[exp.category] || CATEGORY_LABEL.other;
+                    return (
+                      <tr key={exp.id} className="hover:bg-white/[0.02] transition-colors">
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-medium text-gray-200">{exp.description}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${cat.color}`}>
+                            {cat.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-sm font-semibold text-red-400">{formatAmount(exp.amount)}</span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="text-xs text-gray-500">
+                            {format(new Date(exp.date), 'dd MMM yyyy', { locale: fr })}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => {
+                              if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(exp.id);
+                            }}
+                            className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                  {expenses.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-600">
+                        Aucune dépense enregistrée — cliquez sur "Ajouter une dépense"
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

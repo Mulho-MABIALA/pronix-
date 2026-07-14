@@ -412,11 +412,25 @@ async function getAdminFinances(req, res, next) {
       }),
     ]);
 
+    // Dépenses
+    const [totalExpenses, monthExpenses, recentExpenses] = await Promise.all([
+      prisma.expense.aggregate({ _sum: { amount: true }, _count: true }),
+      prisma.expense.aggregate({
+        where: { date: { gte: startOfMonth } },
+        _sum: { amount: true },
+        _count: true,
+      }),
+      prisma.expense.findMany({ orderBy: { date: 'desc' }, take: 50 }),
+    ]);
+
+    const totalRev = totalRevenue._sum.amount || 0;
+    const totalExp = totalExpenses._sum.amount || 0;
+
     res.json({
       success: true,
       data: {
         summary: {
-          totalRevenue: totalRevenue._sum.amount || 0,
+          totalRevenue: totalRev,
           totalPayments: totalRevenue._count,
           monthRevenue: monthRevenue._sum.amount || 0,
           monthPayments: monthRevenue._count,
@@ -425,13 +439,53 @@ async function getAdminFinances(req, res, next) {
           growth: lastMonthRevenue._sum.amount > 0
             ? Math.round(((monthRevenue._sum.amount - lastMonthRevenue._sum.amount) / lastMonthRevenue._sum.amount) * 100)
             : null,
+          totalExpenses: totalExp,
+          totalExpensesCount: totalExpenses._count,
+          monthExpenses: monthExpenses._sum.amount || 0,
+          monthExpensesCount: monthExpenses._count,
+          netProfit: totalRev - totalExp,
         },
         byMethod: revenueByMethod,
         byStatus: revenueByStatus,
         byPlan: subscriptionsByPlan,
         recentPayments,
+        expenses: recentExpenses,
       },
     });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Dépenses (Sorties) ───────────────────────────────────────────────────────
+async function createExpense(req, res, next) {
+  try {
+    const schema = z.object({
+      amount:      z.number().int().positive(),
+      description: z.string().min(1).max(255),
+      category:    z.enum(['hosting', 'domain', 'api', 'marketing', 'salary', 'other']).default('other'),
+      date:        z.string().optional(),
+    });
+    const data = schema.parse(req.body);
+    const expense = await prisma.expense.create({
+      data: {
+        amount:      data.amount,
+        description: data.description,
+        category:    data.category,
+        date:        data.date ? new Date(data.date) : new Date(),
+      },
+    });
+    res.status(201).json({ success: true, data: expense });
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function deleteExpense(req, res, next) {
+  try {
+    const { id } = req.params;
+    await prisma.expense.delete({ where: { id } });
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }
@@ -526,6 +580,7 @@ module.exports = {
   getAdminTipsters,
   getAdminPayments,
   getAdminFinances,
+  createExpense, deleteExpense,
   getAdminMatches,
   syncPredictions,
   triggerSync,

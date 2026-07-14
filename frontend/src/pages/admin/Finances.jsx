@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   TrendingUp, TrendingDown, DollarSign, Users, CreditCard,
   CheckCircle, XCircle, Clock, ArrowDownLeft, ArrowUpRight,
-  PlusCircle, Trash2,
+  PlusCircle, Trash2, Eye, X,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -67,9 +67,10 @@ const TABS = [
 const CATEGORIES = ['hosting', 'domain', 'api', 'marketing', 'salary', 'other'];
 
 export default function AdminFinances() {
-  const [activeTab, setActiveTab] = useState('overview');
-  const [showForm, setShowForm]   = useState(false);
-  const [formData, setFormData]   = useState({ amount: '', description: '', category: 'other', date: '' });
+  const [activeTab, setActiveTab]     = useState('overview');
+  const [showForm, setShowForm]       = useState(false);
+  const [formData, setFormData]       = useState({ amount: '', description: '', category: 'other', date: '' });
+  const [viewExpense, setViewExpense] = useState(null); // dépense sélectionnée pour la modale
   const qc = useQueryClient();
 
   const { data, isLoading } = useQuery({
@@ -126,6 +127,75 @@ export default function AdminFinances() {
   const netProfit = (summary.netProfit || 0);
 
   return (
+    <>
+    {/* ── Modale détail dépense ── */}
+    {viewExpense && (() => {
+      const cat = CATEGORY_LABEL[viewExpense.category] || CATEGORY_LABEL.other;
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewExpense(null)} />
+          <div className="relative w-full max-w-sm rounded-2xl border border-white/[0.08] p-6 space-y-5 animate-fade-in"
+            style={{ background: 'var(--color-card)' }}>
+
+            {/* En-tête */}
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">Détail dépense</p>
+                <h3 className="text-base font-bold text-white leading-snug">{viewExpense.description}</h3>
+              </div>
+              <button onClick={() => setViewExpense(null)}
+                className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/[0.08] transition-colors shrink-0">
+                <X size={16} />
+              </button>
+            </div>
+
+            {/* Champs */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
+                <span className="text-xs text-gray-500">Montant</span>
+                <span className="text-sm font-bold text-red-400">{formatAmount(viewExpense.amount)}</span>
+              </div>
+              <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
+                <span className="text-xs text-gray-500">Catégorie</span>
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${cat.color}`}>{cat.label}</span>
+              </div>
+              <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
+                <span className="text-xs text-gray-500">Date</span>
+                <span className="text-sm text-gray-300">
+                  {format(new Date(viewExpense.date), 'dd MMMM yyyy', { locale: fr })}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2.5">
+                <span className="text-xs text-gray-500">Ajouté le</span>
+                <span className="text-xs text-gray-500">
+                  {format(new Date(viewExpense.createdAt), 'dd MMM yyyy HH:mm', { locale: fr })}
+                </span>
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 pt-1">
+              <button
+                onClick={() => {
+                  setViewExpense(null);
+                  if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(viewExpense.id);
+                }}
+                className="flex-1 flex items-center justify-center gap-2 py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors text-sm font-medium"
+              >
+                <Trash2 size={14} /> Supprimer
+              </button>
+              <button
+                onClick={() => setViewExpense(null)}
+                className="flex-1 py-2 rounded-xl bg-white/[0.06] text-gray-400 hover:bg-white/[0.10] transition-colors text-sm font-medium"
+              >
+                Fermer
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    })()}
+
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -434,14 +504,24 @@ export default function AdminFinances() {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <button
-                            onClick={() => {
-                              if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(exp.id);
-                            }}
-                            className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
-                          >
-                            <Trash2 size={14} />
-                          </button>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() => setViewExpense(exp)}
+                              className="p-1.5 rounded-lg text-gray-600 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
+                              title="Voir le détail"
+                            >
+                              <Eye size={14} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(exp.id);
+                              }}
+                              className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
+                              title="Supprimer"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     );
@@ -460,5 +540,6 @@ export default function AdminFinances() {
         </div>
       )}
     </div>
+    </>
   );
 }

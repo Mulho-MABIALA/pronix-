@@ -41,16 +41,16 @@ async function runAgentContenu() {
     messages: [
       {
         role: 'user',
-        content: `Tu es le community manager de Pronix (pronix.app), plateforme de stats football pour tous les francophones.
+        content: `Tu es le community manager de fpronix (fpronix.com), plateforme de stats football pour tous les francophones.
 
 Voici les matchs du jour :
 ${matchList}
 
 Génère 2 posts de réseaux sociaux en français (langage dynamique, proche des fans) :
-1. Un post WhatsApp court (200 mots max) avec les affches du jour + emoji
+1. Un post WhatsApp court (200 mots max) avec les affiches du jour + emoji
 2. Un post Facebook plus développé (400 mots max) avec contexte + appel à rejoindre la plateforme
 
-Inclus toujours : "pronix.app" et le hashtag "#Pronix"
+Inclus toujours : "fpronix.com" et le hashtag "#fpronix"
 Jamais de conseil de paris ni promesse de gain.
 
 Réponds en JSON :

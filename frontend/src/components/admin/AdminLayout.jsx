@@ -3,7 +3,7 @@ import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight, Bot, Shield,
+  ExternalLink, LogOut, ChevronRight, Bot, Shield, BarChart3,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,6 +28,7 @@ const NAV_GROUPS = [
       { to: '/admin/competitions', label: 'Compétitions', Icon: Globe },
       { to: '/admin/matchs',       label: 'Matchs',       Icon: Calendar },
       { to: '/admin/paiements',    label: 'Paiements',    Icon: CreditCard },
+      { to: '/admin/finances',     label: 'Finances',     Icon: BarChart3 },
     ],
   },
   {

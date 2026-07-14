@@ -344,6 +344,99 @@ async function getAdminPayments(req, res, next) {
   }
 }
 
+// ─── Finances (stats agrégées) ───────────────────────────────────────────────
+async function getAdminFinances(req, res, next) {
+  try {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+
+    const [
+      totalRevenue,
+      monthRevenue,
+      lastMonthRevenue,
+      revenueByMethod,
+      revenueByStatus,
+      activeSubscriptions,
+      recentPayments,
+      subscriptionsByPlan,
+    ] = await prisma.$transaction([
+      // Revenu total (paiements COMPLETED)
+      prisma.payment.aggregate({
+        where: { status: 'COMPLETED' },
+        _sum: { amount: true },
+        _count: true,
+      }),
+      // Revenu ce mois
+      prisma.payment.aggregate({
+        where: { status: 'COMPLETED', createdAt: { gte: startOfMonth } },
+        _sum: { amount: true },
+        _count: true,
+      }),
+      // Revenu mois dernier
+      prisma.payment.aggregate({
+        where: { status: 'COMPLETED', createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } },
+        _sum: { amount: true },
+        _count: true,
+      }),
+      // Répartition par méthode de paiement
+      prisma.payment.groupBy({
+        by: ['provider'],
+        where: { status: 'COMPLETED' },
+        _sum: { amount: true },
+        _count: true,
+      }),
+      // Répartition par statut
+      prisma.payment.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+      // Abonnements actifs
+      prisma.subscription.count({
+        where: { status: 'ACTIVE', endDate: { gte: now } },
+      }),
+      // 20 dernières transactions
+      prisma.payment.findMany({
+        take: 20,
+        orderBy: { createdAt: 'desc' },
+        include: {
+          user: { select: { username: true, email: true } },
+        },
+      }),
+      // Abonnements par plan
+      prisma.subscription.groupBy({
+        by: ['planId'],
+        where: { status: 'ACTIVE' },
+        _count: true,
+      }),
+    ]);
+
+    res.json({
+      success: true,
+      data: {
+        summary: {
+          totalRevenue: totalRevenue._sum.amount || 0,
+          totalPayments: totalRevenue._count,
+          monthRevenue: monthRevenue._sum.amount || 0,
+          monthPayments: monthRevenue._count,
+          lastMonthRevenue: lastMonthRevenue._sum.amount || 0,
+          activeSubscriptions,
+          growth: lastMonthRevenue._sum.amount > 0
+            ? Math.round(((monthRevenue._sum.amount - lastMonthRevenue._sum.amount) / lastMonthRevenue._sum.amount) * 100)
+            : null,
+        },
+        byMethod: revenueByMethod,
+        byStatus: revenueByStatus,
+        byPlan: subscriptionsByPlan,
+        recentPayments,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ─── Matchs ───────────────────────────────────────────────────────────────────
 async function getAdminMatches(req, res, next) {
   try {
@@ -432,6 +525,7 @@ module.exports = {
   getAdminCompetitions, toggleCompetitionDisplay,
   getAdminTipsters,
   getAdminPayments,
+  getAdminFinances,
   getAdminMatches,
   syncPredictions,
   triggerSync,

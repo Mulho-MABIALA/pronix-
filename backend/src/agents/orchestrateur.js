@@ -88,7 +88,7 @@ async function orchestrer(instruction) {
       model: 'claude-opus-4-8',
       max_tokens: 2000,
       thinking: { type: 'adaptive' },
-      system: `Tu es l'orchestrateur d'une équipe d'agents IA pour Statistique Foot SN.
+      system: `Tu es l'orchestrateur d'une équipe d'agents IA pour fpronix (fpronix.com).
 Tu disposes de 4 agents spécialisés. Choisis les bons agents selon la demande.
 Exécute les outils nécessaires puis synthétise les résultats en français.
 Ne répète pas les données brutes — résume ce qui a été accompli.`,

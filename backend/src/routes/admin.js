@@ -7,6 +7,7 @@ const {
   getAdminCompetitions, toggleCompetitionDisplay,
   getAdminTipsters,
   getAdminPayments,
+  getAdminFinances,
   getAdminMatches,
   syncPredictions,
   triggerSync,
@@ -30,6 +31,7 @@ router.patch('/competitions/:competitionId/display', toggleCompetitionDisplay);
 
 router.get('/tipsters', getAdminTipsters);
 router.get('/payments', getAdminPayments);
+router.get('/finances', getAdminFinances);
 router.get('/matches', getAdminMatches);
 
 router.post('/sync', triggerSync);

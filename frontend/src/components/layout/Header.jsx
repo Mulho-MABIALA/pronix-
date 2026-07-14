@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Sun, Moon, User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
+
 import NotificationBell from '../ui/NotificationBell';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -108,7 +108,6 @@ function OutilsDropdown() {
 export default function Header() {
   const { t } = useTranslation();
   const { user, logout, isAdmin } = useAuth();
-  const { theme, toggleTheme } = useTheme();
   const { isInstallable, install } = usePWAInstall();
 
   const NAV_LINKS = [
@@ -166,12 +165,6 @@ export default function Header() {
 
           {/* Switcher de langue */}
           <LangSwitcher />
-
-          <button onClick={toggleTheme}
-            className="p-2 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
-            aria-label={theme === 'dark' ? t('nav.lightMode') : t('nav.darkMode')}>
-            {theme === 'dark' ? <Sun size={17} /> : <Moon size={17} />}
-          </button>
 
           {user ? (
             <>

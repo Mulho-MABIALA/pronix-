@@ -13,19 +13,19 @@ async function runAgentAnalyse() {
 
   // Récupérer les tipsters avec leurs stats
   const tipsters = await prisma.user.findMany({
-    where: { role: 'ADMIN' },
+    where: { tipsterStats: { isNot: null } },
     select: {
       id: true,
       username: true,
       tipsterStats: true,
-      predictions: {
+      tips: {
         where: {
           createdAt: {
             gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000),
           },
-          status: { in: ['WON', 'LOST'] },
+          result: { in: ['WIN', 'LOSS'] },
         },
-        select: { status: true, confidence: true },
+        select: { result: true, confidence: true },
       },
     },
     take: 20,
@@ -36,14 +36,14 @@ async function runAgentAnalyse() {
   }
 
   const tipsterData = tipsters.map((t) => {
-    const weekPreds = t.predictions || [];
-    const won = weekPreds.filter((p) => p.status === 'WON').length;
+    const weekPreds = t.tips || [];
+    const won = weekPreds.filter((p) => p.result === 'WIN').length;
     const total = weekPreds.length;
     const weekRate = total > 0 ? Math.round((won / total) * 100) : 0;
 
     return {
       username: t.username,
-      totalPredictions: t.tipsterStats?.totalPredictions || 0,
+      totalPredictions: t.tipsterStats?.totalTips || 0,
       successRate: t.tipsterStats?.successRate || 0,
       weeklyWon: won,
       weeklyTotal: total,

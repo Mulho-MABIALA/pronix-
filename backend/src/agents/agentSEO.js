@@ -41,7 +41,7 @@ Compétition : ${match.competition?.name || 'Football'}
 ${scoreInfo}
 Date : ${new Date(match.scheduledAt).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
 
-Génère le contenu SEO pour la page de ce match sur pronix.app :
+Génère le contenu SEO pour la page de ce match sur fpronix.com :
 
 1. **Title tag** (60 chars max) : accrocheur + mot-clé principal
 2. **Meta description** (160 chars max) : inclut les équipes + compétition + action

@@ -41,6 +41,7 @@ import AdminCompetitions from './pages/admin/Competitions';
 import AdminPayments from './pages/admin/Payments';
 import AdminMatches from './pages/admin/AdminMatches';
 import AdminAgents from './pages/admin/Agents';
+import AdminFinances from './pages/admin/Finances';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -112,6 +113,7 @@ export default function App() {
                 <Route path="/admin/competitions" element={<AdminCompetitions />} />
                 <Route path="/admin/matchs" element={<AdminMatches />} />
                 <Route path="/admin/paiements" element={<AdminPayments />} />
+                <Route path="/admin/finances" element={<AdminFinances />} />
                 <Route path="/admin/agents" element={<AdminAgents />} />
               </Route>
 

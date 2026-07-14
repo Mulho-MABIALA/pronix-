@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Barlow:wght@600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,9 +18,14 @@
   html { @apply scroll-smooth; }
 
   body {
-    @apply text-gray-100 font-sans antialiased;
+    @apply font-sans antialiased;
+    color: #e8eaed;
     background-color: var(--color-bg);
     min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern" 1;
   }
 
   ::-webkit-scrollbar { width: 5px; }
@@ -177,17 +182,18 @@
 
   /* ── Section header ─────────────────────────────────────────────── */
   .section-title {
-    @apply font-display font-bold text-base text-gray-100 tracking-tight;
+    @apply font-display font-bold text-base tracking-tight;
+    color: #ffffff;
   }
 
   /* ── Disclaimer ─────────────────────────────────────────────────── */
   .disclaimer {
-    @apply text-[11px] text-gray-600 italic leading-relaxed;
+    @apply text-[11px] text-gray-500 italic leading-relaxed;
   }
 
   /* ── Competition label ──────────────────────────────────────────── */
   .comp-label {
-    @apply text-[10px] font-semibold text-gray-500 uppercase tracking-widest;
+    @apply text-[10px] font-semibold text-gray-400 uppercase tracking-widest;
   }
 
   /* ── Scrollbar hide ─────────────────────────────────────────────── */

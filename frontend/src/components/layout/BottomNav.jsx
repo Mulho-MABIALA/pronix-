@@ -54,7 +54,7 @@ function ExplorerDrawer({ open, onClose }) {
         </div>
 
         {/* Sections — scrollable */}
-        <div className="overflow-y-auto flex-1 px-4 py-4 space-y-5" style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}>
+        <div className="overflow-y-auto flex-1 min-h-0 px-4 py-4 space-y-5" style={{ paddingBottom: 'max(5rem, env(safe-area-inset-bottom))' }}>
           {SECTIONS.map((section) => (
             <div key={section.label}>
               <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2 px-1">{section.label}</p>

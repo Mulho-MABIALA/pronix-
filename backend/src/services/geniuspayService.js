@@ -9,6 +9,7 @@ function getHeaders() {
     'X-API-Key':    env.GENIUSPAY_API_KEY    || '',
     'X-API-Secret': env.GENIUSPAY_API_SECRET || '',
     'Content-Type': 'application/json',
+    'Accept':       'application/json',
   };
 }
 

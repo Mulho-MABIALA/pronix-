@@ -7,6 +7,7 @@ const fedapayService = require('../services/fedapayService');
 const geniuspayService = require('../services/geniuspayService');
 const { AppError } = require('../middleware/errorHandler');
 const env = require('../config/env');
+const { notifyUser } = require('./pushController');
 
 // ─── Helper : active/renouvelle l'abonnement après paiement validé ───────────
 async function activateSubscription(userId, planId, billingCycle, paymentId) {
@@ -25,6 +26,14 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
       data: { status: 'COMPLETED' },
     }),
   ]);
+
+  // Push de confirmation (fire & forget)
+  notifyUser(userId, {
+    title: '🎉 Bienvenue Premium !',
+    body:  `Votre abonnement ${billingCycle === 'YEARLY' ? 'annuel' : 'mensuel'} est maintenant actif. Profitez de tous les avantages !`,
+    url:   '/profil',
+    tag:   'subscription-confirmed',
+  }).catch(() => {});
 }
 
 // ─── Initier un paiement Wave ──────────────────────────────────────────────────

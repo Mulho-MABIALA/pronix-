@@ -2,6 +2,7 @@
 const cron = require('node-cron');
 const prisma = require('../config/database');
 const { sendSubscriptionExpiryReminder } = require('../services/emailService');
+const { notifyUser } = require('../controllers/pushController');
 
 async function checkExpiringSubscriptions() {
   console.log('[Cron checkSubscriptions] Vérification des abonnements...');
@@ -32,6 +33,16 @@ async function checkExpiringSubscriptions() {
           { ...sub.user, subscription: sub },
           daysLeft === 0 ? 'aujourd\'hui' : daysLeft
         ).catch(console.error);
+      }
+
+      // Push notification (J-3 et J-1 uniquement, pas J0 pour éviter le doublon avec l'email)
+      if (daysLeft > 0) {
+        notifyUser(sub.user.id, {
+          title: `⚠️ Abonnement expirant dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}`,
+          body:  `Renouvelez votre abonnement ${sub.plan?.displayName || 'Premium'} pour continuer à profiter de tous les avantages.`,
+          url:   '/abonnement',
+          tag:   `sub-expiry-${sub.id}`,
+        }).catch(console.error);
       }
     }
 

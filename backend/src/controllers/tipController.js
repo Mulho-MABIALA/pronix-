@@ -1,6 +1,17 @@
 const { z } = require('zod');
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
+const { broadcastNotification } = require('./pushController');
+
+const PRED_LABELS = {
+  HOME_WIN:   'Victoire domicile',
+  DRAW:       'Match nul',
+  AWAY_WIN:   'Victoire extérieure',
+  OVER_2_5:   'Plus de 2.5 buts',
+  UNDER_2_5:  'Moins de 2.5 buts',
+  BTTS_YES:   'Les deux équipes marquent',
+  BTTS_NO:    "Au moins une équipe ne marque pas",
+};
 
 // ─── Schéma de création d'un pronostic ────────────────────────────────────────
 const createTipSchema = z.object({
@@ -32,6 +43,15 @@ async function createTip(req, res, next) {
         user: { include: { profile: true, tipsterStats: true } },
       },
     });
+
+    // ── Push notification (fire & forget) ──────────────────────────
+    const tipsterName = tip.user?.profile?.displayName || tip.user?.username || 'Un tipster';
+    broadcastNotification({
+      title: `⚽ ${match.homeTeam} vs ${match.awayTeam}`,
+      body:  `${tipsterName} pronostique : ${PRED_LABELS[tip.prediction] || tip.prediction}`,
+      url:   `/matchs/${match.id}`,
+      tag:   `tip-${tip.id}`,
+    }).catch(() => {});
 
     res.status(201).json({ success: true, data: tip });
   } catch (err) {

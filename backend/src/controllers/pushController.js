@@ -111,4 +111,44 @@ async function adminBroadcast(req, res, next) {
   }
 }
 
-module.exports = { subscribe, unsubscribe, getPublicKey, broadcastNotification, adminBroadcast };
+async function getPushStats(req, res, next) {
+  try {
+    const total = await prisma.pushSubscription.count();
+    const withUser = await prisma.pushSubscription.count({ where: { userId: { not: null } } });
+    res.json({ success: true, data: { total, withUser, anonymous: total - withUser } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Notification ciblée : un seul utilisateur ────────────────────────────────
+async function notifyUser(userId, payload) {
+  if (!vapidReady || !userId) return;
+
+  const subs = await prisma.pushSubscription.findMany({ where: { userId } });
+  if (subs.length === 0) return;
+
+  const results = await Promise.allSettled(
+    subs.map((sub) =>
+      webpush.sendNotification(
+        { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
+        JSON.stringify({ icon: '/logo192.png', ...payload })
+      )
+    )
+  );
+
+  const expiredEndpoints = [];
+  results.forEach((r, i) => {
+    if (r.status === 'rejected' && [404, 410].includes(r.reason?.statusCode)) {
+      expiredEndpoints.push(subs[i].endpoint);
+    }
+  });
+
+  if (expiredEndpoints.length > 0) {
+    await prisma.pushSubscription.deleteMany({
+      where: { endpoint: { in: expiredEndpoints } },
+    });
+  }
+}
+
+module.exports = { subscribe, unsubscribe, getPublicKey, broadcastNotification, adminBroadcast, getPushStats, notifyUser };

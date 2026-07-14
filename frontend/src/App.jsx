@@ -42,6 +42,7 @@ import AdminPayments from './pages/admin/Payments';
 import AdminMatches from './pages/admin/AdminMatches';
 import AdminAgents from './pages/admin/Agents';
 import AdminFinances from './pages/admin/Finances';
+import AdminNotifications from './pages/admin/Notifications';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -114,6 +115,7 @@ export default function App() {
                 <Route path="/admin/matchs" element={<AdminMatches />} />
                 <Route path="/admin/paiements" element={<AdminPayments />} />
                 <Route path="/admin/finances" element={<AdminFinances />} />
+                <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/agents" element={<AdminAgents />} />
               </Route>
 

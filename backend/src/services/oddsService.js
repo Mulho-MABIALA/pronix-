@@ -3,6 +3,7 @@
 // Stratégie : sync 1×/jour via cron, cache in-memory, fallback mock côté front si absent.
 
 const env = require('../config/env');
+const { broadcastNotification } = require('../controllers/pushController');
 
 // Championnats couverts (clés The Odds API) — adapter selon les ligues de ta base
 const SOCCER_SPORTS = [
@@ -136,6 +137,30 @@ async function syncOdds() {
 
   lastSync = new Date();
   console.log(`[Odds] ${total} matchs en cache, sync terminée (${lastSync.toISOString()})`);
+
+  // ── Value bets : matchs avec au moins une cote ≥ 3.0 (opportunités de valeur)
+  if (total > 0) {
+    const today = new Date().toISOString().split('T')[0];
+    const valueBets = [...oddsCache.values()].filter((data) => {
+      // Limiter aux matchs d'aujourd'hui / demain
+      if (!data.commenceTime) return false;
+      const matchDate = new Date(data.commenceTime).toISOString().split('T')[0];
+      if (matchDate < today) return false;
+      // Cote max ≥ 3.0 = possible valeur sur un outsider
+      return Math.max(data.best.home, data.best.draw, data.best.away) >= 3.0;
+    });
+
+    if (valueBets.length > 0) {
+      broadcastNotification({
+        title: `🔥 ${valueBets.length} value bet${valueBets.length > 1 ? 's' : ''} détecté${valueBets.length > 1 ? 's' : ''} !`,
+        body:  "Des cotes à forte valeur ont été identifiées sur les matchs d'aujourd'hui et demain.",
+        url:   '/outils/filtres',
+        tag:   'value-bets',
+        icon:  '/logo192.png',
+      }).catch((e) => console.error('[Odds] Push value bets:', e.message));
+      console.log(`[Odds] ${valueBets.length} value bets — notification envoyée`);
+    }
+  }
 }
 
 // ── Récupération des cotes pour un match ─────────────────────────────────────

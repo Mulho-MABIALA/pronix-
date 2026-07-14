@@ -3,7 +3,7 @@ import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight, Bot, Shield, BarChart3,
+  ExternalLink, LogOut, ChevronRight, Bot, Shield, BarChart3, Bell,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -34,7 +34,8 @@ const NAV_GROUPS = [
   {
     label: 'Intelligence',
     items: [
-      { to: '/admin/agents', label: 'Agents IA', Icon: Bot },
+      { to: '/admin/agents',         label: 'Agents IA',      Icon: Bot },
+      { to: '/admin/notifications',  label: 'Notifications',  Icon: Bell },
     ],
   },
 ];

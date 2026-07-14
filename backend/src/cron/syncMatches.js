@@ -2,8 +2,58 @@
 const cron = require('node-cron');
 const prisma = require('../config/database');
 const footballApi = require('../services/footballApi');
-const { broadcastNotification } = require('../controllers/pushController');
+const { broadcastNotification, notifyUser } = require('../controllers/pushController');
 const { calculatePredictionsForDate } = require('../services/predictionService');
+
+// ─── Évaluation d'un pronostic vs score final ─────────────────────────────────
+const PRED_LABELS = {
+  HOME_WIN:  'Victoire domicile',
+  DRAW:      'Match nul',
+  AWAY_WIN:  'Victoire extérieure',
+  OVER_2_5:  'Plus de 2.5 buts',
+  UNDER_2_5: 'Moins de 2.5 buts',
+  BTTS_YES:  'Les deux équipes marquent',
+  BTTS_NO:   "Au moins une équipe ne marque pas",
+};
+
+function evaluateTip(prediction, homeScore, awayScore) {
+  if (homeScore === null || awayScore === null) return null;
+  const total = homeScore + awayScore;
+  switch (prediction) {
+    case 'HOME_WIN':  return homeScore > awayScore;
+    case 'DRAW':      return homeScore === awayScore;
+    case 'AWAY_WIN':  return awayScore > homeScore;
+    case 'OVER_2_5':  return total > 2;
+    case 'UNDER_2_5': return total < 3;
+    case 'BTTS_YES':  return homeScore > 0 && awayScore > 0;
+    case 'BTTS_NO':   return homeScore === 0 || awayScore === 0;
+    default:          return null;
+  }
+}
+
+async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScore) {
+  try {
+    const tips = await prisma.tip.findMany({
+      where: { matchId, isVisible: true, userId: { not: null } },
+      select: { id: true, userId: true, prediction: true },
+    });
+    if (tips.length === 0) return;
+
+    const scoreStr = `${homeScore}-${awayScore}`;
+    for (const tip of tips) {
+      const won = evaluateTip(tip.prediction, homeScore, awayScore);
+      if (won === null) continue;
+      await notifyUser(tip.userId, {
+        title: won ? '✅ Bon pronostic !' : '❌ Pronostic raté',
+        body:  `${homeTeam} ${scoreStr} ${awayTeam} — ${PRED_LABELS[tip.prediction] || tip.prediction}`,
+        url:   `/matchs/${matchId}`,
+        tag:   `tipresult-${tip.id}`,
+      });
+    }
+  } catch (err) {
+    console.error('[Cron syncLive] notifyTipResults:', err.message);
+  }
+}
 
 // Cache des dates déjà synchronisées (protection quota api-sports)
 const syncCache = new Map();
@@ -150,6 +200,23 @@ async function syncLiveMatches() {
           url:   `/matchs/${match.id}`,
           tag:   `live-${match.id}`,
         }).catch(() => {});
+      }
+
+      // Fin de match : LIVE → FINISHED
+      if (wasLive && normalized.status === 'FINISHED') {
+        const hs = normalized.homeScore ?? 0;
+        const as = normalized.awayScore ?? 0;
+
+        // Broadcast résultat à tous
+        broadcastNotification({
+          title: `⚽ Résultat : ${match.homeTeam} ${hs}-${as} ${match.awayTeam}`,
+          body:  'Le match est terminé.',
+          url:   `/matchs/${match.id}`,
+          tag:   `result-${match.id}`,
+        }).catch(() => {});
+
+        // Notification individuelle par tipster
+        notifyTipResults(match.id, match.homeTeam, match.awayTeam, hs, as).catch(() => {});
       }
     }
   } catch (err) {

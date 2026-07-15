@@ -56,6 +56,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Script personnalisé pour les notifications push
+        importScripts: ['push-handler.js'],
         // Précacher tous les assets statiques
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,webp}'],
         // Stratégies de cache runtime

@@ -6,7 +6,8 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
   const isPremium = plan.code === 'PREMIUM';
   const isYearly = billingCycle === 'YEARLY';
   const displayPrice = isYearly ? plan.priceYearly : plan.priceMonthly;
-  const monthlyEquiv = isYearly ? (plan.priceYearly / 12).toFixed(2) : null;
+  const monthlyEquiv = isYearly ? Math.round(plan.priceYearly / 12) : null;
+  const fmt = (n) => new Intl.NumberFormat('fr-FR').format(n);
 
   return (
     <motion.div
@@ -31,11 +32,11 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
           ) : (
             <>
               <span className="text-3xl font-display font-bold text-gray-100">
-                ${displayPrice?.toFixed(2)}
+                {fmt(displayPrice)}
               </span>
-              <span className="text-gray-500 pb-1">{isYearly ? '/an' : '/mois'}</span>
+              <span className="text-gray-500 pb-1"> FCFA{isYearly ? '/an' : '/mois'}</span>
               {monthlyEquiv && (
-                <span className="text-xs text-primary-400 pb-1 ml-1">(≈ ${monthlyEquiv}/mois)</span>
+                <span className="text-xs text-primary-400 pb-1 ml-1">(≈ {fmt(monthlyEquiv)} FCFA/mois)</span>
               )}
             </>
           )}

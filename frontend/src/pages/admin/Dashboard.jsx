@@ -85,7 +85,7 @@ function RevenueChart({ data }) {
       <div className="flex items-start justify-between mb-4">
         <div>
           <p className="text-sm font-semibold text-gray-100">Revenus — 6 mois</p>
-          <p className="text-[11px] text-gray-500 mt-0.5">Total : <span className="text-primary-400 font-semibold">${(total / 100).toFixed(0)}</span></p>
+          <p className="text-[11px] text-gray-500 mt-0.5">Total : <span className="text-primary-400 font-semibold">{new Intl.NumberFormat('fr-FR').format(total)} FCFA</span></p>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary-500/10 border border-primary-500/20">
           <div className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse" />
@@ -441,8 +441,8 @@ export default function AdminDashboard() {
           <KpiCard
             icon={DollarSign}
             label="MRR"
-            value={`$${(kpis?.monthlyRevenue || 0).toFixed(0)}`}
-            sub={`Cumulé : $${(kpis?.totalRevenue || 0).toFixed(0)}`}
+            value={`${new Intl.NumberFormat('fr-FR').format(kpis?.monthlyRevenue || 0)} FCFA`}
+            sub={`Cumulé : ${new Intl.NumberFormat('fr-FR').format(kpis?.totalRevenue || 0)} FCFA`}
             trend={kpis?.revenueGrowth}
             gradient="radial-gradient(circle, #fb923c, #ea580c)"
             to="/admin/paiements"

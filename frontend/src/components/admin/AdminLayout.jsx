@@ -50,7 +50,7 @@ function NavItem({ to, label, Icon, end, badge, onClose }) {
         `relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
           isActive
             ? 'bg-primary-500/15 text-primary-300'
-            : 'text-white/50 hover:text-white/90 hover:bg-white/[0.06]'
+            : 'text-white/75 hover:text-white hover:bg-white/[0.06]'
         }`
       }
     >
@@ -89,7 +89,7 @@ function SidebarContent({ onClose }) {
             <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight">
               fp<span className="text-primary-400">ronix</span>
             </p>
-            <p className="text-[9px] text-white/30 uppercase tracking-[0.15em] font-semibold">Admin Console</p>
+            <p className="text-[9px] text-white/55 uppercase tracking-[0.15em] font-semibold">Admin Console</p>
           </div>
         </Link>
         {onClose && (
@@ -104,7 +104,7 @@ function SidebarContent({ onClose }) {
       <nav className="flex-1 overflow-y-auto py-4 px-2.5 space-y-5" aria-label="Admin navigation">
         {NAV_GROUPS.map(({ label, items }) => (
           <div key={label}>
-            <p className="px-3 mb-1.5 text-[10px] font-bold text-white/20 uppercase tracking-[0.12em]">
+            <p className="px-3 mb-1.5 text-[10px] font-bold text-white/45 uppercase tracking-[0.12em]">
               {label}
             </p>
             <div className="space-y-0.5">
@@ -119,7 +119,7 @@ function SidebarContent({ onClose }) {
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
       <div className="px-2.5 pb-3 pt-2 border-t border-white/[0.06] space-y-1 shrink-0">
         <Link to="/" target="_blank"
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-white/40 hover:text-white/80 hover:bg-white/[0.06] transition-colors">
+          className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-white/65 hover:text-white hover:bg-white/[0.06] transition-colors">
           <ExternalLink size={14} />
           Voir le site
         </Link>
@@ -129,8 +129,8 @@ function SidebarContent({ onClose }) {
             {user?.username?.charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-semibold text-white/70 truncate leading-tight">{user?.username}</p>
-            <p className="text-[10px] text-white/30 truncate mt-0.5">{user?.email}</p>
+            <p className="text-[12px] font-semibold text-white/90 truncate leading-tight">{user?.username}</p>
+            <p className="text-[10px] text-white/55 truncate mt-0.5">{user?.email}</p>
           </div>
           <button
             onClick={() => { logout(); navigate('/connexion'); }}
@@ -195,13 +195,13 @@ export default function AdminLayout() {
             <div className="w-5 h-5 rounded-md bg-primary-500/20 border border-primary-500/25 flex items-center justify-center">
               <Shield size={10} className="text-primary-400" />
             </div>
-            <span className="text-[11px] text-gray-600 font-medium">
-              fp<span className="text-primary-500">ronix</span> Admin Console
+            <span className="text-[11px] text-gray-400 font-medium">
+              fp<span className="text-primary-400">ronix</span> Admin Console
             </span>
-            <span className="text-[11px] text-gray-700">·</span>
-            <span className="text-[11px] text-gray-700">v1.0</span>
+            <span className="text-[11px] text-gray-500">·</span>
+            <span className="text-[11px] text-gray-500">v1.0</span>
           </div>
-          <p className="text-[11px] text-gray-700">
+          <p className="text-[11px] text-gray-500">
             © {new Date().getFullYear()} fpronix — Tous droits réservés
           </p>
         </footer>

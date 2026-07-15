@@ -10,7 +10,19 @@ function urlBase64ToUint8Array(base64String) {
   return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
 }
 
-export function usePushNotifications() {
+// Envoie la souscription existante au backend (pour la lier à un userId)
+async function syncExistingSubscription() {
+  try {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
+    const reg = await navigator.serviceWorker.ready;
+    const sub = await reg.pushManager.getSubscription();
+    if (sub) {
+      await api.post('/push/subscribe', { subscription: sub.toJSON() });
+    }
+  } catch {}
+}
+
+export function usePushNotifications(user) {
   const [supported, setSupported] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -20,6 +32,13 @@ export function usePushNotifications() {
     setSupported(ok);
     if (ok) checkSubscription();
   }, []);
+
+  // Quand l'utilisateur se connecte → re-synchronise pour lier le userId
+  useEffect(() => {
+    if (user?.id) {
+      syncExistingSubscription();
+    }
+  }, [user?.id]);
 
   async function checkSubscription() {
     try {

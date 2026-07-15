@@ -1,8 +1,10 @@
 import { Bell, BellOff } from 'lucide-react';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
+import { useAuth } from '../../context/AuthContext';
 
 export default function NotificationBell() {
-  const { supported, subscribed, loading, subscribe, unsubscribe } = usePushNotifications();
+  const { user } = useAuth();
+  const { supported, subscribed, loading, subscribe, unsubscribe } = usePushNotifications(user);
 
   if (!supported) return null;
 

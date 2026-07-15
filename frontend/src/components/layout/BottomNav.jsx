@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
+import NotificationBell from '../ui/NotificationBell';
 
 // Détecte iOS
 function isIOS() {
@@ -202,6 +203,9 @@ export default function BottomNav() {
               )}
             </NavLink>
           ))}
+
+          {/* Bouton Notifications */}
+          <NotificationBell size={20} showLabel={true} />
 
           {/* Bouton Explorer */}
           <button

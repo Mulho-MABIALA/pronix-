@@ -149,7 +149,10 @@ export default function Header() {
 
         {/* Actions droite */}
         <div className="flex items-center gap-1 ml-auto">
-          <NotificationBell />
+          {/* Cloche visible seulement sur desktop — sur mobile elle est dans le BottomNav */}
+          <div className="hidden md:block">
+            <NotificationBell />
+          </div>
 
           {/* Bouton installer PWA (visible seulement si installable) */}
           {isInstallable && (

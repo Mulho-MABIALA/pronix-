@@ -190,4 +190,19 @@ async function getMyTips(req, res, next) {
   }
 }
 
-module.exports = { createTip, getTipsByMatch, getLeaderboard, getTipsterProfile, reportTip, getMyTips };
+// ─── Stats ROI hebdomadaires d'un tipster ─────────────────────────────────────
+async function getTipsterWeeklyStats(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const data = await prisma.tipsterWeeklyStats.findMany({
+      where: { userId },
+      orderBy: { weekStart: 'asc' },
+      take: 8,
+    });
+    res.json({ success: true, data });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { createTip, getTipsByMatch, getLeaderboard, getTipsterProfile, getTipsterWeeklyStats, reportTip, getMyTips };

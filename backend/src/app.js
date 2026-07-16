@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const { errorHandler } = require('./middleware/errorHandler');
 
 // Routes
-const authRoutes = require('./routes/auth');
+const authRoutes       = require('./routes/auth');
 const matchRoutes = require('./routes/matches');
 const tipRoutes = require('./routes/tips');
 const subscriptionRoutes = require('./routes/subscriptions');
@@ -24,9 +24,15 @@ const referralsRoutes = require('./routes/referrals');
 const betsRoutes = require('./routes/bets');
 const remindersRoutes = require('./routes/reminders');
 const sitemapRoutes = require('./routes/sitemap');
-const blogRoutes = require('./routes/blog');
-const teamsRoutes = require('./routes/teams');
+const blogRoutes         = require('./routes/blog');
+const teamsRoutes        = require('./routes/teams');
 const tipsterPlansRoutes = require('./routes/tipsterPlans');
+const combosRoutes       = require('./routes/combos');
+const followsRoutes      = require('./routes/follows');
+const commentsRoutes     = require('./routes/comments');
+const analyticsRoutes    = require('./routes/analytics');
+const walletRoutes       = require('./routes/wallet');
+const oddsAlertsRoutes   = require('./routes/oddsAlerts');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -50,6 +56,15 @@ app.use(rateLimit({
   message: { success: false, code: 'RATE_LIMITED', message: 'Trop de requêtes. Réessayez dans quelques minutes.' },
 }));
 
+// Rate limiting strict sur l'authentification (anti brute-force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, code: 'RATE_LIMITED', message: 'Trop de tentatives de connexion. Réessayez dans 15 minutes.' },
+});
+
 // Parser JSON — raw pour les webhooks paiement (signature HMAC)
 app.use('/api/payments/wave/webhook', express.raw({ type: 'application/json' }));
 app.use('/api/payments/cinetpay/webhook', express.raw({ type: 'application/json' }));
@@ -61,7 +76,7 @@ app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // ─── Routes API ────────────────────────────────────────────────────────────────
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/matches', matchRoutes);
 app.use('/api/tips', tipRoutes);
 app.use('/api/subscriptions', subscriptionRoutes);
@@ -79,6 +94,12 @@ app.use('/api/reminders', remindersRoutes);
 app.use('/api/blog', blogRoutes);
 app.use('/api/teams', teamsRoutes);
 app.use('/api/tipster-plans', tipsterPlansRoutes);
+app.use('/api/combos', combosRoutes);
+app.use('/api/follows', followsRoutes);
+app.use('/api/comments', commentsRoutes);
+app.use('/api/analytics', analyticsRoutes);
+app.use('/api/wallet', walletRoutes);
+app.use('/api/odds-alerts', oddsAlertsRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API

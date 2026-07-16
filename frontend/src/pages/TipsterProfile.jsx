@@ -1,24 +1,197 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Flag, Crown, Users, Loader2 } from 'lucide-react';
+import { Flag, Crown, Users, Loader2, Heart, HeartOff, MessageCircle, Send, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { TipsterBadge, ResultBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
 import { estimateTipsterROI } from '../utils/mockOdds';
+import { useAnalytics } from '../hooks/useAnalytics';
 
 const PRED_LABELS = {
   HOME_WIN: '1 — Dom.', DRAW: 'X — Nul', AWAY_WIN: '2 — Ext.',
   OVER_2_5: '+2.5', UNDER_2_5: '-2.5', BTTS_YES: 'BTTS Oui', BTTS_NO: 'BTTS Non',
 };
 
+// ─── Mini SVG ROI Line Chart ───────────────────────────────────────────────────
+function ROIChart({ data }) {
+  if (!data || data.length < 2) return null;
+
+  const W = 280, H = 80, PAD = 12;
+  const rois = data.map((d) => d.roi);
+  const min = Math.min(...rois, -5);
+  const max = Math.max(...rois, 5);
+  const range = max - min || 1;
+
+  const toX = (i) => PAD + (i / (data.length - 1)) * (W - PAD * 2);
+  const toY = (v) => H - PAD - ((v - min) / range) * (H - PAD * 2);
+
+  const points = data.map((d, i) => `${toX(i)},${toY(d.roi)}`).join(' ');
+  const zeroY = toY(0);
+  const lastRoi = rois[rois.length - 1];
+  const color = lastRoi >= 0 ? '#22c55e' : '#ef4444';
+
+  return (
+    <div>
+      <div className="flex items-center gap-1.5 mb-1.5">
+        <TrendingUp size={13} className="text-gray-500" />
+        <p className="text-xs text-gray-500">ROI hebdomadaire (8 dernières semaines)</p>
+      </div>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-20">
+        {/* Zéro line */}
+        {zeroY > PAD && zeroY < H - PAD && (
+          <line x1={PAD} y1={zeroY} x2={W - PAD} y2={zeroY} stroke="#374151" strokeDasharray="3,3" />
+        )}
+        {/* Line */}
+        <polyline
+          points={points}
+          fill="none"
+          stroke={color}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* Dots */}
+        {data.map((d, i) => (
+          <circle key={i} cx={toX(i)} cy={toY(d.roi)} r="3" fill={d.roi >= 0 ? '#22c55e' : '#ef4444'} />
+        ))}
+        {/* Last value label */}
+        <text
+          x={toX(data.length - 1)}
+          y={toY(lastRoi) - 6}
+          textAnchor="middle"
+          fontSize="9"
+          fill={color}
+          fontWeight="600"
+        >
+          {lastRoi >= 0 ? '+' : ''}{lastRoi.toFixed(1)}%
+        </text>
+      </svg>
+    </div>
+  );
+}
+
+// ─── Comments section pour un tip ─────────────────────────────────────────────
+function TipComments({ tipId }) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [text, setText] = useState('');
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['comments', tipId],
+    queryFn: () => api.get(`/comments/${tipId}`).then((r) => r.data),
+  });
+
+  const addMutation = useMutation({
+    mutationFn: () => api.post(`/comments/${tipId}`, { content: text }),
+    onSuccess: () => {
+      setText('');
+      queryClient.invalidateQueries({ queryKey: ['comments', tipId] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (commentId) => api.delete(`/comments/${commentId}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments', tipId] }),
+  });
+
+  const comments = data?.data || [];
+
+  return (
+    <div className="pt-3 border-t border-surface-700 space-y-3">
+      {isLoading && <p className="text-xs text-gray-500">Chargement…</p>}
+      {comments.map((c) => (
+        <div key={c.id} className="flex gap-2 text-xs">
+          <div className="h-6 w-6 rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-semibold shrink-0 text-[10px]">
+            {(c.user?.profile?.displayName || c.user?.username || '?').charAt(0).toUpperCase()}
+          </div>
+          <div className="flex-1">
+            <span className="font-medium text-gray-300">
+              {c.user?.profile?.displayName || c.user?.username}
+            </span>
+            <span className="text-gray-500 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: fr })}</span>
+            <p className="text-gray-400 mt-0.5">{c.content}</p>
+          </div>
+          {(user?.id === c.userId || user?.role === 'ADMIN') && (
+            <button
+              onClick={() => deleteMutation.mutate(c.id)}
+              className="text-gray-600 hover:text-red-400 transition-colors self-start mt-0.5"
+            >
+              ×
+            </button>
+          )}
+        </div>
+      ))}
+      {!comments.length && !isLoading && (
+        <p className="text-xs text-gray-600">Aucun commentaire — soyez le premier !</p>
+      )}
+      {user && (
+        <div className="flex gap-2 items-center">
+          <input
+            value={text}
+            onChange={(e) => setText(e.target.value.slice(0, 500))}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && text.trim() && addMutation.mutate()}
+            placeholder="Votre avis…"
+            className="flex-1 bg-surface-700 border border-surface-600 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500"
+          />
+          <button
+            onClick={() => text.trim() && addMutation.mutate()}
+            disabled={!text.trim() || addMutation.isPending}
+            className="p-1.5 rounded-lg bg-primary-500 text-white disabled:opacity-40 hover:bg-primary-400 transition-colors"
+          >
+            {addMutation.isPending ? <Loader2 size={13} className="animate-spin" /> : <Send size={13} />}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Tip card with expandable comments ────────────────────────────────────────
+function TipCard({ tip }) {
+  const [showComments, setShowComments] = useState(false);
+  return (
+    <div className="bento-card space-y-2">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <Link to={`/matchs/${tip.matchId}`} className="text-sm font-medium text-gray-200 hover:text-primary-300 truncate block">
+            {tip.match?.homeTeam} vs {tip.match?.awayTeam}
+          </Link>
+          <p className="text-xs text-gray-500 mt-0.5">
+            {PRED_LABELS[tip.prediction] || tip.prediction}
+            {' '}· {format(new Date(tip.createdAt), 'dd MMM', { locale: fr })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <ResultBadge result={tip.result} />
+          <button
+            onClick={() => setShowComments((v) => !v)}
+            className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-400 transition-colors"
+            title="Commentaires"
+          >
+            <MessageCircle size={13} />
+            {showComments ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
+          </button>
+        </div>
+      </div>
+      {showComments && <TipComments tipId={tip.id} />}
+    </div>
+  );
+}
+
+// ─── Main component ────────────────────────────────────────────────────────────
 export default function TipsterProfile() {
   const { userId } = useParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
+  const { track } = useAnalytics();
+
+  // Track profile view
+  useState(() => { track('tipster_view', userId); }, [userId]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['tipster', userId],
@@ -32,12 +205,33 @@ export default function TipsterProfile() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Statut d'abonnement de l'utilisateur connecté
+  // Statut d'abonnement
   const { data: subStatus, refetch: refetchSub } = useQuery({
     queryKey: ['tipster-sub-status', userId],
     queryFn: () => api.get(`/tipster-plans/mine/status?tipsterId=${userId}`).then((r) => r.data),
-    enabled: !!user && user.id !== userId,
+    enabled: !!user && user?.id !== userId,
     staleTime: 60 * 1000,
+  });
+
+  // Statut de follow
+  const { data: followStatus, refetch: refetchFollow } = useQuery({
+    queryKey: ['follow-status', userId],
+    queryFn: () => api.get(`/follows/${userId}/status`).then((r) => r.data).catch(() => ({ following: false })),
+    staleTime: 30 * 1000,
+  });
+
+  // Nombre de followers
+  const { data: followerData, refetch: refetchFollowerCount } = useQuery({
+    queryKey: ['follower-count', userId],
+    queryFn: () => api.get(`/follows/${userId}/count`).then((r) => r.data),
+    staleTime: 60 * 1000,
+  });
+
+  // Historique ROI hebdomadaire
+  const { data: weeklyData } = useQuery({
+    queryKey: ['weekly-stats', userId],
+    queryFn: () => api.get(`/tips/tipster/${userId}/weekly-stats`).then((r) => r.data).catch(() => null),
+    staleTime: 10 * 60 * 1000,
   });
 
   const subscribeMutation = useMutation({
@@ -50,8 +244,27 @@ export default function TipsterProfile() {
     onSuccess: () => refetchSub(),
   });
 
+  const followMutation = useMutation({
+    mutationFn: () => api.post(`/follows/${userId}`),
+    onSuccess: () => {
+      refetchFollow();
+      refetchFollowerCount();
+      queryClient.invalidateQueries({ queryKey: ['follower-count', userId] });
+    },
+  });
+
+  const unfollowMutation = useMutation({
+    mutationFn: () => api.delete(`/follows/${userId}`),
+    onSuccess: () => {
+      refetchFollow();
+      refetchFollowerCount();
+    },
+  });
+
   const plan = planData?.data;
   const isSubscribed = subStatus?.subscribed;
+  const isFollowing = followStatus?.following;
+  const followerCount = followerData?.count ?? 0;
 
   if (isLoading) {
     return (
@@ -62,16 +275,18 @@ export default function TipsterProfile() {
     );
   }
 
-  const { user: tipster, stats, recentTips } = data?.data || {};
+  const { user: tipster, stats, recentTips, weeklyStats: inlineWeekly } = data?.data || {};
   if (!tipster) return <div className="text-center py-20 text-gray-500">Tipster introuvable</div>;
 
   const displayName = tipster.profile?.displayName || tipster.username;
   const isOwn = user?.id === userId;
   const roi = stats?.totalTips > 0 ? estimateTipsterROI(stats.successRate, userId) : null;
+  const weeklyChartData = weeklyData?.data || inlineWeekly || [];
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
-      {/* Profil header */}
+
+      {/* ── Profil header ── */}
       <section className="bento-card">
         <div className="flex items-start gap-4">
           <div className="h-16 w-16 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-2xl font-bold shrink-0">
@@ -86,21 +301,50 @@ export default function TipsterProfile() {
             <div className="flex flex-wrap gap-1 mt-2">
               {(stats?.badges || []).map((b) => <TipsterBadge key={b} badgeCode={b} />)}
             </div>
+            {/* Follower count */}
+            <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+              <Users size={11} />
+              {followerCount.toLocaleString('fr-FR')} abonné{followerCount > 1 ? 's' : ''}
+            </p>
           </div>
 
-          {!isOwn && user && (
-            <button
-              onClick={() => api.post('/profiles/me/favorites', { type: 'tipster', externalId: userId, name: displayName })}
-              className="btn-secondary text-sm p-2"
-              aria-label="Ajouter aux favoris"
-            >
-              ★
-            </button>
+          {/* Follow + Favorite buttons */}
+          {!isOwn && (
+            <div className="flex flex-col gap-2 shrink-0">
+              {user ? (
+                <button
+                  onClick={() => isFollowing ? unfollowMutation.mutate() : followMutation.mutate()}
+                  disabled={followMutation.isPending || unfollowMutation.isPending}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40 ${
+                    isFollowing
+                      ? 'bg-surface-600 text-gray-300 hover:bg-red-500/20 hover:text-red-400'
+                      : 'bg-primary-500/15 text-primary-400 hover:bg-primary-500/30'
+                  }`}
+                  aria-label={isFollowing ? 'Ne plus suivre' : 'Suivre'}
+                >
+                  {(followMutation.isPending || unfollowMutation.isPending) ? (
+                    <Loader2 size={12} className="animate-spin" />
+                  ) : isFollowing ? (
+                    <HeartOff size={12} />
+                  ) : (
+                    <Heart size={12} />
+                  )}
+                  {isFollowing ? 'Suivi' : 'Suivre'}
+                </button>
+              ) : (
+                <Link
+                  to="/connexion"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-primary-400 hover:bg-primary-500/30"
+                >
+                  <Heart size={12} /> Suivre
+                </Link>
+              )}
+            </div>
           )}
         </div>
       </section>
 
-      {/* Stats bento grid */}
+      {/* ── Stats bento grid ── */}
       {stats && (
         <div className="grid grid-cols-2 gap-3">
           <div className="bento-card text-center">
@@ -136,8 +380,15 @@ export default function TipsterProfile() {
         </div>
       )}
 
-      {/* Plan d'abonnement tipster */}
-      {plan && user?.id !== userId && (
+      {/* ── ROI hebdomadaire chart ── */}
+      {weeklyChartData.length >= 2 && (
+        <div className="bento-card">
+          <ROIChart data={weeklyChartData} />
+        </div>
+      )}
+
+      {/* ── Plan d'abonnement tipster ── */}
+      {plan && !isOwn && (
         <div className="bento-card border-primary-500/30 bg-primary-500/5 space-y-3">
           <div className="flex items-center gap-2">
             <Crown size={16} className="text-primary-400" />
@@ -189,31 +440,18 @@ export default function TipsterProfile() {
         </div>
       )}
 
-      {/* Pronostics récents */}
+      {/* ── Pronostics récents avec commentaires ── */}
       <section>
         <h2 className="font-semibold text-gray-100 mb-3">Pronostics récents</h2>
         <div className="space-y-2">
-          {recentTips?.map((tip) => (
-            <div key={tip.id} className="bento-card flex items-center justify-between gap-3">
-              <div className="flex-1 min-w-0">
-                <Link to={`/matchs/${tip.matchId}`} className="text-sm font-medium text-gray-200 hover:text-primary-300 truncate block">
-                  {tip.match?.homeTeam} vs {tip.match?.awayTeam}
-                </Link>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {PRED_LABELS[tip.prediction] || tip.prediction}{' '}
-                  · {format(new Date(tip.createdAt), 'dd MMM', { locale: fr })}
-                </p>
-              </div>
-              <ResultBadge result={tip.result} />
-            </div>
-          ))}
+          {recentTips?.map((tip) => <TipCard key={tip.id} tip={tip} />)}
           {!recentTips?.length && (
             <p className="text-gray-500 text-sm text-center py-4">Aucun pronostic récent</p>
           )}
         </div>
       </section>
 
-      {/* Signalement (si connecté et pas le sien) */}
+      {/* ── Signalement ── */}
       {!isOwn && user && recentTips?.length > 0 && (
         <p className="text-center">
           <button

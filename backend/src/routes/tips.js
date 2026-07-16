@@ -3,7 +3,7 @@ const { authenticate } = require('../middleware/auth');
 const { requirePlan } = require('../middleware/subscription');
 const {
   createTip, getTipsByMatch, getLeaderboard,
-  getTipsterProfile, reportTip, getMyTips,
+  getTipsterProfile, getTipsterWeeklyStats, reportTip, getMyTips,
 } = require('../controllers/tipController');
 const { generateAiTip } = require('../controllers/aiTipController');
 
@@ -13,6 +13,7 @@ const router = Router();
 router.get('/leaderboard', getLeaderboard);
 router.get('/match/:matchId', getTipsByMatch);
 router.get('/tipster/:userId', getTipsterProfile);
+router.get('/tipster/:userId/weekly-stats', getTipsterWeeklyStats);
 
 // Authentifié
 router.use(authenticate);

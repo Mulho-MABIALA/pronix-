@@ -67,6 +67,9 @@ async function register(req, res, next) {
 
     const hashedPassword = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
     const freePlan = await prisma.plan.findUnique({ where: { code: 'FREE' } });
+    if (!freePlan) {
+      throw new AppError('Plan gratuit introuvable. Contactez l\'administrateur.', 500, 'FREE_PLAN_MISSING');
+    }
 
     const user = await prisma.user.create({
       data: {

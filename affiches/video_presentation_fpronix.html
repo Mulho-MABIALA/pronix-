@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>fpronix — Vidéo Présentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #000;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    gap: 16px;
+  }
+
+  .hint {
+    color: #444; font-size: 13px; text-align: center; line-height: 1.8;
+  }
+
+  /* ── Écran vidéo 9:16 ── */
+  .screen {
+    width: 405px;
+    height: 720px;
+    background: #0d0f10;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 0 60px rgba(34,197,94,0.08);
+  }
+
+  /* ── Slides ── */
+  .slide {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    opacity: 0;
+    transition: opacity 0.7s ease;
+    pointer-events: none;
+    padding: 40px 32px;
+  }
+  .slide.active { opacity: 1; pointer-events: all; }
+
+  /* Barre verte en haut */
+  .top-line {
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #16a34a, #22c55e, #4ade80);
+  }
+
+  /* Déco cercles */
+  .deco { position: absolute; border-radius: 50%; pointer-events: none; }
+  .d1 { width: 500px; height: 500px; top: -180px; right: -180px;
+    background: radial-gradient(circle, rgba(34,197,94,0.05) 0%, transparent 70%); }
+  .d2 { width: 400px; height: 400px; bottom: -140px; left: -140px;
+    background: radial-gradient(circle, rgba(34,197,94,0.04) 0%, transparent 70%); }
+
+  /* ── SLIDE 1 — Intro logo ── */
+  .s1-logo {
+    font-size: 72px; font-weight: 900;
+    color: #f0f0f0; letter-spacing: -3px;
+    opacity: 0; transform: scale(0.7);
+    transition: all 0.8s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .s1-logo span { color: #22c55e; }
+  .s1-logo.in { opacity: 1; transform: scale(1); }
+
+  .s1-tag {
+    font-size: 13px; font-weight: 700; letter-spacing: 0.25em;
+    color: #4b5563; text-transform: uppercase; margin-top: 10px;
+    opacity: 0; transform: translateY(16px);
+    transition: all 0.6s ease 0.5s;
+  }
+  .s1-tag.in { opacity: 1; transform: translateY(0); }
+
+  .s1-line {
+    width: 0; height: 3px; margin-top: 24px;
+    background: linear-gradient(90deg, transparent, #22c55e, transparent);
+    transition: width 0.8s ease 0.8s;
+  }
+  .s1-line.in { width: 80px; }
+
+  /* ── SLIDE 2 — Accroche ── */
+  .s2-question {
+    font-size: 34px; font-weight: 900;
+    color: #f9fafb; text-align: center; line-height: 1.25;
+    opacity: 0; transform: translateY(30px);
+    transition: all 0.7s ease;
+  }
+  .s2-question.in { opacity: 1; transform: translateY(0); }
+
+  .s2-emoji {
+    font-size: 56px; margin-bottom: 24px;
+    opacity: 0; transform: scale(0.5);
+    transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .s2-emoji.in { opacity: 1; transform: scale(1); }
+
+  .s2-sub {
+    font-size: 16px; color: #6b7280; margin-top: 20px; text-align: center;
+    opacity: 0; transition: opacity 0.6s ease 0.4s;
+  }
+  .s2-sub.in { opacity: 1; }
+
+  /* ── SLIDE 3 — Solution ── */
+  .s3-badge {
+    background: rgba(34,197,94,0.12);
+    border: 1.5px solid rgba(34,197,94,0.3);
+    color: #4ade80; font-size: 12px; font-weight: 700;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 6px 18px; border-radius: 100px;
+    margin-bottom: 24px;
+    opacity: 0; transform: translateY(-16px);
+    transition: all 0.5s ease;
+  }
+  .s3-badge.in { opacity: 1; transform: translateY(0); }
+
+  .s3-title {
+    font-size: 36px; font-weight: 900; color: #f9fafb;
+    text-align: center; line-height: 1.2;
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.6s ease 0.2s;
+  }
+  .s3-title span { color: #22c55e; }
+  .s3-title.in { opacity: 1; transform: translateY(0); }
+
+  .s3-desc {
+    font-size: 15px; color: #9ca3af; text-align: center;
+    margin-top: 16px; line-height: 1.6;
+    opacity: 0; transition: opacity 0.6s ease 0.5s;
+  }
+  .s3-desc.in { opacity: 1; }
+
+  /* ── SLIDE 4 — Features ── */
+  .s4-title {
+    font-size: 22px; font-weight: 800; color: #f9fafb;
+    margin-bottom: 28px; text-align: center;
+    opacity: 0; transform: translateY(-10px);
+    transition: all 0.5s ease;
+  }
+  .s4-title.in { opacity: 1; transform: translateY(0); }
+
+  .feature-card {
+    width: 100%; background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 14px; padding: 16px 20px;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 10px;
+    opacity: 0; transform: translateX(-24px);
+    transition: all 0.5s ease;
+  }
+  .feature-card.in { opacity: 1; transform: translateX(0); }
+  .feature-card:nth-child(2) { transition-delay: 0.1s; }
+  .feature-card:nth-child(3) { transition-delay: 0.2s; }
+  .feature-card:nth-child(4) { transition-delay: 0.3s; }
+  .feature-card:nth-child(5) { transition-delay: 0.4s; }
+
+  .fcard-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: rgba(34,197,94,0.12);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .fcard-text { flex: 1; }
+  .fcard-text strong { font-size: 14px; color: #f3f4f6; display: block; }
+  .fcard-text span { font-size: 12px; color: #6b7280; }
+
+  /* ── SLIDE 5 — CTA ── */
+  .s5-logo {
+    font-size: 60px; font-weight: 900; color: #f0f0f0;
+    letter-spacing: -2px; margin-bottom: 8px;
+    opacity: 0; transform: scale(0.8);
+    transition: all 0.7s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .s5-logo span { color: #22c55e; }
+  .s5-logo.in { opacity: 1; transform: scale(1); }
+
+  .s5-sub {
+    font-size: 13px; color: #6b7280; letter-spacing: 0.2em;
+    text-transform: uppercase; margin-bottom: 36px;
+    opacity: 0; transition: opacity 0.5s ease 0.3s;
+  }
+  .s5-sub.in { opacity: 1; }
+
+  .s5-cta {
+    background: #22c55e; color: #000;
+    font-size: 18px; font-weight: 900;
+    letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 18px 48px; border-radius: 100px;
+    margin-bottom: 20px;
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.6s ease 0.5s;
+  }
+  .s5-cta.in { opacity: 1; transform: translateY(0); }
+
+  .s5-url {
+    font-size: 18px; font-weight: 700; color: #374151;
+    letter-spacing: 0.08em;
+    opacity: 0; transition: opacity 0.5s ease 0.8s;
+  }
+  .s5-url.in { opacity: 1; }
+
+  /* ── Barre de progression ── */
+  .progress-bar {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 3px; background: rgba(255,255,255,0.05);
+  }
+  .progress-fill {
+    height: 100%; background: #22c55e;
+    width: 0%; transition: width linear;
+  }
+
+  /* ── Compteur de slide ── */
+  .slide-counter {
+    position: absolute; top: 16px; right: 16px;
+    font-size: 11px; color: #374151; font-weight: 700;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Contrôles ── */
+  .controls {
+    display: flex; gap: 12px; align-items: center;
+  }
+  .btn {
+    background: #1a1b1e; border: 1px solid #2d2f33;
+    color: #d1d5db; font-size: 13px; font-weight: 600;
+    padding: 10px 22px; border-radius: 10px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn:hover { background: #22c55e; color: #000; border-color: #22c55e; }
+  .btn-play {
+    background: #22c55e; color: #000;
+    font-weight: 800; padding: 12px 32px;
+    font-size: 14px;
+  }
+  .btn-play:hover { background: #16a34a; color: #fff; border-color: #16a34a; }
+</style>
+</head>
+<body>
+
+<div class="hint">
+  🎬 Clique sur <strong style="color:#22c55e">▶ Lancer la vidéo</strong> puis fais ton screen record (Xbox Game Bar : <strong>Win + G</strong>)<br>
+  Durée totale : ~30 secondes · Format 9:16 · Idéal TikTok, WhatsApp, Reels
+</div>
+
+<div class="screen">
+  <div class="top-line"></div>
+  <div class="deco d1"></div>
+  <div class="deco d2"></div>
+  <div class="slide-counter" id="counter">1 / 5</div>
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- SLIDE 1 : Logo -->
+  <div class="slide active" id="s1">
+    <div class="s1-logo" id="s1-logo">fp<span>ronix</span></div>
+    <div class="s1-tag" id="s1-tag">Pronostics Football IA</div>
+    <div class="s1-line" id="s1-line"></div>
+  </div>
+
+  <!-- SLIDE 2 : Accroche -->
+  <div class="slide" id="s2">
+    <div class="s2-emoji" id="s2-emoji">😤</div>
+    <div class="s2-question" id="s2-q">
+      Marre de perdre<br/>tes paris ?
+    </div>
+    <div class="s2-sub" id="s2-sub">Il te manquait juste les bonnes infos.</div>
+  </div>
+
+  <!-- SLIDE 3 : Solution -->
+  <div class="slide" id="s3">
+    <div class="s3-badge" id="s3-badge">✨ La solution</div>
+    <div class="s3-title" id="s3-title">
+      <span>fpronix</span> analyse<br/>tout pour toi
+    </div>
+    <div class="s3-desc" id="s3-desc">
+      Intelligence artificielle + données<br/>
+      en temps réel = pronostics fiables.
+    </div>
+  </div>
+
+  <!-- SLIDE 4 : Features -->
+  <div class="slide" id="s4">
+    <div class="s4-title" id="s4-title">Ce que tu obtiens</div>
+    <div class="feature-card" id="fc1">
+      <div class="fcard-icon">🤖</div>
+      <div class="fcard-text">
+        <strong>Pronostics IA</strong>
+        <span>Analysés par intelligence artificielle</span>
+      </div>
+    </div>
+    <div class="feature-card" id="fc2">
+      <div class="fcard-icon">📊</div>
+      <div class="fcard-text">
+        <strong>Stats & Cotes live</strong>
+        <span>Données réelles en temps réel</span>
+      </div>
+    </div>
+    <div class="feature-card" id="fc3">
+      <div class="fcard-icon">🏆</div>
+      <div class="fcard-text">
+        <strong>Top Tipsters</strong>
+        <span>Suis les meilleurs pronostiqueurs</span>
+      </div>
+    </div>
+    <div class="feature-card" id="fc4">
+      <div class="fcard-icon">🔔</div>
+      <div class="fcard-text">
+        <strong>Alertes matchs</strong>
+        <span>Ne rate plus aucun match</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5 : CTA -->
+  <div class="slide" id="s5">
+    <div class="s5-logo" id="s5-logo">fp<span>ronix</span></div>
+    <div class="s5-sub" id="s5-sub">Rejoins la communauté</div>
+    <div class="s5-cta" id="s5-cta">C'est gratuit !</div>
+    <div class="s5-url" id="s5-url">fpronix.com</div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" onclick="prevSlide()">◀ Préc.</button>
+  <button class="btn btn-play" id="playBtn" onclick="togglePlay()">▶ Lancer la vidéo</button>
+  <button class="btn" onclick="nextSlide()">Suiv. ▶</button>
+</div>
+
+<script>
+  const SLIDES = [
+    { id: 's1', duration: 4000, enter: enterS1 },
+    { id: 's2', duration: 5000, enter: enterS2 },
+    { id: 's3', duration: 6000, enter: enterS3 },
+    { id: 's4', duration: 8000, enter: enterS4 },
+    { id: 's5', duration: 6000, enter: enterS5 },
+  ];
+
+  let current = 0;
+  let playing = false;
+  let timer = null;
+  let progressTimer = null;
+
+  function showSlide(i) {
+    SLIDES.forEach((s, idx) => {
+      const el = document.getElementById(s.id);
+      el.classList.toggle('active', idx === i);
+    });
+    document.getElementById('counter').textContent = `${i + 1} / ${SLIDES.length}`;
+    SLIDES[i].enter();
+    current = i;
+  }
+
+  function startProgress(duration) {
+    const fill = document.getElementById('progress');
+    fill.style.transition = 'none';
+    fill.style.width = '0%';
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        fill.style.transition = `width ${duration}ms linear`;
+        fill.style.width = '100%';
+      });
+    });
+  }
+
+  function nextSlide() {
+    if (current < SLIDES.length - 1) showSlide(current + 1);
+  }
+  function prevSlide() {
+    if (current > 0) showSlide(current - 1);
+  }
+
+  function togglePlay() {
+    if (playing) {
+      playing = false;
+      clearTimeout(timer);
+      document.getElementById('playBtn').textContent = '▶ Lancer la vidéo';
+    } else {
+      playing = true;
+      document.getElementById('playBtn').textContent = '⏸ Pause';
+      playFrom(current);
+    }
+  }
+
+  function playFrom(i) {
+    if (!playing) return;
+    showSlide(i);
+    startProgress(SLIDES[i].duration);
+    timer = setTimeout(() => {
+      if (i < SLIDES.length - 1) {
+        playFrom(i + 1);
+      } else {
+        playing = false;
+        document.getElementById('playBtn').textContent = '🔄 Rejouer';
+        document.getElementById('playBtn').onclick = () => {
+          showSlide(0);
+          document.getElementById('playBtn').textContent = '▶ Lancer la vidéo';
+          document.getElementById('playBtn').onclick = togglePlay;
+          playing = false;
+        };
+      }
+    }, SLIDES[i].duration);
+  }
+
+  // ── Animations par slide ──────────────────────────────────────────
+  function resetEl(ids) {
+    ids.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('in');
+    });
+  }
+
+  function enterS1() {
+    resetEl(['s1-logo','s1-tag','s1-line']);
+    setTimeout(() => document.getElementById('s1-logo').classList.add('in'), 200);
+    setTimeout(() => document.getElementById('s1-tag').classList.add('in'), 400);
+    setTimeout(() => document.getElementById('s1-line').classList.add('in'), 500);
+  }
+
+  function enterS2() {
+    resetEl(['s2-emoji','s2-q','s2-sub']);
+    setTimeout(() => document.getElementById('s2-emoji').classList.add('in'), 200);
+    setTimeout(() => document.getElementById('s2-q').classList.add('in'), 500);
+    setTimeout(() => document.getElementById('s2-sub').classList.add('in'), 900);
+  }
+
+  function enterS3() {
+    resetEl(['s3-badge','s3-title','s3-desc']);
+    setTimeout(() => document.getElementById('s3-badge').classList.add('in'), 200);
+    setTimeout(() => document.getElementById('s3-title').classList.add('in'), 400);
+    setTimeout(() => document.getElementById('s3-desc').classList.add('in'), 700);
+  }
+
+  function enterS4() {
+    resetEl(['s4-title','fc1','fc2','fc3','fc4']);
+    setTimeout(() => document.getElementById('s4-title').classList.add('in'), 200);
+    setTimeout(() => document.getElementById('fc1').classList.add('in'), 400);
+    setTimeout(() => document.getElementById('fc2').classList.add('in'), 700);
+    setTimeout(() => document.getElementById('fc3').classList.add('in'), 1000);
+    setTimeout(() => document.getElementById('fc4').classList.add('in'), 1300);
+  }
+
+  function enterS5() {
+    resetEl(['s5-logo','s5-sub','s5-cta','s5-url']);
+    setTimeout(() => document.getElementById('s5-logo').classList.add('in'), 200);
+    setTimeout(() => document.getElementById('s5-sub').classList.add('in'), 500);
+    setTimeout(() => document.getElementById('s5-cta').classList.add('in'), 700);
+    setTimeout(() => document.getElementById('s5-url').classList.add('in'), 1000);
+  }
+
+  // Init
+  showSlide(0);
+</script>
+</body>
+</html>

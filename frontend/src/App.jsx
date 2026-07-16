@@ -37,6 +37,7 @@ import BetTracker from './pages/BetTracker';
 import TeamPage from './pages/TeamPage';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
+import WalletPage from './pages/WalletPage';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -112,6 +113,7 @@ export default function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
+                <Route path="/portefeuille-virtuel" element={<WalletPage />} />
                 <Route path="/equipes/:id" element={<TeamPage />} />
                 <Route path="/blog" element={<BlogList />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />

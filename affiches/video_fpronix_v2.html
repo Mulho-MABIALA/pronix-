@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>fpronix — Vidéo Cinématique</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background:#000;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  min-height:100vh;
+  font-family:'Inter',system-ui,sans-serif;
+  gap:14px;
+}
+
+.hint { color:#333; font-size:12px; text-align:center; line-height:2; }
+.hint b { color:#22c55e; }
+
+/* ═══ ÉCRAN 9:16 ═══ */
+.screen {
+  width:405px; height:720px;
+  background:#060708;
+  position:relative; overflow:hidden;
+  border-radius:16px;
+  box-shadow:0 0 0 1px rgba(255,255,255,0.06), 0 30px 80px rgba(0,0,0,0.8);
+}
+
+/* ═══ CANVAS PARTICULES ═══ */
+#particles { position:absolute; inset:0; z-index:0; }
+
+/* ═══ SLIDES ═══ */
+.slide {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  z-index:10; padding:0;
+  opacity:0; pointer-events:none;
+  transition:opacity 0.6s ease;
+}
+.slide.active { opacity:1; pointer-events:all; }
+
+/* ═══ SLIDE 1 — INTRO CINÉMATIQUE ═══ */
+#s1 { background: #060708; }
+
+.s1-scanline {
+  position:absolute; inset:0;
+  background:repeating-linear-gradient(0deg,
+    transparent, transparent 2px,
+    rgba(255,255,255,0.012) 2px, rgba(255,255,255,0.012) 4px);
+  pointer-events:none; z-index:1;
+}
+
+.s1-glow {
+  position:absolute; width:600px; height:600px; border-radius:50%;
+  background:radial-gradient(circle, rgba(34,197,94,0.12) 0%, transparent 65%);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  animation:glow-pulse 3s ease-in-out infinite;
+}
+@keyframes glow-pulse { 0%,100%{opacity:0.6;transform:translate(-50%,-50%) scale(1)} 50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)} }
+
+.s1-ring {
+  position:absolute; border-radius:50%; border:1px solid rgba(34,197,94,0.08);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+}
+.ring1 { width:300px; height:300px; animation:ring-expand 4s ease-out infinite; }
+.ring2 { width:420px; height:420px; animation:ring-expand 4s ease-out 1s infinite; }
+.ring3 { width:540px; height:540px; animation:ring-expand 4s ease-out 2s infinite; }
+@keyframes ring-expand { 0%{opacity:0.8;transform:translate(-50%,-50%) scale(0.8)} 100%{opacity:0;transform:translate(-50%,-50%) scale(1.2)} }
+
+.s1-content { position:relative; z-index:2; text-align:center; }
+
+.s1-logo-wrap {
+  opacity:0; transform:scale(0.6) translateY(20px);
+  transition:all 0.9s cubic-bezier(0.22,1,0.36,1);
+}
+.s1-logo-wrap.in { opacity:1; transform:scale(1) translateY(0); }
+
+.s1-fp { font-size:88px; font-weight:900; letter-spacing:-4px; line-height:0.9; }
+.s1-fp .fp-white { color:#fff; }
+.s1-fp .fp-green {
+  color:#22c55e;
+  text-shadow:0 0 40px rgba(34,197,94,0.6), 0 0 80px rgba(34,197,94,0.3);
+}
+
+.s1-tagline {
+  font-size:12px; font-weight:700; letter-spacing:0.28em;
+  color:#4b5563; text-transform:uppercase; margin-top:12px;
+  opacity:0; transform:translateY(10px);
+  transition:all 0.6s ease 0.5s;
+}
+.s1-tagline.in { opacity:1; transform:translateY(0); }
+
+.s1-bar {
+  width:0; height:2px; margin:18px auto 0;
+  background:linear-gradient(90deg, transparent, #22c55e, transparent);
+  transition:width 1s ease 0.8s;
+}
+.s1-bar.in { width:120px; }
+
+.s1-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.25);
+  color:#4ade80; font-size:11px; font-weight:700;
+  letter-spacing:0.1em; text-transform:uppercase;
+  padding:5px 14px; border-radius:100px; margin-bottom:28px;
+  opacity:0; transform:translateY(-10px);
+  transition:all 0.5s ease 0.2s;
+}
+.s1-badge.in { opacity:1; transform:translateY(0); }
+.badge-dot { width:6px; height:6px; border-radius:50%; background:#22c55e; animation:blink 1s ease infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+/* ═══ SLIDE 2 — TERRAIN FOOTBALL ═══ */
+#s2 {
+  background:linear-gradient(180deg, #060b06 0%, #0a1a0a 50%, #060b06 100%);
+}
+
+.pitch-wrap {
+  position:absolute; inset:0; display:flex;
+  align-items:center; justify-content:center;
+  opacity:0.15;
+}
+
+.pitch {
+  width:260px; height:340px;
+  border:2px solid rgba(34,197,94,0.4);
+  border-radius:6px; position:relative;
+}
+.pitch-mid { position:absolute; top:50%; left:0; right:0; height:1px; background:rgba(34,197,94,0.4); transform:translateY(-50%); }
+.pitch-circle { position:absolute; width:90px; height:90px; border-radius:50%; border:1.5px solid rgba(34,197,94,0.4); top:50%; left:50%; transform:translate(-50%,-50%); }
+.pitch-dot { position:absolute; width:6px; height:6px; border-radius:50%; background:rgba(34,197,94,0.5); top:50%; left:50%; transform:translate(-50%,-50%); }
+.pitch-box-t { position:absolute; top:0; left:50%; transform:translateX(-50%); width:100px; height:40px; border:1.5px solid rgba(34,197,94,0.3); border-top:none; }
+.pitch-box-b { position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:100px; height:40px; border:1.5px solid rgba(34,197,94,0.3); border-bottom:none; }
+
+.s2-content { position:relative; z-index:2; text-align:center; padding:0 36px; }
+
+.s2-number {
+  font-size:110px; font-weight:900; line-height:1;
+  color:transparent;
+  background:linear-gradient(135deg, #22c55e, #4ade80);
+  -webkit-background-clip:text; background-clip:text;
+  text-shadow:none;
+  opacity:0; transform:scale(1.4);
+  transition:all 0.7s cubic-bezier(0.22,1,0.36,1);
+  display:block;
+}
+.s2-number.in { opacity:1; transform:scale(1); }
+
+.s2-label {
+  font-size:22px; font-weight:800; color:#f9fafb;
+  margin-top:4px; line-height:1.2;
+  opacity:0; transform:translateY(20px);
+  transition:all 0.6s ease 0.3s;
+}
+.s2-label.in { opacity:1; transform:translateY(0); }
+
+.s2-sub {
+  font-size:13px; color:#6b7280; margin-top:12px;
+  opacity:0; transition:opacity 0.5s ease 0.6s;
+}
+.s2-sub.in { opacity:1; }
+
+.s2-chips {
+  display:flex; gap:8px; flex-wrap:wrap; justify-content:center; margin-top:24px;
+}
+.chip {
+  background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);
+  color:#86efac; font-size:11px; font-weight:600;
+  padding:5px 12px; border-radius:100px;
+  opacity:0; transform:translateY(10px);
+  transition:all 0.4s ease;
+}
+.chip.in { opacity:1; transform:translateY(0); }
+
+/* ═══ SLIDE 3 — FEATURES CARDS ═══ */
+#s3 { background:#060708; padding:0 28px; }
+
+.s3-title {
+  font-size:26px; font-weight:900; color:#f9fafb;
+  text-align:center; margin-bottom:24px;
+  opacity:0; transform:translateY(-16px);
+  transition:all 0.5s ease;
+}
+.s3-title.in { opacity:1; transform:translateY(0); }
+.s3-title span { color:#22c55e; }
+
+.fcard {
+  width:100%; border-radius:16px; overflow:hidden;
+  margin-bottom:10px; position:relative;
+  opacity:0; transform:translateX(-30px);
+  transition:all 0.55s cubic-bezier(0.22,1,0.36,1);
+}
+.fcard.in { opacity:1; transform:translateX(0); }
+.fcard:nth-child(2) { transition-delay:0.08s; }
+.fcard:nth-child(3) { transition-delay:0.16s; }
+.fcard:nth-child(4) { transition-delay:0.24s; }
+.fcard:nth-child(5) { transition-delay:0.32s; }
+
+.fcard-inner {
+  display:flex; align-items:center; gap:14px;
+  padding:14px 16px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:16px;
+  position:relative; overflow:hidden;
+}
+.fcard-inner::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:3px;
+  background:linear-gradient(180deg, #16a34a, #22c55e);
+  border-radius:0 2px 2px 0;
+}
+
+.fcard-emoji {
+  width:44px; height:44px; border-radius:12px; flex-shrink:0;
+  background:rgba(34,197,94,0.1);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px;
+}
+.fcard-body { flex:1; }
+.fcard-body strong { font-size:14px; color:#f3f4f6; display:block; font-weight:700; }
+.fcard-body span { font-size:11px; color:#6b7280; margin-top:1px; display:block; }
+
+.fcard-arrow {
+  font-size:16px; color:rgba(34,197,94,0.4); flex-shrink:0;
+}
+
+/* ═══ SLIDE 4 — TIPSTERS ═══ */
+#s4 { background:#060708; padding:0 28px; }
+
+.s4-header {
+  text-align:center; margin-bottom:22px; width:100%;
+  opacity:0; transform:translateY(-14px);
+  transition:all 0.5s ease;
+}
+.s4-header.in { opacity:1; transform:translateY(0); }
+.s4-header h2 { font-size:24px; font-weight:900; color:#f9fafb; }
+.s4-header h2 span { color:#22c55e; }
+.s4-header p { font-size:12px; color:#6b7280; margin-top:4px; }
+
+.tipster-card {
+  width:100%; background:rgba(255,255,255,0.03);
+  border:1px solid rgba(255,255,255,0.06);
+  border-radius:14px; padding:12px 14px;
+  display:flex; align-items:center; gap:12px;
+  margin-bottom:9px;
+  opacity:0; transform:translateY(20px);
+  transition:all 0.5s cubic-bezier(0.22,1,0.36,1);
+}
+.tipster-card.in { opacity:1; transform:translateY(0); }
+.tipster-card:nth-child(1) { transition-delay:0.1s; }
+.tipster-card:nth-child(2) { transition-delay:0.2s; }
+.tipster-card:nth-child(3) { transition-delay:0.3s; }
+.tipster-card:nth-child(4) { transition-delay:0.4s; }
+
+.tipster-rank {
+  font-size:18px; font-weight:900; width:28px; text-align:center; flex-shrink:0;
+}
+.rank-1 { color:#f59e0b; text-shadow:0 0 10px rgba(245,158,11,0.5); }
+.rank-2 { color:#94a3b8; }
+.rank-3 { color:#cd7c2f; }
+.rank-4 { color:#4b5563; }
+
+.tipster-avatar {
+  width:38px; height:38px; border-radius:50%; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-weight:800; color:#fff;
+}
+.av1 { background:linear-gradient(135deg,#f59e0b,#ef4444); }
+.av2 { background:linear-gradient(135deg,#8b5cf6,#3b82f6); }
+.av3 { background:linear-gradient(135deg,#22c55e,#16a34a); }
+.av4 { background:linear-gradient(135deg,#ec4899,#8b5cf6); }
+
+.tipster-info { flex:1; }
+.tipster-info strong { font-size:13px; color:#f3f4f6; display:block; font-weight:700; }
+.tipster-info span { font-size:11px; color:#6b7280; }
+
+.tipster-rate {
+  text-align:right; flex-shrink:0;
+}
+.tipster-rate .rate { font-size:18px; font-weight:900; color:#22c55e; }
+.tipster-rate .rate-label { font-size:10px; color:#6b7280; display:block; }
+
+/* ═══ SLIDE 5 — CTA FINAL ═══ */
+#s5 { background:#060708; }
+
+.s5-bg {
+  position:absolute; inset:0;
+  background:radial-gradient(ellipse at 50% 40%, rgba(34,197,94,0.12) 0%, transparent 65%);
+  animation:s5-pulse 3s ease-in-out infinite;
+}
+@keyframes s5-pulse { 0%,100%{opacity:0.7} 50%{opacity:1} }
+
+.s5-content { position:relative; z-index:2; text-align:center; padding:0 32px; }
+
+.s5-hook {
+  font-size:32px; font-weight:900; color:#f9fafb;
+  line-height:1.2; margin-bottom:20px;
+  opacity:0; transform:translateY(24px);
+  transition:all 0.7s cubic-bezier(0.22,1,0.36,1);
+}
+.s5-hook.in { opacity:1; transform:translateY(0); }
+.s5-hook .green { color:#22c55e; }
+.s5-hook .yellow { color:#f59e0b; }
+
+.s5-logo {
+  font-size:72px; font-weight:900; letter-spacing:-3px;
+  line-height:1; margin-bottom:6px;
+  opacity:0; transform:scale(0.8);
+  transition:all 0.7s cubic-bezier(0.34,1.56,0.64,1) 0.3s;
+}
+.s5-logo.in { opacity:1; transform:scale(1); }
+.s5-logo .white { color:#fff; }
+.s5-logo .green {
+  color:#22c55e;
+  text-shadow:0 0 40px rgba(34,197,94,0.5);
+}
+
+.s5-url {
+  font-size:13px; color:#6b7280; letter-spacing:0.15em;
+  font-weight:600; margin-bottom:32px;
+  opacity:0; transition:opacity 0.5s ease 0.6s;
+}
+.s5-url.in { opacity:1; }
+
+.s5-btn {
+  display:inline-block;
+  background:linear-gradient(135deg, #16a34a, #22c55e);
+  color:#000; font-size:17px; font-weight:900;
+  letter-spacing:0.06em; text-transform:uppercase;
+  padding:18px 48px; border-radius:100px;
+  box-shadow:0 0 40px rgba(34,197,94,0.35), 0 8px 24px rgba(0,0,0,0.4);
+  opacity:0; transform:translateY(20px) scale(0.95);
+  transition:all 0.6s cubic-bezier(0.22,1,0.36,1) 0.5s;
+  animation:btn-shine 0s linear;
+}
+.s5-btn.in {
+  opacity:1; transform:translateY(0) scale(1);
+  animation:btn-shine 2.5s linear 1.2s infinite;
+}
+@keyframes btn-shine {
+  0%{box-shadow:0 0 40px rgba(34,197,94,0.35),0 8px 24px rgba(0,0,0,0.4)}
+  50%{box-shadow:0 0 60px rgba(34,197,94,0.55),0 8px 30px rgba(0,0,0,0.5)}
+  100%{box-shadow:0 0 40px rgba(34,197,94,0.35),0 8px 24px rgba(0,0,0,0.4)}
+}
+
+.s5-social {
+  display:flex; gap:14px; justify-content:center; margin-top:22px;
+  opacity:0; transition:opacity 0.5s ease 0.9s;
+}
+.s5-social.in { opacity:1; }
+.social-pill {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.08);
+  border-radius:100px; padding:6px 14px;
+  font-size:11px; color:#9ca3af; font-weight:600;
+}
+.social-icon { font-size:14px; }
+
+/* ═══ BARRE PROGRESSION ═══ */
+.progress-bar {
+  position:absolute; bottom:0; left:0; right:0; height:3px;
+  background:rgba(255,255,255,0.04); z-index:100;
+}
+.progress-fill { height:100%; background:linear-gradient(90deg,#16a34a,#22c55e); width:0%; }
+
+/* ═══ SLIDE INDICATOR ═══ */
+.slide-dots {
+  position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  display:flex; gap:5px; z-index:100;
+}
+.dot-ind {
+  width:20px; height:3px; border-radius:2px;
+  background:rgba(255,255,255,0.1); transition:all 0.4s ease;
+}
+.dot-ind.active { background:#22c55e; width:28px; }
+
+/* ═══ CONTRÔLES ═══ */
+.controls {
+  display:flex; gap:10px; align-items:center;
+}
+.btn {
+  background:#111; border:1px solid #222; color:#aaa;
+  font-size:12px; font-weight:600; padding:9px 18px;
+  border-radius:10px; cursor:pointer; transition:all 0.2s;
+}
+.btn:hover { border-color:#22c55e; color:#22c55e; }
+.btn-play {
+  background:#22c55e; color:#000; border-color:#22c55e;
+  font-weight:800; padding:11px 28px; font-size:13px;
+  box-shadow:0 4px 20px rgba(34,197,94,0.3);
+}
+.btn-play:hover { background:#16a34a; color:#fff; border-color:#16a34a; }
+</style>
+</head>
+<body>
+
+<div class="hint">
+  🎬 Clique <b>▶ Lancer</b> → ouvre Xbox Game Bar (<b>Win+G</b>) → enregistre → ajoute ta musique dans CapCut
+</div>
+
+<div class="screen">
+  <canvas id="particles"></canvas>
+
+  <!-- DOTS INDICATOR -->
+  <div class="slide-dots">
+    <div class="dot-ind active" id="d0"></div>
+    <div class="dot-ind" id="d1"></div>
+    <div class="dot-ind" id="d2"></div>
+    <div class="dot-ind" id="d3"></div>
+    <div class="dot-ind" id="d4"></div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
+
+  <!-- ═══ SLIDE 1 — LOGO ═══ -->
+  <div class="slide active" id="s1">
+    <div class="s1-scanline"></div>
+    <div class="s1-glow"></div>
+    <div class="s1-ring ring1"></div>
+    <div class="s1-ring ring2"></div>
+    <div class="s1-ring ring3"></div>
+    <div class="s1-content">
+      <div class="s1-badge" id="s1-badge">
+        <div class="badge-dot"></div>
+        Lancement officiel
+      </div>
+      <div class="s1-logo-wrap" id="s1-logo">
+        <div class="s1-fp">
+          <span class="fp-white">fp</span><span class="fp-green">ronix</span>
+        </div>
+        <div class="s1-tagline" id="s1-tag">Pronostics Football · Intelligence Artificielle</div>
+        <div class="s1-bar" id="s1-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 2 — STATS ═══ -->
+  <div class="slide" id="s2">
+    <div class="pitch-wrap">
+      <div class="pitch">
+        <div class="pitch-mid"></div>
+        <div class="pitch-circle"><div class="pitch-dot"></div></div>
+        <div class="pitch-box-t"></div>
+        <div class="pitch-box-b"></div>
+      </div>
+    </div>
+    <div class="s2-content">
+      <span class="s2-number" id="s2-num">68%</span>
+      <div class="s2-label" id="s2-lbl">de taux de réussite<br/>sur nos pronostics</div>
+      <div class="s2-sub" id="s2-sub">Analysés par IA sur 10 000+ matchs</div>
+      <div class="s2-chips" id="s2-chips">
+        <div class="chip" id="c1">⚽ Ligue 1</div>
+        <div class="chip" id="c2">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Premier League</div>
+        <div class="chip" id="c3">🇪🇸 LaLiga</div>
+        <div class="chip" id="c4">🇩🇪 Bundesliga</div>
+        <div class="chip" id="c5">🇮🇹 Serie A</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 3 — FEATURES ═══ -->
+  <div class="slide" id="s3">
+    <div class="s3-title" id="s3-t">Tout ce dont tu as<br/><span>besoin pour gagner</span></div>
+    <div class="fcard" id="f1">
+      <div class="fcard-inner">
+        <div class="fcard-emoji">🤖</div>
+        <div class="fcard-body">
+          <strong>Pronostics IA en temps réel</strong>
+          <span>Algorithme entraîné sur 5 ans de données</span>
+        </div>
+        <div class="fcard-arrow">›</div>
+      </div>
+    </div>
+    <div class="fcard" id="f2">
+      <div class="fcard-inner">
+        <div class="fcard-emoji">📊</div>
+        <div class="fcard-body">
+          <strong>Statistiques & cotes live</strong>
+          <span>Comparateur de cotes multi-bookmakers</span>
+        </div>
+        <div class="fcard-arrow">›</div>
+      </div>
+    </div>
+    <div class="fcard" id="f3">
+      <div class="fcard-inner">
+        <div class="fcard-emoji">🏆</div>
+        <div class="fcard-body">
+          <strong>Top Tipsters classés</strong>
+          <span>Suis les meilleurs, copie leurs picks</span>
+        </div>
+        <div class="fcard-arrow">›</div>
+      </div>
+    </div>
+    <div class="fcard" id="f4">
+      <div class="fcard-inner">
+        <div class="fcard-emoji">🔔</div>
+        <div class="fcard-body">
+          <strong>Alertes & notifications</strong>
+          <span>Ne rate plus jamais un match important</span>
+        </div>
+        <div class="fcard-arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 4 — TOP TIPSTERS ═══ -->
+  <div class="slide" id="s4">
+    <div class="s4-header" id="s4-h">
+      <h2>Top <span>Tipsters</span></h2>
+      <p>Les meilleurs pronostiqueurs de la plateforme</p>
+    </div>
+    <div class="tipster-card" id="t1">
+      <div class="tipster-rank rank-1">🥇</div>
+      <div class="tipster-avatar av1">D</div>
+      <div class="tipster-info">
+        <strong>DiabloParis</strong>
+        <span>243 pronostics · 12K abonnés</span>
+      </div>
+      <div class="tipster-rate">
+        <div class="rate">74%</div>
+        <span class="rate-label">réussite</span>
+      </div>
+    </div>
+    <div class="tipster-card" id="t2">
+      <div class="tipster-rank rank-2">🥈</div>
+      <div class="tipster-avatar av2">K</div>
+      <div class="tipster-info">
+        <strong>KingBet237</strong>
+        <span>189 pronostics · 8.4K abonnés</span>
+      </div>
+      <div class="tipster-rate">
+        <div class="rate">71%</div>
+        <span class="rate-label">réussite</span>
+      </div>
+    </div>
+    <div class="tipster-card" id="t3">
+      <div class="tipster-rank rank-3">🥉</div>
+      <div class="tipster-avatar av3">M</div>
+      <div class="tipster-info">
+        <strong>MboloTips</strong>
+        <span>317 pronostics · 6.1K abonnés</span>
+      </div>
+      <div class="tipster-rate">
+        <div class="rate">69%</div>
+        <span class="rate-label">réussite</span>
+      </div>
+    </div>
+    <div class="tipster-card" id="t4">
+      <div class="tipster-rank rank-4">4</div>
+      <div class="tipster-avatar av4">A</div>
+      <div class="tipster-info">
+        <strong>AlphaProno</strong>
+        <span>501 pronostics · 4.8K abonnés</span>
+      </div>
+      <div class="tipster-rate">
+        <div class="rate">67%</div>
+        <span class="rate-label">réussite</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SLIDE 5 — CTA ═══ -->
+  <div class="slide" id="s5">
+    <div class="s5-bg"></div>
+    <div class="s5-content">
+      <div class="s5-hook" id="s5-hook">
+        Arrête de parier<br/>
+        <span class="yellow">à l'aveugle.</span><br/>
+        Joue <span class="green">intelligent.</span>
+      </div>
+      <div class="s5-logo" id="s5-logo">
+        <span class="white">fp</span><span class="green">ronix</span>
+      </div>
+      <div class="s5-url" id="s5-url">fpronix.com</div>
+      <div class="s5-btn" id="s5-btn">🚀 Rejoins gratuitement</div>
+      <div class="s5-social" id="s5-soc">
+        <div class="social-pill"><span class="social-icon">📸</span> Instagram</div>
+        <div class="social-pill"><span class="social-icon">🎵</span> TikTok</div>
+        <div class="social-pill"><span class="social-icon">💬</span> WhatsApp</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <button class="btn" onclick="prevSlide()">◀</button>
+  <button class="btn btn-play" id="playBtn" onclick="togglePlay()">▶ Lancer</button>
+  <button class="btn" onclick="nextSlide()">▶</button>
+</div>
+
+<script>
+// ═══ PARTICULES ═══
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+canvas.width = 405; canvas.height = 720;
+
+const particles = [];
+for (let i = 0; i < 55; i++) {
+  particles.push({
+    x: Math.random() * 405,
+    y: Math.random() * 720,
+    r: Math.random() * 1.5 + 0.3,
+    vx: (Math.random() - 0.5) * 0.3,
+    vy: -Math.random() * 0.4 - 0.1,
+    alpha: Math.random() * 0.4 + 0.1,
+  });
+}
+
+function drawParticles() {
+  ctx.clearRect(0, 0, 405, 720);
+  particles.forEach(p => {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(34,197,94,${p.alpha})`;
+    ctx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if (p.y < -5) { p.y = 725; p.x = Math.random() * 405; }
+    if (p.x < 0) p.x = 405; if (p.x > 405) p.x = 0;
+  });
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+// ═══ SLIDES ENGINE ═══
+const SLIDES = [
+  { id:'s1', dur:4500, enter:enterS1 },
+  { id:'s2', dur:5500, enter:enterS2 },
+  { id:'s3', dur:7000, enter:enterS3 },
+  { id:'s4', dur:7000, enter:enterS4 },
+  { id:'s5', dur:6000, enter:enterS5 },
+];
+
+let current = 0, playing = false, timer = null;
+
+function rm(ids) { ids.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('in'); }); }
+
+function showSlide(i) {
+  SLIDES.forEach((s, idx) => {
+    document.getElementById(s.id).classList.toggle('active', idx === i);
+    document.getElementById('d'+idx).classList.toggle('active', idx === i);
+  });
+  SLIDES[i].enter();
+  current = i;
+}
+
+function startProgress(dur) {
+  const fill = document.getElementById('progress');
+  fill.style.transition = 'none'; fill.style.width = '0%';
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    fill.style.transition = `width ${dur}ms linear`; fill.style.width = '100%';
+  }));
+}
+
+function togglePlay() {
+  if (playing) {
+    playing = false; clearTimeout(timer);
+    document.getElementById('playBtn').textContent = '▶ Lancer';
+  } else {
+    playing = true;
+    document.getElementById('playBtn').textContent = '⏸ Pause';
+    playFrom(current);
+  }
+}
+
+function playFrom(i) {
+  if (!playing) return;
+  showSlide(i); startProgress(SLIDES[i].dur);
+  timer = setTimeout(() => {
+    if (i < SLIDES.length - 1) { playFrom(i + 1); }
+    else {
+      playing = false;
+      const btn = document.getElementById('playBtn');
+      btn.textContent = '🔄 Rejouer';
+      btn.onclick = () => { showSlide(0); btn.textContent='▶ Lancer'; btn.onclick=togglePlay; };
+    }
+  }, SLIDES[i].dur);
+}
+
+function nextSlide() { if(current<SLIDES.length-1) showSlide(current+1); }
+function prevSlide() { if(current>0) showSlide(current-1); }
+
+// ═══ ENTER ANIMATIONS ═══
+function enterS1() {
+  rm(['s1-badge','s1-logo','s1-tag','s1-bar']);
+  setTimeout(() => document.getElementById('s1-badge').classList.add('in'), 150);
+  setTimeout(() => document.getElementById('s1-logo').classList.add('in'), 300);
+  setTimeout(() => document.getElementById('s1-tag').classList.add('in'), 600);
+  setTimeout(() => document.getElementById('s1-bar').classList.add('in'), 800);
+}
+
+// Compteur animé
+function animateCount(el, end, suffix, dur) {
+  let start = 0, step = dur / 60;
+  const inc = end / (dur / (1000/60));
+  const tick = () => {
+    start = Math.min(start + inc, end);
+    el.textContent = Math.round(start) + suffix;
+    if (start < end) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+function enterS2() {
+  rm(['s2-num','s2-lbl','s2-sub','c1','c2','c3','c4','c5']);
+  setTimeout(() => {
+    const el = document.getElementById('s2-num');
+    el.classList.add('in'); el.textContent = '0%';
+    animateCount(el, 68, '%', 1200);
+  }, 300);
+  setTimeout(() => document.getElementById('s2-lbl').classList.add('in'), 600);
+  setTimeout(() => document.getElementById('s2-sub').classList.add('in'), 900);
+  ['c1','c2','c3','c4','c5'].forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('in'), 1100 + i*120);
+  });
+}
+
+function enterS3() {
+  rm(['s3-t','f1','f2','f3','f4']);
+  setTimeout(() => document.getElementById('s3-t').classList.add('in'), 200);
+  ['f1','f2','f3','f4'].forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('in'), 500 + i*180);
+  });
+}
+
+function enterS4() {
+  rm(['s4-h','t1','t2','t3','t4']);
+  setTimeout(() => document.getElementById('s4-h').classList.add('in'), 200);
+  ['t1','t2','t3','t4'].forEach((id, i) => {
+    setTimeout(() => document.getElementById(id).classList.add('in'), 500 + i*220);
+  });
+}
+
+function enterS5() {
+  rm(['s5-hook','s5-logo','s5-url','s5-btn','s5-soc']);
+  setTimeout(() => document.getElementById('s5-hook').classList.add('in'), 200);
+  setTimeout(() => document.getElementById('s5-logo').classList.add('in'), 600);
+  setTimeout(() => document.getElementById('s5-url').classList.add('in'), 900);
+  setTimeout(() => document.getElementById('s5-btn').classList.add('in'), 1000);
+  setTimeout(() => document.getElementById('s5-soc').classList.add('in'), 1400);
+}
+
+// Init
+showSlide(0);
+</script>
+</body>
+</html>

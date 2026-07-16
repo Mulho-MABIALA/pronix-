@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>fpronix — Affiche Lancement Instagram/Facebook</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    gap: 12px;
+  }
+  p.hint { color: #555; font-size: 13px; }
+
+  .post {
+    width: 1080px; height: 1080px;
+    background: #0d0f10;
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 6px;
+    background: linear-gradient(90deg, #16a34a, #22c55e, #4ade80); }
+
+  .c { position: absolute; border-radius: 50%; pointer-events: none; }
+  .c1 { width: 820px; height: 820px; border: 1px solid rgba(34,197,94,0.06); top: -160px; right: -160px; }
+  .c2 { width: 540px; height: 540px; border: 1px solid rgba(34,197,94,0.05); top: -80px; right: -80px; }
+  .c3 { width: 660px; height: 660px; border: 1px solid rgba(34,197,94,0.04); bottom: -200px; left: -200px; }
+  .glow { position: absolute; width: 600px; height: 600px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,197,94,0.04) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%,-50%); }
+
+  .badge {
+    background: rgba(34,197,94,0.12);
+    border: 2px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+    font-size: 22px; font-weight: 800;
+    letter-spacing: 0.14em;
+    padding: 10px 32px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    margin-bottom: 44px;
+  }
+
+  .logo {
+    font-size: 112px; font-weight: 900;
+    color: #f0f0f0; letter-spacing: -4px; line-height: 1;
+    margin-bottom: 16px;
+  }
+  .logo span { color: #22c55e; }
+
+  .tagline {
+    font-size: 26px; font-weight: 700;
+    color: #6b7280; letter-spacing: 0.28em;
+    text-transform: uppercase;
+    margin-bottom: 52px;
+  }
+
+  .divider {
+    width: 80px; height: 3px;
+    background: linear-gradient(90deg, transparent, #22c55e, transparent);
+    margin-bottom: 52px;
+  }
+
+  .features { display: flex; flex-direction: column; gap: 22px; align-items: center; margin-bottom: 64px; }
+  .feature { display: flex; align-items: center; gap: 20px; font-size: 26px; color: #d1d5db; font-weight: 600; }
+  .ficon {
+    width: 44px; height: 44px;
+    background: rgba(34,197,94,0.12);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+
+  .cta {
+    background: #22c55e; color: #000;
+    font-size: 28px; font-weight: 900;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 26px 72px; border-radius: 100px;
+  }
+
+  .url { position: absolute; bottom: 36px;
+    font-size: 22px; color: #374151; font-weight: 700; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+  <p class="hint">👉 Fais Win + Shift + S et sélectionne exactement le carré noir pour capturer l'affiche</p>
+  <div class="post">
+    <div class="top-bar"></div>
+    <div class="c c1"></div><div class="c c2"></div><div class="c c3"></div>
+    <div class="glow"></div>
+
+    <div class="badge">🚀 Lancement officiel</div>
+    <div class="logo">fp<span>ronix</span></div>
+    <div class="tagline">Pronostics Football IA</div>
+    <div class="divider"></div>
+
+    <div class="features">
+      <div class="feature"><div class="ficon">⚽</div> Pronostics IA en temps réel</div>
+      <div class="feature"><div class="ficon">📊</div> Statistiques & cotes live</div>
+      <div class="feature"><div class="ficon">🏆</div> Classement des meilleurs tipsters</div>
+      <div class="feature"><div class="ficon">🔔</div> Rappels de matchs & alertes</div>
+    </div>
+
+    <div class="cta">Rejoindre gratuitement</div>
+    <div class="url">fpronix.com</div>
+  </div>
+  <p class="hint">Format : 1080×1080 · Instagram / Facebook</p>
+</body>
+</html>

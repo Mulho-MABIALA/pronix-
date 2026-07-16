@@ -104,9 +104,16 @@ model User {
   referralReceived   Referral?          @relation("RefereeUser")
   betEntries           BetEntry[]
   matchReminders       MatchReminder[]
-  blogPosts            BlogPost[]          @relation("BlogAuthor")
-  tipsterPlan          TipsterPlan?        @relation("TipsterPlan")
+  blogPosts            BlogPost[]            @relation("BlogAuthor")
+  tipsterPlan          TipsterPlan?          @relation("TipsterPlan")
   tipsterSubscriptions TipsterSubscription[] @relation("TipsterSubscriber")
+  combos               TipCombo[]            @relation("UserCombos")
+  following            TipsterFollow[]       @relation("FollowerUser")
+  followers            TipsterFollow[]       @relation("FollowedUser")
+  tipComments          TipComment[]          @relation("TipCommentAuthor")
+  virtualWallet        VirtualWallet?
+  oddsAlerts           OddsAlert[]
+  weeklyStats          TipsterWeeklyStats[]
 
   @@map("users")
 }
@@ -287,6 +294,8 @@ model Match {
   tips           Tip[]
   betEntries     BetEntry[]
   matchReminders MatchReminder[]
+  comboEntries   TipComboEntry[]
+  virtualBets    VirtualBet[]
 
   @@index([scheduledAt])
   @@index([status])
@@ -311,7 +320,8 @@ model Tip {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
-  reports Report[]
+  reports  Report[]
+  comments TipComment[]
 
   @@unique([userId, matchId]) // un seul pronostic par match par tipster
   @@index([userId])
@@ -506,4 +516,150 @@ model PushSubscription {
   createdAt DateTime @default(now())
 
   @@map("push_subscriptions")
+}
+
+// ─── COMBINÉS (MULTI-PICKS) ────────────────────────────────────────────────────
+
+model TipCombo {
+  id        String          @id @default(uuid())
+  userId    String
+  user      User            @relation("UserCombos", fields: [userId], references: [id], onDelete: Cascade)
+  title     String?
+  totalOdds Float           @default(1)
+  isPremium Boolean         @default(false)
+  result    String?         // WIN | LOSS | PENDING
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  entries   TipComboEntry[]
+
+  @@index([userId])
+  @@map("tip_combos")
+}
+
+model TipComboEntry {
+  id         String   @id @default(uuid())
+  comboId    String
+  combo      TipCombo @relation(fields: [comboId], references: [id], onDelete: Cascade)
+  matchId    String
+  match      Match    @relation(fields: [matchId], references: [id])
+  prediction String
+  odds       Float
+  result     String?  // WIN | LOSS | VOID | null
+  createdAt  DateTime @default(now())
+
+  @@index([comboId])
+  @@map("tip_combo_entries")
+}
+
+// ─── FOLLOW TIPSTER (GRATUIT) ─────────────────────────────────────────────────
+
+model TipsterFollow {
+  id         String   @id @default(uuid())
+  followerId String
+  follower   User     @relation("FollowerUser", fields: [followerId], references: [id], onDelete: Cascade)
+  tipsterId  String
+  tipster    User     @relation("FollowedUser", fields: [tipsterId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([followerId, tipsterId])
+  @@index([tipsterId])
+  @@map("tipster_follows")
+}
+
+// ─── COMMENTAIRES SUR LES PRONOSTICS ─────────────────────────────────────────
+
+model TipComment {
+  id        String   @id @default(uuid())
+  tipId     String
+  tip       Tip      @relation(fields: [tipId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation("TipCommentAuthor", fields: [userId], references: [id], onDelete: Cascade)
+  content   String   @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([tipId])
+  @@map("tip_comments")
+}
+
+// ─── ANALYTICS INTERNES ───────────────────────────────────────────────────────
+
+model EventLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  event     String   // tipster_view | tip_view | match_view | conversion | search
+  entityId  String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([event, createdAt])
+  @@index([entityId])
+  @@map("event_logs")
+}
+
+// ─── WALLET FICTIF (GAMIFICATION) ────────────────────────────────────────────
+
+model VirtualWallet {
+  id        String       @id @default(uuid())
+  userId    String       @unique
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Int          @default(1000) // points fictifs
+  totalWon  Int          @default(0)
+  totalLost Int          @default(0)
+  updatedAt DateTime     @updatedAt
+  bets      VirtualBet[]
+
+  @@map("virtual_wallets")
+}
+
+model VirtualBet {
+  id         String        @id @default(uuid())
+  walletId   String
+  wallet     VirtualWallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  matchId    String
+  match      Match         @relation(fields: [matchId], references: [id])
+  prediction String
+  odds       Float
+  stake      Int
+  payout     Int?          // calculé si WIN = stake * odds
+  result     String?       // WIN | LOSS | VOID | null (en attente)
+  createdAt  DateTime      @default(now())
+
+  @@index([walletId])
+  @@map("virtual_bets")
+}
+
+// ─── ALERTES COTES ───────────────────────────────────────────────────────────
+
+model OddsAlert {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  teamName    String
+  targetOdds  Float
+  condition   String    @default("above") // above | below
+  isActive    Boolean   @default(true)
+  triggeredAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([isActive])
+  @@index([userId])
+  @@map("odds_alerts")
+}
+
+// ─── HISTORIQUE HEBDO TIPSTER ─────────────────────────────────────────────────
+
+model TipsterWeeklyStats {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weekStart   DateTime
+  tips        Int      @default(0)
+  correct     Int      @default(0)
+  successRate Float    @default(0)
+  roi         Float    @default(0)
+  createdAt   DateTime @default(now())
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@map("tipster_weekly_stats")
 }

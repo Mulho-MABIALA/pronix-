@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>fpronix — Story WhatsApp / TikTok</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #111;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    min-height: 100vh;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    gap: 12px;
+  }
+  p.hint { color: #555; font-size: 13px; }
+
+  .post {
+    width: 608px; height: 1080px;
+    background: #0d0f10;
+    position: relative;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+
+  .top-bar { position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, #16a34a, #22c55e, #4ade80); }
+
+  .glow1 { position: absolute; width: 500px; height: 500px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,197,94,0.06) 0%, transparent 70%);
+    top: -120px; right: -120px; pointer-events: none; }
+  .glow2 { position: absolute; width: 400px; height: 400px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(34,197,94,0.05) 0%, transparent 70%);
+    bottom: -100px; left: -100px; pointer-events: none; }
+
+  .badge {
+    background: rgba(34,197,94,0.12);
+    border: 2px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+    font-size: 18px; font-weight: 800;
+    letter-spacing: 0.12em;
+    padding: 8px 24px; border-radius: 100px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .logo {
+    font-size: 86px; font-weight: 900;
+    color: #f0f0f0; letter-spacing: -3px; line-height: 1;
+    margin-bottom: 10px;
+  }
+  .logo span { color: #22c55e; }
+
+  .tagline {
+    font-size: 18px; font-weight: 700;
+    color: #6b7280; letter-spacing: 0.22em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .divider {
+    width: 60px; height: 3px;
+    background: linear-gradient(90deg, transparent, #22c55e, transparent);
+    margin-bottom: 36px;
+  }
+
+  .headline {
+    font-size: 38px; font-weight: 900;
+    color: #f9fafb; text-align: center;
+    line-height: 1.25; padding: 0 40px;
+    margin-bottom: 36px;
+  }
+  .headline span { color: #22c55e; }
+
+  .features {
+    display: flex; flex-direction: column; gap: 16px;
+    padding: 0 48px; margin-bottom: 44px; width: 100%;
+  }
+  .feature {
+    display: flex; align-items: center; gap: 16px;
+    font-size: 20px; color: #d1d5db; font-weight: 600;
+  }
+  .dot { width: 10px; height: 10px; background: #22c55e; border-radius: 50%; flex-shrink: 0; }
+
+  .cta {
+    background: #22c55e; color: #000;
+    font-size: 22px; font-weight: 900;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 20px 56px; border-radius: 100px;
+  }
+
+  .url { position: absolute; bottom: 28px;
+    font-size: 18px; color: #374151; font-weight: 700; letter-spacing: 0.08em; }
+</style>
+</head>
+<body>
+  <p class="hint">👉 Fais Win + Shift + S et sélectionne le rectangle noir pour capturer</p>
+  <div class="post">
+    <div class="top-bar"></div>
+    <div class="glow1"></div><div class="glow2"></div>
+
+    <div class="badge">🚀 Nouveau</div>
+    <div class="logo">fp<span>ronix</span></div>
+    <div class="tagline">Pronostics Football IA</div>
+    <div class="divider"></div>
+
+    <div class="headline">Le football,<br/>analysé par <span>l'IA</span></div>
+
+    <div class="features">
+      <div class="feature"><div class="dot"></div>Pronostics IA en temps réel</div>
+      <div class="feature"><div class="dot"></div>Statistiques & cotes live</div>
+      <div class="feature"><div class="dot"></div>Top tipsters classés</div>
+      <div class="feature"><div class="dot"></div>100% gratuit au départ</div>
+    </div>
+
+    <div class="cta">Rejoindre maintenant</div>
+    <div class="url">fpronix.com</div>
+  </div>
+  <p class="hint">Format : 1080×1920 · WhatsApp Status / TikTok / Story Instagram</p>
+</body>
+</html>

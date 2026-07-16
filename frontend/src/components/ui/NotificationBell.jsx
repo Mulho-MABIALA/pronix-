@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Bell, BellOff, X, Share } from 'lucide-react';
+import { createPortal } from 'react-dom';
+import { Bell, BellOff, X } from 'lucide-react';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
 import { useAuth } from '../../context/AuthContext';
 
@@ -13,130 +14,133 @@ function isStandalone() {
   );
 }
 
-/**
- * NotificationBell
- * - size       : taille de l'icône (défaut 18)
- * - showLabel  : affiche "Alertes" sous l'icône (pour BottomNav)
- */
-export default function NotificationBell({ size = 18, showLabel = false }) {
+/* ─── Bottom sheet iOS (rendu via portal pour éviter tout conflit z-index) ── */
+function IOSBottomSheet({ onClose }) {
+  const STEPS = [
+    'Appuie sur Partager ↑ en bas de Safari',
+    "Sélectionne \"Sur l'écran d'accueil\"",
+    "Lance l'app installée et reviens activer les alertes",
+  ];
+
+  return createPortal(
+    <>
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Sheet */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-[301] rounded-t-2xl animate-slide-up"
+        style={{
+          background: 'rgba(24,25,28,0.99)',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
+          paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
+        }}
+      >
+        {/* Handle */}
+        <div className="flex justify-center pt-3 pb-2">
+          <div className="w-10 h-1 rounded-full bg-white/20" />
+        </div>
+
+        {/* En-tête */}
+        <div className="flex items-center justify-between px-5 pb-4 border-b border-white/[0.06]">
+          <p className="font-semibold text-gray-100 text-base">
+            Activer les notifications
+          </p>
+          <button
+            onClick={onClose}
+            className="p-1.5 rounded-xl text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-colors"
+          >
+            <X size={16} />
+          </button>
+        </div>
+
+        {/* Contenu */}
+        <div className="px-5 pt-4 space-y-5">
+          <p className="text-sm text-gray-400 leading-relaxed">
+            Sur iPhone, les notifications push nécessitent l'app installée
+            depuis Safari <span className="text-gray-500">(iOS 16.4+)</span>.
+          </p>
+
+          {/* Étapes */}
+          <div className="space-y-3">
+            {STEPS.map((step, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <span className="w-7 h-7 rounded-full bg-primary-500/20 text-primary-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  {i + 1}
+                </span>
+                <p className="text-sm text-gray-300 leading-snug pt-1">{step}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Bouton fermer */}
+          <button
+            onClick={onClose}
+            className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-gray-200 transition-colors"
+            style={{ background: 'rgba(255,255,255,0.07)' }}
+          >
+            Compris
+          </button>
+        </div>
+      </div>
+    </>,
+    document.body
+  );
+}
+
+/* ─── Composant principal ────────────────────────────────────────────────────── */
+export default function NotificationBell({ size = 18 }) {
   const { user } = useAuth();
   const { supported, subscribed, loading, subscribe, unsubscribe } =
     usePushNotifications(user);
   const [showIOSHint, setShowIOSHint] = useState(false);
 
-  const ios = isIOS();
+  const ios        = isIOS();
   const standalone = isStandalone();
 
-  /* ── iOS non installée en PWA → pas de PushManager → guide d'installation ── */
+  /* ── iOS non installée → guide d'installation ── */
   if (ios && !standalone) {
     return (
-      <div className="relative">
+      <>
         <button
-          onClick={() => setShowIOSHint((v) => !v)}
-          className={`flex flex-col items-center justify-center gap-0.5 transition-colors rounded-xl
-            ${showLabel ? 'flex-1 h-full' : 'p-2 rounded-lg hover:bg-surface-700'}
-            text-gray-500 hover:text-gray-300`}
-          aria-label="Notifications"
+          onClick={() => setShowIOSHint(true)}
+          className="p-2 rounded-lg transition-colors text-gray-500 hover:text-gray-300 hover:bg-surface-700"
+          aria-label="Activer les notifications"
+          title="Notifications push — installer l'app d'abord"
         >
-          <div className={showLabel ? 'p-1 rounded-lg' : ''}>
-            <BellOff size={size} strokeWidth={1.75} />
-          </div>
-          {showLabel && (
-            <span className="text-[9px] font-semibold tracking-wide">Alertes</span>
-          )}
+          <BellOff size={size} strokeWidth={1.75} />
         </button>
 
         {showIOSHint && (
-          <>
-            {/* Overlay pour fermer */}
-            <div
-              className="fixed inset-0 z-[80]"
-              onClick={() => setShowIOSHint(false)}
-            />
-            {/* Tooltip */}
-            <div
-              className={`absolute z-[90] w-72 bg-surface-800 border border-white/10 rounded-2xl p-4 shadow-xl text-xs text-gray-300 space-y-2
-                ${showLabel ? 'bottom-full mb-3 right-0' : 'top-full mt-2 right-0'}`}
-            >
-              <div className="flex items-center justify-between mb-1">
-                <p className="font-semibold text-gray-100 text-sm">
-                  Notifications iPhone
-                </p>
-                <button
-                  onClick={() => setShowIOSHint(false)}
-                  className="p-1 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05]"
-                >
-                  <X size={14} />
-                </button>
-              </div>
-
-              <p className="text-gray-400 leading-snug">
-                Pour recevoir des notifications push, installe d'abord l'app depuis Safari :
-              </p>
-
-              <div className="space-y-1.5 text-gray-300 leading-snug">
-                <p>
-                  1. Appuie sur{' '}
-                  <span className="inline-flex items-center gap-1 text-primary-400 font-semibold">
-                    <Share size={10} /> Partager
-                  </span>{' '}
-                  en bas de Safari
-                </p>
-                <p>
-                  2. Sélectionne{' '}
-                  <span className="text-primary-400 font-semibold">
-                    "Sur l'écran d'accueil"
-                  </span>
-                </p>
-                <p>
-                  3. Ouvre l'app installée et reviens activer les alertes ici
-                </p>
-              </div>
-
-              <p className="text-gray-600 text-[10px] pt-1 border-t border-white/[0.06]">
-                Nécessite iOS 16.4 ou plus récent
-              </p>
-            </div>
-          </>
+          <IOSBottomSheet onClose={() => setShowIOSHint(false)} />
         )}
-      </div>
+      </>
     );
   }
 
-  /* ── Navigateur vraiment non-supporté (vieux Android, etc.) ── */
+  /* ── Navigateur non supporté ── */
   if (!supported) return null;
 
-  /* ── Push supporté → toggle abonnement ── */
+  /* ── Push disponible → toggle abonnement ── */
   return (
     <button
       onClick={subscribed ? unsubscribe : subscribe}
       disabled={loading}
-      className={`flex flex-col items-center justify-center gap-0.5 transition-colors rounded-xl
-        ${showLabel ? 'flex-1 h-full' : 'p-2 rounded-lg hover:bg-surface-700'}
-        ${
-          subscribed
-            ? 'text-primary-400 hover:text-primary-300'
-            : 'text-gray-400 hover:text-gray-200'
-        }`}
-      aria-label={
-        subscribed ? 'Désactiver les notifications' : 'Activer les notifications'
-      }
-      title={
+      className={`p-2 rounded-lg transition-colors ${
         subscribed
-          ? 'Notifications activées — cliquer pour désactiver'
-          : 'Activer les notifications push'
-      }
+          ? 'text-primary-400 hover:text-primary-300 hover:bg-surface-700'
+          : 'text-gray-400 hover:text-gray-200 hover:bg-surface-700'
+      }`}
+      aria-label={subscribed ? 'Désactiver les notifications' : 'Activer les notifications'}
+      title={subscribed ? 'Notifications activées' : 'Activer les notifications push'}
     >
-      <div className={showLabel ? 'p-1 rounded-lg' : ''}>
-        {subscribed ? (
-          <Bell size={size} strokeWidth={showLabel ? 1.75 : 1.75} />
-        ) : (
-          <BellOff size={size} strokeWidth={1.75} />
-        )}
-      </div>
-      {showLabel && (
-        <span className="text-[9px] font-semibold tracking-wide">Alertes</span>
-      )}
+      {subscribed
+        ? <Bell size={size} strokeWidth={1.75} />
+        : <BellOff size={size} strokeWidth={1.75} />
+      }
     </button>
   );
 }

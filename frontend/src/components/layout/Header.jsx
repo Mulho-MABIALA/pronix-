@@ -163,8 +163,10 @@ export default function Header() {
             </button>
           )}
 
-          {/* Switcher de langue */}
-          <LangSwitcher />
+          {/* Langue : visible desktop + utilisateur connecté mobile ; caché mobile non-connecté */}
+          <div className={user ? 'block' : 'hidden md:block'}>
+            <LangSwitcher />
+          </div>
 
           {user ? (
             <>
@@ -188,10 +190,14 @@ export default function Header() {
             </>
           ) : (
             <div className="flex items-center gap-2 ml-1">
-              <Link to="/connexion" className="btn-secondary text-[13px] px-3 py-1.5" style={{ minHeight: 34 }}>
+              <Link to="/connexion"
+                className="btn-secondary text-[13px] px-3 py-1.5"
+                style={{ minHeight: 34 }}>
                 {t('nav.login')}
               </Link>
-              <Link to="/inscription" className="btn-cta text-[13px] px-4 py-1.5 hidden sm:flex" style={{ minHeight: 34 }}>
+              <Link to="/inscription"
+                className="btn-cta text-[13px] px-4 py-1.5 hidden sm:flex"
+                style={{ minHeight: 34 }}>
                 {t('nav.register')}
               </Link>
             </div>

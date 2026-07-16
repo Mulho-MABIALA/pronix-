@@ -1,5 +1,5 @@
 const { z } = require('zod');
-const prisma = require('../config/prisma');
+const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 
 const planSchema = z.object({

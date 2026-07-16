@@ -27,11 +27,14 @@ async function sendEmail({ to, subject, html }) {
   const { error } = await resend.emails.send({ from: FROM, to, subject, html });
 
   if (error) {
-    console.error('[Email] Erreur Resend:', error);
-    throw new Error(error.message);
+    // Log l'erreur mais NE PAS throw — une erreur d'email ne doit jamais
+    // faire crasher l'API (domaine non vérifié, quota, etc.)
+    console.error('[Email] Erreur Resend (non fatale):', error.message || error);
+    return false;
   }
 
   console.log(`[Email] Envoyé → ${to} | ${subject}`);
+  return true;
 }
 
 // ── Email de bienvenue ────────────────────────────────────────────────────────

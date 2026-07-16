@@ -1,8 +1,8 @@
 import { useParams, Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Flag } from 'lucide-react';
+import { Flag, Crown, Users, Loader2 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { TipsterBadge, ResultBadge } from '../components/ui/Badge';
@@ -18,11 +18,40 @@ const PRED_LABELS = {
 export default function TipsterProfile() {
   const { userId } = useParams();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
     queryKey: ['tipster', userId],
     queryFn: () => api.get(`/tips/tipster/${userId}`).then((r) => r.data),
   });
+
+  // Plan du tipster
+  const { data: planData } = useQuery({
+    queryKey: ['tipster-plan', userId],
+    queryFn: () => api.get(`/tipster-plans/${userId}`).then((r) => r.data).catch(() => null),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // Statut d'abonnement de l'utilisateur connecté
+  const { data: subStatus, refetch: refetchSub } = useQuery({
+    queryKey: ['tipster-sub-status', userId],
+    queryFn: () => api.get(`/tipster-plans/mine/status?tipsterId=${userId}`).then((r) => r.data),
+    enabled: !!user && user.id !== userId,
+    staleTime: 60 * 1000,
+  });
+
+  const subscribeMutation = useMutation({
+    mutationFn: () => api.post(`/tipster-plans/${userId}/subscribe`),
+    onSuccess: () => refetchSub(),
+  });
+
+  const unsubscribeMutation = useMutation({
+    mutationFn: () => api.delete(`/tipster-plans/${userId}/subscribe`),
+    onSuccess: () => refetchSub(),
+  });
+
+  const plan = planData?.data;
+  const isSubscribed = subStatus?.subscribed;
 
   if (isLoading) {
     return (
@@ -103,6 +132,59 @@ export default function TipsterProfile() {
                 ROI estimé (simulé)
               </p>
             </div>
+          )}
+        </div>
+      )}
+
+      {/* Plan d'abonnement tipster */}
+      {plan && user?.id !== userId && (
+        <div className="bento-card border-primary-500/30 bg-primary-500/5 space-y-3">
+          <div className="flex items-center gap-2">
+            <Crown size={16} className="text-primary-400" />
+            <p className="font-semibold text-gray-100">{plan.name}</p>
+            <span className="ml-auto text-lg font-display font-bold text-primary-400">
+              {plan.price.toLocaleString('fr-FR')} FCFA
+              <span className="text-xs text-gray-500 font-normal"> /mois</span>
+            </span>
+          </div>
+          {plan.description && (
+            <p className="text-xs text-gray-400">{plan.description}</p>
+          )}
+          {plan.subscriberCount > 0 && (
+            <p className="text-xs text-gray-500 flex items-center gap-1">
+              <Users size={11} />
+              {plan.subscriberCount} abonné{plan.subscriberCount > 1 ? 's' : ''}
+            </p>
+          )}
+          {user ? (
+            isSubscribed ? (
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-green-400 font-medium">✓ Abonné</span>
+                <button
+                  onClick={() => unsubscribeMutation.mutate()}
+                  disabled={unsubscribeMutation.isPending}
+                  className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+                >
+                  {unsubscribeMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : 'Se désabonner'}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => subscribeMutation.mutate()}
+                disabled={subscribeMutation.isPending}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors disabled:opacity-40"
+              >
+                {subscribeMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} />}
+                S'abonner — {plan.price.toLocaleString('fr-FR')} FCFA/mois
+              </button>
+            )
+          ) : (
+            <Link
+              to="/connexion"
+              className="block text-center py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors"
+            >
+              Se connecter pour s'abonner
+            </Link>
           )}
         </div>
       )}

@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Lock, ChevronDown, Sparkles, Flag, X } from 'lucide-react';
+import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square } from 'lucide-react';
 import ChatIA from '../components/match/ChatIA';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -209,22 +209,28 @@ function TeamLogoLarge({ logo, teamId, name }) {
   const [error, setError] = useState(false);
   const src = logo || FOTMOB_CDN(teamId);
 
-  if (src && !error) {
-    return (
-      <div className="flex-1 text-center">
-        <img src={src} alt="" className="h-16 w-16 mx-auto mb-2 object-contain" onError={() => setError(true)} aria-hidden="true" />
-        <p className="font-semibold text-gray-100 text-sm leading-tight">{name}</p>
-      </div>
-    );
-  }
-  return (
-    <div className="flex-1 text-center">
+  const inner = (src && !error) ? (
+    <>
+      <img src={src} alt="" className="h-16 w-16 mx-auto mb-2 object-contain" onError={() => setError(true)} aria-hidden="true" />
+      <p className="font-semibold text-gray-100 text-sm leading-tight">{name}</p>
+    </>
+  ) : (
+    <>
       <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-surface-700 flex items-center justify-center text-xl font-bold text-gray-500">
         {name?.charAt(0).toUpperCase()}
       </div>
       <p className="font-semibold text-gray-100 text-sm leading-tight">{name}</p>
-    </div>
+    </>
   );
+
+  if (teamId) {
+    return (
+      <Link to={`/equipes/${teamId}`} className="flex-1 text-center hover:opacity-80 transition-opacity">
+        {inner}
+      </Link>
+    );
+  }
+  return <div className="flex-1 text-center">{inner}</div>;
 }
 
 const RESULT_STYLE = {
@@ -443,6 +449,15 @@ export default function MatchDetail() {
 
   const { data: realOdds } = useOdds(id);
 
+  // Évènements live — polling 30s si LIVE
+  const { data: eventsData } = useQuery({
+    queryKey: ['match-events', id],
+    queryFn: () => api.get(`/matches/${id}/events`).then((r) => r.data),
+    enabled: !!data?.data && ['LIVE', 'FINISHED'].includes(data?.data?.status) && activeTab === 'events',
+    staleTime: 25_000,
+    refetchInterval: (query) => query.state.data?.matchStatus === 'LIVE' ? 30_000 : false,
+  });
+
   const match = data?.data;
   const tips  = tipsData?.data || [];
 
@@ -599,6 +614,9 @@ export default function MatchDetail() {
         <div className="flex px-4 min-w-max">
           {isFinishedOrLive && (
             <Tab label="Données du match" active={activeTab === 'data'} onClick={() => setActiveTab('data')} />
+          )}
+          {isFinishedOrLive && (
+            <Tab label="Évènements" active={activeTab === 'events'} onClick={() => setActiveTab('events')} />
           )}
           <Tab label={`Pronostics${tips.length ? ` (${tips.length})` : ''}`} active={activeTab === 'tips'} onClick={() => setActiveTab('tips')} />
           <Tab label="Forme & H2H" active={activeTab === 'form'} onClick={() => setActiveTab('form')} />
@@ -873,6 +891,69 @@ export default function MatchDetail() {
               </div>
             </section>
           </>
+        )}
+
+        {/* ── Onglet : Évènements live ────────────────────────────────── */}
+        {activeTab === 'events' && (
+          <section>
+            {!eventsData ? (
+              <div className="space-y-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="skeleton h-10 w-full rounded-xl" />
+                ))}
+              </div>
+            ) : eventsData.data?.length === 0 ? (
+              <div className="card-p text-center py-10">
+                <p className="text-gray-500 text-sm">Aucun évènement enregistré pour ce match</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {match.status === 'LIVE' && (
+                  <div className="flex items-center gap-2 text-live-400 text-xs mb-3">
+                    <span className="w-2 h-2 rounded-full bg-live-500 animate-pulse" />
+                    Mise à jour automatique toutes les 30 secondes
+                  </div>
+                )}
+                {eventsData.data.map((evt, i) => {
+                  const isHome = evt.team === match.homeTeam;
+                  const isGoal = evt.type === 'Goal';
+                  const isCard = evt.type === 'Card';
+                  const isSub  = evt.type?.toLowerCase() === 'subst';
+                  const icon = isGoal
+                    ? <CircleDot size={14} className="text-primary-400" />
+                    : isCard
+                    ? <Square size={12} className={evt.detail?.includes('Yellow') ? 'text-yellow-400' : 'text-red-500'} fill="currentColor" />
+                    : isSub
+                    ? <ArrowLeftRight size={13} className="text-gray-400" />
+                    : <CircleDot size={13} className="text-gray-500" />;
+
+                  return (
+                    <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-800 border border-surface-700 ${isHome ? '' : 'flex-row-reverse text-right'}`}>
+                      <span className="text-xs font-bold text-gray-400 w-8 shrink-0 tabular-nums">
+                        {evt.time}{evt.extra ? `+${evt.extra}` : ''}'
+                      </span>
+                      <span className="shrink-0">{icon}</span>
+                      <div className={`flex-1 min-w-0 ${isHome ? '' : 'text-right'}`}>
+                        <p className="text-sm font-medium text-gray-100 truncate">{evt.player}</p>
+                        {isSub && evt.assist && (
+                          <p className="text-xs text-gray-500 truncate">↙ {evt.assist}</p>
+                        )}
+                        {isGoal && evt.assist && (
+                          <p className="text-xs text-gray-500 truncate">Passe : {evt.assist}</p>
+                        )}
+                        {evt.detail && !isSub && (
+                          <p className="text-xs text-gray-600">{evt.detail}</p>
+                        )}
+                      </div>
+                      <span className={`text-xs shrink-0 ${isHome ? 'text-primary-400' : 'text-gray-400'}`}>
+                        {isHome ? match.homeTeam?.split(' ')[0] : match.awayTeam?.split(' ')[0]}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
         )}
 
         {/* ── Onglet : Forme & H2H ────────────────────────────────────── */}

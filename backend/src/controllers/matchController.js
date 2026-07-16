@@ -437,4 +437,32 @@ async function getMatchOdds(req, res, next) {
   }
 }
 
-module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds };
+// ─── Évènements live (buts, cartons, remplacements) ──────────────────────────
+async function getMatchEvents(req, res, next) {
+  try {
+    const match = await prisma.match.findUnique({
+      where: { id: req.params.id },
+      select: { externalId: true, status: true, homeTeam: true, awayTeam: true },
+    });
+    if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
+
+    // Appel API-Football pour les évènements
+    const raw = await footballApi.getFixtureEvents(match.externalId);
+
+    const events = (raw || []).map((e) => ({
+      time:    e.time?.elapsed,
+      extra:   e.time?.extra,
+      team:    e.team?.name,
+      player:  e.player?.name,
+      assist:  e.assist?.name,
+      type:    e.type,   // 'Goal' | 'Card' | 'subst' | 'Var'
+      detail:  e.detail, // 'Normal Goal' | 'Yellow Card' | 'Substitution 1'...
+      comments: e.comments,
+    }));
+
+    res.setHeader('Cache-Control', match.status === 'LIVE' ? 'no-cache' : 'public, max-age=60');
+    res.json({ success: true, data: events, matchStatus: match.status });
+  } catch (err) { next(err); }
+}
+
+module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents };

@@ -102,8 +102,11 @@ model User {
   emailVerifications EmailVerification[]
   referralsGiven     Referral[]         @relation("ReferrerUser")
   referralReceived   Referral?          @relation("RefereeUser")
-  betEntries         BetEntry[]
-  matchReminders     MatchReminder[]
+  betEntries           BetEntry[]
+  matchReminders       MatchReminder[]
+  blogPosts            BlogPost[]          @relation("BlogAuthor")
+  tipsterPlan          TipsterPlan?        @relation("TipsterPlan")
+  tipsterSubscriptions TipsterSubscription[] @relation("TipsterSubscriber")
 
   @@map("users")
 }
@@ -429,6 +432,66 @@ model MatchReminder {
   @@unique([userId, matchId])
   @@index([sent, matchId])
   @@map("match_reminders")
+}
+
+// ─── BLOG SEO ─────────────────────────────────────────────────────────────────
+
+model BlogPost {
+  id          String    @id @default(uuid())
+  slug        String    @unique
+  title       String
+  content     String    @db.Text
+  excerpt     String?
+  coverImage  String?
+  category    String    @default("general")
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  metaTitle   String?
+  metaDesc    String?
+  views       Int       @default(0)
+  authorId    String?
+  author      User?     @relation("BlogAuthor", fields: [authorId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([slug])
+  @@index([published, publishedAt])
+  @@map("blog_posts")
+}
+
+// ─── MONÉTISATION TIPSTERS ────────────────────────────────────────────────────
+
+model TipsterPlan {
+  id          String   @id @default(uuid())
+  tipsterId   String   @unique
+  tipster     User     @relation("TipsterPlan", fields: [tipsterId], references: [id], onDelete: Cascade)
+  name        String   @default("Plan Premium")
+  description String?
+  price       Int      // FCFA/mois
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  subscriptions TipsterSubscription[]
+
+  @@map("tipster_plans")
+}
+
+model TipsterSubscription {
+  id           String    @id @default(uuid())
+  subscriberId String
+  subscriber   User      @relation("TipsterSubscriber", fields: [subscriberId], references: [id], onDelete: Cascade)
+  planId       String
+  plan         TipsterPlan @relation(fields: [planId], references: [id])
+  status       SubStatus @default(ACTIVE)
+  startDate    DateTime  @default(now())
+  endDate      DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([subscriberId, planId])
+  @@index([subscriberId])
+  @@map("tipster_subscriptions")
 }
 
 // ─── PUSH NOTIFICATIONS ───────────────────────────────────────────────────────

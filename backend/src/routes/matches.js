@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { authenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
-const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds } = require('../controllers/matchController');
+const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
 const { setReminder, deleteReminder } = require('../controllers/remindersController');
 
@@ -28,6 +28,9 @@ router.get('/:id/stats', getMatchStats);
 
 // Cotes bookmakers réelles (The Odds API, cache in-memory) — public
 router.get('/:id/odds', getMatchOdds);
+
+// Évènements live (buts, cartons, remplacements) — public
+router.get('/:id/events', getMatchEvents);
 
 // Chat IA — question sur un match (authentification requise, quota par plan)
 router.post('/:id/chat', authenticate, attachPlan, async (req, res) => {

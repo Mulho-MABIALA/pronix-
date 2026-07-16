@@ -34,6 +34,9 @@ import FAQ from './pages/FAQ';
 import CoupeDuMonde2026 from './pages/CoupeDuMonde2026';
 import VerifyEmail from './pages/VerifyEmail';
 import BetTracker from './pages/BetTracker';
+import TeamPage from './pages/TeamPage';
+import BlogList from './pages/BlogList';
+import BlogPost from './pages/BlogPost';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -46,6 +49,7 @@ import AdminMatches from './pages/admin/AdminMatches';
 import AdminAgents from './pages/admin/Agents';
 import AdminFinances from './pages/admin/Finances';
 import AdminNotifications from './pages/admin/Notifications';
+import AdminBlog from './pages/admin/Blog';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -108,6 +112,9 @@ export default function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
+                <Route path="/equipes/:id" element={<TeamPage />} />
+                <Route path="/blog" element={<BlogList />} />
+                <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="*" element={<NotFound />} />
               </Route>
 
@@ -123,6 +130,7 @@ export default function App() {
                 <Route path="/admin/finances" element={<AdminFinances />} />
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/agents" element={<AdminAgents />} />
+                <Route path="/admin/blog" element={<AdminBlog />} />
               </Route>
 
               {/* Routes auth (sans layout) */}

@@ -350,6 +350,18 @@ async function getAllLeagues() {
   }
 }
 
+// ─── Évènements d'un match (buts, cartons, remplacements) ────────────────────
+async function getFixtureEvents(fixtureId) {
+  try {
+    if (!env.FOOTBALL_API_KEY) return [];
+    const { data } = await apiClient.get('/fixtures/events', { params: { fixture: fixtureId } });
+    return data?.response || [];
+  } catch (err) {
+    console.error('[FootballAPI] getFixtureEvents:', err.message);
+    return [];
+  }
+}
+
 // ─── Exports ──────────────────────────────────────────────────────────────────
 module.exports = {
   // Fixtures
@@ -363,6 +375,7 @@ module.exports = {
   getTeamRecentForm,
   getInjuries,
   getPredictions,
+  getFixtureEvents,
   // Méta
   getStandings,
   getAllLeagues,

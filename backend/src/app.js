@@ -24,6 +24,9 @@ const referralsRoutes = require('./routes/referrals');
 const betsRoutes = require('./routes/bets');
 const remindersRoutes = require('./routes/reminders');
 const sitemapRoutes = require('./routes/sitemap');
+const blogRoutes = require('./routes/blog');
+const teamsRoutes = require('./routes/teams');
+const tipsterPlansRoutes = require('./routes/tipsterPlans');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -73,6 +76,9 @@ app.use('/api/favorites', favoritesRoutes);
 app.use('/api/referrals', referralsRoutes);
 app.use('/api/bets', betsRoutes);
 app.use('/api/reminders', remindersRoutes);
+app.use('/api/blog', blogRoutes);
+app.use('/api/teams', teamsRoutes);
+app.use('/api/tipster-plans', tipsterPlansRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API

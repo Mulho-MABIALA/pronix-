@@ -1,9 +1,16 @@
 const axios = require('axios');
 
+// Cache mémoire 2h
+let _cache = null;
+let _cacheAt = 0;
+const CACHE_TTL = 2 * 60 * 60 * 1000;
+
 const RSS_SOURCES = [
   { url: 'https://www.rfi.fr/fr/sports/football/rss', source: 'RFI' },
   { url: 'https://feeds.bbci.co.uk/sport/football/rss.xml', source: 'BBC Sport' },
   { url: 'https://www.goal.com/fr/rss/accueil', source: 'Goal.com' },
+  { url: 'https://www.footmercato.net/rss.xml', source: 'Footmercato' },
+  { url: 'https://rmcsport.bfmtv.com/rss/football/', source: 'RMC Sport' },
 ];
 
 function parseRSS(xml, sourceName) {
@@ -36,6 +43,12 @@ function parseRSS(xml, sourceName) {
 
 async function getNews(req, res, next) {
   try {
+    // Servir le cache si frais
+    if (_cache && Date.now() - _cacheAt < CACHE_TTL) {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      return res.json({ success: true, data: _cache, fromCache: true });
+    }
+
     const allArticles = [];
 
     await Promise.allSettled(
@@ -43,7 +56,7 @@ async function getNews(req, res, next) {
         try {
           const { data } = await axios.get(url, {
             timeout: 8000,
-            headers: { 'User-Agent': 'StatistiqueFoot/1.0 RSS-reader' },
+            headers: { 'User-Agent': 'fpronix/1.0 RSS-reader' },
           });
           allArticles.push(...parseRSS(data, source));
         } catch (err) {
@@ -58,7 +71,11 @@ async function getNews(req, res, next) {
       return db - da;
     });
 
-    res.json({ success: true, data: allArticles.slice(0, 24) });
+    _cache = allArticles.slice(0, 30);
+    _cacheAt = Date.now();
+
+    res.setHeader('Cache-Control', 'public, max-age=3600');
+    res.json({ success: true, data: _cache });
   } catch (err) {
     next(err);
   }

@@ -7,7 +7,38 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 
-const PAYMENT_METHODS = ['Wave', 'Orange Money', 'Airtel Money', 'MTN', 'Visa / Mastercard'];
+const PAYMENT_METHODS = [
+  {
+    name: 'Wave',
+    logo: 'https://logo.clearbit.com/wave.com',
+    bg: 'bg-[#1ebcd5]/10',
+  },
+  {
+    name: 'Orange Money',
+    logo: 'https://logo.clearbit.com/orange.com',
+    bg: 'bg-orange-500/10',
+  },
+  {
+    name: 'Airtel Money',
+    logo: 'https://logo.clearbit.com/airtel.com',
+    bg: 'bg-red-500/10',
+  },
+  {
+    name: 'MTN',
+    logo: 'https://logo.clearbit.com/mtn.com',
+    bg: 'bg-yellow-400/10',
+  },
+  {
+    name: 'Visa',
+    logo: 'https://logo.clearbit.com/visa.com',
+    bg: 'bg-blue-600/10',
+  },
+  {
+    name: 'Mastercard',
+    logo: 'https://logo.clearbit.com/mastercard.com',
+    bg: 'bg-red-500/10',
+  },
+];
 
 // Couleurs par plan
 const PLAN_STYLE = {
@@ -226,11 +257,20 @@ export default function Subscription() {
           <Lock size={14} className="text-primary-400" />
           <p className="text-sm font-semibold text-gray-200">{t('subscription.payment.title')}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-center">
           {PAYMENT_METHODS.map((m) => (
-            <span key={m} className="text-xs px-3 py-1.5 rounded-lg bg-surface-600/50 border border-white/[0.07] text-gray-300 font-medium">
-              {m}
-            </span>
+            <div
+              key={m.name}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-white/[0.07] ${m.bg}`}
+            >
+              <img
+                src={m.logo}
+                alt={m.name}
+                className="h-5 w-5 object-contain rounded"
+                onError={(e) => { e.currentTarget.style.display = 'none'; }}
+              />
+              <span className="text-xs text-gray-200 font-medium">{m.name}</span>
+            </div>
           ))}
         </div>
       </div>

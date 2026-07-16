@@ -5,13 +5,14 @@ import {
   Users, TrendingUp, DollarSign, AlertTriangle,
   Calendar, Target, Award, ArrowUpRight, ArrowDownRight,
   RefreshCw, Brain, Zap, Check, X, Activity,
-  ChevronRight, Wifi, Clock,
+  ChevronRight, Clock, Wifi, BarChart3, CreditCard,
+  UserPlus, Percent, Trophy, ShieldAlert, Sparkles,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
 
-// ── Utilitaires ────────────────────────────────────────────────────────────────
+// ── Helpers ────────────────────────────────────────────────────────────────────
 
 function greeting() {
   const h = new Date().getHours();
@@ -20,23 +21,80 @@ function greeting() {
   return 'Bonsoir';
 }
 
+function fmt(n) { return new Intl.NumberFormat('fr-FR').format(n ?? 0); }
+
+// ── Pulse dot ──────────────────────────────────────────────────────────────────
+
+function LiveDot({ color = '#34d399' }) {
+  return (
+    <span className="relative flex items-center justify-center w-2 h-2">
+      <span className="absolute inline-flex h-full w-full rounded-full opacity-60 animate-ping" style={{ background: color }} />
+      <span className="relative inline-flex rounded-full w-1.5 h-1.5" style={{ background: color }} />
+    </span>
+  );
+}
+
+// ── Skeleton ──────────────────────────────────────────────────────────────────
+
+function Sk({ className = '' }) {
+  return <div className={`rounded-2xl bg-white/[0.04] animate-pulse ${className}`} />;
+}
+
 // ── KPI Card ──────────────────────────────────────────────────────────────────
 
-function KpiCard({ icon: Icon, label, value, sub, trend, gradient, to }) {
-  const positive = trend > 0;
-  const content = (
-    <div className="group relative overflow-hidden rounded-2xl border border-white/[0.07] p-5 flex flex-col gap-5 transition-all duration-300 hover:border-white/[0.14] hover:-translate-y-0.5 hover:shadow-xl"
-      style={{ background: 'var(--color-card)' }}>
-      {/* Glow top-right */}
-      <div className="absolute -top-8 -right-8 w-24 h-24 rounded-full opacity-20 transition-opacity group-hover:opacity-35 pointer-events-none"
-        style={{ background: gradient }} />
+const KPI_THEMES = {
+  indigo: {
+    glow: 'rgba(99,102,241,0.18)',
+    icon: 'bg-indigo-500/15 text-indigo-400',
+    ring: 'rgba(99,102,241,0.25)',
+  },
+  emerald: {
+    glow: 'rgba(52,211,153,0.15)',
+    icon: 'bg-emerald-500/15 text-emerald-400',
+    ring: 'rgba(52,211,153,0.25)',
+  },
+  orange: {
+    glow: 'rgba(251,146,60,0.15)',
+    icon: 'bg-orange-500/15 text-orange-400',
+    ring: 'rgba(251,146,60,0.25)',
+  },
+  red: {
+    glow: 'rgba(248,113,113,0.15)',
+    icon: 'bg-red-500/15 text-red-400',
+    ring: 'rgba(248,113,113,0.25)',
+  },
+};
 
-      <div className="flex items-start justify-between relative">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-          style={{ background: gradient + '22' }}>
-          <Icon size={18} style={{ color: gradient.includes('34d399') ? '#34d399' : gradient.includes('818cf8') ? '#818cf8' : gradient.includes('fb923c') ? '#fb923c' : '#f87171' }} />
+function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to }) {
+  const t = KPI_THEMES[theme];
+  const positive = trend > 0;
+  const hasTrend = trend !== undefined && trend !== null && trend !== 0;
+
+  const inner = (
+    <div
+      className="group relative overflow-hidden rounded-2xl border p-5 flex flex-col gap-4 h-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer"
+      style={{
+        background: 'var(--color-card)',
+        borderColor: 'rgba(255,255,255,0.07)',
+      }}
+    >
+      {/* corner glow */}
+      <div
+        className="absolute -top-12 -right-12 w-36 h-36 rounded-full pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+        style={{ background: `radial-gradient(circle, ${t.glow} 0%, transparent 70%)` }}
+      />
+      {/* subtle top glow always visible */}
+      <div
+        className="absolute top-0 right-0 w-20 h-20 rounded-full pointer-events-none opacity-30"
+        style={{ background: `radial-gradient(circle, ${t.glow} 0%, transparent 70%)` }}
+      />
+
+      {/* icon + trend */}
+      <div className="flex items-start justify-between relative z-10">
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${t.icon}`}>
+          <Icon size={18} />
         </div>
-        {trend !== undefined && trend !== null && (
+        {hasTrend && (
           <span className={`flex items-center gap-0.5 text-[11px] font-bold px-2 py-1 rounded-lg ${positive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
             {positive ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
             {Math.abs(trend)}%
@@ -44,155 +102,205 @@ function KpiCard({ icon: Icon, label, value, sub, trend, gradient, to }) {
         )}
       </div>
 
-      <div className="relative">
-        <p className="text-[28px] font-display font-bold text-white leading-none tracking-tight">{value ?? '–'}</p>
-        <p className="text-[12px] text-gray-400 mt-1.5 font-medium">{label}</p>
+      {/* value */}
+      <div className="relative z-10">
+        <p className="text-[30px] font-display font-bold text-white leading-none tracking-tight tabular-nums">
+          {value ?? '–'}
+        </p>
+        <p className="text-[12px] text-gray-400 font-medium mt-1.5">{label}</p>
         {sub && <p className="text-[11px] text-gray-600 mt-0.5">{sub}</p>}
       </div>
     </div>
   );
-  return to ? (
-    <Link to={to} className="block">{content}</Link>
-  ) : content;
+
+  return to ? <Link to={to} className="block h-full">{inner}</Link> : inner;
 }
 
-// ── Area Revenue Chart ─────────────────────────────────────────────────────────
+// ── Stat pill ──────────────────────────────────────────────────────────────────
+
+function StatPill({ icon: Icon, value, label, iconClass }) {
+  return (
+    <div
+      className="flex items-center gap-3 rounded-xl border border-white/[0.07] px-4 py-3.5"
+      style={{ background: 'var(--color-card)' }}
+    >
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
+        <Icon size={15} />
+      </div>
+      <div>
+        <p className="text-[17px] font-display font-bold text-gray-100 leading-none tabular-nums">{value ?? '–'}</p>
+        <p className="text-[11px] text-gray-500 mt-0.5">{label}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Revenue chart ─────────────────────────────────────────────────────────────
 
 function RevenueChart({ data }) {
-  if (!data || data.length === 0) return (
-    <div className="rounded-2xl border border-white/[0.07] p-5 flex items-center justify-center h-48"
+  if (!data?.length) return (
+    <div className="rounded-2xl border border-white/[0.07] p-5 flex items-center justify-center h-64"
       style={{ background: 'var(--color-card)' }}>
       <p className="text-sm text-gray-600">Aucune donnée</p>
     </div>
   );
 
-  const max = Math.max(...data.map(d => d.amount), 1);
-  const W = 320, H = 100;
-  const pts = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * W;
-    const y = H - (d.amount / max) * H * 0.85 - 6;
-    return { x, y, ...d };
-  });
+  const max    = Math.max(...data.map(d => d.amount), 1);
+  const W = 400, H = 120;
+  const pad = 8;
 
-  const polyline = pts.map(p => `${p.x},${p.y}`).join(' ');
-  const area = `M${pts[0].x},${H} ` + pts.map(p => `L${p.x},${p.y}`).join(' ') + ` L${pts[pts.length - 1].x},${H} Z`;
+  const pts = data.map((d, i) => ({
+    x: pad + (i / (data.length - 1)) * (W - pad * 2),
+    y: H - pad - (d.amount / max) * (H - pad * 2),
+    ...d,
+  }));
 
-  const total = data.reduce((s, d) => s + d.amount, 0);
+  // Smooth bezier path
+  function bezierPath(pts) {
+    if (pts.length < 2) return '';
+    let d = `M ${pts[0].x} ${pts[0].y}`;
+    for (let i = 1; i < pts.length; i++) {
+      const cp1x = (pts[i - 1].x + pts[i].x) / 2;
+      d += ` C ${cp1x} ${pts[i - 1].y}, ${cp1x} ${pts[i].y}, ${pts[i].x} ${pts[i].y}`;
+    }
+    return d;
+  }
+
+  const linePath = bezierPath(pts);
+  const areaPath = `${linePath} L ${pts[pts.length - 1].x} ${H} L ${pts[0].x} ${H} Z`;
+
+  const total  = data.reduce((s, d) => s + d.amount, 0);
+  const last2  = data.slice(-2);
+  const momPct = last2.length === 2 && last2[0].amount > 0
+    ? Math.round(((last2[1].amount - last2[0].amount) / last2[0].amount) * 100)
+    : null;
 
   return (
     <div className="rounded-2xl border border-white/[0.07] p-5"
       style={{ background: 'var(--color-card)' }}>
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-1">
         <div>
-          <p className="text-sm font-semibold text-gray-100">Revenus — 6 mois</p>
-          <p className="text-[11px] text-gray-500 mt-0.5">Total : <span className="text-primary-400 font-semibold">{new Intl.NumberFormat('fr-FR').format(total)} FCFA</span></p>
+          <p className="text-sm font-semibold text-gray-100">Revenus mensuels</p>
+          <p className="text-[11px] text-gray-500 mt-0.5">6 derniers mois</p>
         </div>
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary-500/10 border border-primary-500/20">
-          <div className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse" />
-          <span className="text-[11px] text-primary-400 font-semibold">En direct</span>
+        <div className="text-right">
+          <p className="text-lg font-display font-bold text-white tabular-nums">{fmt(total)} FCFA</p>
+          {momPct !== null && (
+            <span className={`inline-flex items-center gap-0.5 text-[11px] font-bold ${momPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {momPct >= 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+              {Math.abs(momPct)}% vs mois passé
+            </span>
+          )}
         </div>
       </div>
 
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" style={{ height: 90 }}>
+      <svg viewBox={`0 0 ${W} ${H}`} className="w-full mt-3" style={{ height: 110 }} preserveAspectRatio="none">
         <defs>
-          <linearGradient id="rev-grad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#1aa656" stopOpacity="0.35" />
-            <stop offset="100%" stopColor="#1aa656" stopOpacity="0" />
+          <linearGradient id="rev-fill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#34d399" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#34d399" stopOpacity="0.01" />
           </linearGradient>
+          <filter id="glow-line">
+            <feGaussianBlur stdDeviation="2" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
         </defs>
-        <path d={area} fill="url(#rev-grad)" />
-        <polyline points={polyline} fill="none" stroke="#1aa656" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        {/* grid lines */}
+        {[0.25, 0.5, 0.75].map(frac => (
+          <line key={frac} x1={pad} x2={W - pad} y1={H - pad - frac * (H - pad * 2)} y2={H - pad - frac * (H - pad * 2)}
+            stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+        ))}
+        {/* area fill */}
+        <path d={areaPath} fill="url(#rev-fill)" />
+        {/* line */}
+        <path d={linePath} fill="none" stroke="#34d399" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#glow-line)" />
+        {/* dots */}
         {pts.map((p, i) => (
-          <circle key={i} cx={p.x} cy={p.y} r="3" fill="#1aa656" opacity={i === pts.length - 1 ? 1 : 0.4} />
+          <g key={i}>
+            <circle cx={p.x} cy={p.y} r="5" fill="var(--color-card)" stroke="#34d399" strokeWidth="2" opacity={i === pts.length - 1 ? 1 : 0.5} />
+            {i === pts.length - 1 && <circle cx={p.x} cy={p.y} r="3" fill="#34d399" />}
+          </g>
         ))}
       </svg>
 
-      <div className="flex justify-between mt-2">
+      {/* month labels */}
+      <div className="flex justify-between mt-2 px-1">
         {data.map((d, i) => (
-          <span key={i} className="text-[10px] text-gray-600 capitalize font-medium">{d.month}</span>
+          <span key={i} className="text-[10px] text-gray-600 capitalize font-medium text-center">{d.month}</span>
         ))}
       </div>
     </div>
   );
 }
 
-// ── Donut Plan Distribution ────────────────────────────────────────────────────
+// ── Conversion funnel ──────────────────────────────────────────────────────────
 
-function PlanDistribution({ data }) {
+function ConversionCard({ data, kpis }) {
   if (!data) return null;
-  const free = data.FREE || 0;
+  const free    = data.FREE    || 0;
   const premium = data.PREMIUM || 0;
-  const total = free + premium || 1;
-  const premiumPct = Math.round((premium / total) * 100);
+  const total   = free + premium || 1;
+  const convPct = ((premium / total) * 100).toFixed(1);
 
   // SVG donut
-  const R = 30, stroke = 10;
-  const circ = 2 * Math.PI * R;
+  const R = 32, stroke = 11;
+  const circ       = 2 * Math.PI * R;
   const premiumArc = (premium / total) * circ;
 
   return (
     <div className="rounded-2xl border border-white/[0.07] p-5"
       style={{ background: 'var(--color-card)' }}>
-      <p className="text-sm font-semibold text-gray-100 mb-4">Plans actifs</p>
+      <div className="flex items-center justify-between mb-5">
+        <div>
+          <p className="text-sm font-semibold text-gray-100">Conversion</p>
+          <p className="text-[11px] text-gray-500 mt-0.5">Plans actifs</p>
+        </div>
+        <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+          <Percent size={11} className="text-emerald-400" />
+          <span className="text-[12px] font-bold text-emerald-400">{convPct}%</span>
+        </div>
+      </div>
 
-      <div className="flex items-center gap-6">
-        {/* Donut */}
+      <div className="flex items-center gap-5">
+        {/* donut */}
         <div className="relative shrink-0">
-          <svg width="80" height="80" viewBox="0 0 80 80">
-            <circle cx="40" cy="40" r={R} fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth={stroke} />
-            <circle cx="40" cy="40" r={R} fill="none" stroke="#1aa656" strokeWidth={stroke}
+          <svg width="90" height="90" viewBox="0 0 90 90">
+            <circle cx="45" cy="45" r={R} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={stroke} />
+            <circle cx="45" cy="45" r={R} fill="none" stroke="#34d399" strokeWidth={stroke}
               strokeDasharray={`${premiumArc} ${circ}`}
               strokeDashoffset={circ * 0.25}
               strokeLinecap="round"
-              style={{ transition: 'stroke-dasharray 1s ease' }}
+              style={{ transition: 'stroke-dasharray 1.2s cubic-bezier(.4,0,.2,1)' }}
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <p className="text-sm font-bold text-white">{premiumPct}%</p>
-              <p className="text-[9px] text-gray-500">premium</p>
-            </div>
+          <div className="absolute inset-0 flex items-center justify-center flex-col">
+            <p className="text-[15px] font-display font-bold text-white leading-none">{convPct}%</p>
+            <p className="text-[9px] text-gray-500 mt-0.5">premium</p>
           </div>
         </div>
 
-        {/* Légende */}
-        <div className="space-y-3 flex-1">
+        {/* bars */}
+        <div className="flex-1 space-y-3">
           {[
-            { label: 'Premium', count: premium, color: '#1aa656', bg: 'bg-primary-500/15 text-primary-400' },
-            { label: 'Gratuit',  count: free,    color: '#6b7280', bg: 'bg-gray-500/15 text-gray-400' },
-          ].map(({ label, count, color, bg }) => (
-            <div key={label} className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full" style={{ background: color }} />
-                <span className="text-xs text-gray-400">{label}</span>
+            { label: 'Premium', count: premium, color: '#34d399', bg: 'bg-emerald-500/15 text-emerald-400', bar: 'bg-emerald-500' },
+            { label: 'Gratuit',  count: free,    color: '#6b7280', bg: 'bg-gray-500/15 text-gray-400',    bar: 'bg-gray-600' },
+          ].map(({ label, count, bg, bar }) => (
+            <div key={label}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[11px] text-gray-400 font-medium">{label}</span>
+                <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${bg}`}>{count}</span>
               </div>
-              <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${bg}`}>{count}</span>
+              <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+                <div className={`h-full rounded-full transition-all duration-1000 ${bar}`}
+                  style={{ width: `${(count / total) * 100}%` }} />
+              </div>
             </div>
           ))}
-          <div className="pt-1 border-t border-white/[0.05]">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] text-gray-600">Total</span>
-              <span className="text-xs font-bold text-gray-200">{total}</span>
-            </div>
+          <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
+            <span className="text-[11px] text-gray-600">Total inscrits</span>
+            <span className="text-[12px] font-bold text-gray-200">{fmt(total)}</span>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-// ── Mini Stats Row ─────────────────────────────────────────────────────────────
-
-function MiniStat({ icon: Icon, value, label, color }) {
-  return (
-    <div className="rounded-xl border border-white/[0.07] p-4 flex items-center gap-3"
-      style={{ background: 'var(--color-card)' }}>
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
-        <Icon size={15} />
-      </div>
-      <div>
-        <p className="text-lg font-display font-bold text-gray-100 leading-none">{value ?? '–'}</p>
-        <p className="text-[11px] text-gray-500 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -200,82 +308,56 @@ function MiniStat({ icon: Icon, value, label, color }) {
 
 // ── Top Tipsters ───────────────────────────────────────────────────────────────
 
+const MEDALS  = ['🥇', '🥈', '🥉'];
+const AVATAR_COLORS = [
+  'bg-indigo-500/25 text-indigo-400',
+  'bg-violet-500/25 text-violet-400',
+  'bg-sky-500/25 text-sky-400',
+  'bg-emerald-500/25 text-emerald-400',
+  'bg-amber-500/25 text-amber-400',
+];
+
 function TopTipsters({ data }) {
   if (!data?.length) return null;
-  const medals = ['🥇', '🥈', '🥉'];
-
   return (
     <div className="rounded-2xl border border-white/[0.07] p-5"
       style={{ background: 'var(--color-card)' }}>
       <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-semibold text-gray-100">Top Tipsters</p>
-        <Link to="/admin/tipsters" className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
-          Tous <ChevronRight size={12} />
+        <div className="flex items-center gap-2">
+          <Trophy size={14} className="text-amber-400" />
+          <p className="text-sm font-semibold text-gray-100">Top Tipsters</p>
+        </div>
+        <Link to="/admin/tipsters"
+          className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
+          Voir tous <ChevronRight size={12} />
         </Link>
       </div>
-      <div className="space-y-1">
-        {data.map((t, i) => (
-          <div key={t.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
-            <span className="text-sm w-5 text-center">{medals[i] || <span className="text-xs text-gray-600 font-bold">{i + 1}</span>}</span>
-            <div className="w-7 h-7 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-xs font-bold shrink-0">
-              {t.displayName?.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-medium text-gray-200 truncate">{t.displayName}</p>
-              <p className="text-[10px] text-gray-600">{t.totalTips} pronos</p>
-            </div>
-            <div className="text-right shrink-0">
-              <span className={`text-sm font-bold ${t.successRate >= 60 ? 'text-emerald-400' : t.successRate >= 45 ? 'text-amber-400' : 'text-red-400'}`}>
-                {t.successRate.toFixed(1)}%
-              </span>
-              <div className="h-1 w-12 rounded-full bg-white/[0.06] mt-1 overflow-hidden">
-                <div className="h-full rounded-full bg-primary-500/70 transition-all"
-                  style={{ width: `${Math.min(t.successRate, 100)}%` }} />
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
 
-// ── Recent Users ──────────────────────────────────────────────────────────────
-
-function RecentUsers({ data }) {
-  if (!data?.length) return null;
-
-  return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
-      <div className="flex items-center justify-between mb-4">
-        <p className="text-sm font-semibold text-gray-100">Derniers inscrits</p>
-        <Link to="/admin/utilisateurs" className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
-          Tous <ChevronRight size={12} />
-        </Link>
-      </div>
-      <div className="space-y-1">
-        {data.map((u) => {
-          const plan = u.subscription?.plan?.code || 'FREE';
-          const isPremium = plan === 'PREMIUM';
+      <div className="space-y-1.5">
+        {data.map((tip, i) => {
+          const rate = tip.successRate ?? 0;
+          const rateColor = rate >= 60 ? 'text-emerald-400' : rate >= 45 ? 'text-amber-400' : 'text-red-400';
           return (
-            <div key={u.id} className="flex items-center gap-3 px-2 py-2 rounded-xl hover:bg-white/[0.03] transition-colors">
-              <div className="w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-gray-300 text-sm font-bold shrink-0 ring-1 ring-white/[0.08]">
-                {u.username?.charAt(0).toUpperCase()}
+            <div key={tip.id}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors group">
+              <span className="w-5 text-center text-sm shrink-0">
+                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-600">{i + 1}</span>}
+              </span>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
+                {tip.displayName?.charAt(0).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-medium text-gray-200 truncate">{u.profile?.displayName || u.username}</p>
-                <p className="text-[11px] text-gray-500 truncate">{u.email}</p>
-              </div>
-              <div className="text-right shrink-0 space-y-0.5">
-                <div>
-                  <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-md ${isPremium ? 'bg-primary-500/20 text-primary-400' : 'bg-white/[0.06] text-gray-500'}`}>
-                    {plan}
-                  </span>
-                </div>
-                <p className="text-[10px] text-gray-600">
-                  {format(new Date(u.createdAt), 'dd MMM', { locale: fr })}
+                <p className="text-[13px] font-semibold text-gray-200 truncate group-hover:text-white transition-colors">
+                  {tip.displayName}
                 </p>
+                <p className="text-[10px] text-gray-600">{fmt(tip.totalTips)} picks</p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className={`text-[13px] font-bold tabular-nums ${rateColor}`}>{rate.toFixed(1)}%</p>
+                <div className="h-1 w-14 rounded-full bg-white/[0.05] mt-1 overflow-hidden">
+                  <div className={`h-full rounded-full transition-all duration-700 ${rate >= 60 ? 'bg-emerald-500' : rate >= 45 ? 'bg-amber-500' : 'bg-red-500'}`}
+                    style={{ width: `${Math.min(rate, 100)}%` }} />
+                </div>
               </div>
             </div>
           );
@@ -285,9 +367,62 @@ function RecentUsers({ data }) {
   );
 }
 
-// ── Sync Tools ────────────────────────────────────────────────────────────────
+// ── Recent Users ──────────────────────────────────────────────────────────────
 
-function SyncTools() {
+function RecentUsers({ data }) {
+  if (!data?.length) return null;
+  return (
+    <div className="rounded-2xl border border-white/[0.07] p-5"
+      style={{ background: 'var(--color-card)' }}>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <UserPlus size={14} className="text-indigo-400" />
+          <p className="text-sm font-semibold text-gray-100">Derniers inscrits</p>
+        </div>
+        <Link to="/admin/utilisateurs"
+          className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
+          Voir tous <ChevronRight size={12} />
+        </Link>
+      </div>
+
+      <div className="space-y-1">
+        {data.map((u, i) => {
+          const plan      = u.subscription?.plan?.code || 'FREE';
+          const isPremium = plan === 'PREMIUM';
+          const letter    = (u.profile?.displayName || u.username)?.charAt(0).toUpperCase();
+          return (
+            <div key={u.id}
+              className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-white/[0.08] ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
+                {letter}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <p className="text-[13px] font-medium text-gray-200 truncate">
+                    {u.profile?.displayName || u.username}
+                  </p>
+                  {isPremium && (
+                    <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-400 shrink-0">
+                      PRO
+                    </span>
+                  )}
+                </div>
+                <p className="text-[11px] text-gray-500 truncate">{u.email}</p>
+              </div>
+              <p className="text-[10px] text-gray-600 shrink-0 font-medium">
+                {format(new Date(u.createdAt), 'dd MMM', { locale: fr })}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Quick Actions ─────────────────────────────────────────────────────────────
+
+function QuickActions() {
   const today    = new Date().toISOString().split('T')[0];
   const tomorrow = new Date(Date.now() + 86400000).toISOString().split('T')[0];
   const [states, setStates] = useState({});
@@ -303,83 +438,123 @@ function SyncTools() {
     setTimeout(() => setStates(s => ({ ...s, [key]: null })), 3000);
   }
 
-  function ActionBtn({ id, label, icon: Icon, fn, variant = 'default' }) {
-    const st = states[id];
-    const variants = {
-      default: 'border-white/[0.08] text-gray-300 hover:border-white/20 hover:text-white hover:bg-white/[0.04]',
-      blue:    'border-blue-500/20 text-blue-400 hover:border-blue-500/40 hover:bg-blue-500/10',
-      green:   'border-primary-500/20 text-primary-400 hover:border-primary-500/40 hover:bg-primary-500/10',
-      amber:   'border-amber-500/20 text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10',
-    };
-    return (
-      <button onClick={() => run(id, fn)} disabled={st === 'loading'}
-        className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border text-[12px] font-semibold transition-all ${variants[variant]} disabled:opacity-40`}>
-        {st === 'loading' ? <RefreshCw size={13} className="animate-spin" /> :
-         st === 'ok'      ? <Check size={13} className="text-emerald-400" /> :
-         st === 'error'   ? <X size={13} className="text-red-400" /> :
-         <Icon size={13} />}
-        {label}
-      </button>
-    );
-  }
-
-  const groups = [
+  const ACTIONS = [
     {
-      label: 'Matchs',
-      icon: Calendar,
-      items: [
-        { id: 'sync-today',    label: "Aujourd'hui", icon: RefreshCw, variant: 'blue', fn: () => api.post(`/admin/sync?date=${today}`) },
-        { id: 'sync-tomorrow', label: 'Demain',       icon: RefreshCw, variant: 'blue', fn: () => api.post(`/admin/sync?date=${tomorrow}`) },
-      ],
+      id: 'sync-today',
+      label: "Sync matchs — Auj.",
+      icon: RefreshCw,
+      theme: 'sky',
+      fn: () => api.post(`/admin/sync?date=${today}`),
     },
     {
-      label: 'Prédictions IA',
+      id: 'sync-tomorrow',
+      label: 'Sync matchs — Dem.',
+      icon: Calendar,
+      theme: 'sky',
+      fn: () => api.post(`/admin/sync?date=${tomorrow}`),
+    },
+    {
+      id: 'pred-today',
+      label: "Prédictions — Auj.",
       icon: Brain,
-      items: [
-        { id: 'pred-today',    label: "Aujourd'hui", icon: Brain,      variant: 'green', fn: () => api.post(`/admin/sync-predictions?date=${today}`) },
-        { id: 'pred-tomorrow', label: 'Demain',       icon: Brain,      variant: 'green', fn: () => api.post(`/admin/sync-predictions?date=${tomorrow}`) },
-        { id: 'pred-force',    label: 'Forcer tout',  icon: Zap,        variant: 'amber', fn: () => api.post('/admin/sync-predictions?forceAll=true') },
-      ],
+      theme: 'emerald',
+      fn: () => api.post(`/admin/sync-predictions?date=${today}`),
+    },
+    {
+      id: 'pred-tomorrow',
+      label: 'Prédictions — Dem.',
+      icon: Brain,
+      theme: 'emerald',
+      fn: () => api.post(`/admin/sync-predictions?date=${tomorrow}`),
+    },
+    {
+      id: 'pred-force',
+      label: 'Forcer tout',
+      icon: Zap,
+      theme: 'amber',
+      fn: () => api.post('/admin/sync-predictions?forceAll=true'),
     },
   ];
+
+  const THEME_CLASSES = {
+    sky:     'border-sky-500/20 text-sky-400 hover:border-sky-500/40 hover:bg-sky-500/10',
+    emerald: 'border-emerald-500/20 text-emerald-400 hover:border-emerald-500/40 hover:bg-emerald-500/10',
+    amber:   'border-amber-500/20 text-amber-400 hover:border-amber-500/40 hover:bg-amber-500/10',
+  };
 
   return (
     <div className="rounded-2xl border border-white/[0.07] p-5"
       style={{ background: 'var(--color-card)' }}>
-      <div className="flex items-center gap-2 mb-5">
-        <div className="w-7 h-7 rounded-lg bg-white/[0.06] flex items-center justify-center">
-          <Activity size={14} className="text-gray-400" />
+      <div className="flex items-center gap-2 mb-4">
+        <div className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center">
+          <Sparkles size={13} className="text-gray-400" />
         </div>
         <p className="text-sm font-semibold text-gray-100">Actions rapides</p>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-5">
-        {groups.map(({ label, icon: GroupIcon, items }) => (
-          <div key={label}>
-            <div className="flex items-center gap-2 mb-3">
-              <GroupIcon size={12} className="text-gray-600" />
-              <p className="text-[11px] font-bold text-gray-600 uppercase tracking-wider">{label}</p>
+      <div className="flex flex-wrap gap-2">
+        {ACTIONS.map(({ id, label, icon: Icon, theme, fn }) => {
+          const st = states[id];
+          return (
+            <button
+              key={id}
+              onClick={() => run(id, fn)}
+              disabled={st === 'loading'}
+              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl border text-[12px] font-semibold transition-all duration-200 disabled:opacity-40 ${THEME_CLASSES[theme]}`}
+            >
+              {st === 'loading' ? <RefreshCw size={13} className="animate-spin" />
+              : st === 'ok'     ? <Check  size={13} className="text-emerald-400" />
+              : st === 'error'  ? <X      size={13} className="text-red-400" />
+              :                   <Icon   size={13} />}
+              {label}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── Liens rapides ─────────────────────────────────────────────────────────────
+
+const NAV_SHORTCUTS = [
+  { to: '/admin/utilisateurs',  label: 'Utilisateurs',  icon: Users,        color: 'text-indigo-400  bg-indigo-500/10' },
+  { to: '/admin/paiements',     label: 'Paiements',     icon: CreditCard,   color: 'text-orange-400  bg-orange-500/10' },
+  { to: '/admin/tipsters',      label: 'Tipsters',      icon: Trophy,       color: 'text-amber-400   bg-amber-500/10' },
+  { to: '/admin/signalements',  label: 'Signalements',  icon: ShieldAlert,  color: 'text-red-400     bg-red-500/10' },
+  { to: '/admin/notifications', label: 'Notifs push',   icon: Wifi,         color: 'text-sky-400     bg-sky-500/10' },
+  { to: '/admin/agents',        label: 'Agents IA',     icon: Brain,        color: 'text-violet-400  bg-violet-500/10' },
+  { to: '/admin/matchs',        label: 'Matchs',        icon: Calendar,     color: 'text-blue-400    bg-blue-500/10' },
+  { to: '/admin/finances',      label: 'Finances',      icon: BarChart3,    color: 'text-emerald-400 bg-emerald-500/10' },
+];
+
+function NavShortcuts() {
+  return (
+    <div className="rounded-2xl border border-white/[0.07] p-5"
+      style={{ background: 'var(--color-card)' }}>
+      <p className="text-sm font-semibold text-gray-100 mb-4">Navigation rapide</p>
+      <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
+        {NAV_SHORTCUTS.map(({ to, label, icon: Icon, color }) => (
+          <Link
+            key={to}
+            to={to}
+            className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/[0.04] transition-colors group text-center"
+          >
+            <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}>
+              <Icon size={16} />
             </div>
-            <div className="flex flex-wrap gap-2">
-              {items.map(item => <ActionBtn key={item.id} {...item} />)}
-            </div>
-          </div>
+            <span className="text-[10px] font-medium text-gray-500 group-hover:text-gray-300 transition-colors leading-tight">{label}</span>
+          </Link>
         ))}
       </div>
     </div>
   );
 }
 
-// ── Skeleton ──────────────────────────────────────────────────────────────────
-
-function Skeleton({ className = '' }) {
-  return <div className={`rounded-2xl bg-white/[0.04] animate-pulse ${className}`} />;
-}
-
 // ── Dashboard principal ───────────────────────────────────────────────────────
 
 export default function AdminDashboard() {
-  const { data, isLoading, dataUpdatedAt } = useQuery({
+  const { data, isLoading, dataUpdatedAt, refetch, isFetching } = useQuery({
     queryKey: ['admin-dashboard'],
     queryFn: () => api.get('/admin/dashboard').then(r => r.data),
     staleTime: 2 * 60 * 1000,
@@ -391,68 +566,82 @@ export default function AdminDashboard() {
   const now  = new Date();
 
   return (
-    <div className="space-y-6 max-w-7xl">
+    <div className="space-y-5 max-w-7xl pb-6">
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs text-gray-600 font-medium uppercase tracking-wider mb-1">
+          <p className="text-xs text-gray-600 font-semibold uppercase tracking-widest mb-1">
             {format(now, "EEEE d MMMM yyyy", { locale: fr })}
           </p>
-          <h1 className="font-display font-bold text-2xl text-white">
-            {greeting()}, <span className="text-primary-400">Admin</span> 👋
+          <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
+            {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
           </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Voici l'état de fpronix en temps réel.</p>
+          <p className="text-sm text-gray-500 mt-0.5">Vue en temps réel de fpronix.</p>
         </div>
-        {dataUpdatedAt > 0 && (
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.07] shrink-0">
-            <Clock size={12} className="text-gray-600" />
-            <span className="text-[11px] text-gray-500">
-              Mis à jour {format(new Date(dataUpdatedAt), 'HH:mm')}
-            </span>
-          </div>
-        )}
+
+        <div className="flex items-center gap-2 shrink-0">
+          {dataUpdatedAt > 0 && (
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.07]">
+              <Clock size={12} className="text-gray-600" />
+              <span className="text-[11px] text-gray-500">
+                {format(new Date(dataUpdatedAt), 'HH:mm')}
+              </span>
+            </div>
+          )}
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-[12px] text-gray-400 hover:text-gray-200 hover:bg-white/[0.07] transition-all disabled:opacity-50"
+          >
+            <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
+            Actualiser
+          </button>
+        </div>
       </div>
+
+      {/* ── Navigation rapide ────────────────────────────────────────────────── */}
+      <NavShortcuts />
 
       {/* ── KPIs ─────────────────────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-32" />)}
+          {[...Array(4)].map((_, i) => <Sk key={i} className="h-36" />)}
         </div>
       ) : (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           <KpiCard
             icon={Users}
             label="Utilisateurs"
-            value={kpis?.totalUsers?.toLocaleString('fr-FR')}
+            value={fmt(kpis?.totalUsers)}
             sub={`+${kpis?.newUsersThisMonth || 0} ce mois`}
             trend={kpis?.userGrowth}
-            gradient="radial-gradient(circle, #818cf8, #6366f1)"
+            theme="indigo"
             to="/admin/utilisateurs"
           />
           <KpiCard
             icon={TrendingUp}
             label="Abonnés Premium"
-            value={kpis?.activeSubscriptions?.toLocaleString('fr-FR')}
+            value={fmt(kpis?.activeSubscriptions)}
             sub="Abonnements actifs"
-            gradient="radial-gradient(circle, #34d399, #1aa656)"
+            theme="emerald"
             to="/admin/utilisateurs"
           />
           <KpiCard
             icon={DollarSign}
             label="MRR"
-            value={`${new Intl.NumberFormat('fr-FR').format(kpis?.monthlyRevenue || 0)} FCFA`}
-            sub={`Cumulé : ${new Intl.NumberFormat('fr-FR').format(kpis?.totalRevenue || 0)} FCFA`}
+            value={`${fmt(kpis?.monthlyRevenue)} FCFA`}
+            sub={`Cumulé : ${fmt(kpis?.totalRevenue)} FCFA`}
             trend={kpis?.revenueGrowth}
-            gradient="radial-gradient(circle, #fb923c, #ea580c)"
+            theme="orange"
             to="/admin/paiements"
           />
           <KpiCard
             icon={AlertTriangle}
             label="Signalements"
             value={kpis?.pendingReports ?? 0}
-            sub="En attente"
-            gradient="radial-gradient(circle, #f87171, #dc2626)"
+            sub="En attente de traitement"
+            theme="red"
             to="/admin/signalements"
           />
         </div>
@@ -461,30 +650,32 @@ export default function AdminDashboard() {
       {/* ── Mini stats ───────────────────────────────────────────────────────── */}
       {!isLoading && kpis && (
         <div className="grid grid-cols-3 gap-3">
-          <MiniStat icon={Calendar} value={kpis.totalMatches?.toLocaleString('fr-FR')} label="Matchs en base"    color="bg-blue-500/15 text-blue-400" />
-          <MiniStat icon={Target}   value={kpis.totalTips?.toLocaleString('fr-FR')}    label="Pronostics publiés" color="bg-violet-500/15 text-violet-400" />
-          <MiniStat icon={Award}    value={kpis.churnThisMonth ?? 0}                   label="Churn ce mois"      color="bg-amber-500/15 text-amber-400" />
+          <StatPill icon={Calendar}  value={fmt(kpis.totalMatches)}  label="Matchs en base"     iconClass="bg-blue-500/15 text-blue-400" />
+          <StatPill icon={Target}    value={fmt(kpis.totalTips)}     label="Pronostics publiés" iconClass="bg-violet-500/15 text-violet-400" />
+          <StatPill icon={Activity}  value={kpis.churnThisMonth ?? 0} label="Churn ce mois"     iconClass="bg-rose-500/15 text-rose-400" />
         </div>
       )}
 
       {/* ── Graphiques ───────────────────────────────────────────────────────── */}
       {isLoading ? (
-        <div className="grid md:grid-cols-2 gap-4">
-          <Skeleton className="h-44" />
-          <Skeleton className="h-44" />
+        <div className="grid md:grid-cols-3 gap-4">
+          <Sk className="h-56 md:col-span-2" />
+          <Sk className="h-56" />
         </div>
       ) : (
-        <div className="grid md:grid-cols-2 gap-4">
-          <RevenueChart data={d?.revenueByMonth} />
-          <PlanDistribution data={d?.planDistribution} />
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
+            <RevenueChart data={d?.revenueByMonth} />
+          </div>
+          <ConversionCard data={d?.planDistribution} kpis={kpis} />
         </div>
       )}
 
       {/* ── Tipsters + inscrits ──────────────────────────────────────────────── */}
       {isLoading ? (
         <div className="grid md:grid-cols-2 gap-4">
-          <Skeleton className="h-56" />
-          <Skeleton className="h-56" />
+          <Sk className="h-64" />
+          <Sk className="h-64" />
         </div>
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
@@ -494,7 +685,7 @@ export default function AdminDashboard() {
       )}
 
       {/* ── Actions rapides ──────────────────────────────────────────────────── */}
-      <SyncTools />
+      <QuickActions />
     </div>
   );
 }

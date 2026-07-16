@@ -95,7 +95,7 @@ function OutilsDropdown() {
               </div>
               <div>
                 <p className="text-[13px] font-semibold text-gray-200">{label}</p>
-                <p className="text-[11px] text-gray-600 mt-0.5">{desc}</p>
+                <p className="text-[12px] text-gray-500 mt-0.5">{desc}</p>
               </div>
             </Link>
           ))}
@@ -192,12 +192,12 @@ export default function Header() {
             <div className="flex items-center gap-2 ml-1">
               <Link to="/connexion"
                 className="btn-secondary text-[13px] px-3 py-1.5"
-                style={{ minHeight: 34 }}>
+                style={{ minHeight: 44 }}>
                 {t('nav.login')}
               </Link>
               <Link to="/inscription"
                 className="btn-cta text-[13px] px-4 py-1.5 hidden sm:flex"
-                style={{ minHeight: 34 }}>
+                style={{ minHeight: 44 }}>
                 {t('nav.register')}
               </Link>
             </div>

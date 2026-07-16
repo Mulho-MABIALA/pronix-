@@ -45,7 +45,7 @@ export default function Home() {
 
       {/* ── Hero ─────────────────────────────────────────────────── */}
       {!user && (
-        <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] px-6 py-14 md:py-20 text-center">
+        <section className="relative overflow-hidden rounded-3xl border border-white/[0.08] px-6 py-8 md:py-20 text-center">
 
           <HeroBackground />
 

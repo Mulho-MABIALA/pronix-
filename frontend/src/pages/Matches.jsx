@@ -1,18 +1,20 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import MatchCard from '../components/matches/MatchCard';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 const GROUP_LIMIT = 5;
 
 export default function Matches() {
   const { t, i18n } = useTranslation();
+  const queryClient = useQueryClient();
   const isEN = i18n.language?.startsWith('en');
 
   usePageMeta('Matchs du jour', 'Scores en direct, résultats et calendrier de tous les matchs de football. Consultez les statistiques et pronostics.');
@@ -34,6 +36,12 @@ export default function Matches() {
 
   const dateStr    = format(date, 'yyyy-MM-dd');
   const dateWindow = [-2, -1, 0, 1, 2, 3, 4].map((offset) => addDays(new Date(), offset));
+
+  const handleRefresh = useCallback(async () => {
+    await queryClient.invalidateQueries({ queryKey: ['matches'] });
+  }, [queryClient]);
+
+  const { pulling, pullDistance, refreshing, threshold } = usePullToRefresh(handleRefresh);
 
   const { data: competitionsData } = useQuery({
     queryKey: ['competitions'],
@@ -62,8 +70,32 @@ export default function Matches() {
     return acc;
   }, {});
 
+  const pullProgress = Math.min(pullDistance / threshold, 1);
+  const showPTR = pulling || refreshing;
+
   return (
     <div className="max-w-2xl mx-auto py-5 space-y-4">
+
+      {/* ── Pull-to-refresh indicator ────────────────────────────── */}
+      <div
+        className="md:hidden overflow-hidden transition-all duration-200"
+        style={{ height: showPTR ? Math.max(pullDistance * 0.5, refreshing ? 48 : 0) : 0 }}
+      >
+        <div className="flex items-center justify-center gap-2 py-3 text-gray-500 text-xs">
+          <RefreshCw
+            size={16}
+            className={`transition-transform ${refreshing ? 'animate-spin text-primary-400' : ''}`}
+            style={{ transform: `rotate(${pullProgress * 360}deg)` }}
+          />
+          <span className={refreshing ? 'text-primary-400' : ''}>
+            {refreshing
+              ? t('notifications.refreshing')
+              : pullProgress >= 1
+              ? t('notifications.pullToRefresh')
+              : t('notifications.pulling')}
+          </span>
+        </div>
+      </div>
 
       {/* ── Date tabs ─────────────────────────────────────────────── */}
       <div className="overflow-x-auto scrollbar-hide">
@@ -143,11 +175,26 @@ export default function Matches() {
             {Array.from({ length: 6 }).map((_, i) => <SkeletonMatchCard key={i} />)}
           </div>
         ) : matches.length === 0 ? (
-          <div className="card-p text-center py-14">
-            <p className="text-3xl mb-3">📅</p>
-            <p className="text-gray-500 text-sm">
-              {liveOnly ? t('matches.noLive') : t('matches.noMatchesDate')}
-            </p>
+          <div className="bento-card text-center py-14 space-y-4">
+            <div className="text-5xl" aria-hidden="true">{liveOnly ? '📡' : '📅'}</div>
+            <div>
+              <p className="text-gray-300 font-semibold text-base">
+                {liveOnly ? t('matches.noLive') : t('matches.noMatchesDate')}
+              </p>
+              <p className="text-gray-500 text-sm mt-1">
+                {liveOnly
+                  ? t('matches.noLiveHint')
+                  : t('matches.noMatchesDateHint')}
+              </p>
+            </div>
+            {liveOnly && (
+              <button
+                onClick={() => setLiveOnly(false)}
+                className="btn-secondary text-sm mx-auto"
+              >
+                {t('matches.showAllMatches')}
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-5">

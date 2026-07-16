@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Bell, BellOff, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { usePushNotifications } from '../../hooks/usePushNotifications';
 import { useAuth } from '../../context/AuthContext';
+import { useToast } from '../../context/ToastContext';
 
 function isIOS() {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -93,10 +95,29 @@ function IOSBottomSheet({ onClose }) {
 
 /* ─── Composant principal ────────────────────────────────────────────────────── */
 export default function NotificationBell({ size = 18 }) {
+  const { t } = useTranslation();
+  const toast = useToast();
   const { user } = useAuth();
   const { supported, subscribed, loading, subscribe, unsubscribe } =
     usePushNotifications(user);
   const [showIOSHint, setShowIOSHint] = useState(false);
+
+  const handleToggle = async () => {
+    if (subscribed) {
+      await unsubscribe();
+      toast(t('notifications.unsubscribed'), 'info');
+    } else {
+      await subscribe();
+      // Le toast success est affiché seulement si la permission est accordée
+      // (subscribe() ne lève pas d'erreur si refusé, donc on vérifie le résultat via subscribed
+      // au prochain render — on déclenche le toast après un micro-délai)
+      setTimeout(() => {
+        if (Notification.permission === 'granted') {
+          toast(t('notifications.subscribed'), 'success');
+        }
+      }, 800);
+    }
+  };
 
   const ios        = isIOS();
   const standalone = isStandalone();
@@ -127,7 +148,7 @@ export default function NotificationBell({ size = 18 }) {
   /* ── Push disponible → toggle abonnement ── */
   return (
     <button
-      onClick={subscribed ? unsubscribe : subscribe}
+      onClick={handleToggle}
       disabled={loading}
       className={`p-2 rounded-lg transition-colors ${
         subscribed

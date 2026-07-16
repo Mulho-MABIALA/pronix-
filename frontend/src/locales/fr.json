@@ -13,7 +13,8 @@
     "logout": "Déconnexion",
     "admin": "Admin",
     "lightMode": "Mode clair",
-    "darkMode": "Mode sombre"
+    "darkMode": "Mode sombre",
+    "explorer": "Explorer"
   },
   "tools": {
     "filters": "Filtres avancés",
@@ -109,6 +110,9 @@
     "noMatchesDesc": "Revenez plus tard pour voir les matchs à venir.",
     "noMatchesDate": "Aucun match pour cette date",
     "noLive": "Aucun match en direct",
+    "noLiveHint": "Les scores s'actualisent en temps réel. Revenez dès le coup d'envoi.",
+    "noMatchesDateHint": "Les données pour cette journée ne sont pas encore disponibles.",
+    "showAllMatches": "Voir tous les matchs",
     "live": "En direct",
     "scheduled": "À venir",
     "finished": "Terminés",
@@ -324,6 +328,13 @@
     "updateBtn": "Mettre à jour",
     "offline": "Vous êtes hors ligne",
     "offlineDesc": "Certaines fonctionnalités peuvent être indisponibles."
+  },
+  "notifications": {
+    "subscribed": "Notifications activées ✓",
+    "unsubscribed": "Notifications désactivées",
+    "pullToRefresh": "Relâchez pour rafraîchir",
+    "pulling": "Tirez pour rafraîchir",
+    "refreshing": "Actualisation..."
   },
   "errors": {
     "notFound": "Page introuvable",

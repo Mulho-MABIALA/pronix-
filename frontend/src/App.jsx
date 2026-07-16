@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 
 import Layout from './components/layout/Layout';
 import AdminLayout from './components/admin/AdminLayout';
@@ -79,6 +80,7 @@ export default function App() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
+          <ToastProvider>
           <BrowserRouter>
             <Routes>
               {/* Routes publiques avec layout principal */}
@@ -128,6 +130,7 @@ export default function App() {
 
             </Routes>
           </BrowserRouter>
+          </ToastProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

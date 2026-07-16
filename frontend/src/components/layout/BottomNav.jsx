@@ -202,7 +202,7 @@ export default function BottomNav() {
                   <div className={`p-1 rounded-lg transition-colors ${isActive ? 'bg-select-500/15' : ''}`}>
                     <Icon size={20} strokeWidth={isActive ? 2.5 : 1.75} />
                   </div>
-                  <span className="text-[9px] font-semibold tracking-wide">{label}</span>
+                  <span className="text-[11px] font-semibold tracking-wide">{label}</span>
                 </>
               )}
             </NavLink>
@@ -214,12 +214,12 @@ export default function BottomNav() {
             className={`flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-xl transition-colors ${
               drawerOpen ? 'text-select-400' : 'text-gray-600 hover:text-gray-400'
             }`}
-            aria-label="Explorer"
+            aria-label={t('nav.explorer')}
           >
             <div className={`p-1 rounded-lg transition-colors ${drawerOpen ? 'bg-select-500/15' : ''}`}>
               <LayoutGrid size={20} strokeWidth={drawerOpen ? 2.5 : 1.75} />
             </div>
-            <span className="text-[9px] font-semibold tracking-wide">Explorer</span>
+            <span className="text-[11px] font-semibold tracking-wide">{t('nav.explorer')}</span>
           </button>
         </div>
       </nav>

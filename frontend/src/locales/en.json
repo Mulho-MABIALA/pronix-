@@ -13,7 +13,8 @@
     "logout": "Logout",
     "admin": "Admin",
     "lightMode": "Light mode",
-    "darkMode": "Dark mode"
+    "darkMode": "Dark mode",
+    "explorer": "Explore"
   },
   "tools": {
     "filters": "Advanced filters",
@@ -109,6 +110,9 @@
     "noMatchesDesc": "Come back later for upcoming matches.",
     "noMatchesDate": "No matches for this date",
     "noLive": "No live matches",
+    "noLiveHint": "Scores update in real time. Come back when a match kicks off.",
+    "noMatchesDateHint": "Data for this day is not yet available.",
+    "showAllMatches": "Show all matches",
     "live": "Live",
     "scheduled": "Upcoming",
     "finished": "Finished",
@@ -324,6 +328,13 @@
     "updateBtn": "Update",
     "offline": "You are offline",
     "offlineDesc": "Some features may be unavailable."
+  },
+  "notifications": {
+    "subscribed": "Notifications enabled ✓",
+    "unsubscribed": "Notifications disabled",
+    "pullToRefresh": "Release to refresh",
+    "pulling": "Pull to refresh",
+    "refreshing": "Refreshing..."
   },
   "errors": {
     "notFound": "Page not found",

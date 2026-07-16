@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { Zap } from 'lucide-react';
 import { getOdd, isValueBet, formatOdd } from '../../utils/mockOdds';
+import MatchReminderButton from './MatchReminderButton';
 
 function WhatsAppIcon({ className }) {
   return (
@@ -145,14 +146,17 @@ export default function MatchCard({ match }) {
       })()}
     </Link>
 
-    {/* WhatsApp share — visible on hover */}
-    <button
-      onClick={handleShare}
-      className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-green-500/50 hover:text-green-400 hover:bg-green-500/10 opacity-0 group-hover:opacity-100 transition-all duration-150 focus:opacity-100"
-      aria-label="Partager sur WhatsApp"
-    >
-      <WhatsAppIcon className="w-3.5 h-3.5" />
-    </button>
+    {/* Actions — visible on hover */}
+    <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex flex-col items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all duration-150 focus-within:opacity-100">
+      <MatchReminderButton matchId={match.id} scheduledAt={match.scheduledAt} size={13} />
+      <button
+        onClick={handleShare}
+        className="p-1.5 rounded-lg text-green-500/50 hover:text-green-400 hover:bg-green-500/10 transition-colors"
+        aria-label="Partager sur WhatsApp"
+      >
+        <WhatsAppIcon className="w-3 h-3" />
+      </button>
+    </div>
     </div>
   );
 }

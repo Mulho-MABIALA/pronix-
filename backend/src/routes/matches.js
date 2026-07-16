@@ -3,6 +3,7 @@ const { authenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
 const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
+const { setReminder, deleteReminder } = require('../controllers/remindersController');
 
 const router = Router();
 
@@ -45,5 +46,9 @@ router.post('/:id/chat', authenticate, attachPlan, async (req, res) => {
     return res.status(status).json({ success: false, message: err.message });
   }
 });
+
+// Rappels de match
+router.post('/:id/reminder', authenticate, setReminder);
+router.delete('/:id/reminder', authenticate, deleteReminder);
 
 module.exports = router;

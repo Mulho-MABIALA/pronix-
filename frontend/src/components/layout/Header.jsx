@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 
 import NotificationBell from '../ui/NotificationBell';
+import SearchBar from '../ui/SearchBar';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 function FootballLogo({ className }) {
@@ -109,6 +110,7 @@ export default function Header() {
   const { t } = useTranslation();
   const { user, logout, isAdmin } = useAuth();
   const { isInstallable, install } = usePWAInstall();
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const NAV_LINKS = [
     { to: '/matchs',      label: t('nav.matches') },
@@ -118,6 +120,7 @@ export default function Header() {
   ];
 
   return (
+    <>
     <header className="sticky top-0 z-50 border-b border-white/[0.05]"
       style={{ background: 'rgba(23,24,25,0.95)', backdropFilter: 'blur(16px)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
@@ -149,6 +152,15 @@ export default function Header() {
 
         {/* Actions droite */}
         <div className="flex items-center gap-1 ml-auto">
+          {/* Bouton recherche */}
+          <button
+            onClick={() => setSearchOpen(true)}
+            className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.05] transition-colors"
+            aria-label={t('search.open', 'Rechercher')}
+          >
+            <Search size={17} />
+          </button>
+
           <NotificationBell />
 
           {/* Bouton installer PWA (visible seulement si installable) */}
@@ -205,5 +217,9 @@ export default function Header() {
         </div>
       </div>
     </header>
+
+    {/* Search overlay */}
+    {searchOpen && <SearchBar onClose={() => setSearchOpen(false)} />}
+  </>
   );
 }

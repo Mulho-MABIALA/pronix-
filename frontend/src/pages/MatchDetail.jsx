@@ -448,9 +448,20 @@ export default function MatchDetail() {
 
   const isFinishedOrLive = match && ['FINISHED', 'LIVE'].includes(match.status);
 
+  const ogTitle = match
+    ? `${match.homeTeam} vs ${match.awayTeam}${match.competition?.name ? ` — ${match.competition.name}` : ''} | fpronix`
+    : 'Match | fpronix';
+  const ogDesc = match
+    ? `Pronostics IA, statistiques et cotes pour ${match.homeTeam} vs ${match.awayTeam}${
+        match.scheduledAt ? ` · ${format(new Date(match.scheduledAt), 'dd MMM yyyy HH:mm', { locale: fr })}` : ''
+      }. Analyse complète sur fpronix.`
+    : 'Analyse et pronostics football sur fpronix.';
+  const ogImage = match?.homeTeamLogo || match?.awayTeamLogo || undefined;
+
   usePageMeta(
     match ? `${match.homeTeam} vs ${match.awayTeam}` : 'Match',
-    match ? `Pronostics et statistiques : ${match.homeTeam} vs ${match.awayTeam} — ${match.competition?.name || 'Football'}.` : undefined,
+    ogDesc,
+    { title: ogTitle, description: ogDesc, image: ogImage, type: 'article' },
   );
 
   // Onglet par défaut : "data" pour les matchs terminés/en direct

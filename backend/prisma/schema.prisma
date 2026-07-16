@@ -75,27 +75,35 @@ enum ReportStatus {
 // ─── UTILISATEURS ──────────────────────────────────────────────────────────────
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String?
-  username  String   @unique
-  googleId  String?  @unique
-  role      Role     @default(USER)
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password      String?
+  username      String   @unique
+  googleId      String?  @unique
+  role          Role     @default(USER)
+  isActive      Boolean  @default(true)
+  emailVerified Boolean  @default(false)
+  referralCode  String?  @unique
+  referredById  String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  profile       Profile?
-  subscription  Subscription?
-  payments      Payment[]
-  tips          Tip[]
-  tipsterStats  TipsterStats?
-  favorites         Favorite[]
-  reports           Report[]           @relation("Reporter")
-  refreshTokens     RefreshToken[]
-  passwordResets    PasswordReset[]
-  pushSubscriptions PushSubscription[]
-  chatQuotas        ChatQuota[]
+  profile            Profile?
+  subscription       Subscription?
+  payments           Payment[]
+  tips               Tip[]
+  tipsterStats       TipsterStats?
+  favorites          Favorite[]
+  reports            Report[]           @relation("Reporter")
+  refreshTokens      RefreshToken[]
+  passwordResets     PasswordReset[]
+  pushSubscriptions  PushSubscription[]
+  chatQuotas         ChatQuota[]
+  emailVerifications EmailVerification[]
+  referralsGiven     Referral[]         @relation("ReferrerUser")
+  referralReceived   Referral?          @relation("RefereeUser")
+  betEntries         BetEntry[]
+  matchReminders     MatchReminder[]
 
   @@map("users")
 }
@@ -140,6 +148,31 @@ model PasswordReset {
   createdAt DateTime @default(now())
 
   @@map("password_resets")
+}
+
+model EmailVerification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("email_verifications")
+}
+
+model Referral {
+  id          String    @id @default(uuid())
+  referrerId  String
+  referrer    User      @relation("ReferrerUser", fields: [referrerId], references: [id])
+  refereeId   String    @unique
+  referee     User      @relation("RefereeUser", fields: [refereeId], references: [id])
+  status      String    @default("PENDING") // PENDING | REWARDED
+  rewardedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@map("referrals")
 }
 
 // ─── ABONNEMENTS & PAIEMENTS ───────────────────────────────────────────────────
@@ -248,7 +281,9 @@ model Match {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
-  tips Tip[]
+  tips           Tip[]
+  betEntries     BetEntry[]
+  matchReminders MatchReminder[]
 
   @@index([scheduledAt])
   @@index([status])
@@ -354,6 +389,46 @@ model Expense {
   createdAt   DateTime @default(now())
 
   @@map("expenses")
+}
+
+// ─── BET TRACKER ──────────────────────────────────────────────────────────────
+
+model BetEntry {
+  id         String    @id @default(uuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matchId    String?
+  match      Match?    @relation(fields: [matchId], references: [id])
+  teamA      String
+  teamB      String
+  prediction String    // HOME_WIN, AWAY_WIN, DRAW, OVER_2_5, etc.
+  odds       Float
+  stake      Int       // mise en FCFA
+  result     String?   // WIN | LOSS | VOID | null (en attente)
+  matchDate  DateTime
+  notes      String?   @db.Text
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("bet_entries")
+}
+
+// ─── RAPPELS MATCHS ───────────────────────────────────────────────────────────
+
+model MatchReminder {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  matchId       String
+  match         Match    @relation(fields: [matchId], references: [id])
+  minutesBefore Int      @default(60) // 60 min avant
+  sent          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, matchId])
+  @@index([sent, matchId])
+  @@map("match_reminders")
 }
 
 // ─── PUSH NOTIFICATIONS ───────────────────────────────────────────────────────

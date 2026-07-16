@@ -12,6 +12,7 @@ const {
   getAdminMatches,
   syncPredictions,
   triggerSync,
+  exportUsers, exportPayments,
 } = require('../controllers/adminController');
 const { adminBroadcast, getPushStats } = require('../controllers/pushController');
 
@@ -41,5 +42,9 @@ router.post('/sync', triggerSync);
 router.post('/sync-predictions', syncPredictions);
 router.get('/push/stats', getPushStats);
 router.post('/push/broadcast', adminBroadcast);
+
+// Exports CSV
+router.get('/export/users', exportUsers);
+router.get('/export/payments', exportPayments);
 
 module.exports = router;

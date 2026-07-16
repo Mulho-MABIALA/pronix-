@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Clock, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -29,9 +29,19 @@ export default function AdminPayments() {
 
   return (
     <div className="space-y-5 max-w-7xl">
-      <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Paiements</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{pagination?.total ?? 0} transactions</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display font-bold text-2xl text-gray-50">Paiements</h1>
+          <p className="text-sm text-gray-500 mt-0.5">{pagination?.total ?? 0} transactions</p>
+        </div>
+        <a
+          href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/payments`}
+          download
+          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-surface-800 border border-surface-700 text-gray-300 hover:text-gray-100 hover:border-surface-600 transition-colors shrink-0"
+        >
+          <Download size={13} />
+          Exporter CSV
+        </a>
       </div>
 
       {/* Filtres */}

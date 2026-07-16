@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, UserCheck, UserX, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { Search, UserCheck, UserX, ChevronLeft, ChevronRight, Filter, Download } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -35,11 +35,21 @@ export default function AdminUsers() {
   return (
     <div className="space-y-5 max-w-7xl">
       {/* En-tête */}
-      <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Utilisateurs</h1>
-        <p className="text-sm text-gray-500 mt-0.5">
-          {pagination?.total !== undefined ? `${pagination.total} utilisateurs au total` : ''}
-        </p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="font-display font-bold text-2xl text-gray-50">Utilisateurs</h1>
+          <p className="text-sm text-gray-500 mt-0.5">
+            {pagination?.total !== undefined ? `${pagination.total} utilisateurs au total` : ''}
+          </p>
+        </div>
+        <a
+          href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/users`}
+          download
+          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-surface-800 border border-surface-700 text-gray-300 hover:text-gray-100 hover:border-surface-600 transition-colors shrink-0"
+        >
+          <Download size={13} />
+          Exporter CSV
+        </a>
       </div>
 
       {/* Filtres */}

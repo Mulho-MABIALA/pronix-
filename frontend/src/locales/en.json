@@ -113,6 +113,9 @@
     "noLiveHint": "Scores update in real time. Come back when a match kicks off.",
     "noMatchesDateHint": "Data for this day is not yet available.",
     "showAllMatches": "Show all matches",
+    "reminder": "Reminder",
+    "reminderSet": "Reminder set",
+    "reminderRemoved": "Reminder removed",
     "live": "Live",
     "scheduled": "Upcoming",
     "finished": "Finished",
@@ -335,6 +338,30 @@
     "pullToRefresh": "Release to refresh",
     "pulling": "Pull to refresh",
     "refreshing": "Refreshing..."
+  },
+  "search": {
+    "open": "Search",
+    "placeholder": "Search matches, tipsters...",
+    "noResults": "No results for",
+    "hint": "Type to search for matches, tipsters or competitions",
+    "matches": "Matches",
+    "tipsters": "Tipsters",
+    "competitions": "Competitions"
+  },
+  "emailVerify": {
+    "prompt": "Your email address is not verified.",
+    "send": "Verify",
+    "sent": "Verification email sent! Check your inbox.",
+    "checkInbox": "Check your inbox to confirm your email address.",
+    "error": "Error sending email. Please try again later."
+  },
+  "bets": {
+    "title": "My bet tracker",
+    "add": "Add a bet",
+    "roi": "ROI",
+    "winRate": "Win rate",
+    "noEntries": "No bets recorded",
+    "noEntriesDesc": "Start tracking your bets to analyze your performance."
   },
   "errors": {
     "notFound": "Page not found",

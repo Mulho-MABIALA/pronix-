@@ -1,14 +1,15 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
-  Bell, BellOff, Pencil, Shield, Star, TrendingUp, X,
+  Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { PlanBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -106,6 +107,80 @@ function Section({ title, icon: Icon, children, action }) {
         {action}
       </div>
       {children}
+    </section>
+  );
+}
+
+/* ─── Section parrainage ─────────────────────────────────────────────────────── */
+function ReferralSection() {
+  const toast = useToast();
+  const [code, setCode] = useState(null);
+  const [count, setCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const fetchCode = async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.get('/referrals/my-code');
+      setCode(data.data.code);
+      setCount(data.data.referralCount);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchCode(); }, []);
+
+  const handleCopy = () => {
+    if (!code) return;
+    const shareUrl = `${window.location.origin}?ref=${code}`;
+    navigator.clipboard.writeText(shareUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+      if (toast) toast('Lien de parrainage copié !', 'success');
+    });
+  };
+
+  return (
+    <section className="bento-card space-y-4">
+      <div className="flex items-center gap-2">
+        <Gift size={16} className="text-gray-500" />
+        <h2 className="font-semibold text-gray-100 text-sm">Parrainage</h2>
+      </div>
+
+      <p className="text-xs text-gray-500 leading-relaxed">
+        Partage ton code et gagne des récompenses quand tes filleuls s'inscrivent sur fpronix.
+      </p>
+
+      {loading ? (
+        <div className="h-10 bg-surface-700/40 rounded-xl animate-pulse" />
+      ) : code ? (
+        <div className="flex items-center gap-2">
+          <div className="flex-1 flex items-center gap-2 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2.5">
+            <span className="text-primary-400 font-mono font-bold text-sm tracking-widest">{code}</span>
+          </div>
+          <button
+            onClick={handleCopy}
+            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] font-semibold transition-colors ${
+              copied
+                ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
+                : 'btn-secondary'
+            }`}
+          >
+            {copied ? <Check size={13} /> : <Copy size={13} />}
+            {copied ? 'Copié' : 'Copier'}
+          </button>
+        </div>
+      ) : null}
+
+      {count > 0 && (
+        <p className="text-xs text-gray-500">
+          <span className="text-primary-400 font-semibold">{count}</span> filleul{count > 1 ? 's' : ''} parrainé{count > 1 ? 's' : ''}
+        </p>
+      )}
     </section>
   );
 }
@@ -510,6 +585,9 @@ export default function Profile() {
           )}
         </div>
       </Section>
+
+      {/* ── Parrainage ────────────────────────────────────────────────────────── */}
+      <ReferralSection />
 
       {/* ── Déconnexion ───────────────────────────────────────────────────────── */}
       <button

@@ -4,6 +4,7 @@ const { authenticate } = require('../middleware/auth');
 const {
   register, login, refreshToken, logout,
   forgotPassword, resetPassword, me, googleAuth,
+  sendVerificationEmail, verifyEmail,
 } = require('../controllers/authController');
 
 const router = Router();
@@ -23,5 +24,7 @@ router.post('/logout', logout);
 router.post('/forgot-password', authLimit, forgotPassword);
 router.post('/reset-password', authLimit, resetPassword);
 router.get('/me', authenticate, me);
+router.post('/send-verification', authenticate, sendVerificationEmail);
+router.get('/verify-email/:token', verifyEmail);
 
 module.exports = router;

@@ -18,6 +18,12 @@ const profileRoutes = require('./routes/profiles');
 const newsRoutes = require('./routes/news');
 const pushRoutes = require('./routes/push');
 const agentRoutes = require('./routes/agents');
+const searchRoutes = require('./routes/search');
+const favoritesRoutes = require('./routes/favorites');
+const referralsRoutes = require('./routes/referrals');
+const betsRoutes = require('./routes/bets');
+const remindersRoutes = require('./routes/reminders');
+const sitemapRoutes = require('./routes/sitemap');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -62,6 +68,12 @@ app.use('/api/profiles', profileRoutes);
 app.use('/api/news', newsRoutes);
 app.use('/api/push', pushRoutes);
 app.use('/api/agents', agentRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/favorites', favoritesRoutes);
+app.use('/api/referrals', referralsRoutes);
+app.use('/api/bets', betsRoutes);
+app.use('/api/reminders', remindersRoutes);
+app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API
 app.get('/api/health', (req, res) => {

@@ -113,6 +113,9 @@
     "noLiveHint": "Les scores s'actualisent en temps réel. Revenez dès le coup d'envoi.",
     "noMatchesDateHint": "Les données pour cette journée ne sont pas encore disponibles.",
     "showAllMatches": "Voir tous les matchs",
+    "reminder": "Rappel",
+    "reminderSet": "Rappel activé",
+    "reminderRemoved": "Rappel supprimé"
     "live": "En direct",
     "scheduled": "À venir",
     "finished": "Terminés",
@@ -335,6 +338,30 @@
     "pullToRefresh": "Relâchez pour rafraîchir",
     "pulling": "Tirez pour rafraîchir",
     "refreshing": "Actualisation..."
+  },
+  "search": {
+    "open": "Rechercher",
+    "placeholder": "Rechercher matchs, tipsters...",
+    "noResults": "Aucun résultat pour",
+    "hint": "Tapez pour rechercher des matchs, tipsters ou compétitions",
+    "matches": "Matchs",
+    "tipsters": "Tipsters",
+    "competitions": "Compétitions"
+  },
+  "emailVerify": {
+    "prompt": "Ton adresse email n'est pas vérifiée.",
+    "send": "Vérifier",
+    "sent": "Email de vérification envoyé ! Vérifie ta boîte mail.",
+    "checkInbox": "Vérifie ta boîte mail pour confirmer ton adresse.",
+    "error": "Erreur lors de l'envoi. Réessaie plus tard."
+  },
+  "bets": {
+    "title": "Mon carnet de paris",
+    "add": "Ajouter un pari",
+    "roi": "ROI",
+    "winRate": "Taux de réussite",
+    "noEntries": "Aucun pari enregistré",
+    "noEntriesDesc": "Commence à suivre tes paris pour analyser tes performances."
   },
   "errors": {
     "notFound": "Page introuvable",

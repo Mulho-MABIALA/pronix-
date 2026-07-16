@@ -241,4 +241,49 @@ async function sendSubscriptionExpiryReminder(user, daysLeft) {
   });
 }
 
-module.exports = { sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionExpiryReminder };
+// ── Vérification d'email ──────────────────────────────────────────────────────
+async function sendEmailVerification(user, token) {
+  const verifyUrl = `${env.FRONTEND_URL}/verify-email?token=${token}`;
+  await sendEmail({
+    to: user.email,
+    subject: 'Vérifie ton adresse email — fpronix',
+    html: `
+<!DOCTYPE html>
+<html lang="fr">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width,initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#0a0b0d;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0b0d;">
+    <tr><td align="center" style="padding:32px 16px;">
+      <table style="max-width:520px;width:100%;">
+        <tr><td align="center" style="padding-bottom:24px;">
+          <span style="background:rgba(26,166,86,0.15);border:1px solid rgba(26,166,86,0.3);border-radius:12px;padding:8px 14px;font-size:18px;font-weight:800;color:#fff;">
+            fp<span style="color:#1aa656;">ronix</span>
+          </span>
+        </td></tr>
+        <tr><td style="background:#111214;border:1px solid rgba(255,255,255,0.07);border-radius:20px;padding:36px;">
+          <h1 style="margin:0 0 12px;font-size:22px;font-weight:700;color:#fff;">✉️ Vérifie ton email</h1>
+          <p style="margin:0 0 24px;font-size:14px;color:#6b7280;line-height:1.6;">
+            Bonjour ${user.username},<br />
+            Clique sur le bouton ci-dessous pour vérifier ton adresse email. Ce lien est valable <strong style="color:#e5e7eb;">24 heures</strong>.
+          </p>
+          <table width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center">
+              <a href="${verifyUrl}"
+                style="display:inline-block;padding:14px 32px;background:#1aa656;color:#fff;font-size:14px;font-weight:600;text-decoration:none;border-radius:12px;">
+                Vérifier mon email →
+              </a>
+            </td></tr>
+          </table>
+          <p style="margin:24px 0 0;font-size:12px;color:#4b5563;text-align:center;">
+            Si tu n'as pas créé de compte sur fpronix, ignore cet email.
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`,
+  });
+}
+
+module.exports = { sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionExpiryReminder, sendEmailVerification };

@@ -6,7 +6,7 @@ const { OAuth2Client } = require('google-auth-library');
 const prisma = require('../config/database');
 const env = require('../config/env');
 const { AppError } = require('../middleware/errorHandler');
-const { sendWelcomeEmail, sendPasswordResetEmail } = require('../services/emailService');
+const { sendWelcomeEmail, sendPasswordResetEmail, sendEmailVerification } = require('../services/emailService');
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -329,4 +329,54 @@ async function me(req, res) {
   res.json({ success: true, data: userSafe });
 }
 
-module.exports = { register, login, refreshToken, logout, forgotPassword, resetPassword, me, googleAuth };
+// ─── Envoi de l'email de vérification ────────────────────────────────────────
+async function sendVerificationEmail(req, res, next) {
+  try {
+    if (req.user.emailVerified) {
+      return res.json({ success: true, message: 'Email déjà vérifié' });
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
+
+    await prisma.emailVerification.create({
+      data: { userId: req.user.id, token, expiresAt },
+    });
+
+    await sendEmailVerification(req.user, token);
+
+    res.json({ success: true, message: 'Email de vérification envoyé' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Vérification du token ────────────────────────────────────────────────────
+async function verifyEmail(req, res, next) {
+  try {
+    const { token } = z.object({ token: z.string() }).parse(req.params);
+
+    const verification = await prisma.emailVerification.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+
+    if (!verification || verification.used || verification.expiresAt < new Date()) {
+      throw new AppError('Lien de vérification invalide ou expiré', 400, 'INVALID_TOKEN');
+    }
+
+    await prisma.$transaction([
+      prisma.user.update({ where: { id: verification.userId }, data: { emailVerified: true } }),
+      prisma.emailVerification.update({ where: { id: verification.id }, data: { used: true } }),
+    ]);
+
+    res.json({ success: true, message: 'Email vérifié avec succès' });
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = {
+  register, login, refreshToken, logout, forgotPassword, resetPassword, me, googleAuth,
+  sendVerificationEmail, verifyEmail,
+};

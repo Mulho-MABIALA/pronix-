@@ -572,6 +572,75 @@ async function triggerSync(req, res, next) {
   }
 }
 
+// ─── Export CSV ───────────────────────────────────────────────────────────────
+function toCsv(headers, rows) {
+  const escape = (v) => {
+    if (v == null) return '';
+    const s = String(v).replace(/"/g, '""');
+    return /[",\n]/.test(s) ? `"${s}"` : s;
+  };
+  const lines = [headers.join(',')];
+  for (const row of rows) lines.push(row.map(escape).join(','));
+  return lines.join('\n');
+}
+
+async function exportUsers(req, res, next) {
+  try {
+    const users = await prisma.user.findMany({
+      select: {
+        id: true, email: true, username: true, role: true,
+        emailVerified: true, isActive: true, createdAt: true,
+        referralCode: true,
+        subscription: { select: { status: true, plan: { select: { code: true } } } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const csv = toCsv(
+      ['id', 'email', 'username', 'role', 'emailVerified', 'isActive', 'plan', 'subscription', 'referralCode', 'createdAt'],
+      users.map((u) => [
+        u.id, u.email, u.username, u.role,
+        u.emailVerified, u.isActive,
+        u.subscription?.plan?.code || 'FREE',
+        u.subscription?.status || 'NONE',
+        u.referralCode || '',
+        u.createdAt.toISOString(),
+      ])
+    );
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="fpronix_users_${new Date().toISOString().slice(0,10)}.csv"`);
+    res.send('﻿' + csv); // BOM pour Excel UTF-8
+  } catch (err) {
+    next(err);
+  }
+}
+
+async function exportPayments(req, res, next) {
+  try {
+    const payments = await prisma.payment.findMany({
+      include: { user: { select: { email: true, username: true } } },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const csv = toCsv(
+      ['id', 'email', 'username', 'amount_fcfa', 'currency', 'method', 'status', 'provider', 'providerRef', 'transactionId', 'createdAt'],
+      payments.map((p) => [
+        p.id, p.user?.email || '', p.user?.username || '',
+        p.amount, p.currency, p.method, p.status,
+        p.provider, p.providerRef || '', p.transactionId || '',
+        p.createdAt.toISOString(),
+      ])
+    );
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="fpronix_payments_${new Date().toISOString().slice(0,10)}.csv"`);
+    res.send('﻿' + csv);
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   getDashboard,
   getUsers, toggleUserStatus,
@@ -584,4 +653,5 @@ module.exports = {
   getAdminMatches,
   syncPredictions,
   triggerSync,
+  exportUsers, exportPayments,
 };

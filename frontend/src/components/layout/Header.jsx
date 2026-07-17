@@ -110,30 +110,31 @@ function OutilsDropdown() {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 w-64 rounded-xl border border-white/[0.08] shadow-card-hover z-50 overflow-hidden"
-          style={{ background: 'var(--color-card)' }}>
-          {SECTIONS.map((section, si) => (
-            <div key={section.label}>
-              {/* Séparateur entre sections */}
-              {si > 0 && <div className="mx-4 border-t border-white/[0.05]" />}
-              <p className="px-4 pt-3 pb-1 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
-                {section.label}
-              </p>
-              {section.items.map(({ to, label, Icon, desc, color }) => (
-                <Link key={`${to}-${label}`} to={to} onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
-                    <Icon size={13} />
-                  </div>
-                  <div>
-                    <p className="text-[13px] font-semibold text-gray-200">{label}</p>
-                    <p className="text-[11px] text-gray-500">{desc}</p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ))}
-          <div className="pb-2" />
+        <div
+          className="absolute top-full left-0 mt-1.5 rounded-xl border border-white/[0.08] shadow-card-hover z-50 p-3"
+          style={{ background: 'var(--color-card)', width: 520 }}
+        >
+          <div className="grid grid-cols-2 gap-x-3">
+            {SECTIONS.map((section, si) => (
+              <div key={section.label} className={si >= 2 ? 'mt-2' : ''}>
+                <p className="px-2 pt-1 pb-1.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+                  {section.label}
+                </p>
+                {section.items.map(({ to, label, Icon, desc, color }) => (
+                  <Link key={`${to}-${label}`} to={to} onClick={() => setOpen(false)}
+                    className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-white/[0.05] transition-colors">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
+                      <Icon size={13} />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[12px] font-semibold text-gray-200 truncate">{label}</p>
+                      <p className="text-[10px] text-gray-500 truncate">{desc}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>

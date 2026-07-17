@@ -5,6 +5,7 @@ const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions
 const { askAboutMatch } = require('../services/chatService');
 const { setReminder, deleteReminder } = require('../controllers/remindersController');
 const { getLiveAnalysis } = require('../services/liveAnalysisService');
+const { explainValueBet } = require('../services/valueBetAiService');
 
 const router = Router();
 
@@ -57,6 +58,23 @@ router.get('/:id/live-analysis', async (req, res, next) => {
     const analysis = await getLiveAnalysis(req.params.id);
     if (!analysis) return res.json({ success: true, data: null });
     res.json({ success: true, data: analysis });
+  } catch (err) { next(err); }
+});
+
+// Explication IA value bet — public (cachée 30 min)
+router.post('/:id/value-bet-explain', async (req, res, next) => {
+  try {
+    const { market, bookOdds, trueProb } = req.body;
+    if (!market || !bookOdds || !trueProb) {
+      return res.status(400).json({ success: false, message: 'market, bookOdds et trueProb sont requis' });
+    }
+    const data = await explainValueBet(req.params.id, {
+      market,
+      bookOdds: parseFloat(bookOdds),
+      trueProb: parseFloat(trueProb),
+    });
+    if (!data) return res.json({ success: true, data: null });
+    res.json({ success: true, data });
   } catch (err) { next(err); }
 });
 

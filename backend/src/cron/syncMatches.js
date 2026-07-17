@@ -4,6 +4,7 @@ const prisma = require('../config/database');
 const footballApi = require('../services/footballApi');
 const { broadcastNotification, notifyUser } = require('../controllers/pushController');
 const { calculatePredictionsForDate } = require('../services/predictionService');
+const { generateMatchSummary } = require('../services/matchSummaryService');
 
 // ─── Évaluation d'un pronostic vs score final ─────────────────────────────────
 const PRED_LABELS = {
@@ -217,6 +218,9 @@ async function syncLiveMatches() {
 
         // Notification individuelle par tipster
         notifyTipResults(match.id, match.homeTeam, match.awayTeam, hs, as).catch(() => {});
+
+        // Résumé post-match automatique (article de blog IA)
+        generateMatchSummary(match.id).catch(() => {});
       }
     }
   } catch (err) {

@@ -3,8 +3,9 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square } from 'lucide-react';
+import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square, Loader2 } from 'lucide-react';
 import ChatIA from '../components/match/ChatIA';
+import LiveAnalysis from '../components/match/LiveAnalysis';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { MatchStatusBadge, ResultBadge } from '../components/ui/Badge';
@@ -106,6 +107,62 @@ function ProbabilitySection({ match }) {
   );
 }
 
+// ── Value Bet AI Explain ─────────────────────────────────────────────────────
+function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const CONFIDENCE_COLOR = { ÉLEVÉE: 'text-green-400', MODÉRÉE: 'text-amber-400', FAIBLE: 'text-red-400' };
+
+  async function fetchExplain() {
+    if (data) { setOpen((v) => !v); return; }
+    setLoading(true);
+    try {
+      const res = await api.post(`/matches/${matchId}/value-bet-explain`, { market, bookOdds, trueProb });
+      setData(res.data.data);
+      setOpen(true);
+    } catch { /* silent */ }
+    finally { setLoading(false); }
+  }
+
+  return (
+    <div className="mt-1">
+      <button
+        onClick={fetchExplain}
+        disabled={loading}
+        className="flex items-center gap-1.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors disabled:opacity-50"
+      >
+        {loading ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
+        Pourquoi c'est une value ?
+      </button>
+
+      {open && data && (
+        <div className="mt-2 rounded-xl border border-amber-500/15 bg-amber-500/5 p-3 space-y-2">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-gray-200">{data.edge}</p>
+            {data.confidence && (
+              <span className={`text-[10px] font-bold ${CONFIDENCE_COLOR[data.confidence] || 'text-gray-400'}`}>
+                Confiance {data.confidence}
+              </span>
+            )}
+          </div>
+          <p className="text-xs text-gray-400 leading-relaxed">{data.explanation}</p>
+          {data.reasoning?.length > 0 && (
+            <ul className="space-y-1">
+              {data.reasoning.map((r, i) => (
+                <li key={i} className="text-[11px] text-gray-500 flex items-start gap-1.5">
+                  <span className="text-amber-400 shrink-0">•</span> {r}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ── Cotes réelles ou simulées — comparateur style BetMines ───────────────────
 function OddsAndValueSection({ match, realOdds }) {
   const pred = match.predictions;
@@ -175,6 +232,16 @@ function OddsAndValueSection({ match, realOdds }) {
           ))}
         </div>
       </div>
+
+      {/* Value Bet AI Explanation */}
+      {value && (
+        <ValueBetExplainButton
+          matchId={match.id}
+          market={pred.bestPick.type}
+          bookOdds={best.odd}
+          trueProb={pred.bestPick.prob}
+        />
+      )}
 
       {isReal
         ? <p className="disclaimer">Cotes fournies à titre informatif — pas un conseil de pari.</p>
@@ -606,6 +673,13 @@ export default function MatchDetail() {
       {match.status === 'SCHEDULED' && (
         <div className="px-4">
           <ChatIA matchId={match.id} matchLabel={`${match.homeTeam} vs ${match.awayTeam}`} />
+        </div>
+      )}
+
+      {/* ── Analyse IA Live ──────────────────────────────────────────── */}
+      {match.status === 'LIVE' && (
+        <div className="px-4">
+          <LiveAnalysis matchId={match.id} />
         </div>
       )}
 

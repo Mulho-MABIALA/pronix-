@@ -1,0 +1,83 @@
+import { useQuery } from '@tanstack/react-query';
+import { Radio, Zap, TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react';
+import api from '../../services/api';
+
+const MOMENTUM_CONFIG = {
+  HOME:     { icon: TrendingUp,   color: 'text-primary-400', label: 'Domicile en forme' },
+  AWAY:     { icon: TrendingDown, color: 'text-red-400',     label: 'Extérieur dominant' },
+  BALANCED: { icon: Minus,        color: 'text-gray-400',    label: 'Match équilibré' },
+};
+
+export default function LiveAnalysis({ matchId }) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['live-analysis', matchId],
+    queryFn: () => api.get(`/matches/${matchId}/live-analysis`).then((r) => r.data.data),
+    // Refresh toutes les 5 minutes (aligné sur le cache backend)
+    refetchInterval: 5 * 60 * 1000,
+    staleTime: 4 * 60 * 1000,
+  });
+
+  if (isLoading) {
+    return (
+      <div className="bento-card flex items-center gap-3 text-gray-500 py-4">
+        <Loader2 size={15} className="animate-spin text-live-400 shrink-0" />
+        <span className="text-sm">Analyse du match en cours…</span>
+      </div>
+    );
+  }
+
+  if (!data) return null;
+
+  const MomentumIcon = MOMENTUM_CONFIG[data.momentum]?.icon || Minus;
+  const momentumColor = MOMENTUM_CONFIG[data.momentum]?.color || 'text-gray-400';
+  const momentumLabel = MOMENTUM_CONFIG[data.momentum]?.label || '';
+
+  return (
+    <div className="bento-card space-y-3 border-live-500/20 bg-live-500/[0.03]">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-live-500/15 flex items-center justify-center shrink-0">
+            <Radio size={13} className="text-live-400" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-100">Analyse IA en direct</p>
+            {data.minute && (
+              <p className="text-[10px] text-live-400 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse inline-block" />
+                {data.minute === 'HT' ? 'Mi-temps' : `${data.minute}'`}
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Momentum badge */}
+        <div className={`flex items-center gap-1 text-[11px] font-semibold ${momentumColor}`}>
+          <MomentumIcon size={13} />
+          <span className="hidden sm:inline">{momentumLabel}</span>
+        </div>
+      </div>
+
+      {/* Headline */}
+      <p className="text-sm font-semibold text-gray-100">{data.headline}</p>
+
+      {/* Analysis */}
+      <p className="text-xs text-gray-400 leading-relaxed">{data.analysis}</p>
+
+      {/* Key fact */}
+      {data.keyFact && (
+        <div className="flex items-start gap-2 pt-1 border-t border-white/[0.05]">
+          <Zap size={12} className="text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] text-gray-400">{data.keyFact}</p>
+        </div>
+      )}
+
+      {/* Footer */}
+      {data.generatedAt && (
+        <p className="text-[10px] text-gray-600">
+          Mise à jour : {new Date(data.generatedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+        </p>
+      )}
+    </div>
+  );
+}

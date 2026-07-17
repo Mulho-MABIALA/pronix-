@@ -8,14 +8,15 @@ import NotificationBell from '../ui/NotificationBell';
 import SearchBar from '../ui/SearchBar';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
-function FootballLogo({ className }) {
+function FootballLogo() {
   return (
-    <img
-      src="/imgfpronix.png"
-      alt="fpronix logo"
-      className={className}
-      style={{ objectFit: 'contain' }}
-    />
+    <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center shrink-0 shadow-[0_0_10px_rgba(99,102,241,0.4)]">
+      <img
+        src="/imgfpronix.png"
+        alt="fpronix logo"
+        className="w-8 h-8 object-contain"
+      />
+    </div>
   );
 }
 
@@ -155,7 +156,7 @@ export default function Header() {
 
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
-          <FootballLogo className="w-7 h-7 drop-shadow-[0_0_6px_rgba(99,102,241,0.5)]" />
+          <FootballLogo />
           <span className="hidden sm:block font-display font-bold text-[15px] text-white tracking-tight">
             fp<span className="text-primary-400">ronix</span>
           </span>

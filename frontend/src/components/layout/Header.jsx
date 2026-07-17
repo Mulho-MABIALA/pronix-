@@ -10,19 +10,12 @@ import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 function FootballLogo({ className }) {
   return (
-    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
-      <circle cx="14" cy="14" r="13" fill="white" />
-      {/* Centre */}
-      <polygon points="14,6 18,9.5 16.5,14.5 11.5,14.5 10,9.5" fill="#111827" />
-      {/* Haut */}
-      <polygon points="14,6 18,9.5 21,7 19,2.5 14,1.5 9,2.5 7,7 10,9.5" fill="#111827" />
-      {/* Droite */}
-      <polygon points="18,9.5 21,7 25,10.5 23.5,15.5 20,16 16.5,14.5" fill="#111827" />
-      {/* Gauche */}
-      <polygon points="10,9.5 7,7 3,10.5 4.5,15.5 8,16 11.5,14.5" fill="#111827" />
-      {/* Bas */}
-      <polygon points="16.5,14.5 20,16 19.5,21 14,23 8.5,21 8,16 11.5,14.5" fill="#111827" />
-    </svg>
+    <img
+      src="/imgfpronix.png"
+      alt="fpronix logo"
+      className={className}
+      style={{ objectFit: 'contain' }}
+    />
   );
 }
 

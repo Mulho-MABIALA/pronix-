@@ -148,12 +148,18 @@
   }
 
   /* ── Input ──────────────────────────────────────────────────────── */
+  /* iOS auto-zoom fix : font-size < 16px déclenche un zoom au focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
   .input {
     background-color: var(--color-card-alt);
     border: 1px solid rgba(255,255,255,0.08);
     @apply w-full text-gray-100 placeholder-gray-600
-           rounded-lg px-4 py-3 text-sm transition-colors
+           rounded-lg px-4 py-3 transition-colors
            focus:border-primary-400/60 focus:ring-1 focus:ring-primary-400/30 focus:outline-none;
+    font-size: 16px;
     min-height: 42px;
   }
 

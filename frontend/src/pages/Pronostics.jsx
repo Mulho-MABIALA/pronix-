@@ -1,10 +1,10 @@
 import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { format, subDays, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
+import { format, subDays, addDays, isToday, isYesterday, isTomorrow, isPast, startOfDay } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
-  TrendingUp, Search, Bot, Lock, Zap, ChevronLeft, ChevronRight, Info,
+  TrendingUp, Search, Bot, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy,
 } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -238,18 +238,15 @@ export default function Pronostics() {
   const [date,         setDate]         = useState(new Date());
   const [activeMarket, setActiveMarket] = useState('all');
   const [search,       setSearch]       = useState('');
+  const [tabOffset,    setTabOffset]    = useState(0); // décalage fenêtre onglets
   const chipsRef = useRef(null);
 
   const dateStr = format(date, 'yyyy-MM-dd');
+  const isPastDay = isPast(startOfDay(addDays(date, 1))) && !isToday(date);
 
-  // 5 onglets : hier → +3 jours
-  const tabs = [
-    subDays(new Date(), 1),
-    new Date(),
-    addDays(new Date(), 1),
-    addDays(new Date(), 2),
-    addDays(new Date(), 3),
-  ];
+  // Fenêtre de 5 onglets centrée sur today + offset
+  // offset négatif = passé, offset positif = futur
+  const tabs = Array.from({ length: 5 }, (_, i) => addDays(new Date(), tabOffset - 2 + i));
 
   const { data, isLoading } = useQuery({
     queryKey: ['pronostics', dateStr],
@@ -340,24 +337,44 @@ export default function Pronostics() {
         </p>
       </div>
 
-      {/* Date tabs */}
-      <div className="overflow-x-auto scrollbar-hide">
-        <div className="flex gap-1.5 min-w-max">
+      {/* Date tabs + navigation passé/futur */}
+      <div className="flex items-center gap-1">
+        <button
+          onClick={() => setTabOffset((o) => o - 1)}
+          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors"
+          title="Jours précédents"
+        >
+          <ChevronLeft size={16} />
+        </button>
+
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-hide flex-1">
           {tabs.map((d, i) => {
-            const dStr = format(d, 'yyyy-MM-dd');
-            const sel  = dStr === dateStr;
+            const dStr    = format(d, 'yyyy-MM-dd');
+            const sel     = dStr === dateStr;
+            const dayPast = isPast(startOfDay(addDays(d, 1))) && !isToday(d);
             return (
               <button key={i} onClick={() => setDate(d)}
-                className={`px-4 py-2 rounded-lg text-[13px] font-semibold border transition-all ${
+                className={`shrink-0 px-3 py-2 rounded-lg text-[12px] font-semibold border transition-all ${
                   sel
                     ? 'bg-select-500/15 text-select-400 border-select-500/30'
+                    : dayPast
+                    ? 'text-gray-600 border-white/[0.05] hover:text-gray-400 hover:border-white/10'
                     : 'text-gray-500 border-white/[0.06] hover:text-gray-300 hover:border-white/10'
                 }`}>
                 {formatTabDate(d)}
+                {dayPast && <span className="block text-[9px] text-gray-700 leading-none">résultats</span>}
               </button>
             );
           })}
         </div>
+
+        <button
+          onClick={() => setTabOffset((o) => o + 1)}
+          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors"
+          title="Jours suivants"
+        >
+          <ChevronRight size={16} />
+        </button>
       </div>
 
       {/* Filtres marché + recherche */}
@@ -407,6 +424,53 @@ export default function Pronostics() {
           )}
         </div>
       </div>
+
+      {/* Bilan du jour — visible uniquement pour les jours passés */}
+      {isPastDay && (() => {
+        const finished = filteredMatches.filter((m) => m.status === 'FINISHED' && m.homeScore !== null);
+        if (!finished.length) return null;
+        let correct = 0;
+        for (const m of finished) {
+          const t = m.predictions?.bestPick?.type;
+          const h = m.homeScore, a = m.awayScore;
+          if (!t) continue;
+          const ok =
+            (t === '1'      && h > a)  || (t === 'X'  && h === a) || (t === '2'  && a > h)  ||
+            (t === '1X'     && h >= a) || (t === 'X2' && a >= h)  ||
+            (t === 'over25' && h + a > 2.5) || (t === 'over15' && h + a > 1.5) ||
+            (t === 'btts'   && h > 0 && a > 0);
+          if (ok) correct++;
+        }
+        const pct = Math.round((correct / finished.length) * 100);
+        const color = pct >= 60 ? 'text-primary-400' : pct >= 40 ? 'text-amber-400' : 'text-red-400';
+        const bg    = pct >= 60 ? 'border-primary-500/20 bg-primary-500/[0.04]' : pct >= 40 ? 'border-amber-500/20 bg-amber-500/[0.04]' : 'border-red-500/20 bg-red-500/[0.04]';
+        return (
+          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bg}`}>
+            <Trophy size={16} className={color} />
+            <div className="flex-1">
+              <p className="text-[12px] font-bold text-gray-200">Bilan du jour</p>
+              <p className="text-[11px] text-gray-500">
+                {correct} pronostic{correct > 1 ? 's' : ''} correct{correct > 1 ? 's' : ''} sur {finished.length} terminé{finished.length > 1 ? 's' : ''}
+              </p>
+            </div>
+            <div className={`text-[22px] font-display font-bold ${color}`}>{pct}%</div>
+            <div className="flex gap-1">
+              {finished.map((m, i) => {
+                const t = m.predictions?.bestPick?.type;
+                const h = m.homeScore, a = m.awayScore;
+                const ok =
+                  (t === '1' && h > a) || (t === 'X' && h === a) || (t === '2' && a > h) ||
+                  (t === '1X' && h >= a) || (t === 'X2' && a >= h) ||
+                  (t === 'over25' && h + a > 2.5) || (t === 'over15' && h + a > 1.5) ||
+                  (t === 'btts' && h > 0 && a > 0);
+                return (
+                  <div key={i} className={`w-2 h-2 rounded-full ${ok ? 'bg-primary-400' : 'bg-red-400'}`} />
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Disclaimer */}
       <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-surface-700/40 border border-white/[0.04]">

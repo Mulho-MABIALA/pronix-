@@ -13,7 +13,7 @@ export default defineConfig({
         name: 'fpronix — Pronostics Football IA',
         short_name: 'fpronix',
         description: 'Pronostics football alimentés par IA et données temps réel. Forme, confrontations directes, blessures — analysés par Claude AI.',
-        theme_color: '#6366f1',
+        theme_color: '#111315',
         background_color: '#111315',
         display: 'standalone',
         orientation: 'portrait-primary',

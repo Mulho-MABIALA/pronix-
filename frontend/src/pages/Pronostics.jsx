@@ -93,8 +93,12 @@ function PronoRow({ match }) {
   const edge      = getValueEdge(pred.bestPick.prob, odd);
   const value     = isValueBet(pred.bestPick.prob, odd);
 
-  const isFinished = match.status === 'FINISHED';
-  const isLive     = match.status === 'LIVE';
+  // Infère le vrai statut : si l'heure est passée depuis +2h, le match est terminé même si la DB dit SCHEDULED/LIVE
+  const kickoff       = new Date(match.scheduledAt);
+  const reallyPast    = kickoff < new Date(Date.now() - 2 * 60 * 60 * 1000);
+  const isFinished    = match.status === 'FINISHED' || (reallyPast && match.status !== 'LIVE');
+  const isLive        = match.status === 'LIVE' && !reallyPast;
+  const isPastNoScore = reallyPast && match.homeScore === null; // terminé mais pas de score dispo
 
   // Résultat pour matchs terminés
   let resultCorrect = null;
@@ -111,11 +115,13 @@ function PronoRow({ match }) {
       (t === 'btts'   && match.homeScore > 0 && match.awayScore > 0);
   }
 
-  const timeStr = isFinished
+  const timeStr = match.status === 'FINISHED' && match.homeScore !== null
     ? `${match.homeScore}-${match.awayScore}`
     : isLive
     ? (match.minute || 'LIVE')
-    : format(new Date(match.scheduledAt), 'HH:mm');
+    : isPastNoScore
+    ? 'FT'
+    : format(kickoff, 'HH:mm');
 
   return (
     <Link
@@ -129,6 +135,8 @@ function PronoRow({ match }) {
             <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" />
             {timeStr}
           </span>
+        ) : isPastNoScore ? (
+          <span className="text-[10px] font-semibold text-gray-600">FT</span>
         ) : (
           <span className={`text-[11px] font-semibold ${isFinished ? 'text-gray-600' : 'text-gray-400'}`}>
             {timeStr}

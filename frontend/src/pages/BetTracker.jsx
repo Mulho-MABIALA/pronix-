@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useToast } from '../context/ToastContext';
+import CoachPanel from '../components/ai/CoachPanel';
 
 const RESULT_COLORS = {
   WIN:  { text: 'text-primary-400', bg: 'bg-primary-500/10', label: 'Gagné' },
@@ -272,6 +273,9 @@ export default function BetTracker() {
           />
         </div>
       )}
+
+      {/* Coach Personnel IA */}
+      <CoachPanel />
 
       {/* Filtres */}
       <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">

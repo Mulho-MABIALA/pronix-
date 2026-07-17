@@ -4,6 +4,7 @@ import BottomNav from './BottomNav';
 import Disclaimer from './Disclaimer';
 import PWABanner from '../ui/PWABanner';
 import EmailVerifyBanner from '../ui/EmailVerifyBanner';
+import SupportChat from '../ai/SupportChat';
 
 export default function Layout() {
   return (
@@ -17,6 +18,7 @@ export default function Layout() {
       <Disclaimer />
       <BottomNav />
       <PWABanner />
+      <SupportChat />
     </div>
   );
 }

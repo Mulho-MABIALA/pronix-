@@ -6,6 +6,7 @@ const { startCheckSubscriptionsCron } = require('./checkSubscriptions');
 const { startAgentsCron } = require('./runAgents');
 const { syncOdds } = require('../services/oddsService');
 const { broadcastNotification } = require('../controllers/pushController');
+const { generateDailyTips } = require('../services/aiTipsterService');
 
 function startAllCronJobs() {
   startSyncMatchesCron();
@@ -23,6 +24,16 @@ function startAllCronJobs() {
       syncOdds().catch((e) => console.error('[Odds] Sync cron échouée:', e.message));
     });
     console.log('[Cron] The Odds API — sync planifiée à 11h00 quotidien');
+  }
+
+  // ── Tipster IA — génération des pronostics quotidiens à 8h00 ─────────────
+  if (process.env.ANTHROPIC_API_KEY) {
+    cron.schedule('0 8 * * *', () => {
+      generateDailyTips().catch((e) => console.error('[AITipster] Cron échoué:', e.message));
+    });
+    // Génère aussi au démarrage si aucun pronostic IA pour aujourd'hui
+    generateDailyTips().catch((e) => console.error('[AITipster] Init échouée:', e.message));
+    console.log('[Cron] Tipster IA planifié à 8h00 quotidien');
   }
 
   // ── Digest matinal à 7h30 ────────────────────────────────────────────────

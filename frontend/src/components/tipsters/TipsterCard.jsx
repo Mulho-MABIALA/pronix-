@@ -36,9 +36,16 @@ export default function TipsterCard({ stats, rank }) {
 
       {/* Infos */}
       <div className="flex-1 min-w-0">
-        <p className="font-semibold text-gray-100 group-hover:text-primary-300 transition-colors truncate">
-          {displayName}
-        </p>
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <p className="font-semibold text-gray-100 group-hover:text-primary-300 transition-colors truncate">
+            {displayName}
+          </p>
+          {user?.username === 'fpronix_ai' && (
+            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-primary-500/15 text-primary-400 border border-primary-500/20 shrink-0">
+              🤖 IA
+            </span>
+          )}
+        </div>
         <div className="flex items-center gap-1 mt-0.5 flex-wrap">
           {badges.map((b) => <TipsterBadge key={b} badgeCode={b} />)}
         </div>

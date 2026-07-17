@@ -3,10 +3,16 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Search, Plus, X, TrendingUp, Layers, Crown, ChevronDown, ChevronUp, Loader2, Info } from 'lucide-react';
+import { Search, Plus, X, TrendingUp, Layers, Crown, ChevronDown, ChevronUp, Loader2, Info, Sparkles, Zap } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+
+const STRATEGIES = [
+  { value: 'safe',      label: 'Sécurisé',   desc: 'Cotes basses, max de sûreté' },
+  { value: 'balanced',  label: 'Équilibré',   desc: 'Risque / gain optimal' },
+  { value: 'ambitious', label: 'Ambitieux',   desc: 'Max de gain, plus de risques' },
+];
 
 const PREDICTIONS = [
   { value: 'HOME_WIN',  label: '1', full: 'Victoire Dom.' },
@@ -165,6 +171,8 @@ export default function ComboCreate() {
   const [title, setTitle] = useState('');
   const [isPremium, setIsPremium] = useState(false);
   const [entries, setEntries] = useState([]); // [{match, prediction, odds}]
+  const [strategy, setStrategy] = useState('balanced');
+  const [optimizing, setOptimizing] = useState(false);
 
   // Cote totale
   const totalOdds = useMemo(
@@ -210,6 +218,38 @@ export default function ComboCreate() {
   };
 
   const canSubmit = entries.length >= 2 && entries.every((e) => e.prediction && e.odds >= 1.01);
+
+  const handleOptimize = async () => {
+    if (entries.length < 2) {
+      addToast('Ajoutez au moins 2 matchs avant d\'optimiser', 'warning');
+      return;
+    }
+    setOptimizing(true);
+    try {
+      const res = await api.post('/combos/optimize', {
+        matchIds: entries.map((e) => e.match.id),
+        strategy,
+      });
+      const data = res.data?.data;
+      if (!data?.success) {
+        addToast(data?.message || 'Optimisation impossible', 'error');
+        return;
+      }
+      // Applique les picks suggérés par l'IA
+      setEntries((prev) =>
+        prev.map((entry) => {
+          const suggestion = data.entries.find((s) => s.matchId === entry.match.id);
+          if (!suggestion) return entry;
+          return { ...entry, prediction: suggestion.prediction, odds: suggestion.odds };
+        })
+      );
+      addToast(`✨ Picks optimisés par l'IA (stratégie ${strategy})`, 'success');
+    } catch {
+      addToast('Erreur lors de l\'optimisation', 'error');
+    } finally {
+      setOptimizing(false);
+    }
+  };
 
   if (!user) {
     return (
@@ -263,6 +303,43 @@ export default function ComboCreate() {
           onAdd={addMatch}
           selectedIds={entries.map((e) => e.match.id)}
         />
+
+        {/* ── Optimiseur IA ── */}
+        {entries.length >= 2 && (
+          <div className="bento-card border-primary-500/20 bg-primary-500/5 space-y-2">
+            <div className="flex items-center gap-2">
+              <Sparkles size={14} className="text-primary-400" />
+              <p className="text-xs font-semibold text-primary-300">Optimiser avec l'IA</p>
+            </div>
+            <div className="flex gap-1.5">
+              {STRATEGIES.map((s) => (
+                <button
+                  key={s.value}
+                  onClick={() => setStrategy(s.value)}
+                  title={s.desc}
+                  className={`flex-1 text-xs py-1 rounded-lg font-medium transition-colors ${
+                    strategy === s.value
+                      ? 'bg-primary-500 text-white'
+                      : 'bg-surface-700 text-gray-400 hover:bg-surface-600'
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={handleOptimize}
+              disabled={optimizing}
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-primary-500/30 text-primary-300 text-xs font-semibold hover:bg-primary-500/10 transition-colors disabled:opacity-50"
+            >
+              {optimizing ? (
+                <><Loader2 size={12} className="animate-spin" /> Optimisation en cours…</>
+              ) : (
+                <><Zap size={12} /> Optimiser mes picks</>
+              )}
+            </button>
+          </div>
+        )}
 
         {entries.length === 0 && (
           <div className="flex items-center gap-2 p-3 rounded-xl bg-surface-800 border border-dashed border-surface-600">

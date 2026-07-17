@@ -33,6 +33,8 @@ const commentsRoutes     = require('./routes/comments');
 const analyticsRoutes    = require('./routes/analytics');
 const walletRoutes       = require('./routes/wallet');
 const oddsAlertsRoutes   = require('./routes/oddsAlerts');
+const coachRoutes        = require('./routes/coach');
+const supportRoutes      = require('./routes/support');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -100,6 +102,8 @@ app.use('/api/comments', commentsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/odds-alerts', oddsAlertsRoutes);
+app.use('/api/coach', coachRoutes);
+app.use('/api/support', supportRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API

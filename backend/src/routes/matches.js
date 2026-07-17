@@ -4,6 +4,7 @@ const { attachPlan } = require('../middleware/subscription');
 const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
 const { setReminder, deleteReminder } = require('../controllers/remindersController');
+const { getLiveAnalysis } = require('../services/liveAnalysisService');
 
 const router = Router();
 
@@ -48,6 +49,15 @@ router.post('/:id/chat', authenticate, attachPlan, async (req, res) => {
     const status = err.statusCode || 500;
     return res.status(status).json({ success: false, message: err.message });
   }
+});
+
+// Analyse IA live — public (cachée 5 min)
+router.get('/:id/live-analysis', async (req, res, next) => {
+  try {
+    const analysis = await getLiveAnalysis(req.params.id);
+    if (!analysis) return res.json({ success: true, data: null });
+    res.json({ success: true, data: analysis });
+  } catch (err) { next(err); }
 });
 
 // Rappels de match

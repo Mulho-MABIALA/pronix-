@@ -9,7 +9,9 @@ export default function EmailVerifyBanner() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const toast = useToast();
-  const [dismissed, setDismissed] = useState(false);
+  const [dismissed, setDismissed] = useState(
+    () => localStorage.getItem('emailBannerDismissed') === '1'
+  );
   const [sent, setSent] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -54,7 +56,7 @@ export default function EmailVerifyBanner() {
       )}
       {sent && <CheckCircle size={14} className="text-amber-400 shrink-0" />}
       <button
-        onClick={() => setDismissed(true)}
+        onClick={() => { localStorage.setItem('emailBannerDismissed', '1'); setDismissed(true); }}
         className="p-0.5 rounded text-amber-600 hover:text-amber-400 transition-colors shrink-0"
         aria-label="Fermer"
       >

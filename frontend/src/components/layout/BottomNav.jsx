@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, Wallet, Layers, BookOpen, Brain } from 'lucide-react';
+import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, Wallet, Layers, BookOpen, Brain, Bot } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -41,8 +41,14 @@ function ExplorerDrawer({ open, onClose }) {
     {
       label: 'Mon espace',
       items: [
-        { to: '/mes-paris',  label: 'Mon carnet de paris', Icon: BookOpen, desc: 'Suis tes paris et ton ROI',     color: 'text-violet-400 bg-violet-500/10' },
-        { to: '/mes-paris',  label: 'Coach Personnel IA',  Icon: Brain,    desc: 'Conseils IA selon tes stats',  color: 'text-pink-400 bg-pink-500/10' },
+        { to: '/mes-paris',  label: 'Mon carnet de paris', Icon: BookOpen, desc: 'Suis tes paris et ton ROI',    color: 'text-violet-400 bg-violet-500/10' },
+        { to: '/mes-paris',  label: 'Coach Personnel IA',  Icon: Brain,    desc: 'Conseils IA selon tes stats', color: 'text-pink-400 bg-pink-500/10' },
+      ],
+    },
+    {
+      label: 'Intelligence IA',
+      items: [
+        { to: '/pronostics',  label: 'Pronostics IA',  Icon: Bot,  desc: 'Picks générés par le Tipster IA', color: 'text-primary-400 bg-primary-500/10' },
       ],
     },
   ];

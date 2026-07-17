@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, Layers, Wallet, BookOpen, Brain, Bot } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 
@@ -68,11 +68,35 @@ function OutilsDropdown() {
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const OUTILS_ITEMS = [
-    { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,     desc: t('tools.filtersDesc') },
-    { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,        desc: t('tools.generatorDesc') },
-    { to: '/pronostics',          label: t('tools.pronostics'),   Icon: TrendingUp, desc: t('tools.pronosticsDesc') },
-    { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2,  desc: t('tools.statsLeaguesDesc') },
+  const SECTIONS = [
+    {
+      label: 'Outils',
+      items: [
+        { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,     desc: 'Filtrez par marché et confiance',      color: 'text-blue-400 bg-blue-500/10' },
+        { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,        desc: 'Créez votre ticket optimisé',          color: 'text-amber-400 bg-amber-500/10' },
+        { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2,  desc: 'Buts, BTTS, O2.5 par compétition',    color: 'text-purple-400 bg-purple-500/10' },
+      ],
+    },
+    {
+      label: 'Communauté',
+      items: [
+        { to: '/combos',              label: 'Combinés',              Icon: Layers,    desc: 'Coupons multi-matchs partagés',         color: 'text-orange-400 bg-orange-500/10' },
+        { to: '/portefeuille-virtuel',label: 'Portefeuille virtuel',  Icon: Wallet,    desc: 'Simuler des paris sans risque',         color: 'text-yellow-400 bg-yellow-500/10' },
+      ],
+    },
+    {
+      label: 'Mon espace',
+      items: [
+        { to: '/mes-paris',           label: 'Mon carnet de paris',   Icon: BookOpen,  desc: 'Suivi de tes paris et ROI',            color: 'text-violet-400 bg-violet-500/10' },
+        { to: '/mes-paris',           label: 'Coach Personnel IA',    Icon: Brain,     desc: 'Conseils IA selon tes stats',          color: 'text-pink-400 bg-pink-500/10' },
+      ],
+    },
+    {
+      label: 'Intelligence IA',
+      items: [
+        { to: '/pronostics',          label: 'Pronostics IA',         Icon: Bot,       desc: 'Picks générés par le Tipster IA',      color: 'text-primary-400 bg-primary-500/10' },
+      ],
+    },
   ];
 
   return (
@@ -86,20 +110,30 @@ function OutilsDropdown() {
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 w-56 rounded-xl border border-white/[0.08] shadow-card-hover z-50 overflow-hidden"
+        <div className="absolute top-full left-0 mt-1.5 w-64 rounded-xl border border-white/[0.08] shadow-card-hover z-50 overflow-hidden"
           style={{ background: 'var(--color-card)' }}>
-          {OUTILS_ITEMS.map(({ to, label, Icon, desc }) => (
-            <Link key={to} to={to} onClick={() => setOpen(false)}
-              className="flex items-start gap-3 px-4 py-3 hover:bg-white/[0.04] transition-colors border-b border-white/[0.04] last:border-0">
-              <div className="w-7 h-7 rounded-lg bg-primary-500/10 flex items-center justify-center shrink-0 mt-0.5">
-                <Icon size={13} className="text-primary-400" />
-              </div>
-              <div>
-                <p className="text-[13px] font-semibold text-gray-200">{label}</p>
-                <p className="text-[12px] text-gray-500 mt-0.5">{desc}</p>
-              </div>
-            </Link>
+          {SECTIONS.map((section, si) => (
+            <div key={section.label}>
+              {/* Séparateur entre sections */}
+              {si > 0 && <div className="mx-4 border-t border-white/[0.05]" />}
+              <p className="px-4 pt-3 pb-1 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+                {section.label}
+              </p>
+              {section.items.map(({ to, label, Icon, desc, color }) => (
+                <Link key={`${to}-${label}`} to={to} onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors">
+                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
+                    <Icon size={13} />
+                  </div>
+                  <div>
+                    <p className="text-[13px] font-semibold text-gray-200">{label}</p>
+                    <p className="text-[11px] text-gray-500">{desc}</p>
+                  </div>
+                </Link>
+              ))}
+            </div>
           ))}
+          <div className="pb-2" />
         </div>
       )}
     </div>

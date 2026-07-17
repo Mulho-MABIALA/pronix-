@@ -570,14 +570,17 @@ export default function AdminDashboard() {
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-xs text-gray-600 font-semibold uppercase tracking-widest mb-1">
-            {format(now, "EEEE d MMMM yyyy", { locale: fr })}
-          </p>
-          <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
-            {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
-          </h1>
-          <p className="text-sm text-gray-500 mt-0.5">Vue en temps réel de fpronix.</p>
+        <div className="flex items-center gap-4">
+          <img src="/imgfpronix.png" alt="fpronix" className="w-14 h-14 object-contain shrink-0" />
+          <div>
+            <p className="text-xs text-gray-600 font-semibold uppercase tracking-widest mb-1">
+              {format(now, "EEEE d MMMM yyyy", { locale: fr })}
+            </p>
+            <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
+              {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
+            </h1>
+            <p className="text-sm text-gray-500 mt-0.5">Vue en temps réel de fpronix.</p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">

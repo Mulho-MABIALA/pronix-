@@ -2,6 +2,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const env = require('../config/env');
 const prisma = require('../config/database');
+const { broadcastNotification } = require('../controllers/pushController');
 
 const AI_EMAIL    = 'ai@fpronix.com';
 const AI_USERNAME = 'fpronix_ai';
@@ -154,6 +155,17 @@ async function generateDailyTips() {
   }
 
   console.log(`[AITipster] ${generated} pronostic(s) générés`);
+
+  // Push notification si au moins 1 tip généré
+  if (generated > 0) {
+    broadcastNotification({
+      title: `🤖 ${generated} nouveau${generated > 1 ? 'x' : ''} pronostic${generated > 1 ? 's' : ''} IA`,
+      body: `L'agent IA fpronix a publié ses pronostics du jour. Découvre-les maintenant !`,
+      url: '/pronostics',
+      tag: `ai-tips-${new Date().toISOString().split('T')[0]}`,
+    }).catch(() => {});
+  }
+
   return { generated };
 }
 

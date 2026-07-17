@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, Wallet, Layers } from 'lucide-react';
+import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, Wallet, Layers, BookOpen, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -32,10 +32,17 @@ function ExplorerDrawer({ open, onClose }) {
     {
       label: 'Communauté',
       items: [
-        { to: '/classements',           label: t('nav.standings'),       Icon: Trophy,  desc: 'Classements des ligues',       color: 'text-green-400 bg-green-500/10' },
-        { to: '/tipsters',              label: t('nav.tipsters'),        Icon: Users,   desc: 'Top pronostiqueurs',           color: 'text-primary-400 bg-primary-500/10' },
+        { to: '/classements',           label: t('nav.standings'),       Icon: Trophy,  desc: 'Classements des ligues',        color: 'text-green-400 bg-green-500/10' },
+        { to: '/tipsters',              label: t('nav.tipsters'),        Icon: Users,   desc: 'Top pronostiqueurs',            color: 'text-primary-400 bg-primary-500/10' },
         { to: '/portefeuille-virtuel',  label: 'Portefeuille',           Icon: Wallet,  desc: 'Simuler des paris sans risque', color: 'text-yellow-400 bg-yellow-500/10' },
-        { to: '/combos',               label: 'Combinés',               Icon: Layers,  desc: 'Coupons multi-matchs partagés',  color: 'text-orange-400 bg-orange-500/10' },
+        { to: '/combos',               label: 'Combinés',               Icon: Layers,  desc: 'Coupons multi-matchs partagés', color: 'text-orange-400 bg-orange-500/10' },
+      ],
+    },
+    {
+      label: 'Mon espace',
+      items: [
+        { to: '/mes-paris',  label: 'Mon carnet de paris', Icon: BookOpen, desc: 'Suis tes paris et ton ROI',     color: 'text-violet-400 bg-violet-500/10' },
+        { to: '/mes-paris',  label: 'Coach Personnel IA',  Icon: Brain,    desc: 'Conseils IA selon tes stats',  color: 'text-pink-400 bg-pink-500/10' },
       ],
     },
   ];

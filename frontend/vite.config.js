@@ -8,7 +8,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       // Inclure l'icône SVG et tous les PNG dans le précache
-      includeAssets: ['favicon.ico', 'icons/*.svg', 'icons/*.png', 'imgfpronix.png'],
+      includeAssets: ['favicon.ico', 'icons/*.svg', 'icons/*.png', 'imgfpronix.png', 'icon-192.png', 'icon-512.png'],
       manifest: {
         name: 'fpronix — Pronostics Football IA',
         short_name: 'fpronix',
@@ -23,15 +23,20 @@ export default defineConfig({
         categories: ['sports', 'entertainment'],
         icons: [
           {
-            src: '/imgfpronix.png',
-            sizes: 'any',
+            src: '/icon-192.png',
+            sizes: '192x192',
             type: 'image/png',
           },
           {
-            src: '/imgfpronix.png',
-            sizes: 'any',
+            src: '/icon-512.png',
+            sizes: '512x512',
             type: 'image/png',
-            purpose: 'any maskable',
+          },
+          {
+            src: '/icon-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
           },
         ],
         screenshots: [

@@ -24,19 +24,14 @@ export default defineConfig({
         icons: [
           {
             src: '/imgfpronix.png',
-            sizes: '192x192',
+            sizes: 'any',
             type: 'image/png',
           },
           {
             src: '/imgfpronix.png',
-            sizes: '512x512',
+            sizes: 'any',
             type: 'image/png',
-          },
-          {
-            src: '/imgfpronix.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
+            purpose: 'any maskable',
           },
         ],
         screenshots: [

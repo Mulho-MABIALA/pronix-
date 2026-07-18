@@ -75,7 +75,8 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
       className="group relative overflow-hidden rounded-2xl border p-5 flex flex-col gap-4 h-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer"
       style={{
         background: 'var(--color-card)',
-        borderColor: 'rgba(255,255,255,0.07)',
+        borderColor: 'rgba(255,255,255,0.11)',
+        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 16px rgba(0,0,0,0.25)',
       }}
     >
       {/* corner glow */}
@@ -121,15 +122,15 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
 function StatPill({ icon: Icon, value, label, iconClass }) {
   return (
     <div
-      className="flex items-center gap-3 rounded-xl border border-white/[0.07] px-4 py-3.5"
-      style={{ background: 'var(--color-card)' }}
+      className="flex items-center gap-3 rounded-xl border border-white/[0.11] px-4 py-3.5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}
     >
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
         <Icon size={15} />
       </div>
       <div>
-        <p className="text-[17px] font-display font-bold text-gray-100 leading-none tabular-nums">{value ?? '–'}</p>
-        <p className="text-[11px] text-gray-500 mt-0.5">{label}</p>
+        <p className="text-[17px] font-display font-bold text-white leading-none tabular-nums">{value ?? '–'}</p>
+        <p className="text-[11px] text-gray-400 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -139,8 +140,8 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
 
 function RevenueChart({ data }) {
   if (!data?.length) return (
-    <div className="rounded-2xl border border-white/[0.07] p-5 flex items-center justify-center h-64"
-      style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-white/[0.11] p-5 flex items-center justify-center h-64"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <p className="text-sm text-gray-600">Aucune donnée</p>
     </div>
   );
@@ -176,11 +177,11 @@ function RevenueChart({ data }) {
     : null;
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-white/[0.11] p-5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-start justify-between mb-1">
         <div>
-          <p className="text-sm font-semibold text-gray-100">Revenus mensuels</p>
+          <p className="text-sm font-semibold text-white">Revenus mensuels</p>
           <p className="text-[11px] text-gray-500 mt-0.5">6 derniers mois</p>
         </div>
         <div className="text-right">
@@ -248,11 +249,11 @@ function ConversionCard({ data, kpis }) {
   const premiumArc = (premium / total) * circ;
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-white/[0.11] p-5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <p className="text-sm font-semibold text-gray-100">Conversion</p>
+          <p className="text-sm font-semibold text-white">Conversion</p>
           <p className="text-[11px] text-gray-500 mt-0.5">Plans actifs</p>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
@@ -320,12 +321,12 @@ const AVATAR_COLORS = [
 function TopTipsters({ data }) {
   if (!data?.length) return null;
   return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-white/[0.11] p-5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Trophy size={14} className="text-amber-400" />
-          <p className="text-sm font-semibold text-gray-100">Top Tipsters</p>
+          <p className="text-sm font-semibold text-white">Top Tipsters</p>
         </div>
         <Link to="/admin/tipsters"
           className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
@@ -372,12 +373,12 @@ function TopTipsters({ data }) {
 function RecentUsers({ data }) {
   if (!data?.length) return null;
   return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-white/[0.11] p-5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <UserPlus size={14} className="text-indigo-400" />
-          <p className="text-sm font-semibold text-gray-100">Derniers inscrits</p>
+          <p className="text-sm font-semibold text-white">Derniers inscrits</p>
         </div>
         <Link to="/admin/utilisateurs"
           className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
@@ -483,13 +484,13 @@ function QuickActions() {
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-white/[0.11] p-5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center">
           <Sparkles size={13} className="text-gray-400" />
         </div>
-        <p className="text-sm font-semibold text-gray-100">Actions rapides</p>
+        <p className="text-sm font-semibold text-white">Actions rapides</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -530,9 +531,9 @@ const NAV_SHORTCUTS = [
 
 function NavShortcuts() {
   return (
-    <div className="rounded-2xl border border-white/[0.07] p-5"
-      style={{ background: 'var(--color-card)' }}>
-      <p className="text-sm font-semibold text-gray-100 mb-4">Navigation rapide</p>
+    <div className="rounded-2xl border border-white/[0.11] p-5"
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      <p className="text-sm font-semibold text-white mb-4">Navigation rapide</p>
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
         {NAV_SHORTCUTS.map(({ to, label, icon: Icon, color }) => (
           <Link
@@ -543,7 +544,7 @@ function NavShortcuts() {
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}>
               <Icon size={16} />
             </div>
-            <span className="text-[10px] font-medium text-gray-500 group-hover:text-gray-300 transition-colors leading-tight">{label}</span>
+            <span className="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors leading-tight">{label}</span>
           </Link>
         ))}
       </div>
@@ -569,25 +570,29 @@ export default function AdminDashboard() {
     <div className="space-y-5 max-w-7xl pb-6">
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
-      <div className="flex items-start justify-between gap-4">
+      <div
+        className="rounded-2xl border border-white/[0.11] p-5 flex items-start justify-between gap-4"
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), 0 4px 24px rgba(0,0,0,0.3)' }}
+      >
         <div className="flex items-center gap-4">
-          <img src="/imgfpronix.png" alt="fpronix" className="w-14 h-14 object-contain shrink-0" />
+          <img src="/imgfpronix.png" alt="fpronix" className="w-14 h-14 object-contain shrink-0 drop-shadow-lg" />
           <div>
-            <p className="text-xs text-gray-600 font-semibold uppercase tracking-widest mb-1">
+            <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1 flex items-center gap-1.5">
+              <LiveDot />
               {format(now, "EEEE d MMMM yyyy", { locale: fr })}
             </p>
             <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
               {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
             </h1>
-            <p className="text-sm text-gray-500 mt-0.5">Vue en temps réel de fpronix.</p>
+            <p className="text-sm text-gray-400 mt-0.5">Vue en temps réel de fpronix.</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {dataUpdatedAt > 0 && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.07]">
-              <Clock size={12} className="text-gray-600" />
-              <span className="text-[11px] text-gray-500">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/[0.11]">
+              <Clock size={12} className="text-gray-400" />
+              <span className="text-[11px] text-gray-300 font-medium">
                 {format(new Date(dataUpdatedAt), 'HH:mm')}
               </span>
             </div>
@@ -595,7 +600,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => refetch()}
             disabled={isFetching}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.04] border border-white/[0.07] text-[12px] text-gray-400 hover:text-gray-200 hover:bg-white/[0.07] transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/[0.11] text-[12px] text-gray-300 hover:text-white hover:bg-white/[0.09] transition-all disabled:opacity-50"
           >
             <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
             Actualiser

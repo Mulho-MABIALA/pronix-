@@ -7,6 +7,7 @@ import {
   RefreshCw, Brain, Zap, Check, X, Activity,
   ChevronRight, Clock, Wifi, BarChart3, CreditCard,
   UserPlus, Percent, Trophy, ShieldAlert, Sparkles,
+  MessageSquare, MessageCircle,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -525,8 +526,11 @@ const NAV_SHORTCUTS = [
   { to: '/admin/signalements',  label: 'Signalements',  icon: ShieldAlert,  color: 'text-red-400     bg-red-500/10' },
   { to: '/admin/notifications', label: 'Notifs push',   icon: Wifi,         color: 'text-sky-400     bg-sky-500/10' },
   { to: '/admin/agents',        label: 'Agents IA',     icon: Brain,        color: 'text-violet-400  bg-violet-500/10' },
-  { to: '/admin/matchs',        label: 'Matchs',        icon: Calendar,     color: 'text-blue-400    bg-blue-500/10' },
-  { to: '/admin/finances',      label: 'Finances',      icon: BarChart3,    color: 'text-emerald-400 bg-emerald-500/10' },
+  { to: '/admin/matchs',        label: 'Matchs',        icon: Calendar,      color: 'text-blue-400    bg-blue-500/10' },
+  { to: '/admin/finances',      label: 'Finances',      icon: BarChart3,     color: 'text-emerald-400 bg-emerald-500/10' },
+  { to: '/admin/pronostics',    label: 'Pronos',        icon: Target,        color: 'text-violet-400  bg-violet-500/10' },
+  { to: '/admin/commentaires',  label: 'Commentaires',  icon: MessageCircle, color: 'text-pink-400    bg-pink-500/10' },
+  { to: '/admin/support',       label: 'Support',       icon: MessageSquare, color: 'text-cyan-400    bg-cyan-500/10' },
 ];
 
 function NavShortcuts() {

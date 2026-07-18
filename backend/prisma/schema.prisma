@@ -114,6 +114,7 @@ model User {
   virtualWallet        VirtualWallet?
   oddsAlerts           OddsAlert[]
   weeklyStats          TipsterWeeklyStats[]
+  supportTickets       SupportTicket[]
 
   @@map("users")
 }
@@ -662,4 +663,41 @@ model TipsterWeeklyStats {
   @@unique([userId, weekStart])
   @@index([userId])
   @@map("tipster_weekly_stats")
+}
+
+// ─── SUPPORT HUMAIN ───────────────────────────────────────────────────────────
+
+model SupportTicket {
+  id        String          @id @default(uuid())
+  userId    String?
+  user      User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  email     String
+  subject   String
+  status    SupportStatus   @default(OPEN)
+  messages  SupportMessage[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@index([status])
+  @@index([userId])
+  @@map("support_tickets")
+}
+
+model SupportMessage {
+  id        String        @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  isAdmin   Boolean       @default(false)
+  content   String        @db.Text
+  createdAt DateTime      @default(now())
+
+  @@index([ticketId])
+  @@map("support_messages")
+}
+
+enum SupportStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }

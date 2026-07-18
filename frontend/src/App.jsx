@@ -53,6 +53,9 @@ import AdminMatches from './pages/admin/AdminMatches';
 import AdminAgents from './pages/admin/Agents';
 import AdminFinances from './pages/admin/Finances';
 import AdminNotifications from './pages/admin/Notifications';
+import AdminSupport from './pages/admin/Support';
+import AdminPronostics from './pages/admin/AdminPronostics';
+import AdminCommentaires from './pages/admin/AdminCommentaires';
 import AdminBlog from './pages/admin/Blog';
 
 const queryClient = new QueryClient({
@@ -139,6 +142,9 @@ export default function App() {
                 <Route path="/admin/notifications" element={<AdminNotifications />} />
                 <Route path="/admin/agents" element={<AdminAgents />} />
                 <Route path="/admin/blog" element={<AdminBlog />} />
+                <Route path="/admin/support" element={<AdminSupport />} />
+                <Route path="/admin/pronostics" element={<AdminPronostics />} />
+                <Route path="/admin/commentaires" element={<AdminCommentaires />} />
               </Route>
 
               {/* Routes auth (sans layout) */}

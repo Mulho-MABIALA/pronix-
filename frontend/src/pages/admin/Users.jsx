@@ -1,9 +1,96 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, UserCheck, UserX, ChevronLeft, ChevronRight, Filter, Download } from 'lucide-react';
+import { Search, UserCheck, UserX, ChevronLeft, ChevronRight, Filter, Download, Crown, X, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
+
+// ── Modal activation Premium ──────────────────────────────────────────────────
+function ActivateModal({ user, onClose, onConfirm, loading }) {
+  const [planCode, setPlanCode] = useState('PREMIUM');
+  const [months, setMonths]     = useState(1);
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div
+        className="rounded-2xl border border-white/[0.11] p-6 max-w-sm w-full"
+        style={{ background: 'var(--color-card)' }}
+      >
+        <div className="flex items-center justify-between mb-5">
+          <div className="flex items-center gap-2">
+            <Crown size={18} className="text-amber-400" />
+            <h3 className="text-white font-bold text-base">Activer un abonnement</h3>
+          </div>
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.08] text-gray-500 transition-colors">
+            <X size={15} />
+          </button>
+        </div>
+
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] mb-5">
+          <div className="w-9 h-9 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-sm font-bold">
+            {user.username?.charAt(0).toUpperCase()}
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-white">{user.profile?.displayName || user.username}</p>
+            <p className="text-[11px] text-gray-500">{user.email}</p>
+          </div>
+        </div>
+
+        <div className="space-y-4 mb-6">
+          <div>
+            <label className="text-xs text-gray-400 font-medium mb-2 block">Plan</label>
+            <div className="flex gap-2">
+              {[['PREMIUM', 'Premium', 'text-primary-400 bg-primary-500/15 border-primary-500/30'],
+                ['LIFETIME', 'Lifetime', 'text-amber-400 bg-amber-500/15 border-amber-500/30']].map(([val, lbl, cls]) => (
+                <button
+                  key={val}
+                  onClick={() => setPlanCode(val)}
+                  className={`flex-1 py-2 rounded-xl border text-sm font-semibold transition-colors ${
+                    planCode === val ? cls : 'border-white/[0.08] text-gray-500 hover:text-gray-300'
+                  }`}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {planCode !== 'LIFETIME' && (
+            <div>
+              <label className="text-xs text-gray-400 font-medium mb-2 block">Durée</label>
+              <div className="flex gap-2 flex-wrap">
+                {[1, 3, 6, 12].map(m => (
+                  <button
+                    key={m}
+                    onClick={() => setMonths(m)}
+                    className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
+                      months === m
+                        ? 'border-primary-500/40 bg-primary-500/15 text-primary-400'
+                        : 'border-white/[0.08] text-gray-500 hover:text-gray-300'
+                    }`}
+                  >
+                    {m} mois
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="flex gap-3">
+          <button onClick={onClose} className="btn-secondary flex-1">Annuler</button>
+          <button
+            onClick={() => onConfirm(planCode, months)}
+            disabled={loading}
+            className="btn-primary flex-1 gap-2"
+          >
+            {loading ? <RefreshCw size={14} className="animate-spin" /> : <Crown size={14} />}
+            Activer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const PLAN_STYLE = {
   FREE:    'bg-gray-500/15 text-gray-400 border border-gray-500/20',
@@ -16,6 +103,7 @@ export default function AdminUsers() {
   const [search, setSearch] = useState('');
   const [planFilter, setPlanFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [activateUser, setActivateUser] = useState(null);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-users', search, planFilter, page],
@@ -27,6 +115,17 @@ export default function AdminUsers() {
   const toggle = useMutation({
     mutationFn: ({ userId, isActive }) => api.patch(`/admin/users/${userId}/status`, { isActive }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
+  });
+
+  const activate = useMutation({
+    mutationFn: ({ userId, planCode, months }) =>
+      api.post(`/admin/users/${userId}/activate-subscription`, { planCode, months }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-users'] });
+      setActivateUser(null);
+      alert('Abonnement activé avec succès !');
+    },
+    onError: (e) => alert(e?.response?.data?.message || 'Erreur lors de l\'activation'),
   });
 
   const users = data?.data || [];
@@ -148,17 +247,26 @@ export default function AdminUsers() {
                         </span>
                       </td>
                       <td className="px-5 py-4 text-right">
-                        <button
-                          onClick={() => toggle.mutate({ userId: u.id, isActive: !u.isActive })}
-                          disabled={toggle.isPending}
-                          className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
-                            u.isActive
-                              ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
-                              : 'border-primary-500/30 text-primary-400 hover:bg-primary-500/10'
-                          }`}
-                        >
-                          {u.isActive ? 'Suspendre' : 'Réactiver'}
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => setActivateUser(u)}
+                            title="Activer Premium manuellement"
+                            className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-lg border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition-colors"
+                          >
+                            <Crown size={11} /> Premium
+                          </button>
+                          <button
+                            onClick={() => toggle.mutate({ userId: u.id, isActive: !u.isActive })}
+                            disabled={toggle.isPending}
+                            className={`text-xs font-medium px-3 py-1.5 rounded-lg border transition-colors ${
+                              u.isActive
+                                ? 'border-red-500/30 text-red-400 hover:bg-red-500/10'
+                                : 'border-primary-500/30 text-primary-400 hover:bg-primary-500/10'
+                            }`}
+                          >
+                            {u.isActive ? 'Suspendre' : 'Réactiver'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -193,6 +301,16 @@ export default function AdminUsers() {
           </div>
         )}
       </div>
+
+      {/* Modal activation Premium */}
+      {activateUser && (
+        <ActivateModal
+          user={activateUser}
+          onClose={() => setActivateUser(null)}
+          loading={activate.isPending}
+          onConfirm={(planCode, months) => activate.mutate({ userId: activateUser.id, planCode, months })}
+        />
+      )}
     </div>
   );
 }

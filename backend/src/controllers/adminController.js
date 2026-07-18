@@ -641,6 +641,190 @@ async function exportPayments(req, res, next) {
   }
 }
 
+// ─── Pronostics (modération) ──────────────────────────────────────────────────
+async function getAdminTips(req, res, next) {
+  try {
+    const schema = z.object({
+      page:    z.string().default('1').transform(Number),
+      limit:   z.string().default('30').transform(Number),
+      search:  z.string().optional(),
+      result:  z.enum(['WIN', 'LOSS', 'PUSH', 'PENDING']).optional(),
+      date:    z.string().optional(),
+    });
+    const { page, limit, search, result, date } = schema.parse(req.query);
+
+    const where = {};
+    if (result) where.result = result === 'PENDING' ? null : result;
+    if (date) {
+      const d = new Date(date);
+      where.createdAt = { gte: d, lt: new Date(d.getTime() + 86400000) };
+    }
+    if (search) {
+      where.OR = [
+        { user: { username: { contains: search, mode: 'insensitive' } } },
+        { match: { homeTeam: { contains: search, mode: 'insensitive' } } },
+        { match: { awayTeam: { contains: search, mode: 'insensitive' } } },
+      ];
+    }
+
+    const [total, tips] = await prisma.$transaction([
+      prisma.tip.count({ where }),
+      prisma.tip.findMany({
+        where,
+        include: {
+          user: { include: { profile: true } },
+          match: { include: { competition: true } },
+          _count: { select: { comments: true, reports: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: tips, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
+async function deleteAdminTip(req, res, next) {
+  try {
+    const { tipId } = req.params;
+    await prisma.tip.delete({ where: { id: tipId } });
+    res.json({ success: true, message: 'Pronostic supprimé' });
+  } catch (err) { next(err); }
+}
+
+async function toggleTipVisibility(req, res, next) {
+  try {
+    const { tipId } = req.params;
+    const { isVisible } = z.object({ isVisible: z.boolean() }).parse(req.body);
+    await prisma.tip.update({ where: { id: tipId }, data: { isVisible } });
+    res.json({ success: true, message: isVisible ? 'Pronostic affiché' : 'Pronostic masqué' });
+  } catch (err) { next(err); }
+}
+
+// ─── Commentaires (modération) ───────────────────────────────────────────────
+async function getAdminComments(req, res, next) {
+  try {
+    const schema = z.object({
+      page:   z.string().default('1').transform(Number),
+      limit:  z.string().default('30').transform(Number),
+      search: z.string().optional(),
+    });
+    const { page, limit, search } = schema.parse(req.query);
+
+    const where = search
+      ? { OR: [
+          { content: { contains: search, mode: 'insensitive' } },
+          { user: { username: { contains: search, mode: 'insensitive' } } },
+        ]}
+      : {};
+
+    const [total, comments] = await prisma.$transaction([
+      prisma.tipComment.count({ where }),
+      prisma.tipComment.findMany({
+        where,
+        include: {
+          user: { include: { profile: true } },
+          tip:  { include: { match: true, user: { include: { profile: true } } } },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: comments, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
+async function deleteAdminComment(req, res, next) {
+  try {
+    const { commentId } = req.params;
+    await prisma.tipComment.delete({ where: { id: commentId } });
+    res.json({ success: true, message: 'Commentaire supprimé' });
+  } catch (err) { next(err); }
+}
+
+// ─── Abonnement manuel ────────────────────────────────────────────────────────
+async function activateUserSubscription(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const schema = z.object({
+      planCode: z.enum(['PREMIUM', 'LIFETIME']).default('PREMIUM'),
+      months:   z.number().int().min(1).max(12).default(1),
+    });
+    const { planCode, months } = schema.parse(req.body);
+
+    const plan = await prisma.plan.findFirst({ where: { code: planCode } });
+    if (!plan) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
+
+    const endsAt = planCode === 'LIFETIME'
+      ? new Date('2099-12-31')
+      : new Date(Date.now() + months * 30 * 24 * 60 * 60 * 1000);
+
+    await prisma.subscription.upsert({
+      where: { userId },
+      update: { planId: plan.id, status: 'ACTIVE', endsAt },
+      create: { userId, planId: plan.id, status: 'ACTIVE', endsAt },
+    });
+
+    res.json({ success: true, message: `Abonnement ${planCode} activé jusqu'au ${endsAt.toLocaleDateString('fr-FR')}` });
+  } catch (err) { next(err); }
+}
+
+// ─── Support tickets ──────────────────────────────────────────────────────────
+async function getAdminSupportTickets(req, res, next) {
+  try {
+    const schema = z.object({
+      page:   z.string().default('1').transform(Number),
+      limit:  z.string().default('20').transform(Number),
+      status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']).optional(),
+    });
+    const { page, limit, status } = schema.parse(req.query);
+    const where = status ? { status } : {};
+
+    const [total, tickets] = await prisma.$transaction([
+      prisma.supportTicket.count({ where }),
+      prisma.supportTicket.findMany({
+        where,
+        include: {
+          user:     { include: { profile: true } },
+          messages: { orderBy: { createdAt: 'asc' } },
+        },
+        orderBy: { updatedAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: tickets, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
+async function replyToSupportTicket(req, res, next) {
+  try {
+    const { ticketId } = req.params;
+    const { content } = z.object({ content: z.string().min(1).max(2000) }).parse(req.body);
+
+    const [msg] = await prisma.$transaction([
+      prisma.supportMessage.create({ data: { ticketId, isAdmin: true, content } }),
+      prisma.supportTicket.update({ where: { id: ticketId }, data: { status: 'IN_PROGRESS', updatedAt: new Date() } }),
+    ]);
+
+    res.json({ success: true, data: msg });
+  } catch (err) { next(err); }
+}
+
+async function updateTicketStatus(req, res, next) {
+  try {
+    const { ticketId } = req.params;
+    const { status } = z.object({ status: z.enum(['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED']) }).parse(req.body);
+    await prisma.supportTicket.update({ where: { id: ticketId }, data: { status } });
+    res.json({ success: true, message: 'Statut mis à jour' });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getDashboard,
   getUsers, toggleUserStatus,
@@ -654,4 +838,9 @@ module.exports = {
   syncPredictions,
   triggerSync,
   exportUsers, exportPayments,
+  // Nouveaux
+  getAdminTips, deleteAdminTip, toggleTipVisibility,
+  getAdminComments, deleteAdminComment,
+  activateUserSubscription,
+  getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
 };

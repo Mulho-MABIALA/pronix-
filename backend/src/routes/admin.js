@@ -13,6 +13,10 @@ const {
   syncPredictions,
   triggerSync,
   exportUsers, exportPayments,
+  getAdminTips, deleteAdminTip, toggleTipVisibility,
+  getAdminComments, deleteAdminComment,
+  activateUserSubscription,
+  getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
 } = require('../controllers/adminController');
 const { adminBroadcast, getPushStats } = require('../controllers/pushController');
 
@@ -46,5 +50,22 @@ router.post('/push/broadcast', adminBroadcast);
 // Exports CSV
 router.get('/export/users', exportUsers);
 router.get('/export/payments', exportPayments);
+
+// Pronostics (modération)
+router.get('/tips', getAdminTips);
+router.delete('/tips/:tipId', deleteAdminTip);
+router.patch('/tips/:tipId/visibility', toggleTipVisibility);
+
+// Commentaires (modération)
+router.get('/comments', getAdminComments);
+router.delete('/comments/:commentId', deleteAdminComment);
+
+// Abonnement manuel
+router.post('/users/:userId/activate-subscription', activateUserSubscription);
+
+// Support tickets
+router.get('/support/tickets', getAdminSupportTickets);
+router.post('/support/tickets/:ticketId/reply', replyToSupportTicket);
+router.patch('/support/tickets/:ticketId/status', updateTicketStatus);
 
 module.exports = router;

@@ -243,11 +243,14 @@ export default function Profile() {
       const base64 = await resizeToSquareBase64(file, 400);
       setAvatarPreview(base64);
       setForm((f) => ({ ...f, avatar: base64 }));
-      // Auto-save avatar immédiatement
       await api.patch('/profiles/me', { avatar: base64 });
       await refreshUser();
+      // Garde le preview même après refreshUser
+      setAvatarPreview(base64);
     } catch (err) {
       console.error('Avatar upload failed:', err);
+      setAvatarPreview(null);
+      alert('Erreur lors de l\'upload de la photo. Réessaie.');
     } finally {
       setUploading(false);
     }

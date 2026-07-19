@@ -151,7 +151,42 @@ async function getFixturesByDate(date) {
   }
   try {
     // date = YYYY-MM-DD (format natif API-Football)
-    return await apiFetch('/fixtures', { date });
+    const fixtures = await apiFetch('/fixtures', { date, timezone: 'Europe/Paris' });
+
+    // Si l'API renvoie des matchs → on les retourne
+    if (fixtures && fixtures.length > 0) {
+      console.log(`[FootballAPI] ${fixtures.length} matchs reçus pour ${date}`);
+      return fixtures;
+    }
+
+    // Hors-saison championnats européens : on essaie les ligues d'été actives
+    console.warn(`[FootballAPI] 0 match pour ${date} — tentative ligues d'été`);
+
+    // Ligues actives hors-saison européenne :
+    // 1 = Coupe du Monde, 2 = Nations League, 10 = Coupe du Monde des Clubs
+    // 39 = Premier League (matchs amicaux), 61 = Ligue 1 (matchs amicaux)
+    // 253 = MLS, 71 = Brasileirao, 128 = Argentine Primera
+    // 3 = UEFA Champions League qualif, 848 = Copa America, 6 = World Cup qual
+    const SUMMER_LEAGUES = [1, 2, 10, 15, 16, 17, 253, 71, 128, 239, 332, 848, 3, 140, 61, 39, 135, 78, 88, 94, 307];
+    const summerFixtures = [];
+
+    for (const leagueId of SUMMER_LEAGUES) {
+      try {
+        const res = await apiFetch('/fixtures', { date, league: leagueId, season: CURRENT_SEASON, timezone: 'Europe/Paris' });
+        if (res && res.length > 0) {
+          summerFixtures.push(...res);
+        }
+      } catch (_) { /* ignore par ligue */ }
+    }
+
+    if (summerFixtures.length > 0) {
+      console.log(`[FootballAPI] ${summerFixtures.length} matchs d'été trouvés pour ${date}`);
+      return summerFixtures;
+    }
+
+    // Dernier recours : données mockées
+    console.warn('[FootballAPI] Aucun match trouvé — données mockées');
+    return getMockedFixtures();
   } catch (err) {
     console.error('[FootballAPI] getFixturesByDate:', err.message);
     return getMockedFixtures();

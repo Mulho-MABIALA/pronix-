@@ -3,6 +3,15 @@ const { authenticate, requireAdmin } = require('../middleware/auth');
 const {
   getDashboard,
   getUsers, toggleUserStatus,
+  getUserStats,
+  sendEmailToUser,
+  updateUserRole,
+  cancelUserSubscription,
+  updateAdminNote,
+  creditUserWallet,
+  getUserTips,
+  getUserPayments,
+  getUserReferrals,
   getReports, resolveReport,
   getAdminCompetitions, toggleCompetitionDisplay,
   getAdminTipsters,
@@ -26,8 +35,19 @@ router.use(authenticate, requireAdmin);
 
 router.get('/dashboard', getDashboard);
 
-router.get('/users', getUsers);
-router.patch('/users/:userId/status', toggleUserStatus);
+// Utilisateurs
+router.get('/users/stats',                         getUserStats);
+router.get('/users',                               getUsers);
+router.patch('/users/:userId/status',              toggleUserStatus);
+router.patch('/users/:userId/role',                updateUserRole);
+router.patch('/users/:userId/note',                updateAdminNote);
+router.post('/users/:userId/send-email',           sendEmailToUser);
+router.delete('/users/:userId/subscription',       cancelUserSubscription);
+router.post('/users/:userId/wallet/credit',        creditUserWallet);
+router.post('/users/:userId/activate-subscription',activateUserSubscription);
+router.get('/users/:userId/tips',                  getUserTips);
+router.get('/users/:userId/payments',              getUserPayments);
+router.get('/users/:userId/referrals',             getUserReferrals);
 
 router.get('/reports', getReports);
 router.patch('/reports/:reportId/resolve', resolveReport);
@@ -59,9 +79,6 @@ router.patch('/tips/:tipId/visibility', toggleTipVisibility);
 // Commentaires (modération)
 router.get('/comments', getAdminComments);
 router.delete('/comments/:commentId', deleteAdminComment);
-
-// Abonnement manuel
-router.post('/users/:userId/activate-subscription', activateUserSubscription);
 
 // Support tickets
 router.get('/support/tickets', getAdminSupportTickets);

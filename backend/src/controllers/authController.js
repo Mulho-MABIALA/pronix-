@@ -135,13 +135,12 @@ async function login(req, res, next) {
 
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
-    await prisma.refreshToken.create({
-      data: {
-        userId: user.id,
-        token: refreshTokenValue,
-        expiresAt: getRefreshExpiryDate(),
-      },
-    });
+    await prisma.$transaction([
+      prisma.refreshToken.create({
+        data: { userId: user.id, token: refreshTokenValue, expiresAt: getRefreshExpiryDate() },
+      }),
+      prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }),
+    ]);
 
     const { password: _, ...userSafe } = user;
     res.json({

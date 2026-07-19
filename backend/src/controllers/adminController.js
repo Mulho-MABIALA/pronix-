@@ -135,23 +135,33 @@ async function getDashboard(req, res, next) {
 async function getUsers(req, res, next) {
   try {
     const schema = z.object({
-      page: z.string().default('1').transform(Number),
-      limit: z.string().default('20').transform(Number),
-      search: z.string().optional(),
-      role: z.enum(['USER', 'ADMIN']).optional(),
-      plan: z.string().optional(),
+      page:         z.string().default('1').transform(Number),
+      limit:        z.string().default('20').transform(Number),
+      search:       z.string().optional(),
+      role:         z.enum(['USER', 'ADMIN']).optional(),
+      plan:         z.string().optional(),
+      isActive:     z.string().optional(),
+      createdAfter: z.string().optional(),
+      orderBy:      z.string().default('createdAt'),
+      order:        z.enum(['asc', 'desc']).default('desc'),
     });
-    const { page, limit, search, role, plan } = schema.parse(req.query);
+    const { page, limit, search, role, plan, isActive, createdAfter, orderBy, order } = schema.parse(req.query);
 
     const where = {};
     if (search) {
       where.OR = [
-        { email: { contains: search, mode: 'insensitive' } },
+        { email:    { contains: search, mode: 'insensitive' } },
         { username: { contains: search, mode: 'insensitive' } },
       ];
     }
     if (role) where.role = role;
     if (plan) where.subscription = { plan: { code: plan } };
+    if (isActive !== undefined) where.isActive = isActive === 'true';
+    if (createdAfter) where.createdAt = { gte: new Date(createdAfter) };
+
+    const orderByClause = orderBy === 'tips'
+      ? { tips: { _count: order } }
+      : { [orderBy]: order };
 
     const [total, users] = await prisma.$transaction([
       prisma.user.count({ where }),
@@ -161,9 +171,9 @@ async function getUsers(req, res, next) {
           profile: true,
           subscription: { include: { plan: true } },
           tipsterStats: { select: { totalTips: true, successRate: true } },
-          _count: { select: { tips: true } },
+          _count: { select: { tips: true, payments: true } },
         },
-        orderBy: { createdAt: 'desc' },
+        orderBy: orderByClause,
         skip: (page - 1) * limit,
         take: limit,
       }),
@@ -177,6 +187,163 @@ async function getUsers(req, res, next) {
   } catch (err) {
     next(err);
   }
+}
+
+async function getUserStats(req, res, next) {
+  try {
+    const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+    const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const [total, newThisMonth, newThisWeek, suspended, activeSubscriptions] = await prisma.$transaction([
+      prisma.user.count(),
+      prisma.user.count({ where: { createdAt: { gte: firstOfMonth } } }),
+      prisma.user.count({ where: { createdAt: { gte: lastWeek } } }),
+      prisma.user.count({ where: { isActive: false } }),
+      prisma.subscription.count({ where: { status: 'ACTIVE' } }),
+    ]);
+
+    res.json({ success: true, data: { total, newThisMonth, newThisWeek, suspended, activeSubscriptions } });
+  } catch (err) { next(err); }
+}
+
+async function sendEmailToUser(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const { subject, message } = z.object({
+      subject: z.string().min(1).max(200),
+      message: z.string().min(1).max(5000),
+    }).parse(req.body);
+
+    const user = await prisma.user.findUniqueOrThrow({ where: { id: userId }, select: { email: true, username: true } });
+
+    const { sendEmail } = require('../services/emailService');
+    await sendEmail({
+      to: user.email,
+      subject,
+      html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
+        <h2 style="color:#6366f1">Message de l'équipe fpronix</h2>
+        <p>Bonjour ${user.username},</p>
+        <div style="white-space:pre-wrap">${message}</div>
+        <hr style="margin:24px 0">
+        <p style="color:#888;font-size:12px">fpronix.com — L'équipe support</p>
+      </div>`,
+    });
+
+    res.json({ success: true, message: `Email envoyé à ${user.email}` });
+  } catch (err) { next(err); }
+}
+
+async function updateUserRole(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const { role } = z.object({ role: z.enum(['USER', 'ADMIN']) }).parse(req.body);
+    await prisma.user.update({ where: { id: userId }, data: { role } });
+    res.json({ success: true, message: `Rôle mis à jour : ${role}` });
+  } catch (err) { next(err); }
+}
+
+async function cancelUserSubscription(req, res, next) {
+  try {
+    const { userId } = req.params;
+    await prisma.subscription.updateMany({
+      where: { userId, status: 'ACTIVE' },
+      data: { status: 'CANCELLED', endsAt: new Date() },
+    });
+    res.json({ success: true, message: 'Abonnement annulé' });
+  } catch (err) { next(err); }
+}
+
+async function updateAdminNote(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const { note } = z.object({ note: z.string().max(2000) }).parse(req.body);
+    await prisma.user.update({ where: { id: userId }, data: { adminNote: note || null } });
+    res.json({ success: true, message: 'Note enregistrée' });
+  } catch (err) { next(err); }
+}
+
+async function creditUserWallet(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const { amount, description } = z.object({
+      amount:      z.number().min(1).max(10000),
+      description: z.string().default('Crédit administrateur'),
+    }).parse(req.body);
+
+    const wallet = await prisma.virtualWallet.upsert({
+      where: { userId },
+      update: { balance: { increment: amount } },
+      create: { userId, balance: amount },
+    });
+
+    res.json({ success: true, data: wallet, message: `+${amount} crédits ajoutés` });
+  } catch (err) { next(err); }
+}
+
+async function getUserTips(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const page  = Number(req.query.page)  || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const [total, tips] = await prisma.$transaction([
+      prisma.tip.count({ where: { userId } }),
+      prisma.tip.findMany({
+        where: { userId },
+        include: {
+          match: { select: { homeTeam: true, awayTeam: true, matchDate: true, competition: { select: { name: true } } } },
+          _count: { select: { comments: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: tips, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
+async function getUserPayments(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const page  = Number(req.query.page)  || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const [total, payments] = await prisma.$transaction([
+      prisma.payment.count({ where: { userId } }),
+      prisma.payment.findMany({
+        where: { userId },
+        include: { plan: { select: { name: true, code: true } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: payments, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
+async function getUserReferrals(req, res, next) {
+  try {
+    const { userId } = req.params;
+    const referrals = await prisma.referral.findMany({
+      where: { referrerId: userId },
+      include: {
+        referee: {
+          select: {
+            id: true, username: true, createdAt: true,
+            profile: { select: { displayName: true, avatar: true } },
+            subscription: { include: { plan: { select: { code: true } } } },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json({ success: true, data: referrals });
+  } catch (err) { next(err); }
 }
 
 async function toggleUserStatus(req, res, next) {
@@ -828,6 +995,15 @@ async function updateTicketStatus(req, res, next) {
 module.exports = {
   getDashboard,
   getUsers, toggleUserStatus,
+  getUserStats,
+  sendEmailToUser,
+  updateUserRole,
+  cancelUserSubscription,
+  updateAdminNote,
+  creditUserWallet,
+  getUserTips,
+  getUserPayments,
+  getUserReferrals,
   getReports, resolveReport,
   getAdminCompetitions, toggleCompetitionDisplay,
   getAdminTipsters,
@@ -838,7 +1014,6 @@ module.exports = {
   syncPredictions,
   triggerSync,
   exportUsers, exportPayments,
-  // Nouveaux
   getAdminTips, deleteAdminTip, toggleTipVisibility,
   getAdminComments, deleteAdminComment,
   activateUserSubscription,

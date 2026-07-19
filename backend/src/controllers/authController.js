@@ -166,16 +166,15 @@ async function refreshToken(req, res, next) {
       throw new AppError('Refresh token invalide ou expiré', 401, 'INVALID_REFRESH_TOKEN');
     }
 
-    // Rotation du refresh token (sécurité)
+    // Rotation du refresh token (sécurité) + mise à jour lastLoginAt
     await prisma.refreshToken.delete({ where: { id: stored.id } });
     const newRefreshToken = generateRefreshToken();
-    await prisma.refreshToken.create({
-      data: {
-        userId: stored.userId,
-        token: newRefreshToken,
-        expiresAt: getRefreshExpiryDate(),
-      },
-    });
+    await prisma.$transaction([
+      prisma.refreshToken.create({
+        data: { userId: stored.userId, token: newRefreshToken, expiresAt: getRefreshExpiryDate() },
+      }),
+      prisma.user.update({ where: { id: stored.userId }, data: { lastLoginAt: new Date() } }),
+    ]);
 
     const accessToken = generateAccessToken(stored.userId);
     const { password: _, ...userSafe } = stored.user;

@@ -390,26 +390,52 @@ async function initiateGeniuspayPayment(req, res, next) {
 
 // ─── Webhook Geniuspay ─────────────────────────────────────────────────────────
 async function handleGeniuspayWebhook(req, res) {
-  try {
-    const signature = req.headers['x-webhook-signature'];
-    const timestamp = req.headers['x-webhook-timestamp'];
-    const event     = req.headers['x-webhook-event'];
+  const signature = req.headers['x-webhook-signature'];
+  const timestamp = req.headers['x-webhook-timestamp'];
+  const event     = req.headers['x-webhook-event'];
 
-    // Vérifier la signature (req.rawBody injecté par express.json({ verify }) si configuré)
-    const rawBody = req.rawBody || JSON.stringify(req.body);
-    if (!geniuspayService.verifyWebhookSignature(rawBody, timestamp, signature)) {
-      return res.status(401).json({ error: 'Signature invalide' });
+  console.log(`[Webhook GeniusPay] ← Reçu: event=${event} timestamp=${timestamp} sig=${signature?.slice(0,16)}...`);
+
+  // ── Vérifier les headers requis ──
+  if (!event || !timestamp || !signature) {
+    console.warn('[Webhook GeniusPay] Headers manquants');
+    return res.status(400).json({ error: 'Headers requis manquants' });
+  }
+
+  // ── Vérifier la signature ──
+  const rawBody = req.rawBody || JSON.stringify(req.body);
+  if (!geniuspayService.verifyWebhookSignature(rawBody, timestamp, signature)) {
+    console.warn('[Webhook GeniusPay] Signature invalide');
+    return res.status(401).json({ error: 'Signature invalide' });
+  }
+
+  // ── Répondre 200 immédiatement (GeniusPay exige < 10s) ──
+  res.json({ received: true });
+
+  // ── Traitement asynchrone (après la réponse) ──
+  try {
+    // Événement de test — rien à faire
+    if (event === 'webhook.test') {
+      console.log('[Webhook GeniusPay] Test reçu ✅');
+      return;
     }
 
     if (event !== 'payment.success') {
-      return res.json({ received: true });
+      console.log(`[Webhook GeniusPay] Événement ignoré: ${event}`);
+      return;
     }
 
-    const { metadata, status, reference } = req.body?.data || {};
+    const data     = req.body?.data || {};
+    const { metadata, status, reference } = data;
 
-    if (status !== 'completed') return res.json({ received: true });
+    console.log(`[Webhook GeniusPay] payment.success → reference=${reference} status=${status}`);
 
-    // Récupérer le paiement via metadata.paymentId ou transactionId (référence)
+    if (status !== 'completed') {
+      console.log(`[Webhook GeniusPay] Statut non complété: ${status} — ignoré`);
+      return;
+    }
+
+    // Récupérer le paiement via transactionId (référence GeniusPay) OU metadata.paymentId
     const payment = await prisma.payment.findFirst({
       where: {
         OR: [
@@ -421,15 +447,19 @@ async function handleGeniuspayWebhook(req, res) {
       },
     });
 
-    if (!payment) return res.json({ received: true });
+    if (!payment) {
+      console.warn(`[Webhook GeniusPay] Paiement PENDING introuvable — reference=${reference} paymentId=${metadata?.paymentId}`);
+      return;
+    }
 
+    console.log(`[Webhook GeniusPay] Activation abonnement → paymentId=${payment.id} userId=${payment.userId}`);
     const { planId, billingCycle } = payment.metadata;
     await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    console.log(`[Webhook GeniusPay] ✅ Abonnement activé pour userId=${payment.userId}`);
 
-    res.json({ received: true });
   } catch (err) {
-    console.error('[Webhook Geniuspay] Erreur:', err.message);
-    res.status(500).json({ error: 'Erreur interne' });
+    // Ne pas retourner d'erreur ici (200 déjà envoyé) — GeniusPay ne retentera pas
+    console.error('[Webhook GeniusPay] Erreur traitement asynchrone:', err.message, err.stack);
   }
 }
 

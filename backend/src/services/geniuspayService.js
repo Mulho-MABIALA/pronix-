@@ -70,10 +70,20 @@ async function getTransaction(reference) {
 function verifyWebhookSignature(rawBody, timestamp, signature) {
   const secret = env.GENIUSPAY_WEBHOOK_SECRET;
   if (!secret) return true; // pas de secret configuré → skip (dev)
+  if (!signature || !timestamp) return false;
 
-  const payload   = `${timestamp}.${rawBody}`;
-  const expected  = crypto.createHmac('sha256', secret).update(payload).digest('hex');
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature || ''));
+  try {
+    const payload  = `${timestamp}.${rawBody}`;
+    const expected = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+    const expBuf   = Buffer.from(expected);
+    const sigBuf   = Buffer.from(signature);
+    // timingSafeEqual exige des buffers de même longueur (sinon throw RangeError)
+    if (expBuf.length !== sigBuf.length) return false;
+    return crypto.timingSafeEqual(expBuf, sigBuf);
+  } catch (e) {
+    console.error('[GeniusPay] Erreur vérification signature:', e.message);
+    return false;
+  }
 }
 
 // ─── Simuler un paiement réussi (sandbox / mode dev) ─────────────────────────

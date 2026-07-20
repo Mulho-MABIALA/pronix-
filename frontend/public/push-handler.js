@@ -20,6 +20,9 @@ self.addEventListener('push', (event) => {
     data: { url: data.url || '/' },
   };
 
+  // Grande image (bannière) — ex: logo équipe adverse ou visuel du match
+  if (data.image) options.image = data.image;
+
   event.waitUntil(
     self.registration.showNotification(title, options)
   );

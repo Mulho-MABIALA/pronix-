@@ -32,7 +32,7 @@ function evaluateTip(prediction, homeScore, awayScore) {
   }
 }
 
-async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScore) {
+async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScore, homeTeamLogo) {
   try {
     const tips = await prisma.tip.findMany({
       where: { matchId, isVisible: true, userId: { not: null } },
@@ -49,6 +49,7 @@ async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScor
         body:  `${homeTeam} ${scoreStr} ${awayTeam} — ${PRED_LABELS[tip.prediction] || tip.prediction}`,
         url:   `/matchs/${matchId}`,
         tag:   `tipresult-${tip.id}`,
+        icon:  homeTeamLogo || '/logo192.png',
       });
     }
   } catch (err) {
@@ -206,10 +207,11 @@ async function syncLiveMatches() {
 
       if (!wasLive && nowLive) {
         broadcastNotification({
-          title: '🔴 Match en direct',
-          body:  `${match.homeTeam} vs ${match.awayTeam} vient de commencer !`,
+          title: `🔴 ${match.homeTeam} vs ${match.awayTeam}`,
+          body:  'Le match vient de commencer — suivez-le en direct !',
           url:   `/matchs/${match.id}`,
           tag:   `live-${match.id}`,
+          icon:  match.homeTeamLogo || '/logo192.png',
         }).catch(() => {});
       }
 
@@ -220,14 +222,15 @@ async function syncLiveMatches() {
 
         // Broadcast résultat à tous
         broadcastNotification({
-          title: `⚽ Résultat : ${match.homeTeam} ${hs}-${as} ${match.awayTeam}`,
-          body:  'Le match est terminé.',
+          title: `⚽ ${match.homeTeam} ${hs} - ${as} ${match.awayTeam}`,
+          body:  'Match terminé — voir les stats et résultats des pronos.',
           url:   `/matchs/${match.id}`,
           tag:   `result-${match.id}`,
+          icon:  match.homeTeamLogo || '/logo192.png',
         }).catch(() => {});
 
         // Notification individuelle par tipster
-        notifyTipResults(match.id, match.homeTeam, match.awayTeam, hs, as).catch(() => {});
+        notifyTipResults(match.id, match.homeTeam, match.awayTeam, hs, as, match.homeTeamLogo).catch(() => {});
 
         // Résumé post-match automatique (article de blog IA)
         generateMatchSummary(match.id).catch(() => {});

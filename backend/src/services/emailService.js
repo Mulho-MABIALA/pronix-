@@ -289,4 +289,4 @@ async function sendEmailVerification(user, token) {
   });
 }
 
-module.exports = { sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionExpiryReminder, sendEmailVerification };
+module.exports = { sendEmail, sendWelcomeEmail, sendPasswordResetEmail, sendSubscriptionExpiryReminder, sendEmailVerification };

@@ -167,29 +167,14 @@ async function getFixturesByDate(date) {
     // 39 = Premier League (matchs amicaux), 61 = Ligue 1 (matchs amicaux)
     // 253 = MLS, 71 = Brasileirao, 128 = Argentine Primera
     // 3 = UEFA Champions League qualif, 848 = Copa America, 6 = World Cup qual
-    const SUMMER_LEAGUES = [1, 2, 10, 15, 16, 17, 253, 71, 128, 239, 332, 848, 3, 140, 61, 39, 135, 78, 88, 94, 307];
-    const summerFixtures = [];
-
-    for (const leagueId of SUMMER_LEAGUES) {
-      try {
-        const res = await apiFetch('/fixtures', { date, league: leagueId, season: CURRENT_SEASON, timezone: 'Europe/Paris' });
-        if (res && res.length > 0) {
-          summerFixtures.push(...res);
-        }
-      } catch (_) { /* ignore par ligue */ }
-    }
-
-    if (summerFixtures.length > 0) {
-      console.log(`[FootballAPI] ${summerFixtures.length} matchs d'été trouvés pour ${date}`);
-      return summerFixtures;
-    }
-
-    // Dernier recours : données mockées
-    console.warn('[FootballAPI] Aucun match trouvé — données mockées');
-    return getMockedFixtures();
+    // Boucle "ligues d'été" SUPPRIMÉE : elle coûtait 21 requêtes API par tentative
+    // et épuisait le quota journalier (100 req/jour en plan gratuit).
+    // La requête /fixtures?date=... couvre déjà TOUTES les ligues du monde.
+    console.warn(`[FootballAPI] 0 match retourné par l'API pour ${date} (quota épuisé ou jour creux)`);
+    return [];
   } catch (err) {
     console.error('[FootballAPI] getFixturesByDate:', err.message);
-    return getMockedFixtures();
+    return []; // pas de données mockées en prod — elles polluent la base
   }
 }
 

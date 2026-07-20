@@ -1,6 +1,9 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronLeft, ChevronRight, SlidersHorizontal, Zap, TrendingUp, BarChart2 } from 'lucide-react';
+import {
+  ChevronLeft, ChevronRight, SlidersHorizontal, Zap, TrendingUp, BarChart2,
+  Layers, ClipboardList, Wallet, Trophy, Globe,
+} from 'lucide-react';
 
 const TOOLS = [
   {
@@ -43,6 +46,56 @@ const TOOLS = [
     to: '/outils/stats-ligues',
     icon: BarChart2,
     gradient: 'linear-gradient(135deg, #160a20 0%, #2a1238 55%, #a855f7 130%)',
+  },
+  {
+    id: 'combos',
+    badge: 'Communauté',
+    title: 'Combinés',
+    description: 'Crée tes tickets combinés, partage-les et découvre ceux de la communauté avec l\'optimiseur IA.',
+    cta: 'Explorer',
+    to: '/combos',
+    icon: Layers,
+    gradient: 'linear-gradient(135deg, #06131a 0%, #0b2733 55%, #06b6d4 130%)',
+  },
+  {
+    id: 'bettracker',
+    badge: 'Suivi',
+    title: 'Mes paris & Coach IA',
+    description: 'Enregistre tes paris, suis ton ROI en temps réel et reçois des conseils personnalisés du Coach IA.',
+    cta: 'Suivre',
+    to: '/mes-paris',
+    icon: ClipboardList,
+    gradient: 'linear-gradient(135deg, #1a0a0e 0%, #331420 55%, #ec4899 130%)',
+  },
+  {
+    id: 'wallet',
+    badge: 'Simulation',
+    title: 'Portefeuille virtuel',
+    description: 'Parie sans risque avec de l\'argent virtuel et teste tes stratégies avant de miser en réel.',
+    cta: 'Simuler',
+    to: '/portefeuille-virtuel',
+    icon: Wallet,
+    gradient: 'linear-gradient(135deg, #0d1a06 0%, #1e330b 55%, #84cc16 130%)',
+  },
+  {
+    id: 'classements',
+    badge: 'Données',
+    title: 'Classements',
+    description: 'Les tableaux de toutes les ligues, calculés en direct à partir des résultats synchronisés.',
+    cta: 'Voir',
+    to: '/classements',
+    icon: Trophy,
+    gradient: 'linear-gradient(135deg, #1a1406 0%, #33280b 55%, #eab308 130%)',
+  },
+  {
+    id: 'cdm2026',
+    badge: 'Événement',
+    title: 'Coupe du Monde 2026',
+    description: 'Calendrier, groupes et pronostics dédiés au Mondial USA-Canada-Mexique.',
+    cta: 'Découvrir',
+    to: '/coupe-du-monde-2026',
+    icon: Globe,
+    gradient: 'linear-gradient(135deg, #0a0f20 0%, #141f3d 55%, #6366f1 130%)',
   },
 ];
 

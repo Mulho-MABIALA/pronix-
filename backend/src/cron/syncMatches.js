@@ -241,6 +241,21 @@ async function syncLiveMatches() {
   }
 }
 
+// Marque comme CANCELLED les matchs restés SCHEDULED plus de 36h après leur date
+// (matchs mockés ou disparus de l'API) — leurs pronos seront annulés (VOID)
+async function cleanupStaleMatches() {
+  try {
+    const cutoff = new Date(Date.now() - 36 * 60 * 60 * 1000);
+    const res = await prisma.match.updateMany({
+      where: { status: 'SCHEDULED', scheduledAt: { lt: cutoff } },
+      data:  { status: 'CANCELLED' },
+    });
+    if (res.count > 0) console.log(`[Cron cleanup] ${res.count} matchs obsolètes passés en CANCELLED`);
+  } catch (err) {
+    console.error('[Cron cleanup] Erreur:', err.message);
+  }
+}
+
 function startSyncMatchesCron() {
   cron.schedule('0 */12 * * *', () => {
     compCache.clear();
@@ -254,6 +269,17 @@ function startSyncMatchesCron() {
     syncMatchesForDate(tomorrow.toISOString().split('T')[0]);
   });
 
+  // 3h30 : récupérer les scores finaux d'HIER (matchs terminés tard le soir)
+  // → indispensable pour résoudre les pronostics et calculer les stats tipsters
+  cron.schedule('30 3 * * *', async () => {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const dateStr = yesterday.toISOString().split('T')[0];
+    syncCache.delete(dateStr); // ignorer le cooldown
+    await syncMatchesForDate(dateStr);
+    await cleanupStaleMatches();
+  });
+
   cron.schedule('*/30 * * * *', syncLiveMatches);
 
   console.log('[Cron] Synchronisation des matchs démarrée');
@@ -263,4 +289,4 @@ function startSyncMatchesCron() {
   syncMatchesForDate(today).catch((e) => console.error('[Cron] Sync initiale:', e.message));
 }
 
-module.exports = { startSyncMatchesCron, syncMatchesForDate };
+module.exports = { startSyncMatchesCron, syncMatchesForDate, cleanupStaleMatches };

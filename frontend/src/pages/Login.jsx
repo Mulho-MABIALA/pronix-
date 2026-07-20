@@ -44,7 +44,7 @@ export default function Login() {
       <div className="w-full max-w-sm space-y-6 animate-slide-up">
         {/* Logo */}
         <div className="text-center">
-          <span className="text-4xl" aria-hidden="true">⚽</span>
+          <img src="/imgfpronix.png" alt="fpronix" className="w-16 h-16 mx-auto object-contain" />
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.loginTitle')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('auth.loginSubtitle')}</p>
         </div>

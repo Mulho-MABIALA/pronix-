@@ -1,9 +1,97 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { BarChart2 } from 'lucide-react';
+import { BarChart2, ChevronDown, Search, X } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
+
+// ─── Sélecteur de compétition avec logos + recherche ──────────────────────────
+function CompetitionPicker({ competitions, selectedId, onSelect }) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const ref = useRef(null);
+
+  const selected = competitions.find((c) => c.id === selectedId);
+
+  // Fermer au clic extérieur
+  useEffect(() => {
+    const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Filtrage + tri par pays puis nom
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase();
+    return competitions
+      .filter((c) => !q || c.name.toLowerCase().includes(q) || (c.country || '').toLowerCase().includes(q))
+      .sort((a, b) => (a.country || '').localeCompare(b.country || '') || a.name.localeCompare(b.name));
+  }, [competitions, search]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => { setOpen(!open); setSearch(''); }}
+        className="input flex items-center gap-2.5 w-full text-left"
+      >
+        {selected ? (
+          <>
+            <CompetitionLogo logo={selected.logo} size={20} />
+            <span className="flex-1 truncate text-gray-100">{selected.name}</span>
+            <span className="text-xs text-gray-500 shrink-0">{selected.country}</span>
+          </>
+        ) : (
+          <span className="flex-1 text-gray-500">— Choisir une compétition —</span>
+        )}
+        <ChevronDown size={16} className={`text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute z-30 mt-2 w-full bg-surface-800 border border-surface-600 rounded-xl shadow-2xl overflow-hidden">
+          {/* Recherche */}
+          <div className="flex items-center gap-2 px-3 py-2.5 border-b border-surface-700">
+            <Search size={14} className="text-gray-500 shrink-0" />
+            <input
+              autoFocus
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Rechercher une ligue ou un pays..."
+              className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-600 outline-none"
+            />
+            {search && (
+              <button onClick={() => setSearch('')} className="text-gray-500 hover:text-gray-300">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+
+          {/* Liste */}
+          <div className="max-h-72 overflow-y-auto">
+            {filtered.length === 0 && (
+              <p className="px-4 py-6 text-center text-sm text-gray-500">Aucune compétition trouvée</p>
+            )}
+            {filtered.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => { onSelect(c.id); setOpen(false); }}
+                className={`w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left hover:bg-surface-700/60 transition-colors ${
+                  c.id === selectedId ? 'bg-primary-500/10' : ''
+                }`}
+              >
+                <CompetitionLogo logo={c.logo} size={20} />
+                <span className="flex-1 truncate text-sm text-gray-200">{c.name}</span>
+                <span className="text-[11px] text-gray-500 shrink-0">{c.country}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 const RESULT_COLORS = {
   W: 'bg-green-500',
@@ -98,20 +186,14 @@ export default function Standings() {
 
       {/* Sélecteur de compétition */}
       <div className="bento-card">
-        <label htmlFor="comp-select" className="block text-sm font-medium text-gray-400 mb-2">
+        <label className="block text-sm font-medium text-gray-400 mb-2">
           Compétition
         </label>
-        <select
-          id="comp-select"
-          value={selectedCompId}
-          onChange={(e) => setSelectedCompId(e.target.value)}
-          className="input"
-        >
-          <option value="">— Choisir une compétition —</option>
-          {competitions.map((c) => (
-            <option key={c.id} value={c.id}>{c.name}</option>
-          ))}
-        </select>
+        <CompetitionPicker
+          competitions={competitions}
+          selectedId={selectedCompId}
+          onSelect={setSelectedCompId}
+        />
       </div>
 
       {isLoading && <SkeletonCard className="h-48" />}

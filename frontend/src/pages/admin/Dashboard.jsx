@@ -579,7 +579,7 @@ export default function AdminDashboard() {
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), 0 4px 24px rgba(0,0,0,0.3)' }}
       >
         <div className="flex items-center gap-4">
-          <img src="/imgfpronix.png" alt="fpronix" className="w-14 h-14 object-contain shrink-0 drop-shadow-lg" />
+          <img src="/logo-circle.png" alt="fpronix" className="w-14 h-14 rounded-full shrink-0 drop-shadow-lg" />
           <div>
             <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1 flex items-center gap-1.5">
               <LiveDot />

@@ -88,9 +88,7 @@ function SidebarContent({ onClose }) {
       {/* ── Logo ───────────────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between px-4 h-[60px] shrink-0 border-b border-white/[0.06]">
         <Link to="/admin" onClick={onClose} className="flex items-center gap-2.5 group">
-          <div className="w-8 h-8 rounded-xl overflow-hidden shrink-0">
-            <img src="/imgfpronix.png" alt="fpronix" className="w-full h-full object-contain" />
-          </div>
+          <img src="/logo-circle.png" alt="fpronix" className="w-8 h-8 rounded-full shrink-0" />
           <div>
             <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight">
               fp<span className="text-primary-400">ronix</span>

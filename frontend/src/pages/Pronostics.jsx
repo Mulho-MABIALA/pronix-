@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -192,12 +193,12 @@ function PronoRow({ match }) {
 
 // ─── CompetitionGroup ──────────────────────────────────────────────────────────
 
-function CompetitionGroup({ name, items, isPremium, globalIndex }) {
+function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
   return (
     <div className="bento-card overflow-hidden p-0">
       {/* En-tête compétition */}
       <div className="flex items-center gap-2 px-3 py-2 bg-surface-700/30 border-b border-white/[0.05]">
-        <TrendingUp size={11} className="text-gray-600 shrink-0" />
+        <CompetitionLogo logo={logo} size={14} />
         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest truncate flex-1">
           {name}
         </span>
@@ -307,19 +308,19 @@ export default function Pronostics() {
     const map = new Map();
     for (const m of filteredMatches) {
       const key = m.competition?.name || 'Autres';
-      if (!map.has(key)) map.set(key, []);
-      map.get(key).push({ match: m });
+      if (!map.has(key)) map.set(key, { logo: m.competition?.logo || null, items: [] });
+      map.get(key).items.push({ match: m });
     }
-    return [...map.entries()]; // [ [compName, [{match}...]], ... ]
+    return [...map.entries()]; // [ [compName, {logo, items}], ... ]
   }, [filteredMatches]);
 
   // Index absolu cumulé pour le paywall
   const groupsWithIndex = useMemo(() => {
     let idx = 0;
-    return grouped.map(([name, items]) => {
+    return grouped.map(([name, { logo, items }]) => {
       const startIdx = idx;
       idx += items.length;
-      return { name, items, startIdx };
+      return { name, logo, items, startIdx };
     });
   }, [grouped]);
 
@@ -535,10 +536,11 @@ export default function Pronostics() {
           </div>
 
           {/* Groupes par compétition */}
-          {groupsWithIndex.map(({ name, items, startIdx }) => (
+          {groupsWithIndex.map(({ name, logo, items, startIdx }) => (
             <CompetitionGroup
               key={name}
               name={name}
+              logo={logo}
               items={items}
               isPremium={isPremium}
               globalIndex={startIdx}

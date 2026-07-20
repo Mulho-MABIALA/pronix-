@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import MatchCard from '../components/matches/MatchCard';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
@@ -65,8 +66,8 @@ export default function Matches() {
 
   const byCompetition = matches.reduce((acc, match) => {
     const key = match.competition?.name || 'Autre';
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(match);
+    if (!acc[key]) acc[key] = { logo: match.competition?.logo || null, list: [] };
+    acc[key].list.push(match);
     return acc;
   }, {});
 
@@ -157,8 +158,9 @@ export default function Matches() {
                   key={c.id}
                   onClick={() => setSelectedCompetition(c.id === selectedCompetition ? '' : c.id)}
                   data-active={selectedCompetition === c.id}
-                  className="filter-chip rounded-full"
+                  className="filter-chip rounded-full flex items-center gap-1.5"
                 >
+                  <CompetitionLogo logo={c.logo} size={13} />
                   {c.name}
                   {count > 0 && <span className="chip-count">{count}</span>}
                 </button>
@@ -198,14 +200,17 @@ export default function Matches() {
           </div>
         ) : (
           <div className="space-y-5">
-            {Object.entries(byCompetition).map(([compName, compMatches]) => {
+            {Object.entries(byCompetition).map(([compName, { logo, list: compMatches }]) => {
               const isExpanded = !!expandedGroups[compName];
               const hasMore    = compMatches.length > GROUP_LIMIT;
               const visible    = isExpanded ? compMatches : compMatches.slice(0, GROUP_LIMIT);
               return (
                 <section key={compName}>
                   <div className="flex items-center justify-between mb-2 px-1">
-                    <p className="comp-label">{compName}</p>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <CompetitionLogo logo={logo} size={14} />
+                      <p className="comp-label truncate">{compName}</p>
+                    </div>
                     <span className="text-[10px] font-semibold text-gray-600 tabular-nums">{compMatches.length}</span>
                   </div>
                   <div className="card overflow-hidden divide-y divide-white/[0.04]">

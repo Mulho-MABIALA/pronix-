@@ -93,9 +93,13 @@ async function findOrCreateCompetition(fixture, leagueExternalId) {
 
     if (!name) return null;
 
+    // Logo officiel API-Football (fourni dans le fixture, sinon déduit de l'ID)
+    const logo = fixture.league?.logo
+      || (/^\d+$/.test(leagueExternalId) ? `https://media.api-sports.io/football/leagues/${leagueExternalId}.png` : null);
+
     try {
       competition = await prisma.competition.create({
-        data: { externalId: leagueExternalId, name, country, isDisplayed: true },
+        data: { externalId: leagueExternalId, name, country, logo, isDisplayed: true },
       });
       console.log(`[Sync] Nouvelle compétition: ${name} (${country}) [${leagueExternalId}]`);
     } catch {
@@ -104,6 +108,12 @@ async function findOrCreateCompetition(fixture, leagueExternalId) {
         where: { externalId: leagueExternalId },
       });
     }
+  } else if (!competition.logo && fixture.league?.logo) {
+    // Backfill du logo pour les compétitions existantes
+    competition = await prisma.competition.update({
+      where: { id: competition.id },
+      data: { logo: fixture.league.logo },
+    }).catch(() => competition);
   }
 
   if (competition) compCache.set(leagueExternalId, competition);

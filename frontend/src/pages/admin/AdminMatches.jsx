@@ -4,6 +4,30 @@ import { ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
+import CompetitionLogo from '../../components/ui/CompetitionLogo';
+
+// Logo d'équipe avec fallback pastille initiale
+function TeamLogo({ logo, name, size = 20 }) {
+  const [error, setError] = useState(false);
+  if (!logo || error) {
+    return (
+      <span
+        className="shrink-0 rounded-full bg-surface-600 text-gray-300 flex items-center justify-center font-bold"
+        style={{ width: size, height: size, fontSize: size * 0.45 }}
+      >
+        {(name || '?').charAt(0).toUpperCase()}
+      </span>
+    );
+  }
+  return (
+    <img
+      src={logo} alt="" width={size} height={size} loading="lazy"
+      onError={() => setError(true)}
+      className="shrink-0 object-contain"
+      style={{ width: size, height: size }}
+    />
+  );
+}
 
 const STATUS_STYLE = {
   SCHEDULED: 'bg-gray-500/15 text-gray-400',
@@ -82,13 +106,20 @@ export default function AdminMatches() {
                 : matches.map((m) => (
                   <tr key={m.id} className="hover:bg-surface-700/40 transition-colors">
                     <td className="px-5 py-3.5">
-                      <p className="text-sm font-medium text-gray-200 truncate max-w-[180px]">
-                        {m.homeTeam} <span className="text-gray-600">vs</span> {m.awayTeam}
-                      </p>
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-gray-200 max-w-[240px]">
+                        <TeamLogo logo={m.homeTeamLogo} name={m.homeTeam} />
+                        <span className="truncate">{m.homeTeam}</span>
+                        <span className="text-gray-600 shrink-0">vs</span>
+                        <TeamLogo logo={m.awayTeamLogo} name={m.awayTeam} />
+                        <span className="truncate">{m.awayTeam}</span>
+                      </div>
                       {m.round && <p className="text-xs text-gray-600 mt-0.5">{m.round}</p>}
                     </td>
-                    <td className="px-4 py-3.5 hidden md:table-cell text-xs text-gray-500 truncate max-w-[140px]">
-                      {m.competition?.name}
+                    <td className="px-4 py-3.5 hidden md:table-cell text-xs text-gray-500 max-w-[160px]">
+                      <div className="flex items-center gap-1.5">
+                        <CompetitionLogo logo={m.competition?.logo} size={15} />
+                        <span className="truncate">{m.competition?.name}</span>
+                      </div>
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       {m.homeScore !== null

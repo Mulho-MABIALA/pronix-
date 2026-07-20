@@ -47,7 +47,7 @@ export default function Register() {
     <div className="min-h-dvh bg-surface-900 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm space-y-6 animate-slide-up">
         <div className="text-center">
-          <img src="/imgfpronix.png" alt="fpronix" className="w-16 h-16 mx-auto object-contain" />
+          <img src="/logo-circle.png" alt="fpronix" className="w-16 h-16 mx-auto rounded-full" />
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.registerTitle')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('auth.freeNoCommit')}</p>
         </div>

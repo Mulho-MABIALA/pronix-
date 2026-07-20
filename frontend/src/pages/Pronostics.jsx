@@ -198,7 +198,7 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
     <div className="bento-card overflow-hidden p-0">
       {/* En-tête compétition */}
       <div className="flex items-center gap-2 px-3 py-2 bg-surface-700/30 border-b border-white/[0.05]">
-        <CompetitionLogo logo={logo} size={14} />
+        <CompetitionLogo logo={logo} size={20} />
         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest truncate flex-1">
           {name}
         </span>

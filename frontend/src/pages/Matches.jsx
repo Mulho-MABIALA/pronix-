@@ -160,7 +160,7 @@ export default function Matches() {
                   data-active={selectedCompetition === c.id}
                   className="filter-chip rounded-full flex items-center gap-1.5"
                 >
-                  <CompetitionLogo logo={c.logo} size={13} />
+                  <CompetitionLogo logo={c.logo} size={16} />
                   {c.name}
                   {count > 0 && <span className="chip-count">{count}</span>}
                 </button>
@@ -208,7 +208,7 @@ export default function Matches() {
                 <section key={compName}>
                   <div className="flex items-center justify-between mb-2 px-1">
                     <div className="flex items-center gap-1.5 min-w-0">
-                      <CompetitionLogo logo={logo} size={14} />
+                      <CompetitionLogo logo={logo} size={20} />
                       <p className="comp-label truncate">{compName}</p>
                     </div>
                     <span className="text-[10px] font-semibold text-gray-600 tabular-nums">{compMatches.length}</span>

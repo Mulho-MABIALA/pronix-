@@ -21,7 +21,7 @@ export default function CompetitionLogo({ logo, size = 16, className = '' }) {
       height={size}
       loading="lazy"
       onError={() => setError(true)}
-      className={`shrink-0 object-contain rounded-sm bg-white/90 p-[1px] ${className}`}
+      className={`shrink-0 object-contain drop-shadow-[0_0_1px_rgba(255,255,255,0.4)] ${className}`}
       style={{ width: size, height: size }}
     />
   );

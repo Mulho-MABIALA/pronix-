@@ -56,7 +56,7 @@ export default function AdminCompetitions() {
                 <tr key={c.id} className={`hover:bg-surface-700/40 transition-colors ${!c.isDisplayed ? 'opacity-50' : ''}`}>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-2.5">
-                      <CompetitionLogo logo={c.logo} size={20} />
+                      <CompetitionLogo logo={c.logo} size={28} />
                       <span className="text-sm font-medium text-gray-200">{c.name}</span>
                     </div>
                   </td>

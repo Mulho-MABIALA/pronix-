@@ -57,11 +57,20 @@ export function AuthProvider({ children }) {
   const refreshUser = loadUser;
 
   const userPlan = user?.subscription?.plan?.code || 'FREE';
-  const isPremium = userPlan === 'PREMIUM';
+
+  // Essai gratuit 7 jours après inscription
+  const trialActive = !!(user?.trialEndsAt && new Date(user.trialEndsAt) > new Date());
+  const trialDaysLeft = trialActive
+    ? Math.ceil((new Date(user.trialEndsAt) - new Date()) / (1000 * 60 * 60 * 24))
+    : 0;
+
+  // Premium = abonnement payant OU essai en cours
+  const hasPaidPlan = ['PREMIUM', 'PRO', 'LIFETIME'].includes(userPlan);
+  const isPremium = hasPaidPlan || trialActive;
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, logout, refreshUser, userPlan, isPremium, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, logout, refreshUser, userPlan, isPremium, hasPaidPlan, trialActive, trialDaysLeft, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

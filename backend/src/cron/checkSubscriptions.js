@@ -51,6 +51,51 @@ async function checkExpiringSubscriptions() {
     }
   }
 
+  // ── Rappels de fin d'essai gratuit 7 jours (J-2, J-1, J0) ──────────────────
+  for (const daysLeft of [2, 1, 0]) {
+    const targetDate = new Date(now);
+    targetDate.setDate(targetDate.getDate() + daysLeft);
+    targetDate.setHours(0, 0, 0, 0);
+    const nextDay = new Date(targetDate);
+    nextDay.setDate(nextDay.getDate() + 1);
+
+    // Utilisateurs dont l'essai se termine ce jour-là, sans abonnement payant actif
+    const trialUsers = await prisma.user.findMany({
+      where: {
+        trialEndsAt: { gte: targetDate, lt: nextDay },
+        isActive: true,
+        subscription: {
+          OR: [
+            { status: { not: 'ACTIVE' } },
+            { plan: { code: 'FREE' } },
+          ],
+        },
+      },
+      select: { id: true },
+    });
+
+    for (const u of trialUsers) {
+      const payload = daysLeft > 0
+        ? {
+            title: `⏳ Ton essai gratuit se termine dans ${daysLeft} jour${daysLeft > 1 ? 's' : ''}`,
+            body:  'Passe à Premium pour garder l\'accès aux pronostics illimités, stats avancées et analyses IA.',
+            url:   '/abonnement',
+            tag:   `trial-reminder-${daysLeft}`,
+          }
+        : {
+            title: '🔒 Ton essai gratuit est terminé',
+            body:  'Abonne-toi à Premium pour retrouver tous tes avantages : pronos illimités, stats et IA.',
+            url:   '/abonnement',
+            tag:   'trial-ended',
+          };
+      notifyUser(u.id, payload).catch(console.error);
+    }
+
+    if (trialUsers.length > 0) {
+      console.log(`[Cron checkSubscriptions] ${trialUsers.length} rappels fin d'essai (J-${daysLeft})`);
+    }
+  }
+
   // Passage en statut EXPIRED pour les abonnements arrivés à terme
   const expired = await prisma.subscription.updateMany({
     where: {

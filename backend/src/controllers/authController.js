@@ -45,6 +45,13 @@ function getRefreshExpiryDate() {
   return d;
 }
 
+// Fin de l'essai gratuit : 7 jours après l'inscription
+function getTrialEndDate() {
+  const d = new Date();
+  d.setDate(d.getDate() + 7);
+  return d;
+}
+
 // ─── Helper : username unique depuis email Google ────────────────────────────
 async function generateUniqueUsername(email) {
   const base = email.split('@')[0]
@@ -76,6 +83,7 @@ async function register(req, res, next) {
         email,
         password: hashedPassword,
         username,
+        trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
         profile: { create: {} },
         subscription: {
           create: {
@@ -299,6 +307,7 @@ async function googleAuth(req, res, next) {
           email,
           googleId,
           username,
+          trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
           profile: { create: { displayName: name || username, avatar: picture } },
           subscription: { create: { planId: freePlan.id, status: 'ACTIVE' } },
         },

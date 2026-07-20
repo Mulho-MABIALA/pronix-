@@ -1,12 +1,20 @@
 const { AppError } = require('./errorHandler');
 
-const PLAN_LEVELS = { FREE: 0, PREMIUM: 1 };
+const PLAN_LEVELS = { FREE: 0, PREMIUM: 1, PRO: 1, LIFETIME: 2 };
+
+// L'utilisateur est-il en période d'essai gratuit (7 jours après inscription) ?
+function isInTrial(user) {
+  return !!(user?.trialEndsAt && new Date(user.trialEndsAt) > new Date());
+}
 
 // Retourne le code plan actif de l'utilisateur authentifié
+// Pendant l'essai 7 jours, l'utilisateur est traité comme PREMIUM
 function getUserPlanCode(user) {
   const sub = user.subscription;
-  if (!sub || sub.status !== 'ACTIVE') return 'FREE';
-  return sub.plan?.code || 'FREE';
+  const paidPlan = (sub && sub.status === 'ACTIVE' && sub.plan?.code) || 'FREE';
+  if (paidPlan !== 'FREE') return paidPlan;
+  if (isInTrial(user)) return 'PREMIUM'; // essai actif → accès premium
+  return 'FREE';
 }
 
 // Middleware : exige un plan minimum
@@ -43,4 +51,4 @@ function attachPlan(req, res, next) {
   next();
 }
 
-module.exports = { requirePlan, attachPlan, getUserPlanCode };
+module.exports = { requirePlan, attachPlan, getUserPlanCode, isInTrial };

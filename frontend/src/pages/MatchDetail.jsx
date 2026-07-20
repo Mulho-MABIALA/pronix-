@@ -805,8 +805,21 @@ export default function MatchDetail() {
               </section>
             )}
 
-            {/* Formulaire de pronostic */}
-            {user && isPremium && isScheduled && (
+            {/* Invitation à se connecter pour publier */}
+            {!user && isScheduled && (
+              <section className="card p-4 flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold text-gray-100">Publie ton pronostic sur ce match</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Deviens tipster et grimpe dans le classement</p>
+                </div>
+                <Link to="/connexion" className="btn-primary text-sm px-4 py-2 shrink-0">
+                  Se connecter
+                </Link>
+              </section>
+            )}
+
+            {/* Formulaire de pronostic — ouvert à tous les inscrits */}
+            {user && isScheduled && (
               <section className="card p-4 space-y-4">
                 <h2 className="font-semibold text-gray-100 text-sm">Publier un pronostic</h2>
 

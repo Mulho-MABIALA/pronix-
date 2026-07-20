@@ -20,8 +20,9 @@ router.use(authenticate);
 router.get('/my', getMyTips);
 router.post('/:tipId/report', reportTip);
 
-// Premium/Pro uniquement
-router.post('/', requirePlan('PREMIUM'), createTip);
+// Publication ouverte à tous les inscrits
+router.post('/', createTip);
+// Génération IA réservée Premium/Pro
 router.post('/generate-ai', requirePlan('PREMIUM'), generateAiTip);
 
 module.exports = router;

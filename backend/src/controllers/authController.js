@@ -339,6 +339,22 @@ async function me(req, res) {
   res.json({ success: true, data: userSafe });
 }
 
+// ─── Marquer l'app comme installée (PWA) ─────────────────────────────────────
+async function markAppInstalled(req, res, next) {
+  try {
+    // On ne réécrase pas une date déjà enregistrée (première installation)
+    if (!req.user.appInstalledAt) {
+      await prisma.user.update({
+        where: { id: req.user.id },
+        data: { appInstalledAt: new Date() },
+      });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ─── Envoi de l'email de vérification ────────────────────────────────────────
 async function sendVerificationEmail(req, res, next) {
   try {
@@ -388,5 +404,5 @@ async function verifyEmail(req, res, next) {
 
 module.exports = {
   register, login, refreshToken, logout, forgotPassword, resetPassword, me, googleAuth,
-  sendVerificationEmail, verifyEmail,
+  sendVerificationEmail, verifyEmail, markAppInstalled,
 };

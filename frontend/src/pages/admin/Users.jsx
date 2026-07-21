@@ -5,7 +5,7 @@ import {
   Crown, X, RefreshCw, Mail, Calendar, Target, TrendingUp, Shield,
   CheckCircle, XCircle, Copy, Gift, Clock, Users, CreditCard,
   MessageSquare, ArrowUpDown, StickyNote, Send, Wallet, AlertTriangle,
-  ChevronDown, ExternalLink, Star, Trash2,
+  ChevronDown, ExternalLink, Star, Trash2, Smartphone,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -149,6 +149,14 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                     <Clock size={10} /> {formatDistanceToNow(new Date(user.lastLoginAt), { locale: fr, addSuffix: true })}
                   </span>
                 )}
+                <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
+                  user.appInstalledAt ? 'bg-primary-500/15 text-primary-400' : 'bg-white/[0.05] text-gray-500'
+                }`}>
+                  <Smartphone size={10} />
+                  {user.appInstalledAt
+                    ? `App installée · ${format(new Date(user.appInstalledAt), 'dd MMM yyyy', { locale: fr })}`
+                    : 'App non installée'}
+                </span>
               </div>
             </div>
           </div>
@@ -620,6 +628,7 @@ export default function AdminUsers() {
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Pronos</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Inscrit le</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Dernier login</th>
+                <th className="text-center px-4 py-3.5 font-semibold hidden lg:table-cell">App</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Statut</th>
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>
               </tr>
@@ -627,7 +636,7 @@ export default function AdminUsers() {
             <tbody className="divide-y divide-white/[0.04]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i}>{Array.from({ length: 7 }).map((_, j) => (
+                  <tr key={i}>{Array.from({ length: 8 }).map((_, j) => (
                     <td key={j} className="px-5 py-4"><div className="h-4 skeleton rounded" /></td>
                   ))}</tr>
                 ))
@@ -660,6 +669,23 @@ export default function AdminUsers() {
                       </td>
                       <td className="px-4 py-3.5 hidden xl:table-cell text-xs text-gray-600">
                         {u.lastLoginAt ? formatDistanceToNow(new Date(u.lastLoginAt), { locale: fr, addSuffix: true }) : '—'}
+                      </td>
+                      <td className="px-4 py-3.5 hidden lg:table-cell text-center">
+                        {u.appInstalledAt ? (
+                          <span
+                            className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-primary-500/15 text-primary-400 border border-primary-500/20"
+                            title={`App installée le ${format(new Date(u.appInstalledAt), 'dd MMM yyyy', { locale: fr })}`}
+                          >
+                            <Smartphone size={12} />
+                          </span>
+                        ) : (
+                          <span
+                            className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/[0.03] text-gray-600 border border-white/[0.06]"
+                            title="Application non installée"
+                          >
+                            <Smartphone size={12} />
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3.5">
                         <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg ${

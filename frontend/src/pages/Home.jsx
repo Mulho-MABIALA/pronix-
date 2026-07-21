@@ -1,7 +1,8 @@
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ChevronRight, Sparkles, Calendar, Crown, Wand2 } from 'lucide-react';
+import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +10,7 @@ import MatchCard from '../components/matches/MatchCard';
 import ToolsCarousel from '../components/home/ToolsCarousel';
 import HeroBackground from '../components/home/HeroBackground';
 import TipsterCard from '../components/tipsters/TipsterCard';
+import SearchBar from '../components/ui/SearchBar';
 import { SkeletonMatchCard, SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
 
@@ -16,6 +18,7 @@ export default function Home() {
   const { t } = useTranslation();
   usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
   const { user, isPremium } = useAuth();
+  const [searchOpen, setSearchOpen] = useState(false);
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const { data: matchesData, isLoading: matchesLoading } = useQuery({
@@ -96,8 +99,23 @@ export default function Home() {
         </section>
       )}
 
-      {/* ── Carousel outils ──────────────────────────────────────── */}
-      <ToolsCarousel />
+      {/* ── Carousel outils (visiteurs) ou recherche (connectés) ──── */}
+      {user ? (
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-white/[0.08] text-left transition-colors hover:border-white/[0.14]"
+          style={{ background: 'rgba(255,255,255,0.03)' }}
+        >
+          <div className="w-9 h-9 rounded-xl bg-primary-500/15 border border-primary-500/20 flex items-center justify-center shrink-0">
+            <Search size={16} className="text-primary-400" />
+          </div>
+          <span className="flex-1 text-sm text-gray-400">
+            {t('search.placeholder')}
+          </span>
+        </button>
+      ) : (
+        <ToolsCarousel />
+      )}
 
       {/* ── Matchs du jour ───────────────────────────────────────── */}
       <section>
@@ -228,6 +246,8 @@ export default function Home() {
           </section>
         )}
       </div>
+
+      {searchOpen && <SearchBar onClose={() => setSearchOpen(false)} />}
     </div>
   );
 }

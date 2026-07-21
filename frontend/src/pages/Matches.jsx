@@ -2,12 +2,13 @@ import { useState, useCallback } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { format, addDays, isToday, isYesterday, isTomorrow } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { ChevronDown, ChevronUp, RefreshCw } from 'lucide-react';
+import { ChevronDown, ChevronUp, RefreshCw, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import MatchCard from '../components/matches/MatchCard';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
+import SearchBar from '../components/ui/SearchBar';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
@@ -23,6 +24,7 @@ export default function Matches() {
   const [liveOnly, setLiveOnly]               = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState('');
   const [expandedGroups, setExpandedGroups]   = useState({});
+  const [searchOpen, setSearchOpen]           = useState(false);
 
   function toggleGroup(name) {
     setExpandedGroups((prev) => ({ ...prev, [name]: !prev[name] }));
@@ -96,6 +98,20 @@ export default function Matches() {
               : t('notifications.pulling')}
           </span>
         </div>
+      </div>
+
+      {/* ── Barre de recherche ──────────────────────────────────────── */}
+      <div className="px-4">
+        <button
+          onClick={() => setSearchOpen(true)}
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/[0.08] text-left transition-colors hover:border-white/[0.14]"
+          style={{ background: 'rgba(255,255,255,0.03)' }}
+        >
+          <Search size={16} className="text-gray-500 shrink-0" />
+          <span className="flex-1 text-sm text-gray-500">
+            {t('search.placeholder')}
+          </span>
+        </button>
       </div>
 
       {/* ── Date tabs ─────────────────────────────────────────────── */}
@@ -233,6 +249,8 @@ export default function Matches() {
           </div>
         )}
       </div>
+
+      {searchOpen && <SearchBar onClose={() => setSearchOpen(false)} />}
     </div>
   );
 }

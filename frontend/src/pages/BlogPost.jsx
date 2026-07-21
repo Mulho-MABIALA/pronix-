@@ -1,13 +1,16 @@
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { ChevronLeft, Eye, Calendar, User } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export default function BlogPost() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const { slug } = useParams();
 
   const { data, isLoading, isError } = useQuery({
@@ -19,12 +22,12 @@ export default function BlogPost() {
   const post = data?.data;
   const author = post?.author?.profile?.displayName || post?.author?.username;
   const date = post?.publishedAt
-    ? format(new Date(post.publishedAt), 'dd MMMM yyyy', { locale: fr })
+    ? format(new Date(post.publishedAt), 'dd MMMM yyyy', { locale: dateLocale })
     : '';
 
   usePageMeta(
-    post ? (post.metaTitle || post.title) : 'Article',
-    post ? (post.metaDesc || post.excerpt || `${post.title} — blog fpronix`) : '',
+    post ? (post.metaTitle || post.title) : t('blog.articleFallback'),
+    post ? (post.metaDesc || post.excerpt || t('blog.metaDescFallback', { title: post.title })) : '',
     post?.coverImage ? { image: post.coverImage, type: 'article' } : { type: 'article' },
   );
 
@@ -41,8 +44,8 @@ export default function BlogPost() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="bento-card text-center py-12 text-gray-500">
-          Article introuvable.{' '}
-          <Link to="/blog" className="text-primary-400 hover:underline">Retour au blog</Link>
+          {t('blog.articleNotFound')}{' '}
+          <Link to="/blog" className="text-primary-400 hover:underline">{t('blog.backToBlog')}</Link>
         </div>
       </div>
     );
@@ -56,7 +59,7 @@ export default function BlogPost() {
         className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
       >
         <ChevronLeft size={16} />
-        Blog
+        {t('blog.title')}
       </Link>
 
       {/* Image de couverture */}
@@ -71,7 +74,7 @@ export default function BlogPost() {
       {/* Meta */}
       <div className="flex flex-wrap gap-3 text-xs text-gray-500">
         {post.category && (
-          <span className="text-primary-400 font-medium capitalize">{post.category}</span>
+          <span className="text-primary-400 font-medium capitalize">{t(`blog.categories.${post.category}`, { defaultValue: post.category })}</span>
         )}
         {date && (
           <span className="flex items-center gap-1">
@@ -87,7 +90,7 @@ export default function BlogPost() {
         )}
         <span className="flex items-center gap-1">
           <Eye size={11} />
-          {post.views} vues
+          {t('blog.viewsCount', { count: post.views })}
         </span>
       </div>
 
@@ -113,7 +116,7 @@ export default function BlogPost() {
       {/* Retour */}
       <div className="pt-4 border-t border-surface-700">
         <Link to="/blog" className="text-sm text-primary-400 hover:underline">
-          ← Voir tous les articles
+          ← {t('blog.viewAllArticles')}
         </Link>
       </div>
     </article>

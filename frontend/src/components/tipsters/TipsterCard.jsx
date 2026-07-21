@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { TipsterBadge } from '../ui/Badge';
 import SuccessRateBar from '../ui/SuccessRateBar';
 import { estimateTipsterROI } from '../../utils/mockOdds';
@@ -10,6 +11,7 @@ const PODIUM_RING = {
 };
 
 export default function TipsterCard({ stats, rank }) {
+  const { t } = useTranslation();
   const user = stats.user;
   const displayName = user?.profile?.displayName || user?.username || 'Tipster';
   const badges = stats.badges || [];
@@ -22,7 +24,7 @@ export default function TipsterCard({ stats, rank }) {
       className={`bento-card flex items-center gap-4 hover:border-primary-500/40 group animate-fade-in ${
         isPodium ? 'bg-gradient-to-r from-amber-500/[0.04] to-transparent' : ''
       }`}
-      aria-label={`Profil de ${displayName}`}
+      aria-label={t('tipsterCard.profileOf', { name: displayName })}
     >
       {/* Rang */}
       <span className={`w-8 text-center font-display font-bold shrink-0 ${isPodium ? 'text-amber-400 text-lg' : 'text-gray-500 text-sm'}`}>
@@ -57,7 +59,7 @@ export default function TipsterCard({ stats, rank }) {
         {roi != null && (
           <p
             className={`text-[10px] text-right font-semibold tabular-nums ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}
-            title="ROI estimé — calculé à partir du taux de réussite et d'une cote moyenne simulée"
+            title={t('tipsterCard.roiTooltip')}
           >
             ROI {roi >= 0 ? '+' : ''}{roi}%
           </p>

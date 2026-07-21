@@ -2,40 +2,20 @@ import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Filter, ChevronRight, Zap } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge } from '../utils/mockOdds';
 
-const MARKET_FILTERS = [
-  { value: '',       label: 'Tous les marchés' },
-  { value: '1',      label: '1 — Domicile' },
-  { value: 'X',      label: 'X — Nul' },
-  { value: '2',      label: '2 — Extérieur' },
-  { value: '1X',     label: 'Double chance 1X' },
-  { value: 'X2',     label: 'Double chance X2' },
-  { value: 'over25', label: 'Plus de 2.5 buts' },
-  { value: 'over15', label: 'Plus de 1.5 buts' },
-  { value: 'btts',   label: 'Les 2 équipes marquent' },
-];
-
-const CONF_FILTERS = [
-  { value: '',       label: 'Toutes' },
-  { value: 'high',   label: '🟢 Élevée (≥72%)' },
-  { value: 'medium', label: '🟡 Moyenne (58–71%)' },
-  { value: 'low',    label: '⚪ Faible (<58%)' },
-];
+const MARKET_KEYS = ['all', '1', 'X', '2', '1X', 'X2', 'over25', 'over15', 'btts'];
+const CONF_KEYS = ['all', 'high', 'medium', 'low'];
 
 const CONF_COLORS = {
   high:   'text-primary-400 bg-primary-500/10 border-primary-500/20',
   medium: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
   low:    'text-gray-500 bg-surface-700/50 border-white/[0.05]',
-};
-
-const PICK_LABELS = {
-  '1': 'Domicile', 'X': 'Nul', '2': 'Extérieur',
-  'over25': 'O2.5', 'over15': 'O1.5', 'btts': 'BTTS', '1X': '1X', 'X2': 'X2',
 };
 
 const FOTMOB_CDN = (id) => id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png` : null;
@@ -47,24 +27,29 @@ function MiniLogo({ logo, teamId, name }) {
   return <div className="w-5 h-5 rounded-full bg-surface-600 flex items-center justify-center text-[8px] font-bold text-gray-500">{name?.[0]}</div>;
 }
 
-function FilterChips({ options, value, onChange }) {
+function FilterChips({ tKey, keys, value, onChange }) {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-2 flex-wrap">
-      {options.map((o) => (
-        <button key={o.value} onClick={() => onChange(o.value === value ? '' : o.value)}
-          className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
-            value === o.value
-              ? 'bg-select-500/15 text-select-400 border-select-500/30'
-              : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
-          }`}>
-          {o.label}
-        </button>
-      ))}
+      {keys.map((k) => {
+        const realValue = k === 'all' ? '' : k;
+        return (
+          <button key={k} onClick={() => onChange(realValue === value ? '' : realValue)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
+              value === realValue
+                ? 'bg-select-500/15 text-select-400 border-select-500/30'
+                : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+            }`}>
+            {t(`${tKey}.${k}`)}
+          </button>
+        );
+      })}
     </div>
   );
 }
 
 export default function Filtres() {
+  const { t } = useTranslation();
   const [market, setMarket]     = useState('');
   const [conf, setConf]         = useState('');
   const [minProb, setMinProb]   = useState(50);
@@ -103,39 +88,42 @@ export default function Filtres() {
       <div className="px-4">
         <div className="flex items-center gap-2 mb-1">
           <Filter size={18} className="text-primary-400" />
-          <h1 className="section-title">Filtres avancés</h1>
+          <h1 className="section-title">{t('filtersPage.title')}</h1>
         </div>
-        <p className="text-xs text-gray-500">Filtrez les matchs d'aujourd'hui et demain selon vos critères</p>
+        <p className="text-xs text-gray-500">{t('filtersPage.subtitle')}</p>
       </div>
 
       {/* Filtres */}
       <div className="px-4 card p-4 space-y-4">
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Marché</p>
+          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.marketLabel')}</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
-              {MARKET_FILTERS.map((o) => (
-                <button key={o.value} onClick={() => setMarket(o.value === market ? '' : o.value)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
-                    market === o.value
-                      ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
-                  }`}>
-                  {o.label}
-                </button>
-              ))}
+              {MARKET_KEYS.map((k) => {
+                const realValue = k === 'all' ? '' : k;
+                return (
+                  <button key={k} onClick={() => setMarket(realValue === market ? '' : realValue)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
+                      market === realValue
+                        ? 'bg-select-500/15 text-select-400 border-select-500/30'
+                        : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                    }`}>
+                    {t(`filtersPage.marketOptions.${k}`)}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Niveau de confiance</p>
-          <FilterChips options={CONF_FILTERS} value={conf} onChange={setConf} />
+          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.confidenceLabel')}</p>
+          <FilterChips tKey="filtersPage.confOptions" keys={CONF_KEYS} value={conf} onChange={setConf} />
         </div>
 
         <div>
           <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">
-            Probabilité minimale : <span className="text-primary-400">{minProb}%</span>
+            {t('filtersPage.minProbLabel')} <span className="text-primary-400">{minProb}%</span>
           </p>
           <input type="range" min="40" max="90" step="5" value={minProb}
             onChange={(e) => setMinProb(Number(e.target.value))}
@@ -156,7 +144,7 @@ export default function Filtres() {
         >
           <span className="flex items-center gap-2">
             <Zap size={14} className={valueOnly ? 'text-amber-400' : 'text-gray-600'} />
-            Value bets uniquement (cotes simulées)
+            {t('filtersPage.valueOnly')}
           </span>
           <span className={`w-9 h-5 rounded-full relative transition-colors ${valueOnly ? 'bg-amber-500' : 'bg-surface-600'}`}>
             <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${valueOnly ? 'translate-x-[18px]' : 'translate-x-0.5'}`} />
@@ -167,7 +155,7 @@ export default function Filtres() {
       {/* Résultats */}
       <div className="px-4">
         <p className="text-xs text-gray-500 mb-3">
-          {isLoading ? 'Chargement…' : `${filtered.length} match${filtered.length > 1 ? 's' : ''} trouvé${filtered.length > 1 ? 's' : ''}`}
+          {isLoading ? t('filtersPage.loading') : t('filtersPage.matchesFound', { count: filtered.length })}
         </p>
 
         {isLoading ? (
@@ -177,10 +165,10 @@ export default function Filtres() {
         ) : filtered.length === 0 ? (
           <div className="card-p text-center py-10">
             <p className="text-2xl mb-2">🔍</p>
-            <p className="text-gray-500 text-sm">Aucun match ne correspond à ces critères</p>
+            <p className="text-gray-500 text-sm">{t('filtersPage.noMatchesFound')}</p>
             <button onClick={() => { setMarket(''); setConf(''); setMinProb(50); }}
               className="btn-secondary mt-3 text-sm">
-              Réinitialiser les filtres
+              {t('filtersPage.resetFilters')}
             </button>
           </div>
         ) : (
@@ -196,7 +184,7 @@ export default function Filtres() {
                 <Link key={m.id} to={`/matchs/${m.id}`}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors">
                   <div className="w-10 shrink-0 text-center">
-                    <span className="text-[10px] text-gray-600 block">{isToday ? 'Auj.' : 'Dem.'}</span>
+                    <span className="text-[10px] text-gray-600 block">{isToday ? t('filtersPage.today') : t('filtersPage.tomorrow')}</span>
                     <span className="text-xs font-semibold text-gray-400 tabular-nums">
                       {format(new Date(m.scheduledAt), 'HH:mm')}
                     </span>
@@ -213,7 +201,7 @@ export default function Filtres() {
                   </div>
                   <div className={`shrink-0 text-center px-3 py-1.5 rounded-lg border ${CONF_COLORS[pred.confidence]}`}>
                     <span className="block text-sm font-bold">{pred.bestPick.prob}%</span>
-                    <span className="block text-[10px] font-semibold">{PICK_LABELS[pred.bestPick.type] || pred.bestPick.type}</span>
+                    <span className="block text-[10px] font-semibold">{t(`filtersPage.pickLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.type })}</span>
                   </div>
                   <div className="shrink-0 flex flex-col items-center gap-1">
                     <OddsChip odd={odd} />

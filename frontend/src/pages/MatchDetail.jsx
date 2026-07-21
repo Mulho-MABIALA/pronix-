@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square, Loader2 } from 'lucide-react';
 import ChatIA from '../components/match/ChatIA';
 import LiveAnalysis from '../components/match/LiveAnalysis';
@@ -17,14 +18,9 @@ import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } f
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 
-const PICK_MARKET_LABELS = {
-  '1': 'Victoire domicile', 'X': 'Match nul', '2': 'Victoire extérieur',
-  '1X': 'Double chance 1X', 'X2': 'Double chance X2',
-  over25: 'Plus de 2.5 buts', over15: 'Plus de 1.5 buts', btts: 'Les 2 équipes marquent',
-};
-
 // ── Scénarios de score probable ──────────────────────────────────────────────
 function ScorelineSection({ match }) {
+  const { t } = useTranslation();
   const scorelines = match.predictions?.scorelines;
   if (!scorelines?.length || match.status !== 'SCHEDULED') return null;
 
@@ -35,7 +31,7 @@ function ScorelineSection({ match }) {
       <div className="bento-card p-4 space-y-3">
         <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
           <span className="w-1 h-3.5 rounded-full bg-violet-400 shrink-0" />
-          Scénarios de score probables
+          {t('matchDetail.scorelinesTitle')}
         </h2>
         <div className="grid grid-cols-2 gap-x-4 gap-y-2">
           {scorelines.map(({ score, prob, homeGoals, awayGoals }) => {
@@ -53,7 +49,7 @@ function ScorelineSection({ match }) {
             );
           })}
         </div>
-        <p className="text-[10px] text-gray-600">Calculé par distribution de Poisson · indicatif</p>
+        <p className="text-[10px] text-gray-600">{t('matchDetail.poissonDisclaimer')}</p>
       </div>
     </section>
   );
@@ -61,6 +57,7 @@ function ScorelineSection({ match }) {
 
 // ── Probabilités 1X2 style Visifoot ─────────────────────────────────────────
 function ProbabilitySection({ match }) {
+  const { t } = useTranslation();
   if (match.status !== 'SCHEDULED') return null;
   const { home, draw, away, predictedHome, predictedAway } = getMock1X2(match.id);
 
@@ -68,23 +65,23 @@ function ProbabilitySection({ match }) {
     <section className="px-4 pb-1">
       <div className="bento-card p-4 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Probabilités 1X2</h2>
-          <span className="text-[10px] text-gray-600 bg-surface-700 px-2 py-0.5 rounded-full">Simulé · indicatif</span>
+          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('matchDetail.probabilities1x2')}</h2>
+          <span className="text-[10px] text-gray-600 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
         </div>
 
         {/* Gros chiffres */}
         <div className="grid grid-cols-3 text-center gap-2">
           <div>
             <p className="text-4xl font-display font-bold text-primary-400">{home}%</p>
-            <p className="text-xs text-gray-500 mt-1.5">1 · Domicile</p>
+            <p className="text-xs text-gray-500 mt-1.5">{t('matchDetail.home1Label')}</p>
           </div>
           <div>
             <p className="text-4xl font-display font-bold text-gray-400">{draw}%</p>
-            <p className="text-xs text-gray-500 mt-1.5">X · Nul</p>
+            <p className="text-xs text-gray-500 mt-1.5">{t('matchDetail.drawXLabel')}</p>
           </div>
           <div>
             <p className="text-4xl font-display font-bold text-primary-400/70">{away}%</p>
-            <p className="text-xs text-gray-500 mt-1.5">2 · Extérieur</p>
+            <p className="text-xs text-gray-500 mt-1.5">{t('matchDetail.away2Label')}</p>
           </div>
         </div>
 
@@ -97,7 +94,7 @@ function ProbabilitySection({ match }) {
 
         {/* Score prédit */}
         <div className="flex items-center justify-center gap-3 border-t border-surface-700 pt-3">
-          <span className="text-xs text-gray-500">Score prédit</span>
+          <span className="text-xs text-gray-500">{t('matchDetail.predictedScore')}</span>
           <span className="font-display font-bold text-xl text-gray-200 tabular-nums">
             {predictedHome} — {predictedAway}
           </span>
@@ -109,6 +106,7 @@ function ProbabilitySection({ match }) {
 
 // ── Value Bet AI Explain ─────────────────────────────────────────────────────
 function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
   const [open, setOpen] = useState(false);
@@ -134,7 +132,7 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
         className="flex items-center gap-1.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors disabled:opacity-50"
       >
         {loading ? <Loader2 size={11} className="animate-spin" /> : <Sparkles size={11} />}
-        Pourquoi c'est une value ?
+        {t('matchDetail.whyValueBet')}
       </button>
 
       {open && data && (
@@ -143,7 +141,7 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
             <p className="text-xs font-semibold text-gray-200">{data.edge}</p>
             {data.confidence && (
               <span className={`text-[10px] font-bold ${CONFIDENCE_COLOR[data.confidence] || 'text-gray-400'}`}>
-                Confiance {data.confidence}
+                {t('matchDetail.confidenceLevel', { level: data.confidence })}
               </span>
             )}
           </div>
@@ -165,6 +163,7 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
 
 // ── Cotes réelles ou simulées — comparateur style BetMines ───────────────────
 function OddsAndValueSection({ match, realOdds }) {
+  const { t } = useTranslation();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
 
@@ -197,12 +196,12 @@ function OddsAndValueSection({ match, realOdds }) {
       <div className="flex items-center justify-between gap-2">
         <h2 className="font-semibold text-gray-100 text-sm flex items-center gap-2">
           <span className="w-1 h-4 rounded-full bg-amber-400 shrink-0" />
-          Pronostic algorithmique & cotes
+          {t('matchDetail.algoPickOdds')}
         </h2>
         <div className="flex items-center gap-2">
           {isReal && (
             <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary-500/15 text-primary-400 border border-primary-500/20 font-semibold">
-              Bookmakers réels
+              {t('matchDetail.realBookmakers')}
             </span>
           )}
           {value && <ValueBetBadge edge={edge} showEdge size="md" />}
@@ -211,9 +210,9 @@ function OddsAndValueSection({ match, realOdds }) {
 
       <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border bg-primary-500/5 border-primary-500/15">
         <div className="min-w-0">
-          <p className="text-xs text-gray-500">Pick recommandé</p>
+          <p className="text-xs text-gray-500">{t('matchDetail.recommendedPick')}</p>
           <p className="text-sm font-semibold text-gray-100 mt-0.5 truncate">
-            {PICK_MARKET_LABELS[pred.bestPick.type] || pred.bestPick.market || pred.bestPick.label}
+            {t(`matchDetail.pickMarketLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.market || pred.bestPick.label })}
           </p>
         </div>
         <span className="text-xl font-display font-bold text-primary-400 shrink-0 ml-3">{pred.bestPick.prob}%</span>
@@ -221,7 +220,7 @@ function OddsAndValueSection({ match, realOdds }) {
 
       <div>
         <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
-          {isReal ? 'Comparateur de cotes — bookmakers' : 'Comparateur de cotes (simulé)'}
+          {isReal ? t('matchDetail.oddsComparatorReal') : t('matchDetail.oddsComparatorSimulated')}
         </p>
         <div className="space-y-1.5">
           {panel.map((b, i) => (
@@ -244,22 +243,14 @@ function OddsAndValueSection({ match, realOdds }) {
       )}
 
       {isReal
-        ? <p className="disclaimer">Cotes fournies à titre informatif — pas un conseil de pari.</p>
+        ? <p className="disclaimer">{t('matchDetail.oddsInfoDisclaimer')}</p>
         : <p className="disclaimer">{ODDS_DISCLAIMER}</p>
       }
     </section>
   );
 }
 
-const PREDICTIONS = [
-  { value: 'HOME_WIN',   label: '1 — Victoire domicile' },
-  { value: 'DRAW',       label: 'X — Nul' },
-  { value: 'AWAY_WIN',   label: '2 — Victoire extérieur' },
-  { value: 'OVER_2_5',   label: '+2.5 buts' },
-  { value: 'UNDER_2_5',  label: '-2.5 buts' },
-  { value: 'BTTS_YES',   label: 'Les deux équipes marquent' },
-  { value: 'BTTS_NO',    label: 'Les deux équipes ne marquent pas toutes' },
-];
+const PREDICTION_KEYS = ['HOME_WIN', 'DRAW', 'AWAY_WIN', 'OVER_2_5', 'UNDER_2_5', 'BTTS_YES', 'BTTS_NO'];
 
 function WhatsAppIcon({ className }) {
   return (
@@ -316,8 +307,9 @@ function FormBadge({ result }) {
 }
 
 function FormRow({ label, matches }) {
+  const { t } = useTranslation();
   if (!matches || matches.length === 0) {
-    return <p className="text-gray-600 text-xs">Aucun match récent disponible</p>;
+    return <p className="text-gray-600 text-xs">{t('matchDetail.noRecentMatches')}</p>;
   }
   return (
     <div className="space-y-1">
@@ -340,8 +332,9 @@ function FormRow({ label, matches }) {
 }
 
 function H2HSection({ h2h, homeTeam, awayTeam }) {
+  const { t } = useTranslation();
   if (!h2h || h2h.length === 0) {
-    return <p className="text-gray-600 text-xs">Aucune confrontation directe disponible</p>;
+    return <p className="text-gray-600 text-xs">{t('matchDetail.noH2H')}</p>;
   }
 
   let homeWins = 0, awayWins = 0, draws = 0;
@@ -360,7 +353,7 @@ function H2HSection({ h2h, homeTeam, awayTeam }) {
         </div>
         <div className="text-center">
           <p className="font-bold text-2xl text-gray-400">{draws}</p>
-          <p className="text-gray-500">Nuls</p>
+          <p className="text-gray-500">{t('matchDetail.draws')}</p>
         </div>
         <div className="text-center">
           <p className="font-bold text-2xl text-primary-400">{awayWins}</p>
@@ -429,45 +422,41 @@ function Tab({ label, active, onClick }) {
   );
 }
 
-const REPORT_REASONS = [
-  'Contenu trompeur ou fausse information',
-  'Contenu inapproprié ou offensant',
-  'Spam ou publicité',
-  'Autre comportement abusif',
-];
+const REPORT_REASON_KEYS = ['misleading', 'inappropriate', 'spam', 'other'];
 
 function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState('');
   return (
     <div className="space-y-2 pt-1">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-gray-400">Motif du signalement</p>
+        <p className="text-xs font-medium text-gray-400">{t('matchDetail.reportReasonLabel')}</p>
         <button onClick={onCancel} className="text-gray-600 hover:text-gray-400">
           <X size={13} />
         </button>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {REPORT_REASONS.map((r) => (
+        {REPORT_REASON_KEYS.map((k) => (
           <button
-            key={r}
+            key={k}
             type="button"
-            onClick={() => setSelected(r)}
+            onClick={() => setSelected(k)}
             className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
-              selected === r
+              selected === k
                 ? 'border-red-500/50 bg-red-500/10 text-red-400'
                 : 'border-surface-600 text-gray-500 hover:border-surface-500'
             }`}
           >
-            {r}
+            {t(`matchDetail.reportReasons.${k}`)}
           </button>
         ))}
       </div>
       <button
-        onClick={() => selected && onSubmit(selected)}
+        onClick={() => selected && onSubmit(t(`matchDetail.reportReasons.${selected}`))}
         disabled={!selected || isPending}
         className="text-xs px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/25 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-40"
       >
-        {isPending ? 'Envoi…' : 'Envoyer le signalement'}
+        {isPending ? t('matchDetail.sending') : t('matchDetail.sendReport')}
       </button>
     </div>
   );
@@ -475,6 +464,8 @@ function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 export default function MatchDetail() {
+  const { t, i18n }    = useTranslation();
+  const dateLocale     = i18n.language?.startsWith('en') ? enUS : fr;
   const { id }         = useParams();
   const { user, isPremium } = useAuth();
   const queryClient    = useQueryClient();
@@ -535,7 +526,7 @@ export default function MatchDetail() {
     : 'Match | fpronix';
   const ogDesc = match
     ? `Pronostics IA, statistiques et cotes pour ${match.homeTeam} vs ${match.awayTeam}${
-        match.scheduledAt ? ` · ${format(new Date(match.scheduledAt), 'dd MMM yyyy HH:mm', { locale: fr })}` : ''
+        match.scheduledAt ? ` · ${format(new Date(match.scheduledAt), 'dd MMM yyyy HH:mm', { locale: dateLocale })}` : ''
       }. Analyse complète sur fpronix.`
     : 'Analyse et pronostics football sur fpronix.';
   const ogImage = match?.homeTeamLogo || match?.awayTeamLogo || undefined;
@@ -584,7 +575,7 @@ export default function MatchDetail() {
       setActiveTab('tips');
     },
     onError: (err) => {
-      setAiError(err.response?.data?.message || 'Erreur lors de la génération IA');
+      setAiError(err.response?.data?.message || t('matchDetail.aiGenerationError'));
     },
   });
 
@@ -605,7 +596,7 @@ export default function MatchDetail() {
   const shareText = `⚽ ${match.homeTeam} ${
     ['FINISHED', 'LIVE'].includes(match.status) ? `${match.homeScore}–${match.awayScore}` : 'vs'
   } ${match.awayTeam}\n${match.competition?.name || ''} — ${
-    match.status === 'LIVE' ? '🔴 EN DIRECT' : match.status === 'FINISHED' ? 'Terminé' : format(new Date(match.scheduledAt), 'HH:mm dd MMM')
+    match.status === 'LIVE' ? `🔴 ${t('matchDetail.liveNow').toUpperCase()}` : match.status === 'FINISHED' ? t('matchDetail.finished') : format(new Date(match.scheduledAt), 'HH:mm dd MMM')
   }\n\nhttps://statistiquefoot.sn/matchs/${id}`;
 
   return (
@@ -621,10 +612,10 @@ export default function MatchDetail() {
           <button
             onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener')}
             className="flex items-center gap-1.5 text-xs text-green-500 hover:text-green-400 transition-colors"
-            aria-label="Partager sur WhatsApp"
+            aria-label={t('matchDetail.shareWhatsapp')}
           >
             <WhatsAppIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">Partager</span>
+            <span className="hidden sm:inline">{t('matchDetail.share')}</span>
           </button>
         </div>
 
@@ -642,7 +633,7 @@ export default function MatchDetail() {
                   <p className="flex items-center justify-center gap-1.5 mt-1.5">
                     <span className="w-2 h-2 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
                     <span className="text-sm font-bold text-live-400">
-                      {match.minute ? (match.minute === 'HT' ? 'Mi-temps' : match.minute) : 'En direct'}
+                      {match.minute ? (match.minute === 'HT' ? t('matchDetail.halftime') : match.minute) : t('matchDetail.liveNow')}
                     </span>
                   </p>
                 )}
@@ -653,7 +644,7 @@ export default function MatchDetail() {
                   {format(new Date(match.scheduledAt), 'HH:mm')}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {format(new Date(match.scheduledAt), 'dd MMM yyyy', { locale: fr })}
+                  {format(new Date(match.scheduledAt), 'dd MMM yyyy', { locale: dateLocale })}
                 </p>
               </>
             )}
@@ -687,13 +678,13 @@ export default function MatchDetail() {
       <div className="border-b border-white/[0.06] overflow-x-auto scrollbar-hide">
         <div className="flex px-4 min-w-max">
           {isFinishedOrLive && (
-            <Tab label="Données du match" active={activeTab === 'data'} onClick={() => setActiveTab('data')} />
+            <Tab label={t('matchDetail.tabData')} active={activeTab === 'data'} onClick={() => setActiveTab('data')} />
           )}
           {isFinishedOrLive && (
-            <Tab label="Évènements" active={activeTab === 'events'} onClick={() => setActiveTab('events')} />
+            <Tab label={t('matchDetail.tabEvents')} active={activeTab === 'events'} onClick={() => setActiveTab('events')} />
           )}
-          <Tab label={`Pronostics${tips.length ? ` (${tips.length})` : ''}`} active={activeTab === 'tips'} onClick={() => setActiveTab('tips')} />
-          <Tab label="Forme & H2H" active={activeTab === 'form'} onClick={() => setActiveTab('form')} />
+          <Tab label={`${t('matchDetail.tabTips')}${tips.length ? ` (${tips.length})` : ''}`} active={activeTab === 'tips'} onClick={() => setActiveTab('tips')} />
+          <Tab label={t('matchDetail.tabForm')} active={activeTab === 'form'} onClick={() => setActiveTab('form')} />
         </div>
       </div>
 
@@ -714,7 +705,7 @@ export default function MatchDetail() {
               </div>
             ) : !statsData?.data ? (
               <div className="card-p text-center py-10">
-                <p className="text-gray-600 text-sm">Statistiques non disponibles pour ce match</p>
+                <p className="text-gray-600 text-sm">{t('matchDetail.statsNotAvailable')}</p>
               </div>
             ) : (
               <div className="card p-4 space-y-4">
@@ -723,7 +714,7 @@ export default function MatchDetail() {
                 ))}
                 {statsData.mock && (
                   <p className="text-[10px] text-gray-700 text-center pt-1">
-                    * Statistiques estimées — données réelles avec le plan payant
+                    {t('matchDetail.statsEstimatedNote')}
                   </p>
                 )}
               </div>
@@ -741,12 +732,12 @@ export default function MatchDetail() {
             {!isPremium && (
               <section className="card border-dashed border-surface-600 p-6 text-center">
                 <Lock size={22} className="mx-auto text-gray-500 mb-2" aria-hidden="true" />
-                <p className="text-gray-400 font-medium text-sm">Données Premium</p>
+                <p className="text-gray-400 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
                 <p className="text-gray-500 text-xs mt-1">
-                  Compositions probables, blessures, statistiques avancées
+                  {t('matchDetail.premiumDataDesc')}
                 </p>
                 <Link to="/abonnement" className="btn-primary mt-4 text-sm">
-                  Passer Premium — 5 150 FCFA/mois
+                  {t('matchDetail.upgradePremium', { price: '5 150' })}
                 </Link>
               </section>
             )}
@@ -761,12 +752,12 @@ export default function MatchDetail() {
                       <Sparkles size={15} className="text-violet-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-100">Analyse IA</p>
-                      <p className="text-xs text-gray-500">Claude analyse la forme, le H2H et les stats</p>
+                      <p className="text-sm font-semibold text-gray-100">{t('matchDetail.aiAnalysis')}</p>
+                      <p className="text-xs text-gray-500">{t('matchDetail.aiAnalysisDesc')}</p>
                     </div>
                   </div>
                   {aiMeta && (
-                    <span className="text-[10px] text-gray-600 shrink-0">{aiMeta.usedToday}/{aiMeta.dailyLimit} aujourd'hui</span>
+                    <span className="text-[10px] text-gray-600 shrink-0">{t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
                   )}
                 </div>
 
@@ -782,15 +773,15 @@ export default function MatchDetail() {
                       className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-400 hover:bg-violet-500/25 active:scale-[0.98] transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Sparkles size={15} className={generateAi.isPending ? 'animate-spin' : ''} />
-                      {generateAi.isPending ? 'Analyse en cours…' : 'Analyser ce match'}
+                      {generateAi.isPending ? t('matchDetail.analyzing') : t('matchDetail.analyzeMatch')}
                     </button>
                   ) : (
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
-                        <p className="text-xs font-semibold text-violet-400">Analyse prête</p>
+                        <p className="text-xs font-semibold text-violet-400">{t('matchDetail.analysisReady')}</p>
                         {aiMeta && (
-                          <span className="text-[10px] text-gray-600 ml-auto">{aiMeta.usedToday}/{aiMeta.dailyLimit} analyses utilisées</span>
+                          <span className="text-[10px] text-gray-600 ml-auto">{t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
                         )}
                       </div>
                       {analysis && (
@@ -800,7 +791,7 @@ export default function MatchDetail() {
                       )}
                     </div>
                   )}
-                  <p className="disclaimer">Ceci n'est pas un conseil financier. Aucune garantie de gain.</p>
+                  <p className="disclaimer">{t('matchDetail.notFinancialAdvice')}</p>
                 </div>
               </section>
             )}
@@ -809,11 +800,11 @@ export default function MatchDetail() {
             {!user && isScheduled && (
               <section className="card p-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-gray-100">Publie ton pronostic sur ce match</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Deviens tipster et grimpe dans le classement</p>
+                  <p className="text-sm font-semibold text-gray-100">{t('matchDetail.publishPromptTitle')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('matchDetail.publishPromptDesc')}</p>
                 </div>
                 <Link to="/connexion" className="btn-primary text-sm px-4 py-2 shrink-0">
-                  Se connecter
+                  {t('matchDetail.loginBtn')}
                 </Link>
               </section>
             )}
@@ -821,17 +812,17 @@ export default function MatchDetail() {
             {/* Formulaire de pronostic — ouvert à tous les inscrits */}
             {user && isScheduled && (
               <section className="card p-4 space-y-4">
-                <h2 className="font-semibold text-gray-100 text-sm">Publier un pronostic</h2>
+                <h2 className="font-semibold text-gray-100 text-sm">{t('matchDetail.publishTipTitle')}</h2>
 
                 {tipSuccess && (
                   <Alert variant="success" onClose={() => setTipSuccess(false)}>
-                    Pronostic publié avec succès
+                    {t('matchDetail.tipPublishedSuccess')}
                   </Alert>
                 )}
 
                 <div>
                   <label htmlFor="prediction" className="block text-sm font-medium text-gray-300 mb-1.5">
-                    Votre pronostic
+                    {t('matchDetail.yourPrediction')}
                   </label>
                   <div className="relative">
                     <select
@@ -840,9 +831,9 @@ export default function MatchDetail() {
                       onChange={(e) => setPrediction(e.target.value)}
                       className="input appearance-none pr-10"
                     >
-                      <option value="">Choisir un résultat...</option>
-                      {PREDICTIONS.map((p) => (
-                        <option key={p.value} value={p.value}>{p.label}</option>
+                      <option value="">{t('matchDetail.chooseResult')}</option>
+                      {PREDICTION_KEYS.map((k) => (
+                        <option key={k} value={k}>{t(`matchDetail.predictions.${k}`)}</option>
                       ))}
                     </select>
                     <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
@@ -851,7 +842,7 @@ export default function MatchDetail() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">
-                    Confiance : {confidence}/5
+                    {t('matchDetail.confidenceOutOf5', { n: confidence })}
                   </label>
                   <div className="flex gap-2">
                     {[1,2,3,4,5].map((n) => (
@@ -859,7 +850,7 @@ export default function MatchDetail() {
                         key={n}
                         type="button"
                         onClick={() => setConfidence(n)}
-                        aria-label={`Confiance ${n} sur 5`}
+                        aria-label={t('matchDetail.confidenceAriaLabel', { n })}
                         className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
                           n <= confidence ? 'bg-primary-500 text-white' : 'bg-surface-700 text-gray-400'
                         }`}
@@ -872,7 +863,7 @@ export default function MatchDetail() {
 
                 <div>
                   <label htmlFor="analysis" className="block text-sm font-medium text-gray-300 mb-1.5">
-                    Analyse (optionnel)
+                    {t('matchDetail.analysisOptional')}
                   </label>
                   <textarea
                     id="analysis"
@@ -880,7 +871,7 @@ export default function MatchDetail() {
                     onChange={(e) => setAnalysis(e.target.value)}
                     className="input resize-none h-24"
                     maxLength={500}
-                    placeholder="Partagez votre analyse… (max 500 caractères)"
+                    placeholder={t('matchDetail.analysisPlaceholder')}
                   />
                   <p className="text-xs text-gray-600 mt-1 text-right">{analysis.length}/500</p>
                 </div>
@@ -890,7 +881,7 @@ export default function MatchDetail() {
                   disabled={!prediction || submitTip.isPending}
                   className="btn-primary w-full"
                 >
-                  {submitTip.isPending ? 'Publication…' : 'Publier mon pronostic'}
+                  {submitTip.isPending ? t('matchDetail.publishing') : t('matchDetail.publishTipBtn')}
                 </button>
               </section>
             )}
@@ -898,13 +889,13 @@ export default function MatchDetail() {
             {/* Liste des pronostics */}
             <section>
               <h2 className="font-semibold text-gray-100 text-sm mb-3">
-                Pronostics des tipsters{tips.length > 0 ? ` (${tips.length})` : ''}
+                {t('matchDetail.tipstersPicksTitle')}{tips.length > 0 ? ` (${tips.length})` : ''}
               </h2>
               <div className="space-y-3">
                 {tips.map((tip) => {
                   const displayName = tip.user?.profile?.displayName || tip.user?.username;
                   const stats       = tip.user?.tipsterStats;
-                  const predLabel   = PREDICTIONS.find((p) => p.value === tip.prediction)?.label || tip.prediction;
+                  const predLabel   = t(`matchDetail.predictions.${tip.prediction}`, { defaultValue: tip.prediction });
 
                   return (
                     <div key={tip.id} className="card p-4 space-y-3">
@@ -948,7 +939,7 @@ export default function MatchDetail() {
                       {user && tip.userId !== user.id && (
                         <div className="pt-2">
                           {reportedTips.has(tip.id) ? (
-                            <p className="text-xs text-gray-600">Signalement envoyé</p>
+                            <p className="text-xs text-gray-600">{t('matchDetail.reportSent')}</p>
                           ) : reportingTipId === tip.id ? (
                             <ReportForm
                               tipId={tip.id}
@@ -962,7 +953,7 @@ export default function MatchDetail() {
                               className="flex items-center gap-1 text-xs text-gray-600 hover:text-red-400 transition-colors"
                             >
                               <Flag size={11} />
-                              Signaler
+                              {t('matchDetail.reportBtn')}
                             </button>
                           )}
                         </div>
@@ -972,7 +963,7 @@ export default function MatchDetail() {
                 })}
                 {tips.length === 0 && (
                   <div className="card-p text-center py-8">
-                    <p className="text-gray-500 text-sm">Aucun pronostic pour ce match. Soyez le premier !</p>
+                    <p className="text-gray-500 text-sm">{t('matchDetail.noTipsYet')}</p>
                   </div>
                 )}
               </div>
@@ -991,14 +982,14 @@ export default function MatchDetail() {
               </div>
             ) : eventsData.data?.length === 0 ? (
               <div className="card-p text-center py-10">
-                <p className="text-gray-500 text-sm">Aucun évènement enregistré pour ce match</p>
+                <p className="text-gray-500 text-sm">{t('matchDetail.noEventsYet')}</p>
               </div>
             ) : (
               <div className="space-y-2">
                 {match.status === 'LIVE' && (
                   <div className="flex items-center gap-2 text-live-400 text-xs mb-3">
                     <span className="w-2 h-2 rounded-full bg-live-500 animate-pulse" />
-                    Mise à jour automatique toutes les 30 secondes
+                    {t('matchDetail.autoUpdateNote')}
                   </div>
                 )}
                 {eventsData.data.map((evt, i) => {
@@ -1026,7 +1017,7 @@ export default function MatchDetail() {
                           <p className="text-xs text-gray-500 truncate">↙ {evt.assist}</p>
                         )}
                         {isGoal && evt.assist && (
-                          <p className="text-xs text-gray-500 truncate">Passe : {evt.assist}</p>
+                          <p className="text-xs text-gray-500 truncate">{t('matchDetail.assistLabel', { assist: evt.assist })}</p>
                         )}
                         {evt.detail && !isSub && (
                           <p className="text-xs text-gray-600">{evt.detail}</p>
@@ -1053,7 +1044,7 @@ export default function MatchDetail() {
               </div>
             ) : !contextData?.data ? (
               <div className="card-p text-center py-8">
-                <p className="text-gray-600 text-sm">Données de forme non disponibles</p>
+                <p className="text-gray-600 text-sm">{t('matchDetail.formDataNotAvailable')}</p>
               </div>
             ) : (
               <div className="space-y-5">
@@ -1062,7 +1053,7 @@ export default function MatchDetail() {
                   <FormRow label={match.awayTeam} matches={contextData.data.awayForm} />
                 </div>
                 <div className="card p-4">
-                  <p className="text-xs font-semibold text-gray-400 mb-3 uppercase tracking-wider">Confrontations directes</p>
+                  <p className="text-xs font-semibold text-gray-400 mb-3 uppercase tracking-wider">{t('matchDetail.headToHead')}</p>
                   <H2HSection h2h={contextData.data.h2h} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
                 </div>
               </div>

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Flag, Crown, Users, Loader2, Heart, HeartOff, MessageCircle, Send, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -12,13 +13,9 @@ import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
 import { estimateTipsterROI } from '../utils/mockOdds';
 import { useAnalytics } from '../hooks/useAnalytics';
 
-const PRED_LABELS = {
-  HOME_WIN: '1 — Dom.', DRAW: 'X — Nul', AWAY_WIN: '2 — Ext.',
-  OVER_2_5: '+2.5', UNDER_2_5: '-2.5', BTTS_YES: 'BTTS Oui', BTTS_NO: 'BTTS Non',
-};
-
 // ─── Mini SVG ROI Line Chart ───────────────────────────────────────────────────
 function ROIChart({ data }) {
+  const { t } = useTranslation();
   if (!data || data.length < 2) return null;
 
   const W = 280, H = 80, PAD = 12;
@@ -39,7 +36,7 @@ function ROIChart({ data }) {
     <div>
       <div className="flex items-center gap-1.5 mb-1.5">
         <TrendingUp size={13} className="text-gray-500" />
-        <p className="text-xs text-gray-500">ROI hebdomadaire (8 dernières semaines)</p>
+        <p className="text-xs text-gray-500">{t('tipsterProfile.weeklyRoi')}</p>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-20">
         {/* Zéro line */}
@@ -77,6 +74,8 @@ function ROIChart({ data }) {
 
 // ─── Comments section pour un tip ─────────────────────────────────────────────
 function TipComments({ tipId }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [text, setText] = useState('');
@@ -103,7 +102,7 @@ function TipComments({ tipId }) {
 
   return (
     <div className="pt-3 border-t border-surface-700 space-y-3">
-      {isLoading && <p className="text-xs text-gray-500">Chargement…</p>}
+      {isLoading && <p className="text-xs text-gray-500">{t('tipsterProfile.loadingComments')}</p>}
       {comments.map((c) => (
         <div key={c.id} className="flex gap-2 text-xs">
           <div className="h-6 w-6 rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-semibold shrink-0 text-[10px]">
@@ -113,7 +112,7 @@ function TipComments({ tipId }) {
             <span className="font-medium text-gray-300">
               {c.user?.profile?.displayName || c.user?.username}
             </span>
-            <span className="text-gray-500 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: fr })}</span>
+            <span className="text-gray-500 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}</span>
             <p className="text-gray-400 mt-0.5">{c.content}</p>
           </div>
           {(user?.id === c.userId || user?.role === 'ADMIN') && (
@@ -127,7 +126,7 @@ function TipComments({ tipId }) {
         </div>
       ))}
       {!comments.length && !isLoading && (
-        <p className="text-xs text-gray-600">Aucun commentaire — soyez le premier !</p>
+        <p className="text-xs text-gray-600">{t('tipsterProfile.noComments')}</p>
       )}
       {user && (
         <div className="flex gap-2 items-center">
@@ -135,7 +134,7 @@ function TipComments({ tipId }) {
             value={text}
             onChange={(e) => setText(e.target.value.slice(0, 500))}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && text.trim() && addMutation.mutate()}
-            placeholder="Votre avis…"
+            placeholder={t('tipsterProfile.commentPlaceholder')}
             className="flex-1 bg-surface-700 border border-surface-600 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500"
           />
           <button
@@ -153,6 +152,8 @@ function TipComments({ tipId }) {
 
 // ─── Tip card with expandable comments ────────────────────────────────────────
 function TipCard({ tip }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const [showComments, setShowComments] = useState(false);
   return (
     <div className="bento-card space-y-2">
@@ -162,8 +163,8 @@ function TipCard({ tip }) {
             {tip.match?.homeTeam} vs {tip.match?.awayTeam}
           </Link>
           <p className="text-xs text-gray-500 mt-0.5">
-            {PRED_LABELS[tip.prediction] || tip.prediction}
-            {' '}· {format(new Date(tip.createdAt), 'dd MMM', { locale: fr })}
+            {t(`tipsterProfile.predLabels.${tip.prediction}`, { defaultValue: tip.prediction })}
+            {' '}· {format(new Date(tip.createdAt), 'dd MMM', { locale: dateLocale })}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -171,7 +172,7 @@ function TipCard({ tip }) {
           <button
             onClick={() => setShowComments((v) => !v)}
             className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-400 transition-colors"
-            title="Commentaires"
+            title={t('tipsterProfile.comments')}
           >
             <MessageCircle size={13} />
             {showComments ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
@@ -185,6 +186,7 @@ function TipCard({ tip }) {
 
 // ─── Main component ────────────────────────────────────────────────────────────
 export default function TipsterProfile() {
+  const { t } = useTranslation();
   const { userId } = useParams();
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -276,7 +278,7 @@ export default function TipsterProfile() {
   }
 
   const { user: tipster, stats, recentTips, weeklyStats: inlineWeekly } = data?.data || {};
-  if (!tipster) return <div className="text-center py-20 text-gray-500">Tipster introuvable</div>;
+  if (!tipster) return <div className="text-center py-20 text-gray-500">{t('tipsterProfile.notFound')}</div>;
 
   const displayName = tipster.profile?.displayName || tipster.username;
   const isOwn = user?.id === userId;
@@ -304,7 +306,7 @@ export default function TipsterProfile() {
             {/* Follower count */}
             <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
               <Users size={11} />
-              {followerCount.toLocaleString('fr-FR')} abonné{followerCount > 1 ? 's' : ''}
+              {t('tipsterProfile.followersCount', { count: followerCount })}
             </p>
           </div>
 
@@ -320,7 +322,7 @@ export default function TipsterProfile() {
                       ? 'bg-surface-600 text-gray-300 hover:bg-red-500/20 hover:text-red-400'
                       : 'bg-primary-500/15 text-primary-400 hover:bg-primary-500/30'
                   }`}
-                  aria-label={isFollowing ? 'Ne plus suivre' : 'Suivre'}
+                  aria-label={isFollowing ? t('tipsterProfile.unfollow') : t('tipsterProfile.follow')}
                 >
                   {(followMutation.isPending || unfollowMutation.isPending) ? (
                     <Loader2 size={12} className="animate-spin" />
@@ -329,14 +331,14 @@ export default function TipsterProfile() {
                   ) : (
                     <Heart size={12} />
                   )}
-                  {isFollowing ? 'Suivi' : 'Suivre'}
+                  {isFollowing ? t('tipsterProfile.following') : t('tipsterProfile.follow')}
                 </button>
               ) : (
                 <Link
                   to="/connexion"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-primary-400 hover:bg-primary-500/30"
                 >
-                  <Heart size={12} /> Suivre
+                  <Heart size={12} /> {t('tipsterProfile.loginToFollow')}
                 </Link>
               )}
             </div>
@@ -349,31 +351,31 @@ export default function TipsterProfile() {
         <div className="grid grid-cols-2 gap-3">
           <div className="bento-card text-center">
             <p className="text-3xl font-display font-bold text-gray-100">{stats.totalTips}</p>
-            <p className="text-xs text-gray-500 mt-1">Pronostics</p>
+            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.picksCount')}</p>
           </div>
           <div className="bento-card">
             <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="lg" />
-            <p className="text-xs text-gray-500 mt-1">Taux de réussite global</p>
+            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.globalSuccessRate')}</p>
           </div>
           <div className="bento-card text-center">
             <p className="text-2xl font-display font-bold text-gray-100">
               {stats.globalRank ? `#${stats.globalRank}` : '–'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Classement global</p>
+            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.globalRank')}</p>
           </div>
           <div className="bento-card text-center">
             <p className="text-2xl font-display font-bold text-gray-100">
               {stats.monthlyRank ? `#${stats.monthlyRank}` : '–'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">Classement du mois</p>
+            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.monthlyRank')}</p>
           </div>
           {roi != null && (
             <div className="bento-card text-center col-span-2">
               <p className={`text-2xl font-display font-bold ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}>
                 {roi >= 0 ? '+' : ''}{roi}%
               </p>
-              <p className="text-xs text-gray-500 mt-1" title="Calculé à partir du taux de réussite et d'une cote moyenne simulée">
-                ROI estimé (simulé)
+              <p className="text-xs text-gray-500 mt-1" title={t('tipsterProfile.estimatedRoiTooltip')}>
+                {t('tipsterProfile.estimatedRoi')}
               </p>
             </div>
           )}
@@ -395,7 +397,7 @@ export default function TipsterProfile() {
             <p className="font-semibold text-gray-100">{plan.name}</p>
             <span className="ml-auto text-lg font-display font-bold text-primary-400">
               {plan.price.toLocaleString('fr-FR')} FCFA
-              <span className="text-xs text-gray-500 font-normal"> /mois</span>
+              <span className="text-xs text-gray-500 font-normal"> {t('tipsterProfile.perMonth')}</span>
             </span>
           </div>
           {plan.description && (
@@ -404,19 +406,19 @@ export default function TipsterProfile() {
           {plan.subscriberCount > 0 && (
             <p className="text-xs text-gray-500 flex items-center gap-1">
               <Users size={11} />
-              {plan.subscriberCount} abonné{plan.subscriberCount > 1 ? 's' : ''}
+              {t('tipsterProfile.subscribersCount', { count: plan.subscriberCount })}
             </p>
           )}
           {user ? (
             isSubscribed ? (
               <div className="flex items-center justify-between">
-                <span className="text-xs text-green-400 font-medium">✓ Abonné</span>
+                <span className="text-xs text-green-400 font-medium">{t('tipsterProfile.subscribed')}</span>
                 <button
                   onClick={() => unsubscribeMutation.mutate()}
                   disabled={unsubscribeMutation.isPending}
                   className="text-xs text-gray-500 hover:text-red-400 transition-colors"
                 >
-                  {unsubscribeMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : 'Se désabonner'}
+                  {unsubscribeMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : t('tipsterProfile.unsubscribe')}
                 </button>
               </div>
             ) : (
@@ -426,7 +428,7 @@ export default function TipsterProfile() {
                 className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors disabled:opacity-40"
               >
                 {subscribeMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} />}
-                S'abonner — {plan.price.toLocaleString('fr-FR')} FCFA/mois
+                {t('tipsterProfile.subscribe', { price: plan.price.toLocaleString('fr-FR') })}
               </button>
             )
           ) : (
@@ -434,7 +436,7 @@ export default function TipsterProfile() {
               to="/connexion"
               className="block text-center py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors"
             >
-              Se connecter pour s'abonner
+              {t('tipsterProfile.loginToSubscribe')}
             </Link>
           )}
         </div>
@@ -442,11 +444,11 @@ export default function TipsterProfile() {
 
       {/* ── Pronostics récents avec commentaires ── */}
       <section>
-        <h2 className="font-semibold text-gray-100 mb-3">Pronostics récents</h2>
+        <h2 className="font-semibold text-gray-100 mb-3">{t('tipsterProfile.recentPicks')}</h2>
         <div className="space-y-2">
           {recentTips?.map((tip) => <TipCard key={tip.id} tip={tip} />)}
           {!recentTips?.length && (
-            <p className="text-gray-500 text-sm text-center py-4">Aucun pronostic récent</p>
+            <p className="text-gray-500 text-sm text-center py-4">{t('tipsterProfile.noRecentPicks')}</p>
           )}
         </div>
       </section>
@@ -459,13 +461,13 @@ export default function TipsterProfile() {
             className="text-xs text-gray-600 hover:text-gray-400 flex items-center gap-1 mx-auto"
           >
             <Flag size={12} aria-hidden="true" />
-            Signaler ce tipster
+            {t('tipsterProfile.reportTipster')}
           </button>
         </p>
       )}
 
       <p className="disclaimer text-center">
-        Taux de réussite calculé automatiquement. Aucune garantie de gain. Jouez de façon responsable.
+        {t('tipsterProfile.disclaimer')}
       </p>
     </div>
   );

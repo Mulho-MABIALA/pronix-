@@ -1,22 +1,25 @@
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Users, Calendar, MapPin, ChevronLeft } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 function FixtureRow({ fixture }) {
+  const { i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const f = fixture.fixture;
-  const t = fixture.teams;
+  const teams = fixture.teams;
   const g = fixture.goals;
   const finished = ['FT', 'AET', 'PEN', 'AWD', 'WO'].includes(f?.status?.short);
-  const date = f?.date ? format(new Date(f.date), 'dd MMM', { locale: fr }) : '–';
+  const date = f?.date ? format(new Date(f.date), 'dd MMM', { locale: dateLocale }) : '–';
   return (
     <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-800 border border-surface-700">
       <span className="text-xs text-gray-500 w-12 shrink-0">{date}</span>
-      <span className="text-xs text-gray-300 flex-1 truncate">{t?.home?.name} - {t?.away?.name}</span>
+      <span className="text-xs text-gray-300 flex-1 truncate">{teams?.home?.name} - {teams?.away?.name}</span>
       {finished ? (
         <span className="text-xs font-bold text-gray-100 tabular-nums">{g?.home} – {g?.away}</span>
       ) : (
@@ -27,6 +30,7 @@ function FixtureRow({ fixture }) {
 }
 
 export default function TeamPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
 
   const { data: teamData, isLoading: teamLoading } = useQuery({
@@ -53,8 +57,8 @@ export default function TeamPage() {
   const { last = [], next = [] } = fixturesData?.data || {};
 
   usePageMeta(
-    team ? `${team.name} — Statistiques & Effectif` : 'Équipe',
-    team ? `Fiche équipe, effectif, résultats et prochains matchs de ${team.name} sur fpronix.` : '',
+    team ? t('teamPage.metaTitle', { name: team.name }) : t('teamPage.metaTitleFallback'),
+    team ? t('teamPage.metaDesc', { name: team.name }) : '',
   );
 
   if (teamLoading) {
@@ -71,7 +75,7 @@ export default function TeamPage() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
         <div className="bento-card text-center py-12 text-gray-500">
-          Équipe introuvable ou API Football non configurée.
+          {t('teamPage.teamNotFound')}
         </div>
       </div>
     );
@@ -84,7 +88,7 @@ export default function TeamPage() {
 
   // Group squad by position
   const byPosition = squad.reduce((acc, p) => {
-    const pos = p.position || 'Autre';
+    const pos = p.position || t('teamPage.otherPosition');
     if (!acc[pos]) acc[pos] = [];
     acc[pos].push(p);
     return acc;
@@ -106,7 +110,7 @@ export default function TeamPage() {
           <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
             <MapPin size={11} />
             <span>{team.country}</span>
-            {team.founded && <span>· Fondé en {team.founded}</span>}
+            {team.founded && <span>· {t('teamPage.foundedIn', { year: team.founded })}</span>}
           </div>
         </div>
       </div>
@@ -115,22 +119,22 @@ export default function TeamPage() {
       {stats && (
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Statistiques saison en cours
+            {t('teamPage.currentSeasonStats')}
           </h2>
           <div className="grid grid-cols-3 gap-3">
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-gray-100">{stats.fixtures?.played?.total ?? '–'}</p>
-              <p className="text-xs text-gray-500 mt-1">Matchs joués</p>
+              <p className="text-xs text-gray-500 mt-1">{t('teamPage.matchesPlayed')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-primary-400">{winPct != null ? `${winPct}%` : '–'}</p>
-              <p className="text-xs text-gray-500 mt-1">Victoires</p>
+              <p className="text-xs text-gray-500 mt-1">{t('teamPage.wins')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-gray-100">
                 {goalStats?.for?.total?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">Buts marqués</p>
+              <p className="text-xs text-gray-500 mt-1">{t('teamPage.goalsScored')}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-3">
@@ -138,13 +142,13 @@ export default function TeamPage() {
               <p className="text-xl font-display font-bold text-gray-100">
                 {goalStats?.for?.average?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">Moy. buts / match</p>
+              <p className="text-xs text-gray-500 mt-1">{t('teamPage.avgGoalsPerMatch')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-xl font-display font-bold text-gray-100">
                 {goalStats?.against?.total?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">Buts encaissés</p>
+              <p className="text-xs text-gray-500 mt-1">{t('teamPage.goalsConceded')}</p>
             </div>
           </div>
         </section>
@@ -155,7 +159,7 @@ export default function TeamPage() {
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
             <Calendar size={13} />
-            Prochains matchs
+            {t('teamPage.upcomingMatches')}
           </h2>
           <div className="space-y-2">
             {next.map((f) => <FixtureRow key={f.fixture?.id} fixture={f} />)}
@@ -167,7 +171,7 @@ export default function TeamPage() {
       {last.length > 0 && (
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Derniers résultats
+            {t('teamPage.lastResults')}
           </h2>
           <div className="space-y-2">
             {[...last].reverse().map((f) => <FixtureRow key={f.fixture?.id} fixture={f} />)}
@@ -180,7 +184,7 @@ export default function TeamPage() {
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
             <Users size={13} />
-            Effectif ({squad.length} joueurs)
+            {t('teamPage.squadCount', { count: squad.length })}
           </h2>
           {Object.entries(byPosition).map(([pos, players]) => (
             <div key={pos} className="mb-4">

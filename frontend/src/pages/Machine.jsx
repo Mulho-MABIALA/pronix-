@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot } from 'lucide-react';
 import api from '../services/api';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 
-function drawTicketCanvas(ticket, totalOdds) {
+function drawTicketCanvas(ticket, totalOdds, t) {
   const W = 640;
   const ROW_H = 70;
   const HEADER_H = 90;
@@ -46,13 +47,13 @@ function drawTicketCanvas(ticket, totalOdds) {
 
   ctx.fillStyle = '#555555';
   ctx.font = '11px system-ui';
-  ctx.fillText(`Généré le ${format(new Date(), 'dd/MM/yyyy à HH:mm')} · ${ticket.length} sélection${ticket.length > 1 ? 's' : ''}`, 58, 46);
+  ctx.fillText(`${t('machine.canvasGeneratedAt', { date: format(new Date(), 'dd/MM/yyyy à HH:mm') })} · ${t('machine.selectionsGenerated', { count: ticket.length })}`, 58, 46);
 
   // Cote totale
   ctx.fillStyle = '#f97316';
   ctx.font = 'bold 13px system-ui';
   ctx.textAlign = 'right';
-  ctx.fillText(`Cote × ${totalOdds}`, W - 16, 30);
+  ctx.fillText(`${t('machine.totalOdd')} × ${totalOdds}`, W - 16, 30);
 
   // Ligne séparatrice
   ctx.strokeStyle = 'rgba(255,255,255,0.07)';
@@ -66,7 +67,7 @@ function drawTicketCanvas(ticket, totalOdds) {
   const CONF_BG   = { high: '#1aa65622', medium: '#f59e0b22', low: '#3a3a3a' };
   const CONF_TEXT = { high: '#2ec16a',   medium: '#fbbf24',   low: '#888888' };
 
-  ticket.forEach((t, i) => {
+  ticket.forEach((row, i) => {
     const y = HEADER_H + i * ROW_H;
 
     // Séparateur
@@ -88,13 +89,13 @@ function drawTicketCanvas(ticket, totalOdds) {
     // Match
     ctx.fillStyle = '#e5e7eb';
     ctx.font = 'bold 13px system-ui';
-    ctx.fillText(`${t.match.homeTeam} vs ${t.match.awayTeam}`, 34, y + 22);
+    ctx.fillText(`${row.match.homeTeam} vs ${row.match.awayTeam}`, 34, y + 22);
 
     // Compétition + heure
     ctx.fillStyle = '#555555';
     ctx.font = '10px system-ui';
     ctx.fillText(
-      `${t.match.competition?.name || ''} · ${format(new Date(t.match.scheduledAt), 'dd/MM HH:mm')}`,
+      `${row.match.competition?.name || ''} · ${format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}`,
       34, y + 38
     );
 
@@ -102,19 +103,19 @@ function drawTicketCanvas(ticket, totalOdds) {
     const badgeW = 80;
     const badgeX = W - 16 - badgeW;
     const badgeY = y + 9;
-    ctx.fillStyle = CONF_BG[t.conf];
+    ctx.fillStyle = CONF_BG[row.conf];
     roundRect(ctx, badgeX, badgeY, badgeW, 46, 8);
     ctx.fill();
 
-    ctx.fillStyle = CONF_TEXT[t.conf];
+    ctx.fillStyle = CONF_TEXT[row.conf];
     ctx.font = 'bold 12px system-ui';
     ctx.textAlign = 'center';
-    ctx.fillText(PICK_LABELS[t.pick.type] || t.pick.type, badgeX + badgeW / 2, badgeY + 14);
+    ctx.fillText(t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type }), badgeX + badgeW / 2, badgeY + 14);
     ctx.font = 'bold 11px system-ui';
-    ctx.fillText(`${t.pick.prob}%`, badgeX + badgeW / 2, badgeY + 28);
-    ctx.fillStyle = t.value ? '#fbbf24' : '#888888';
+    ctx.fillText(`${row.pick.prob}%`, badgeX + badgeW / 2, badgeY + 28);
+    ctx.fillStyle = row.value ? '#fbbf24' : '#888888';
     ctx.font = 'bold 10px system-ui';
-    ctx.fillText(`cote ${formatOdd(t.odd)}${t.value ? ' ⚡' : ''}`, badgeX + badgeW / 2, badgeY + 41);
+    ctx.fillText(`${formatOdd(row.odd)}${row.value ? ' ⚡' : ''}`, badgeX + badgeW / 2, badgeY + 41);
   });
 
   // Footer
@@ -129,7 +130,7 @@ function drawTicketCanvas(ticket, totalOdds) {
   ctx.fillStyle = '#333333';
   ctx.font = '10px system-ui';
   ctx.textAlign = 'center';
-  ctx.fillText('pronix.com · Pronostics générés par algorithme · Jouez de façon responsable', W / 2, fy + 24);
+  ctx.fillText(t('machine.canvasFooter'), W / 2, fy + 24);
 
   return canvas;
 }
@@ -153,8 +154,8 @@ const TEMPLATES = [
   {
     id: 'safe',
     emoji: '🛡️',
-    label: 'Safe',
-    sub: 'Picks très fiables · cote modeste',
+    labelKey: 'safe',
+    subKey: 'safeSub',
     color: 'text-emerald-400 border-emerald-500/30 bg-emerald-500/10',
     config: {
       nbPicks: 3,
@@ -168,8 +169,8 @@ const TEMPLATES = [
   {
     id: 'equilibre',
     emoji: '⚖️',
-    label: 'Équilibré',
-    sub: 'Bon compromis cote / sécurité',
+    labelKey: 'balanced',
+    subKey: 'balancedSub',
     color: 'text-amber-400 border-amber-500/30 bg-amber-500/10',
     config: {
       nbPicks: 6,
@@ -183,8 +184,8 @@ const TEMPLATES = [
   {
     id: 'ambitieux',
     emoji: '🔥',
-    label: 'Ambitieux',
-    sub: 'Grosse cote · plus risqué',
+    labelKey: 'ambitious',
+    subKey: 'ambitiousSub',
     color: 'text-rose-400 border-rose-500/30 bg-rose-500/10',
     config: {
       nbPicks: 12,
@@ -198,16 +199,16 @@ const TEMPLATES = [
 ];
 
 const DATE_PRESETS = [
-  { value: 'today',    label: "Aujourd'hui", days: 0  },
-  { value: 'tomorrow', label: 'Demain',      days: 1  },
-  { value: '3days',    label: '3 jours',     days: 3  },
-  { value: 'week',     label: '1 semaine',   days: 7  },
-  { value: '2weeks',   label: '2 semaines',  days: 14 },
-  { value: 'month',    label: '1 mois',      days: 30 },
+  { value: 'today',    labelKey: 'today',     days: 0  },
+  { value: 'tomorrow', labelKey: 'tomorrow',  days: 1  },
+  { value: '3days',    labelKey: 'threeDays', days: 3  },
+  { value: 'week',     labelKey: 'week',      days: 7  },
+  { value: '2weeks',   labelKey: 'twoWeeks',  days: 14 },
+  { value: 'month',    labelKey: 'month',     days: 30 },
 ];
 
 const LEAGUES_OPTIONS = [
-  { value: 'all',    label: 'Toutes les ligues' },
+  { value: 'all',    label: null },
   { value: '47',     label: 'Premier League' },
   { value: '53',     label: 'Ligue 1' },
   { value: '54',     label: 'Bundesliga' },
@@ -219,148 +220,13 @@ const LEAGUES_OPTIONS = [
   { value: '526',    label: 'CAF Champions League' },
 ];
 
-// ─── Marchés inspirés 1xbet ────────────────────────────────────────────────────
+// ─── Marchés inspirés 1xbet — labels/descriptions dans machine.marketGroups.* (i18n) ──
 const MARKET_GROUPS = [
-  {
-    id: 'resultats',
-    label: 'Résultat',
-    emoji: '🏆',
-    subtitle: 'Qui remporte le match à la fin du temps réglementaire ?',
-    markets: [
-      {
-        value: 'auto',
-        label: 'Meilleur pick auto',
-        desc: "L'algorithme sélectionne automatiquement le marché avec la plus haute probabilité parmi tous ceux disponibles pour ce match.",
-      },
-      {
-        value: '1',
-        label: '1 — Victoire domicile',
-        desc: "L'équipe qui joue à domicile gagne le match à la fin du temps réglementaire. Perdu si nul ou victoire extérieur.",
-      },
-      {
-        value: 'X',
-        label: 'X — Match nul',
-        desc: "Les deux équipes terminent le match avec le même nombre de buts. Perdu si l'une des deux équipes l'emporte.",
-      },
-      {
-        value: '2',
-        label: '2 — Victoire extérieur',
-        desc: "L'équipe visiteuse gagne le match. Perdu si nul ou victoire domicile.",
-      },
-    ],
-  },
-  {
-    id: 'doublechance',
-    label: 'Double chance',
-    emoji: '🔀',
-    subtitle: 'Tu couvres 2 résultats sur 3 — plus sécurisé, cote réduite.',
-    markets: [
-      {
-        value: '1X',
-        label: '1X — Domicile ou Nul',
-        desc: "Gagné si victoire domicile OU match nul. Perdu uniquement si l'équipe extérieure gagne. Idéal pour miser sur une équipe forte à domicile sans risque du nul.",
-      },
-      {
-        value: 'X2',
-        label: 'X2 — Nul ou Extérieur',
-        desc: "Gagné si match nul OU victoire extérieure. Perdu uniquement si l'équipe à domicile gagne. Bon choix quand l'extérieur est favori ou l'équipe est solide.",
-      },
-      {
-        value: '12',
-        label: '12 — Domicile ou Extérieur (sans nul)',
-        desc: "Gagné si l'une des deux équipes gagne. Perdu uniquement en cas de match nul. Parfait quand un nul semble improbable entre deux équipes offensives.",
-      },
-    ],
-  },
-  {
-    id: 'dnb',
-    label: 'Résultat sans nul',
-    emoji: '🛡️',
-    subtitle: 'Draw No Bet — ton mise est remboursée si match nul.',
-    markets: [
-      {
-        value: 'dnb1',
-        label: 'DNB Domicile — Pari annulé si nul',
-        desc: "Gagné si domicile gagne. Mise remboursée si nul. Perdu si extérieur gagne. Moins risqué qu'un simple 1 — couverture contre le nul.",
-      },
-      {
-        value: 'dnb2',
-        label: 'DNB Extérieur — Pari annulé si nul',
-        desc: "Gagné si extérieur gagne. Mise remboursée si nul. Perdu si domicile gagne. Idéal pour miser sur une équipe visiteuse sans craindre le nul.",
-      },
-    ],
-  },
-  {
-    id: 'overunder',
-    label: 'Total buts',
-    emoji: '⚽',
-    subtitle: 'Parie sur le nombre total de buts marqués dans le match.',
-    markets: [
-      {
-        value: 'over05',
-        label: 'Plus de 0.5 but — Au moins 1 but',
-        desc: "Il suffit qu'un seul but soit marqué dans le match pour gagner. Probabilité très haute (~97%). Cote faible mais sécurisée.",
-      },
-      {
-        value: 'over15',
-        label: 'Plus de 1.5 buts — Au moins 2 buts',
-        desc: "Le match doit compter au moins 2 buts au total. Très fréquent dans les rencontres offensives. Pari solide sur des équipes qui marquent.",
-      },
-      {
-        value: 'over25',
-        label: 'Plus de 2.5 buts — Au moins 3 buts',
-        desc: "Le match doit totaliser 3 buts ou plus (ex. 2-1, 3-0, 2-2). Le marché Over/Under le plus populaire sur 1xbet.",
-      },
-      {
-        value: 'over35',
-        label: 'Plus de 3.5 buts — Au moins 4 buts',
-        desc: "Match prolifique avec 4 buts ou plus (ex. 2-2, 3-1, 4-0). Bonne cote, recommandé pour les derbies ou matchs à forte attaque.",
-      },
-      {
-        value: 'over45',
-        label: 'Plus de 4.5 buts — Au moins 5 buts',
-        desc: "Match très ouvert avec 5 buts ou plus. Cote élevée, recommandé sur les matchs entre équipes très offensives ou en mauvaise défense.",
-      },
-      {
-        value: 'under15',
-        label: 'Moins de 1.5 but — Maximum 1 but',
-        desc: "Le match se termine avec 0 ou 1 seul but. Pari sur un match fermé et défensif. Gagné si score 0-0, 1-0 ou 0-1.",
-      },
-      {
-        value: 'under25',
-        label: 'Moins de 2.5 buts — Maximum 2 buts',
-        desc: "Au maximum 2 buts dans le match (0-0, 1-0, 0-1, 1-1, 2-0, 0-2). Adapté aux matchs tendus, coupe, ou entre grandes défenses.",
-      },
-      {
-        value: 'under35',
-        label: 'Moins de 3.5 buts — Maximum 3 buts',
-        desc: "Le match a 3 buts ou moins. Bonne probabilité dans les matchs équilibrés. Gagné si le score final est 2-1, 1-1, 2-0, etc.",
-      },
-      {
-        value: 'under45',
-        label: 'Moins de 4.5 buts — Maximum 4 buts',
-        desc: "Le match ne dépasse pas 4 buts. Probabilité élevée (~80%). Perdu uniquement pour les matchs très prolifiques (5 buts ou plus).",
-      },
-    ],
-  },
-  {
-    id: 'btts',
-    label: 'Les 2 marquent',
-    emoji: '🥅',
-    subtitle: 'Both Teams To Score — est-ce que chaque équipe marque au moins une fois ?',
-    markets: [
-      {
-        value: 'btts',
-        label: 'BTTS Oui — Les 2 équipes marquent',
-        desc: "Les deux équipes marquent au moins 1 but chacune (ex. 1-1, 2-1, 1-2, 2-2). Le score exact n'importe pas, seulement que les 2 équipes trouvent le filet.",
-      },
-      {
-        value: 'nobtts',
-        label: 'BTTS Non — Au moins une équipe ne marque pas',
-        desc: "Au moins une des deux équipes termine la rencontre sans marquer. Gagné si score 1-0, 0-2, 2-0, ou 0-0. Recommandé quand une équipe a une défense très solide.",
-      },
-    ],
-  },
+  { id: 'resultats',    emoji: '🏆', markets: ['auto', '1', 'X', '2'] },
+  { id: 'doublechance', emoji: '🔀', markets: ['1X', 'X2', '12'] },
+  { id: 'dnb',          emoji: '🛡️', markets: ['dnb1', 'dnb2'] },
+  { id: 'overunder',    emoji: '⚽', markets: ['over05', 'over15', 'over25', 'over35', 'over45', 'under15', 'under25', 'under35', 'under45'] },
+  { id: 'btts',         emoji: '🥅', markets: ['btts', 'nobtts'] },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -369,15 +235,6 @@ const CONF_COLORS = {
   medium: { text: 'text-amber-400',   bg: 'bg-amber-500/10 border-amber-500/20',     dot: 'bg-amber-400' },
   low:    { text: 'text-gray-500',    bg: 'bg-surface-700/50 border-white/[0.05]',   dot: 'bg-gray-500' },
 };
-const PICK_LABELS = {
-  '1': 'Dom.', 'X': 'Nul', '2': 'Ext.',
-  '1X': '1X', 'X2': 'X2', '12': '12',
-  'dnb1': 'DNB1', 'dnb2': 'DNB2',
-  'over05': 'O0.5', 'over15': 'O1.5', 'over25': 'O2.5', 'over35': 'O3.5', 'over45': 'O4.5',
-  'under15': 'U1.5', 'under25': 'U2.5', 'under35': 'U3.5', 'under45': 'U4.5',
-  'btts': 'BTTS✓', 'nobtts': 'BTTSx',
-};
-
 function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
 
@@ -437,6 +294,7 @@ function getConfidence(prob) {
 }
 
 export default function Machine() {
+  const { t } = useTranslation();
   const [nbPicks, setNbPicks]         = useState(5);
   const [marketGroup, setMarketGroup] = useState('resultats');
   const [market, setMarket]           = useState('auto');
@@ -554,11 +412,11 @@ export default function Machine() {
     if (!ticket || ticket.length === 0) return;
     setSharing(true);
     try {
-      const canvas = drawTicketCanvas(ticket, totalOdds);
+      const canvas = drawTicketCanvas(ticket, totalOdds, t);
       canvas.toBlob(async (blob) => {
         const file = new File([blob], 'ticket-statfoot.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file], title: 'Mon ticket fpronix' });
+          await navigator.share({ files: [file], title: t('machine.shareTitle') });
         } else {
           // Fallback : téléchargement direct
           const url = URL.createObjectURL(blob);
@@ -577,18 +435,19 @@ export default function Machine() {
 
   function copyTicket() {
     if (!ticket) return;
-    const lines = ticket.map((t, i) => {
-      const time = format(new Date(t.match.scheduledAt), 'dd/MM HH:mm');
-      return `${i + 1}. ${t.match.homeTeam} vs ${t.match.awayTeam} — ${PICK_LABELS[t.pick.type] || t.pick.type} (${t.pick.prob}% · cote ${formatOdd(t.odd)}${t.value ? ' ⚡value' : ''}) — ${time}`;
+    const lines = ticket.map((row, i) => {
+      const time = format(new Date(row.match.scheduledAt), 'dd/MM HH:mm');
+      const pickLabel = t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type });
+      return `${i + 1}. ${row.match.homeTeam} vs ${row.match.awayTeam} — ${pickLabel} (${row.pick.prob}% · ${formatOdd(row.odd)}${row.value ? ' ⚡value' : ''}) — ${time}`;
     });
-    if (totalOdds) lines.push(`\nCote totale simulée : × ${totalOdds}`);
+    if (totalOdds) lines.push(`\n${t('machine.totalOddSimulated', { odds: totalOdds })}`);
     navigator.clipboard.writeText(lines.join('\n'));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }
 
   const totalOdds = ticket && ticket.length
-    ? ticket.reduce((acc, t) => acc * t.odd, 1).toFixed(2)
+    ? ticket.reduce((acc, row) => acc * row.odd, 1).toFixed(2)
     : null;
 
   return (
@@ -598,9 +457,9 @@ export default function Machine() {
       <div className="px-4">
         <div className="flex items-center gap-2 mb-1">
           <Zap size={18} className="text-primary-400" />
-          <h1 className="section-title">Générateur de ticket</h1>
+          <h1 className="section-title">{t('machine.titleShort')}</h1>
         </div>
-        <p className="text-xs text-gray-500">Construisez un ticket optimisé par l'algorithme</p>
+        <p className="text-xs text-gray-500">{t('machine.subtitleShort')}</p>
       </div>
 
       {/* Paramètres */}
@@ -609,7 +468,7 @@ export default function Machine() {
         {/* ── Templates prédéfinis ──────────────────────────────────── */}
         <div>
           <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
-            Démarrage rapide
+            {t('machine.quickStart')}
           </p>
           <div className="grid grid-cols-3 gap-2">
             {TEMPLATES.map((tpl) => (
@@ -620,15 +479,15 @@ export default function Machine() {
                     : 'border-white/[0.07] text-gray-500 hover:border-white/[0.15] hover:text-gray-300'
                 }`}>
                 <span className="text-lg leading-none">{tpl.emoji}</span>
-                <span className="text-xs font-bold">{tpl.label}</span>
-                <span className="text-[9px] text-center leading-tight opacity-70">{tpl.sub}</span>
+                <span className="text-xs font-bold">{t(`machine.templates.${tpl.labelKey}`)}</span>
+                <span className="text-[9px] text-center leading-tight opacity-70">{t(`machine.templates.${tpl.subKey}`)}</span>
               </button>
             ))}
           </div>
           {activeTemplate && (
             <button onClick={() => setActiveTemplate(null)}
               className="mt-1.5 text-[10px] text-gray-600 hover:text-gray-400 transition-colors">
-              Personnaliser manuellement →
+              {t('machine.customizeManually')}
             </button>
           )}
         </div>
@@ -638,7 +497,7 @@ export default function Machine() {
         {/* Nombre de picks */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Nombre de sélections</p>
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.selectionsCount')}</p>
             <span className="text-sm font-bold text-primary-400">{nbPicks}</span>
           </div>
           <input type="range" min="2" max="45" step="1" value={nbPicks}
@@ -651,7 +510,7 @@ export default function Machine() {
 
         {/* Marché — sélecteur 2 niveaux (catégorie → marché) */}
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Marché</p>
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.market')}</p>
 
           {/* Niveau 1 : catégories */}
           <div className="overflow-x-auto scrollbar-hide">
@@ -660,7 +519,7 @@ export default function Machine() {
                 <button key={g.id}
                   onClick={() => {
                     setMarketGroup(g.id);
-                    setMarket(g.markets[0].value);
+                    setMarket(g.markets[0]);
                     setTicket(null);
                   }}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
@@ -668,7 +527,7 @@ export default function Machine() {
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
                       : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                   }`}>
-                  {g.emoji} {g.label}
+                  {g.emoji} {t(`machine.marketGroups.${g.id}.label`)}
                 </button>
               ))}
             </div>
@@ -677,20 +536,20 @@ export default function Machine() {
           {/* Niveau 2 : marchés de la catégorie avec description */}
           {MARKET_GROUPS.filter((g) => g.id === marketGroup).map((g) => (
             <div key={g.id} className="space-y-1.5">
-              <p className="text-[10px] text-gray-600 leading-snug">{g.subtitle}</p>
+              <p className="text-[10px] text-gray-600 leading-snug">{t(`machine.marketGroups.${g.id}.subtitle`)}</p>
               <div className="grid grid-cols-1 gap-1.5">
-                {g.markets.map((m) => (
-                  <button key={m.value}
-                    onClick={() => { setMarket(m.value); setTicket(null); }}
+                {g.markets.map((mVal) => (
+                  <button key={mVal}
+                    onClick={() => { setMarket(mVal); setTicket(null); }}
                     className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
-                      market === m.value
+                      market === mVal
                         ? 'bg-select-500/10 border-select-500/30'
                         : 'border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]'
                     }`}>
-                    <span className={`block text-xs font-semibold mb-0.5 ${market === m.value ? 'text-select-400' : 'text-gray-300'}`}>
-                      {m.label}
+                    <span className={`block text-xs font-semibold mb-0.5 ${market === mVal ? 'text-select-400' : 'text-gray-300'}`}>
+                      {t(`machine.marketGroups.${g.id}.markets.${mVal}.label`)}
                     </span>
-                    <span className="block text-[10px] text-gray-500 leading-snug">{m.desc}</span>
+                    <span className="block text-[10px] text-gray-500 leading-snug">{t(`machine.marketGroups.${g.id}.markets.${mVal}.desc`)}</span>
                   </button>
                 ))}
               </div>
@@ -700,12 +559,12 @@ export default function Machine() {
 
         {/* Confiance minimale */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Confiance minimale</p>
+          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('machine.filters.confidence')}</p>
           <div className="flex gap-2">
             {[
-              { value: 'high',   label: '🟢 Élevée',  active: 'bg-primary-500/15 text-primary-400 border-primary-500/30' },
-              { value: 'medium', label: '🟡 Moyenne',  active: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
-              { value: 'low',    label: '⚪ Toutes',   active: 'bg-white/[0.08] text-gray-300 border-white/[0.20]' },
+              { value: 'high',   label: t('machine.confHigh'),   active: 'bg-primary-500/15 text-primary-400 border-primary-500/30' },
+              { value: 'medium', label: t('machine.confMedium'), active: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
+              { value: 'low',    label: t('machine.confAll'),    active: 'bg-white/[0.08] text-gray-300 border-white/[0.20]' },
             ].map((o) => (
               <button key={o.value} onClick={() => setMinConf(o.value)}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
@@ -721,7 +580,7 @@ export default function Machine() {
 
         {/* Date / Période */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">Période</p>
+          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('machine.filters.dateRange')}</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               {DATE_PRESETS.map((o) => (
@@ -731,7 +590,7 @@ export default function Machine() {
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
                       : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                   }`}>
-                  {o.label}
+                  {t(`machine.datePresets.${o.labelKey}`)}
                 </button>
               ))}
             </div>
@@ -743,12 +602,12 @@ export default function Machine() {
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
               <Trophy size={11} className="text-gray-500" />
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Championnat</p>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.championship')}</p>
             </div>
             {leagues.length > 0 && (
               <button onClick={() => { setLeagues([]); setTicket(null); }}
                 className="text-[10px] text-gray-600 hover:text-primary-400 transition-colors">
-                Tout afficher
+                {t('machine.showAll')}
               </button>
             )}
           </div>
@@ -778,7 +637,7 @@ export default function Machine() {
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
                         : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                     }`}>
-                    {l.label}
+                    {l.label === null ? t('machine.allLeagues') : l.label}
                   </button>
                 );
               })}
@@ -790,8 +649,8 @@ export default function Machine() {
         <div className="flex items-center justify-between py-1">
           <div className="flex items-center gap-2">
             <Bot size={12} className="text-gray-500" />
-            <span className="text-xs text-gray-400">Exclure matchs amicaux</span>
-            <span className="text-[10px] text-gray-600">(picks peu fiables sans historique)</span>
+            <span className="text-xs text-gray-400">{t('machine.excludeFriendly')}</span>
+            <span className="text-[10px] text-gray-600">{t('machine.excludeFriendlyHint')}</span>
           </div>
           <button
             onClick={() => { setExcludeFriendly((v) => !v); setTicket(null); }}
@@ -809,11 +668,11 @@ export default function Machine() {
             <div className="flex items-center gap-1.5">
               <ListFilter size={11} className="text-gray-500" />
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider group-hover:text-gray-300 transition-colors">
-                Choisir des matchs précis
+                {t('machine.pickSpecificMatches')}
               </p>
               {pinnedMatchIds.size > 0 && (
                 <span className="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-select-500/20 text-select-400">
-                  {pinnedMatchIds.size} fixé{pinnedMatchIds.size > 1 ? 's' : ''}
+                  {t('machine.fixedCount', { count: pinnedMatchIds.size })}
                 </span>
               )}
             </div>
@@ -825,10 +684,10 @@ export default function Machine() {
           {showMatchPicker && (
             <div className="mt-1 space-y-2">
               {isLoading ? (
-                <p className="text-[10px] text-gray-600 py-2 text-center">Chargement des matchs…</p>
+                <p className="text-[10px] text-gray-600 py-2 text-center">{t('machine.loadingMatches')}</p>
               ) : availableCandidates.length === 0 ? (
                 <p className="text-[10px] text-gray-600 py-2 text-center">
-                  Aucun match disponible avec ces filtres
+                  {t('machine.noMatchesFilters')}
                 </p>
               ) : (
                 <>
@@ -836,18 +695,18 @@ export default function Machine() {
                   <div className="flex items-center gap-2">
                     <button onClick={selectAllCandidates}
                       className="text-[10px] text-gray-500 hover:text-gray-300 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
-                      Tout cocher ({availableCandidates.length})
+                      {t('machine.checkAll', { count: availableCandidates.length })}
                     </button>
                     {pinnedMatchIds.size > 0 && (
                       <button onClick={clearPinnedMatches}
                         className="text-[10px] text-gray-500 hover:text-gray-300 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
-                        Tout décocher
+                        {t('machine.uncheckAll')}
                       </button>
                     )}
                     <span className="ml-auto text-[10px] text-gray-600">
                       {pinnedMatchIds.size > 0
-                        ? `${pinnedMatchIds.size} sélectionné${pinnedMatchIds.size > 1 ? 's' : ''}`
-                        : 'Algo choisit'}
+                        ? t('machine.selectedCount', { count: pinnedMatchIds.size })
+                        : t('machine.algoChooses')}
                     </span>
                   </div>
 
@@ -896,8 +755,8 @@ export default function Machine() {
 
                   <p className="text-[10px] text-gray-600">
                     {pinnedMatchIds.size > 0
-                      ? 'Le ticket sera généré uniquement avec les matchs cochés.'
-                      : "Aucun match coché → l'algorithme choisit les meilleurs automatiquement."}
+                      ? t('machine.manualSelectionNote')
+                      : t('machine.noSelectionNote')}
                   </p>
                 </>
               )}
@@ -908,7 +767,7 @@ export default function Machine() {
         {/* Compteur de matchs disponibles */}
         <div className="flex items-center justify-center gap-2 py-1">
           {isLoading ? (
-            <span className="text-[10px] text-gray-600">Recherche des matchs…</span>
+            <span className="text-[10px] text-gray-600">{t('machine.searchingMatches')}</span>
           ) : (
             <>
               <span className={`text-[11px] font-semibold ${
@@ -918,17 +777,17 @@ export default function Machine() {
                     ? 'text-amber-400'
                     : 'text-select-400'
               }`}>
-                {availableCandidates.length} match{availableCandidates.length !== 1 ? 's' : ''} disponible{availableCandidates.length !== 1 ? 's' : ''}
+                {t('machine.matchesAvailable', { count: availableCandidates.length })}
               </span>
               <span className="text-gray-700">·</span>
               <span className="text-[10px] text-gray-600">
                 {pinnedMatchIds.size > 0
-                  ? `${pinnedMatchIds.size} sélectionné${pinnedMatchIds.size > 1 ? 's' : ''} manuellement`
-                  : `meilleurs ${Math.min(nbPicks, availableCandidates.length)} retenus`}
+                  ? t('machine.selectedManually', { count: pinnedMatchIds.size })
+                  : t('machine.bestRetained', { count: Math.min(nbPicks, availableCandidates.length) })}
               </span>
               {availableCandidates.length < nbPicks && availableCandidates.length > 0 && (
                 <span className="text-[10px] text-amber-500">
-                  · ticket réduit à {availableCandidates.length}
+                  {t('machine.ticketReduced', { count: availableCandidates.length })}
                 </span>
               )}
             </>
@@ -939,7 +798,7 @@ export default function Machine() {
         <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
           className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed">
           <Zap size={16} />
-          {isLoading ? 'Chargement…' : availableCandidates.length === 0 ? 'Aucun match disponible' : 'Générer le ticket'}
+          {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
         </button>
       </div>
 
@@ -950,7 +809,7 @@ export default function Machine() {
           {/* ── Barre résultat ────────────────────────────────────────── */}
           <div className="flex items-center justify-between">
             <p className="text-sm font-semibold text-gray-200">
-              {ticket.length} sélection{ticket.length > 1 ? 's' : ''} générée{ticket.length > 1 ? 's' : ''}
+              {t('machine.selectionsGenerated', { count: ticket.length })}
             </p>
             <div className="flex items-center gap-2">
               <button onClick={generateTicket}
@@ -960,14 +819,14 @@ export default function Machine() {
               <button onClick={copyTicket}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors">
                 {copied ? <Check size={12} className="text-primary-400" /> : <Copy size={12} />}
-                {copied ? 'Copié !' : 'Copier'}
+                {copied ? t('machine.copied') : t('machine.copy')}
               </button>
               <button onClick={shareTicket} disabled={sharing}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors disabled:opacity-50">
                 {sharing
                   ? <RefreshCw size={12} className="animate-spin" />
                   : navigator.share ? <Share2 size={12} /> : <Download size={12} />}
-                {navigator.share ? 'Partager' : 'Image'}
+                {navigator.share ? t('machine.share') : t('machine.image')}
               </button>
             </div>
           </div>
@@ -977,7 +836,7 @@ export default function Machine() {
             <div className="card p-3 flex items-center gap-3">
               {/* Cote totale */}
               <div className="shrink-0 text-center">
-                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">Cote totale</p>
+                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">{t('machine.totalOdd')}</p>
                 <p className="text-lg font-black text-amber-400">×{totalOdds}</p>
               </div>
 
@@ -986,7 +845,7 @@ export default function Machine() {
               {/* Input mise */}
               <div className="flex-1 flex items-center gap-2">
                 <div className="flex-1">
-                  <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">Votre mise</p>
+                  <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">{t('machine.yourStake')}</p>
                   <div className="flex items-center gap-1">
                     <input
                       type="number"
@@ -1005,7 +864,7 @@ export default function Machine() {
 
               {/* Gain potentiel */}
               <div className="shrink-0 text-center">
-                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">Gain potentiel</p>
+                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">{t('machine.stake.potentialGain')}</p>
                 {mise && Number(mise) > 0 ? (
                   <p className="text-base font-black text-primary-400">
                     {Math.round(Number(mise) * Number(totalOdds)).toLocaleString('fr-FR')}
@@ -1021,36 +880,36 @@ export default function Machine() {
           {ticket.length === 0 ? (
             <div className="card-p text-center py-8">
               <p className="text-2xl mb-2">🎯</p>
-              <p className="text-gray-500 text-sm">Aucune sélection ne correspond à ces critères</p>
-              <p className="text-gray-600 text-xs mt-1">Essayez de baisser le niveau de confiance ou d'élargir la période</p>
+              <p className="text-gray-500 text-sm">{t('machine.noSelectionMatch')}</p>
+              <p className="text-gray-600 text-xs mt-1">{t('machine.tryLowerConfidence')}</p>
             </div>
           ) : (
             <div className="card overflow-hidden divide-y divide-white/[0.04]">
-              {ticket.map((t, idx) => {
-                const c = CONF_COLORS[t.conf];
+              {ticket.map((row, idx) => {
+                const c = CONF_COLORS[row.conf];
                 return (
-                  <div key={t.match.id} className="flex items-center gap-3 px-4 py-3">
+                  <div key={row.match.id} className="flex items-center gap-3 px-4 py-3">
                     <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-600">{idx + 1}</span>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-medium text-gray-200 truncate">{t.match.homeTeam} vs {t.match.awayTeam}</p>
-                        {t.match.predictions?.aiGenerated && (
+                        <p className="text-sm font-medium text-gray-200 truncate">{row.match.homeTeam} vs {row.match.awayTeam}</p>
+                        {row.match.predictions?.aiGenerated && (
                           <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
                             <Bot size={8} />IA
                           </span>
                         )}
                       </div>
                       <p className="text-[10px] text-gray-600 mt-0.5">
-                        {t.match.competition?.name} · {format(new Date(t.match.scheduledAt), 'dd/MM HH:mm')}
+                        {row.match.competition?.name} · {format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}
                       </p>
                     </div>
                     <div className={`shrink-0 text-center px-2.5 py-1 rounded-lg border ${c.bg}`}>
-                      <span className={`block text-xs font-bold ${c.text}`}>{PICK_LABELS[t.pick.type] || t.pick.type}</span>
-                      <span className={`block text-[10px] font-semibold ${c.text}`}>{t.pick.prob}%</span>
+                      <span className={`block text-xs font-bold ${c.text}`}>{t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type })}</span>
+                      <span className={`block text-[10px] font-semibold ${c.text}`}>{row.pick.prob}%</span>
                     </div>
                     <div className="shrink-0 flex flex-col items-center gap-1">
-                      <OddsChip odd={t.odd} />
-                      {t.value && <ValueBetBadge edge={getValueEdge(t.pick.prob, t.odd)} />}
+                      <OddsChip odd={row.odd} />
+                      {row.value && <ValueBetBadge edge={getValueEdge(row.pick.prob, row.odd)} />}
                     </div>
                   </div>
                 );

@@ -1,20 +1,23 @@
+import { useTranslation } from 'react-i18next';
+
 export default function Disclaimer() {
+  const { t } = useTranslation();
   return (
     <footer className="bg-surface-800 border-t border-surface-700 py-4 px-4 hidden md:block">
       <div className="max-w-6xl mx-auto space-y-2">
         <p className="disclaimer text-center">
-          fpronix fournit des données et statistiques à titre informatif uniquement.{' '}
-          <strong>Ceci n'est pas un conseil financier. Aucune garantie de gain n'est promise.</strong>{' '}
-          Jouez de manière responsable. 18+ uniquement.
+          {t('disclaimer.intro')}{' '}
+          <strong>{t('disclaimer.warning')}</strong>{' '}
+          {t('disclaimer.playResponsibly')}
         </p>
         <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
-          <a href="/cgu" className="hover:text-gray-400 transition-colors">CGU</a>
+          <a href="/cgu" className="hover:text-gray-400 transition-colors">{t('disclaimer.termsLink')}</a>
           <span aria-hidden="true">·</span>
-          <a href="/politique-confidentialite" className="hover:text-gray-400 transition-colors">Politique de confidentialité</a>
+          <a href="/politique-confidentialite" className="hover:text-gray-400 transition-colors">{t('disclaimer.privacyLink')}</a>
           <span aria-hidden="true">·</span>
-          <a href="/faq" className="hover:text-gray-400 transition-colors">FAQ</a>
+          <a href="/faq" className="hover:text-gray-400 transition-colors">{t('disclaimer.faqLink')}</a>
           <span aria-hidden="true">·</span>
-          <a href="mailto:contact@pronix.sn" className="hover:text-gray-400 transition-colors">Contact</a>
+          <a href="mailto:contact@pronix.sn" className="hover:text-gray-400 transition-colors">{t('disclaimer.contactLink')}</a>
         </div>
       </div>
     </footer>

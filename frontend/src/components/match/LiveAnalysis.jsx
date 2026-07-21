@@ -1,14 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Radio, Zap, TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 
-const MOMENTUM_CONFIG = {
-  HOME:     { icon: TrendingUp,   color: 'text-primary-400', label: 'Domicile en forme' },
-  AWAY:     { icon: TrendingDown, color: 'text-red-400',     label: 'Extérieur dominant' },
-  BALANCED: { icon: Minus,        color: 'text-gray-400',    label: 'Match équilibré' },
-};
+const MOMENTUM_ICONS = { HOME: TrendingUp, AWAY: TrendingDown, BALANCED: Minus };
+const MOMENTUM_COLORS = { HOME: 'text-primary-400', AWAY: 'text-red-400', BALANCED: 'text-gray-400' };
 
 export default function LiveAnalysis({ matchId }) {
+  const { t, i18n } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ['live-analysis', matchId],
     queryFn: () => api.get(`/matches/${matchId}/live-analysis`).then((r) => r.data.data),
@@ -21,16 +20,16 @@ export default function LiveAnalysis({ matchId }) {
     return (
       <div className="bento-card flex items-center gap-3 text-gray-500 py-4">
         <Loader2 size={15} className="animate-spin text-live-400 shrink-0" />
-        <span className="text-sm">Analyse du match en cours…</span>
+        <span className="text-sm">{t('liveAnalysis.analyzing')}</span>
       </div>
     );
   }
 
   if (!data) return null;
 
-  const MomentumIcon = MOMENTUM_CONFIG[data.momentum]?.icon || Minus;
-  const momentumColor = MOMENTUM_CONFIG[data.momentum]?.color || 'text-gray-400';
-  const momentumLabel = MOMENTUM_CONFIG[data.momentum]?.label || '';
+  const MomentumIcon = MOMENTUM_ICONS[data.momentum] || Minus;
+  const momentumColor = MOMENTUM_COLORS[data.momentum] || 'text-gray-400';
+  const momentumLabel = data.momentum ? t(`liveAnalysis.momentum.${data.momentum}`) : '';
 
   return (
     <div className="bento-card space-y-3 border-live-500/20 bg-live-500/[0.03]">
@@ -41,11 +40,11 @@ export default function LiveAnalysis({ matchId }) {
             <Radio size={13} className="text-live-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-100">Analyse IA en direct</p>
+            <p className="text-sm font-semibold text-gray-100">{t('liveAnalysis.title')}</p>
             {data.minute && (
               <p className="text-[10px] text-live-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse inline-block" />
-                {data.minute === 'HT' ? 'Mi-temps' : `${data.minute}'`}
+                {data.minute === 'HT' ? t('liveAnalysis.halftime') : `${data.minute}'`}
               </p>
             )}
           </div>
@@ -75,7 +74,7 @@ export default function LiveAnalysis({ matchId }) {
       {/* Footer */}
       {data.generatedAt && (
         <p className="text-[10px] text-gray-600">
-          Mise à jour : {new Date(data.generatedAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+          {t('liveAnalysis.updatedAt', { time: new Date(data.generatedAt).toLocaleTimeString(i18n.language?.startsWith('en') ? 'en-US' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }) })}
         </p>
       )}
     </div>

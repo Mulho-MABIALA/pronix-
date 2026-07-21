@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Zap } from 'lucide-react';
 import { getOdd, isValueBet, formatOdd } from '../../utils/mockOdds';
 import MatchReminderButton from './MatchReminderButton';
@@ -40,10 +41,11 @@ const CONF_COLOR = { high: 'text-primary-400', medium: 'text-amber-400', low: 't
 const CONF_BG    = { high: 'bg-primary-500/10', medium: 'bg-amber-500/10', low: 'bg-white/[0.04]' };
 
 export default function MatchCard({ match }) {
+  const { t } = useTranslation();
   const isLive     = match.status === 'LIVE';
   const isFinished = match.status === 'FINISHED';
   const hasScore   = isLive || isFinished;
-  const minute     = match.minute === 'HT' ? 'MT' : match.minute;
+  const minute     = match.minute === 'HT' ? t('matchCard.htShort') : match.minute;
   const homeWins   = hasScore && match.homeScore > match.awayScore;
   const awayWins   = hasScore && match.awayScore > match.homeScore;
   const pred       = match.predictions;
@@ -136,7 +138,7 @@ export default function MatchCard({ match }) {
             </span>
             <span
               className={`mt-1 flex items-center justify-center gap-0.5 font-mono font-semibold tabular-nums text-[10px] ${value ? 'text-amber-400' : 'text-gray-500'}`}
-              title="Cote simulée"
+              title={t('matchCard.simulatedOdd')}
             >
               {value && <Zap size={9} className="shrink-0" aria-hidden="true" />}
               {formatOdd(odd)}
@@ -152,7 +154,7 @@ export default function MatchCard({ match }) {
       <button
         onClick={handleShare}
         className="p-1.5 rounded-lg text-green-500/50 hover:text-green-400 hover:bg-green-500/10 transition-colors"
-        aria-label="Partager sur WhatsApp"
+        aria-label={t('matchCard.shareWhatsApp')}
       >
         <WhatsAppIcon className="w-3 h-3" />
       </button>

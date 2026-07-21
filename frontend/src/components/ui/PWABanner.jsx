@@ -68,27 +68,27 @@ export default function PWABanner() {
           <Share size={18} className="text-primary-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-100">Installer fpronix</p>
+          <p className="text-sm font-semibold text-gray-100">{t('pwaBanner.installTitle')}</p>
           <p className="text-xs text-gray-400 mt-1 leading-snug">
-            Appuyez sur{' '}
+            {t('pwaBanner.tapOn')}{' '}
             <span className="inline-flex items-center gap-1 text-primary-400 font-semibold">
-              <Share size={11} /> Partager
+              <Share size={11} /> {t('pwaBanner.share')}
             </span>
-            {' '}puis{' '}
-            <span className="text-primary-400 font-semibold">"Sur l'écran d'accueil"</span>
-            {' '}pour installer l'app.
+            {' '}{t('pwaBanner.then')}{' '}
+            <span className="text-primary-400 font-semibold">{t('pwaBanner.homeScreenAction')}</span>
+            {' '}{t('pwaBanner.toInstallApp')}
           </p>
           <button
             onClick={handleDismiss}
             className="text-xs text-gray-500 hover:text-gray-300 transition-colors mt-2"
           >
-            Fermer
+            {t('common.close')}
           </button>
         </div>
         <button
           onClick={handleDismiss}
           className="p-1 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-white/[0.05] transition-colors shrink-0"
-          aria-label="Fermer"
+          aria-label={t('common.close')}
         >
           <X size={14} />
         </button>
@@ -122,7 +122,7 @@ export default function PWABanner() {
       <button
         onClick={handleDismiss}
         className="p-1 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-white/[0.05] transition-colors shrink-0"
-        aria-label="Fermer"
+        aria-label={t('common.close')}
       >
         <X size={14} />
       </button>

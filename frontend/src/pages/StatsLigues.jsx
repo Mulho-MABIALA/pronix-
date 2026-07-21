@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { BarChart2, ChevronDown, ChevronUp } from 'lucide-react';
 import api from '../services/api';
 
@@ -19,13 +20,7 @@ function MiniBar({ pct, color }) {
   );
 }
 
-const SORT_OPTIONS = [
-  { value: 'avgGoals',   label: 'Moy. buts' },
-  { value: 'bttsRate',   label: 'BTTS' },
-  { value: 'over25Rate', label: 'O2.5' },
-  { value: 'homeWinRate',label: '% Dom.' },
-  { value: 'totalMatches', label: 'Matchs' },
-];
+const SORT_KEYS = ['avgGoals', 'bttsRate', 'over25Rate', 'homeWinRate', 'totalMatches'];
 
 function CompLogo({ logo, name }) {
   const [err, setErr] = useState(false);
@@ -40,6 +35,7 @@ function CompLogo({ logo, name }) {
 }
 
 export default function StatsLigues() {
+  const { t } = useTranslation();
   const [sort, setSort]       = useState('avgGoals');
   const [asc, setAsc]         = useState(false);
   const [search, setSearch]   = useState('');
@@ -63,14 +59,14 @@ export default function StatsLigues() {
     else { setSort(key); setAsc(false); }
   }
 
-  function SortBtn({ k, label }) {
+  function SortBtn({ k }) {
     const active = sort === k;
     return (
       <button onClick={() => toggleSort(k)}
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
           active ? 'bg-select-500/15 text-select-400 border-select-500/25' : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
         }`}>
-        {label}
+        {t(`statsLigues.sortOptions.${k}`)}
         {active ? (asc ? <ChevronUp size={11} /> : <ChevronDown size={11} />) : null}
       </button>
     );
@@ -83,23 +79,23 @@ export default function StatsLigues() {
       <div className="px-4">
         <div className="flex items-center gap-2 mb-1">
           <BarChart2 size={18} className="text-primary-400" />
-          <h1 className="section-title">Stats par ligue</h1>
+          <h1 className="section-title">{t('statsLigues.title')}</h1>
         </div>
-        <p className="text-xs text-gray-500">Statistiques calculées depuis les matchs terminés en base</p>
+        <p className="text-xs text-gray-500">{t('statsLigues.subtitle')}</p>
       </div>
 
       {/* Recherche + tri */}
       <div className="px-4 space-y-3">
         <input
           type="text"
-          placeholder="Rechercher une ligue ou un pays…"
+          placeholder={t('statsLigues.searchPlaceholder')}
           value={search}
           onChange={e => setSearch(e.target.value)}
           className="input w-full"
         />
         <div className="overflow-x-auto scrollbar-hide">
           <div className="flex gap-2 min-w-max">
-            {SORT_OPTIONS.map(o => <SortBtn key={o.value} k={o.value} label={o.label} />)}
+            {SORT_KEYS.map(k => <SortBtn key={k} k={k} />)}
           </div>
         </div>
       </div>
@@ -114,8 +110,8 @@ export default function StatsLigues() {
       ) : rows.length === 0 ? (
         <div className="card-p text-center py-12 mx-4">
           <p className="text-3xl mb-2">📊</p>
-          <p className="text-gray-500 text-sm">Aucune donnée disponible</p>
-          <p className="text-gray-600 text-xs mt-1">Les stats se calculent à partir des matchs terminés en base.</p>
+          <p className="text-gray-500 text-sm">{t('statsLigues.noData')}</p>
+          <p className="text-gray-600 text-xs mt-1">{t('statsLigues.noDataHint')}</p>
         </div>
       ) : (
         <div className="px-4 card overflow-hidden divide-y divide-white/[0.04]">
@@ -127,12 +123,12 @@ export default function StatsLigues() {
                   <CompLogo logo={r.competition.logo} name={r.competition.name} />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-200 truncate">{r.competition.name}</p>
-                    <p className="text-[10px] text-gray-600">{r.competition.country} · {r.totalMatches} matchs</p>
+                    <p className="text-[10px] text-gray-600">{r.competition.country} · {t('statsLigues.matchesCount', { count: r.totalMatches })}</p>
                   </div>
                 </div>
                 <div className="shrink-0 text-right pl-3">
                   <span className="text-lg font-display font-bold text-primary-400">{r.avgGoals}</span>
-                  <p className="text-[10px] text-gray-600">buts/match</p>
+                  <p className="text-[10px] text-gray-600">{t('statsLigues.goalsPerMatch')}</p>
                 </div>
               </div>
 
@@ -140,19 +136,19 @@ export default function StatsLigues() {
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
                   <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-                    <span>Dom.</span><span className="font-semibold text-gray-300">{r.homeWinRate}%</span>
+                    <span>{t('statsLigues.home')}</span><span className="font-semibold text-gray-300">{r.homeWinRate}%</span>
                   </div>
                   <MiniBar pct={r.homeWinRate} color="bg-primary-500" />
                 </div>
                 <div>
                   <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-                    <span>Nul</span><span className="font-semibold text-gray-300">{r.drawRate}%</span>
+                    <span>{t('statsLigues.draw')}</span><span className="font-semibold text-gray-300">{r.drawRate}%</span>
                   </div>
                   <MiniBar pct={r.drawRate} color="bg-amber-500" />
                 </div>
                 <div>
                   <div className="flex justify-between text-[10px] text-gray-500 mb-1">
-                    <span>Ext.</span><span className="font-semibold text-gray-300">{r.awayWinRate}%</span>
+                    <span>{t('statsLigues.away')}</span><span className="font-semibold text-gray-300">{r.awayWinRate}%</span>
                   </div>
                   <MiniBar pct={r.awayWinRate} color="bg-blue-500" />
                 </div>
@@ -160,7 +156,7 @@ export default function StatsLigues() {
 
               {/* Pills Over/BTTS */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-[10px] text-gray-600">Marchés :</span>
+                <span className="text-[10px] text-gray-600">{t('statsLigues.marketsLabel')}</span>
                 <StatPill value={r.over25Rate} color="text-violet-400 bg-violet-500/10" />
                 <span className="text-[10px] text-gray-600">O2.5</span>
                 <StatPill value={r.over15Rate} color="text-blue-400 bg-blue-500/10" />

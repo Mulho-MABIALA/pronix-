@@ -1,15 +1,18 @@
 import { useQuery } from '@tanstack/react-query';
 import { format, parseISO, isValid } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { ExternalLink, Newspaper } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 
 function ArticleCard({ article }) {
+  const { i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   let dateLabel = '';
   try {
     const d = new Date(article.pubDate);
-    if (isValid(d)) dateLabel = format(d, 'dd MMM yyyy', { locale: fr });
+    if (isValid(d)) dateLabel = format(d, 'dd MMM yyyy', { locale: dateLocale });
   } catch {}
 
   return (
@@ -54,6 +57,7 @@ function ArticleCard({ article }) {
 }
 
 export default function News() {
+  const { t } = useTranslation();
   const { data, isLoading, isError } = useQuery({
     queryKey: ['news'],
     queryFn: () => api.get('/news').then((r) => r.data),
@@ -66,7 +70,7 @@ export default function News() {
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
         <Newspaper size={22} className="text-primary-400" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">Actualités</h1>
+        <h1 className="font-display font-bold text-2xl text-gray-100">{t('news.title')}</h1>
       </div>
 
       {isLoading && (
@@ -79,13 +83,13 @@ export default function News() {
 
       {isError && (
         <div className="bento-card text-center py-8 text-gray-500">
-          Impossible de charger les actualités. Réessayez plus tard.
+          {t('news.loadError')}
         </div>
       )}
 
       {!isLoading && !isError && articles.length === 0 && (
         <div className="bento-card text-center py-8 text-gray-500">
-          Aucune actualité disponible pour le moment.
+          {t('news.noNews')}
         </div>
       )}
 

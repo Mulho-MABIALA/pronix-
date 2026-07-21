@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
@@ -9,44 +10,46 @@ import { useAuth } from '../../context/AuthContext';
 
 const NAV_GROUPS = [
   {
-    label: 'Vue d\'ensemble',
+    groupKey: 'overview',
     items: [
-      { to: '/admin', label: 'Dashboard', Icon: LayoutDashboard, end: true },
+      { to: '/admin', itemKey: 'dashboard', Icon: LayoutDashboard, end: true },
     ],
   },
   {
-    label: 'Communauté',
+    groupKey: 'community',
     items: [
-      { to: '/admin/utilisateurs', label: 'Utilisateurs', Icon: Users },
-      { to: '/admin/tipsters',     label: 'Tipsters',     Icon: Trophy },
-      { to: '/admin/signalements', label: 'Signalements', Icon: AlertTriangle, badge: 'alert' },
+      { to: '/admin/utilisateurs', itemKey: 'users',   Icon: Users },
+      { to: '/admin/tipsters',     itemKey: 'tipsters', Icon: Trophy },
+      { to: '/admin/signalements', itemKey: 'reports', Icon: AlertTriangle, badge: 'alert' },
     ],
   },
   {
-    label: 'Données',
+    groupKey: 'data',
     items: [
-      { to: '/admin/competitions', label: 'Compétitions', Icon: Globe },
-      { to: '/admin/matchs',       label: 'Matchs',       Icon: Calendar },
-      { to: '/admin/paiements',    label: 'Paiements',    Icon: CreditCard },
-      { to: '/admin/finances',     label: 'Finances',     Icon: BarChart3 },
+      { to: '/admin/competitions', itemKey: 'competitions', Icon: Globe },
+      { to: '/admin/matchs',       itemKey: 'matches',      Icon: Calendar },
+      { to: '/admin/paiements',    itemKey: 'payments',     Icon: CreditCard },
+      { to: '/admin/finances',     itemKey: 'finances',     Icon: BarChart3 },
     ],
   },
   {
-    label: 'Contenu',
+    groupKey: 'content',
     items: [
-      { to: '/admin/blog', label: 'Blog SEO', Icon: BookOpen },
+      { to: '/admin/blog', itemKey: 'blogSeo', Icon: BookOpen },
     ],
   },
   {
-    label: 'Intelligence',
+    groupKey: 'intelligence',
     items: [
-      { to: '/admin/agents',         label: 'Agents IA',      Icon: Bot },
-      { to: '/admin/notifications',  label: 'Notifications',  Icon: Bell },
+      { to: '/admin/agents',         itemKey: 'aiAgents',     Icon: Bot },
+      { to: '/admin/notifications',  itemKey: 'notifications', Icon: Bell },
     ],
   },
 ];
 
-function NavItem({ to, label, Icon, end, badge, onClose }) {
+function NavItem({ to, itemKey, Icon, end, badge, onClose }) {
+  const { t } = useTranslation();
+  const label = t(`adminLayout.items.${itemKey}`);
   return (
     <NavLink
       to={to}
@@ -79,6 +82,7 @@ function NavItem({ to, label, Icon, end, badge, onClose }) {
 }
 
 function SidebarContent({ onClose }) {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -93,7 +97,7 @@ function SidebarContent({ onClose }) {
             <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight">
               fp<span className="text-primary-400">ronix</span>
             </p>
-            <p className="text-[9px] text-white/55 uppercase tracking-[0.15em] font-semibold">Admin Console</p>
+            <p className="text-[9px] text-white/55 uppercase tracking-[0.15em] font-semibold">{t('adminLayout.adminConsole')}</p>
           </div>
         </Link>
         {onClose && (
@@ -106,10 +110,10 @@ function SidebarContent({ onClose }) {
 
       {/* ── Navigation ─────────────────────────────────────────────────────── */}
       <nav className="flex-1 overflow-y-auto py-4 px-2.5 space-y-5" aria-label="Admin navigation">
-        {NAV_GROUPS.map(({ label, items }) => (
-          <div key={label}>
+        {NAV_GROUPS.map(({ groupKey, items }) => (
+          <div key={groupKey}>
             <p className="px-3 mb-1.5 text-[10px] font-bold text-white/45 uppercase tracking-[0.12em]">
-              {label}
+              {t(`adminLayout.groups.${groupKey}`)}
             </p>
             <div className="space-y-0.5">
               {items.map((item) => (
@@ -125,7 +129,7 @@ function SidebarContent({ onClose }) {
         <Link to="/" target="_blank"
           className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-white/65 hover:text-white hover:bg-white/[0.06] transition-colors">
           <ExternalLink size={14} />
-          Voir le site
+          {t('adminLayout.viewSite')}
         </Link>
 
         <div className="flex items-center gap-2.5 px-3 py-2 mt-0.5 rounded-xl">
@@ -139,7 +143,7 @@ function SidebarContent({ onClose }) {
           <button
             onClick={() => { logout(); navigate('/connexion'); }}
             className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
-            aria-label="Déconnexion">
+            aria-label={t('adminLayout.logout')}>
             <LogOut size={14} />
           </button>
         </div>
@@ -149,6 +153,7 @@ function SidebarContent({ onClose }) {
 }
 
 export default function AdminLayout() {
+  const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -179,12 +184,12 @@ export default function AdminLayout() {
           style={{ background: 'rgba(14,15,17,0.95)', backdropFilter: 'blur(12px)' }}>
           <button onClick={() => setMobileOpen(true)}
             className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-white/[0.08] transition-colors"
-            aria-label="Ouvrir le menu">
+            aria-label={t('adminLayout.openMenu')}>
             <Menu size={19} />
           </button>
           <div className="flex items-center gap-2">
             <Shield size={14} className="text-primary-400" />
-            <span className="font-display font-semibold text-white text-[13px]">Administration</span>
+            <span className="font-display font-semibold text-white text-[13px]">{t('adminLayout.administration')}</span>
           </div>
         </div>
 
@@ -206,7 +211,7 @@ export default function AdminLayout() {
             <span className="text-[11px] text-gray-500">v1.0</span>
           </div>
           <p className="text-[11px] text-gray-500">
-            © {new Date().getFullYear()} fpronix — Tous droits réservés
+            {t('adminLayout.copyright', { year: new Date().getFullYear() })}
           </p>
         </footer>
       </div>

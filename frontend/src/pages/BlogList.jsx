@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { BookOpen, Eye } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -11,8 +12,10 @@ import { usePageMeta } from '../hooks/usePageMeta';
 const CATEGORIES = ['general', 'analyse', 'pronostic', 'actualite', 'conseil'];
 
 function PostCard({ post }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const date = post.publishedAt
-    ? format(new Date(post.publishedAt), 'dd MMM yyyy', { locale: fr })
+    ? format(new Date(post.publishedAt), 'dd MMM yyyy', { locale: dateLocale })
     : '';
   const author = post.author?.profile?.displayName || post.author?.username;
 
@@ -37,7 +40,7 @@ function PostCard({ post }) {
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1 flex-wrap">
           {post.category && (
-            <span className="text-xs font-medium text-primary-400 capitalize">{post.category}</span>
+            <span className="text-xs font-medium text-primary-400 capitalize">{t(`blog.categories.${post.category}`, { defaultValue: post.category })}</span>
           )}
           {date && <span className="text-xs text-gray-600">{date}</span>}
         </div>
@@ -48,7 +51,7 @@ function PostCard({ post }) {
           <p className="text-xs text-gray-500 mt-1 line-clamp-2">{post.excerpt}</p>
         )}
         <div className="flex items-center gap-3 mt-2 text-xs text-gray-600">
-          {author && <span>par {author}</span>}
+          {author && <span>{t('blog.byAuthor', { author })}</span>}
           <span className="flex items-center gap-1">
             <Eye size={10} />
             {post.views}
@@ -60,12 +63,13 @@ function PostCard({ post }) {
 }
 
 export default function BlogList() {
+  const { t } = useTranslation();
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
 
   usePageMeta(
-    'Blog Football — Analyses & Conseils',
-    'Articles, analyses et conseils football par les experts fpronix. Pronostics, stratégies et actualités du foot.',
+    t('blog.metaTitle'),
+    t('blog.metaDesc'),
   );
 
   const { data, isLoading, isError } = useQuery({
@@ -81,7 +85,7 @@ export default function BlogList() {
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
         <BookOpen size={22} className="text-primary-400" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">Blog</h1>
+        <h1 className="font-display font-bold text-2xl text-gray-100">{t('blog.title')}</h1>
       </div>
 
       {/* Filtre catégories */}
@@ -92,7 +96,7 @@ export default function BlogList() {
             !category ? 'bg-primary-500 text-white' : 'bg-surface-800 text-gray-400 hover:text-gray-200'
           }`}
         >
-          Tous
+          {t('blog.all')}
         </button>
         {CATEGORIES.map((c) => (
           <button
@@ -102,7 +106,7 @@ export default function BlogList() {
               category === c ? 'bg-primary-500 text-white' : 'bg-surface-800 text-gray-400 hover:text-gray-200'
             }`}
           >
-            {c}
+            {t(`blog.categories.${c}`)}
           </button>
         ))}
       </div>
@@ -115,13 +119,13 @@ export default function BlogList() {
 
       {isError && (
         <div className="bento-card text-center py-8 text-gray-500">
-          Impossible de charger les articles.
+          {t('blog.loadError')}
         </div>
       )}
 
       {!isLoading && posts.length === 0 && (
         <div className="bento-card text-center py-8 text-gray-500">
-          Aucun article disponible pour le moment.
+          {t('blog.noArticles')}
         </div>
       )}
 
@@ -137,7 +141,7 @@ export default function BlogList() {
             onClick={() => setPage((p) => p - 1)}
             className="text-xs px-3 py-1.5 rounded-lg bg-surface-800 border border-surface-700 text-gray-400 hover:text-gray-200 disabled:opacity-40"
           >
-            ← Précédent
+            ← {t('blog.previous')}
           </button>
           <span className="text-xs text-gray-500">{page} / {pagination.pages}</span>
           <button
@@ -145,7 +149,7 @@ export default function BlogList() {
             onClick={() => setPage((p) => p + 1)}
             className="text-xs px-3 py-1.5 rounded-lg bg-surface-800 border border-surface-700 text-gray-400 hover:text-gray-200 disabled:opacity-40"
           >
-            Suivant →
+            {t('blog.next')} →
           </button>
         </div>
       )}

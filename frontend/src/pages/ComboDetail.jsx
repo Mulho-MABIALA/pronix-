@@ -1,18 +1,13 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Crown, Trash2, TrendingUp, Layers, ArrowLeft, Lock, Share2, CheckCircle2, XCircle } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
-
-const PRED_LABELS = {
-  HOME_WIN: '1 — Domicile', DRAW: 'X — Nul', AWAY_WIN: '2 — Extérieur',
-  OVER_2_5: 'Plus de 2.5 buts', UNDER_2_5: 'Moins de 2.5 buts',
-  BTTS_YES: 'Les 2 équipes marquent', BTTS_NO: 'BTTS Non',
-};
 
 function ResultIcon({ result }) {
   if (!result) return null;
@@ -22,6 +17,8 @@ function ResultIcon({ result }) {
 }
 
 function EntryRow({ entry }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const m = entry.match;
   const isFinished = m?.status === 'FINISHED';
 
@@ -41,7 +38,7 @@ function EntryRow({ entry }) {
           <p className="text-xs text-gray-500 mt-0.5">
             {m?.competition?.name}
             {m?.matchDate && (
-              <> · {format(new Date(m.matchDate || m.scheduledAt), 'dd MMM HH:mm', { locale: fr })}</>
+              <> · {format(new Date(m.matchDate || m.scheduledAt), 'dd MMM HH:mm', { locale: dateLocale })}</>
             )}
           </p>
         </div>
@@ -51,7 +48,7 @@ function EntryRow({ entry }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-xs font-semibold text-gray-300 bg-surface-700 px-2 py-0.5 rounded-lg">
-            {PRED_LABELS[entry.prediction] || entry.prediction}
+            {t(`comboDetail.predLabels.${entry.prediction}`, { defaultValue: entry.prediction })}
           </span>
           <span className="text-primary-400 font-bold text-sm">@ {entry.odds.toFixed(2)}</span>
         </div>
@@ -66,6 +63,8 @@ function EntryRow({ entry }) {
 }
 
 export default function ComboDetail() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -80,21 +79,21 @@ export default function ComboDetail() {
   const deleteMutation = useMutation({
     mutationFn: () => api.delete(`/combos/${id}`),
     onSuccess: () => {
-      addToast('Combiné supprimé', 'success');
+      addToast(t('combos.deleted'), 'success');
       queryClient.invalidateQueries({ queryKey: ['combos'] });
       queryClient.invalidateQueries({ queryKey: ['my-combos'] });
       navigate('/combos');
     },
-    onError: () => addToast('Erreur lors de la suppression', 'error'),
+    onError: () => addToast(t('combos.deleteError'), 'error'),
   });
 
   const handleShare = () => {
     const url = window.location.href;
     if (navigator.share) {
-      navigator.share({ title: combo?.title || 'Combiné fpronix', url });
+      navigator.share({ title: combo?.title || t('comboDetail.defaultTitle'), url });
     } else {
       navigator.clipboard.writeText(url);
-      addToast('Lien copié !', 'success');
+      addToast(t('comboDetail.linkCopied'), 'success');
     }
   };
 
@@ -112,16 +111,16 @@ export default function ComboDetail() {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center space-y-4">
         <Lock size={48} className="text-amber-400 mx-auto" />
-        <h2 className="font-display font-bold text-xl text-gray-100">Combiné Premium</h2>
-        <p className="text-gray-400">Ce combiné est réservé aux abonnés Premium. Passez à la formule supérieure pour y accéder.</p>
+        <h2 className="font-display font-bold text-xl text-gray-100">{t('comboDetail.premiumCombo')}</h2>
+        <p className="text-gray-400">{t('comboDetail.premiumComboDesc')}</p>
         <Link
           to="/abonnement"
           className="inline-block px-6 py-3 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-400 transition-colors"
         >
-          Voir les abonnements
+          {t('comboDetail.viewSubscriptions')}
         </Link>
         <button onClick={() => navigate(-1)} className="block mx-auto text-sm text-gray-500 hover:text-gray-300 mt-2">
-          ← Retour
+          ← {t('comboDetail.back')}
         </button>
       </div>
     );
@@ -130,8 +129,8 @@ export default function ComboDetail() {
   if (!data?.data) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center">
-        <p className="text-gray-500">Combiné introuvable.</p>
-        <Link to="/combos" className="text-primary-400 text-sm mt-2 inline-block">← Retour aux combinés</Link>
+        <p className="text-gray-500">{t('comboDetail.notFound')}</p>
+        <Link to="/combos" className="text-primary-400 text-sm mt-2 inline-block">← {t('comboDetail.backToCombos')}</Link>
       </div>
     );
   }
@@ -139,7 +138,7 @@ export default function ComboDetail() {
   const combo = data.data;
   const creatorName = combo.user?.profile?.displayName || combo.user?.username;
   const isOwn = user?.id === combo.userId;
-  const title = combo.title || `Combiné du ${format(new Date(combo.createdAt), 'dd MMMM yyyy', { locale: fr })}`;
+  const title = combo.title || t('combos.comboOf', { date: format(new Date(combo.createdAt), 'dd MMMM yyyy', { locale: dateLocale }) });
 
   const wonCount  = combo.entries.filter((e) => e.result === 'WIN').length;
   const lostCount = combo.entries.filter((e) => e.result === 'LOSS').length;
@@ -151,7 +150,7 @@ export default function ComboDetail() {
       {/* ── Back ── */}
       <button onClick={() => navigate('/combos')} className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors">
         <ArrowLeft size={15} />
-        Retour aux combinés
+        {t('comboDetail.backToCombos')}
       </button>
 
       {/* ── Header ── */}
@@ -167,17 +166,17 @@ export default function ComboDetail() {
               )}
             </div>
             <p className="text-sm text-gray-500 mt-1">
-              Par{' '}
+              {t('comboDetail.byPrefix')}{' '}
               <Link to={`/tipsters/${combo.user?.id}`} className="text-primary-400 hover:underline">
                 {creatorName}
               </Link>
               {combo.user?.tipsterStats?.successRate != null && (
                 <span className="text-gray-600 ml-1">
-                  · {combo.user.tipsterStats.successRate.toFixed(0)}% réussite
+                  · {t('combos.successRatePct', { rate: combo.user.tipsterStats.successRate.toFixed(0) })}
                 </span>
               )}
               <span className="text-gray-600 ml-1">
-                · {format(new Date(combo.createdAt), 'dd MMM yyyy', { locale: fr })}
+                · {format(new Date(combo.createdAt), 'dd MMM yyyy', { locale: dateLocale })}
               </span>
             </p>
           </div>
@@ -185,17 +184,17 @@ export default function ComboDetail() {
             <button
               onClick={handleShare}
               className="p-2 rounded-lg bg-surface-700 text-gray-400 hover:text-gray-200 transition-colors"
-              title="Partager"
+              title={t('comboDetail.share')}
             >
               <Share2 size={14} />
             </button>
             {isOwn && (
               <button
                 onClick={() => {
-                  if (window.confirm('Supprimer ce combiné ?')) deleteMutation.mutate();
+                  if (window.confirm(t('comboDetail.confirmDelete'))) deleteMutation.mutate();
                 }}
                 className="p-2 rounded-lg bg-surface-700 text-gray-400 hover:text-red-400 transition-colors"
-                title="Supprimer"
+                title={t('combos.delete')}
               >
                 <Trash2 size={14} />
               </button>
@@ -208,13 +207,13 @@ export default function ComboDetail() {
           <div className="text-center">
             <p className="text-xl font-display font-bold text-primary-400">{combo.totalOdds.toFixed(2)}</p>
             <p className="text-xs text-gray-500 mt-0.5 flex items-center justify-center gap-1">
-              <TrendingUp size={10} /> Cote totale
+              <TrendingUp size={10} /> {t('comboDetail.totalOdds')}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xl font-display font-bold text-gray-100">{combo.entries.length}</p>
             <p className="text-xs text-gray-500 mt-0.5 flex items-center justify-center gap-1">
-              <Layers size={10} /> Sélections
+              <Layers size={10} /> {t('comboCreate.selections')}
             </p>
           </div>
           <div className="text-center">
@@ -223,14 +222,14 @@ export default function ComboDetail() {
                 <p className={`text-xl font-display font-bold ${
                   combo.result === 'WIN' ? 'text-green-400' : 'text-red-400'
                 }`}>
-                  {combo.result === 'WIN' ? 'Gagné' : 'Perdu'}
+                  {combo.result === 'WIN' ? t('wallet.won') : t('wallet.lostBet')}
                 </p>
-                <p className="text-xs text-gray-500 mt-0.5">Résultat</p>
+                <p className="text-xs text-gray-500 mt-0.5">{t('comboDetail.result')}</p>
               </>
             ) : (
               <>
                 <p className="text-xl font-display font-bold text-gray-400">{pendingCount}</p>
-                <p className="text-xs text-gray-500 mt-0.5">En attente</p>
+                <p className="text-xs text-gray-500 mt-0.5">{t('comboDetail.pending')}</p>
               </>
             )}
           </div>
@@ -239,16 +238,16 @@ export default function ComboDetail() {
         {/* Progress si pas encore terminé */}
         {!combo.result && combo.entries.some((e) => e.result) && (
           <div className="flex items-center gap-2 text-xs pt-1">
-            <span className="text-green-400 font-medium">✓ {wonCount} gagné{wonCount > 1 ? 's' : ''}</span>
-            {lostCount > 0 && <span className="text-red-400 font-medium">✗ {lostCount} perdu{lostCount > 1 ? 's' : ''}</span>}
-            {pendingCount > 0 && <span className="text-gray-500">{pendingCount} en attente</span>}
+            <span className="text-green-400 font-medium">✓ {t('comboDetail.wonCount', { count: wonCount })}</span>
+            {lostCount > 0 && <span className="text-red-400 font-medium">✗ {t('comboDetail.lostCount', { count: lostCount })}</span>}
+            {pendingCount > 0 && <span className="text-gray-500">{t('comboDetail.pendingCount', { count: pendingCount })}</span>}
           </div>
         )}
       </div>
 
       {/* ── Entrées ── */}
       <section>
-        <h2 className="font-semibold text-gray-100 mb-3">Sélections du coupon</h2>
+        <h2 className="font-semibold text-gray-100 mb-3">{t('comboDetail.ticketSelections')}</h2>
         <div className="space-y-2">
           {combo.entries.map((entry) => (
             <EntryRow key={entry.id} entry={entry} />
@@ -262,18 +261,18 @@ export default function ComboDetail() {
           onClick={handleShare}
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border border-surface-600 text-gray-300 text-sm font-medium hover:bg-surface-700 transition-colors"
         >
-          <Share2 size={14} /> Partager ce combiné
+          <Share2 size={14} /> {t('comboDetail.shareThis')}
         </button>
         <Link
           to="/combos/creer"
           className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors"
         >
-          Créer le mien
+          {t('comboDetail.createMine')}
         </Link>
       </div>
 
       <p className="disclaimer text-center">
-        Les cotes indiquées sont indicatives. Vérifiez les cotes réelles chez votre bookmaker avant de parier. Jeu responsable.
+        {t('comboDetail.oddsDisclaimer')}
       </p>
     </div>
   );

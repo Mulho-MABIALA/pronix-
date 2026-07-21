@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ChevronLeft, ChevronRight, SlidersHorizontal, Zap, TrendingUp, BarChart2,
   Layers, ClipboardList, Wallet, Trophy, Globe,
@@ -8,20 +9,12 @@ import {
 const TOOLS = [
   {
     id: 'filtres',
-    badge: 'Outil',
-    title: 'Filtres avancés',
-    description: "Filtrez les matchs par marché, confiance et probabilité pour trouver les meilleures opportunités.",
-    cta: 'Essayer',
     to: '/outils/filtres',
     icon: SlidersHorizontal,
     gradient: 'linear-gradient(135deg, #0a1f14 0%, #103322 55%, #1aa656 130%)',
   },
   {
     id: 'machine',
-    badge: 'Populaire',
-    title: 'Générateur de tickets',
-    description: 'Génère un ticket combiné optimisé selon tes critères, prêt à partager en image.',
-    cta: 'Générer',
     to: '/outils/machine',
     icon: Zap,
     gradient: 'linear-gradient(135deg, #1a1106 0%, #3a2308 55%, #f97316 130%)',
@@ -29,70 +22,42 @@ const TOOLS = [
   },
   {
     id: 'pronostics',
-    badge: 'Communauté',
-    title: 'Pronostics tipsters',
-    description: 'Suis les pronostics publiés par les meilleurs tipsters et leur taux de réussite réel.',
-    cta: 'Découvrir',
     to: '/pronostics',
     icon: TrendingUp,
     gradient: 'linear-gradient(135deg, #0a1420 0%, #122538 55%, #2563eb 130%)',
   },
   {
     id: 'stats',
-    badge: 'Données',
-    title: 'Stats par ligue',
-    description: 'Buts moyens, BTTS, Over 2.5 — compare toutes les compétitions du monde en un coup d\'œil.',
-    cta: 'Comparer',
     to: '/outils/stats-ligues',
     icon: BarChart2,
     gradient: 'linear-gradient(135deg, #160a20 0%, #2a1238 55%, #a855f7 130%)',
   },
   {
     id: 'combos',
-    badge: 'Communauté',
-    title: 'Combinés',
-    description: 'Crée tes tickets combinés, partage-les et découvre ceux de la communauté avec l\'optimiseur IA.',
-    cta: 'Explorer',
     to: '/combos',
     icon: Layers,
     gradient: 'linear-gradient(135deg, #06131a 0%, #0b2733 55%, #06b6d4 130%)',
   },
   {
     id: 'bettracker',
-    badge: 'Suivi',
-    title: 'Mes paris & Coach IA',
-    description: 'Enregistre tes paris, suis ton ROI en temps réel et reçois des conseils personnalisés du Coach IA.',
-    cta: 'Suivre',
     to: '/mes-paris',
     icon: ClipboardList,
     gradient: 'linear-gradient(135deg, #1a0a0e 0%, #331420 55%, #ec4899 130%)',
   },
   {
     id: 'wallet',
-    badge: 'Simulation',
-    title: 'Portefeuille virtuel',
-    description: 'Parie sans risque avec de l\'argent virtuel et teste tes stratégies avant de miser en réel.',
-    cta: 'Simuler',
     to: '/portefeuille-virtuel',
     icon: Wallet,
     gradient: 'linear-gradient(135deg, #0d1a06 0%, #1e330b 55%, #84cc16 130%)',
   },
   {
     id: 'classements',
-    badge: 'Données',
-    title: 'Classements',
-    description: 'Les tableaux de toutes les ligues, calculés en direct à partir des résultats synchronisés.',
-    cta: 'Voir',
     to: '/classements',
     icon: Trophy,
     gradient: 'linear-gradient(135deg, #1a1406 0%, #33280b 55%, #eab308 130%)',
   },
   {
     id: 'cdm2026',
-    badge: 'Événement',
-    title: 'Coupe du Monde 2026',
-    description: 'Calendrier, groupes et pronostics dédiés au Mondial USA-Canada-Mexique.',
-    cta: 'Découvrir',
     to: '/coupe-du-monde-2026',
     icon: Globe,
     gradient: 'linear-gradient(135deg, #0a0f20 0%, #141f3d 55%, #6366f1 130%)',
@@ -100,6 +65,7 @@ const TOOLS = [
 ];
 
 export default function ToolsCarousel() {
+  const { t } = useTranslation();
   const trackRef = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
@@ -138,18 +104,18 @@ export default function ToolsCarousel() {
   return (
     <section>
       <div className="flex items-center justify-between mb-3">
-        <h2 className="section-title">Outils fpronix</h2>
+        <h2 className="section-title">{t('toolsCarousel.title')}</h2>
         <div className="hidden sm:flex items-center gap-1.5">
           <button
             onClick={prev}
-            aria-label="Précédent"
+            aria-label={t('toolsCarousel.prev')}
             className="w-8 h-8 rounded-full bg-surface-800 border border-white/[0.06] flex items-center justify-center text-gray-400 hover:text-white hover:bg-surface-700 transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
           <button
             onClick={next}
-            aria-label="Suivant"
+            aria-label={t('toolsCarousel.next')}
             className="w-8 h-8 rounded-full bg-surface-800 border border-white/[0.06] flex items-center justify-center text-gray-400 hover:text-white hover:bg-surface-700 transition-colors"
           >
             <ChevronRight size={16} />
@@ -189,18 +155,18 @@ export default function ToolsCarousel() {
                   }`}
                 >
                   <Icon size={12} />
-                  {tool.badge}
+                  {t(`toolsCarousel.tools.${tool.id}.badge`)}
                 </span>
 
                 <div>
                   <h3 className="font-display font-bold text-xl text-white mb-1.5 leading-snug">
-                    {tool.title}
+                    {t(`toolsCarousel.tools.${tool.id}.title`)}
                   </h3>
                   <p className="text-sm text-white/70 leading-relaxed mb-4 line-clamp-2">
-                    {tool.description}
+                    {t(`toolsCarousel.tools.${tool.id}.description`)}
                   </p>
                   <span className="inline-flex items-center gap-1.5 bg-white text-surface-900 text-sm font-semibold px-4 py-2 rounded-xl group-hover:gap-2.5 transition-all">
-                    {tool.cta}
+                    {t(`toolsCarousel.tools.${tool.id}.cta`)}
                     <ChevronRight size={15} />
                   </span>
                 </div>
@@ -216,7 +182,7 @@ export default function ToolsCarousel() {
           <button
             key={tool.id}
             onClick={() => scrollToIndex(i)}
-            aria-label={`Aller à ${tool.title}`}
+            aria-label={t('toolsCarousel.goTo', { title: t(`toolsCarousel.tools.${tool.id}.title`) })}
             className={`h-1.5 rounded-full transition-all ${
               i === activeIndex ? 'w-6 bg-primary-500' : 'w-1.5 bg-surface-600'
             }`}

@@ -1,8 +1,9 @@
 import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow, isPast, startOfDay } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
 import {
   TrendingUp, Search, Bot, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy,
 } from 'lucide-react';
@@ -17,43 +18,16 @@ import { useAuth } from '../context/AuthContext';
 
 // ─── Constantes ────────────────────────────────────────────────────────────────
 
-const PICK_LABELS = {
-  '1':      'Victoire Dom.',
-  'X':      'Match nul',
-  '2':      'Victoire Ext.',
-  'over25': 'Plus de 2.5',
-  'over15': 'Plus de 1.5',
-  'btts':   'BTTS Oui',
-  '1X':     'Double 1X',
-  'X2':     'Double X2',
+const MARKET_KEYS = ['all', '1X2', 'btts', 'goals', 'dc'];
+const MARKET_TYPES = {
+  all: null, '1X2': ['1', 'X', '2'], btts: ['btts'], goals: ['over25', 'over15'], dc: ['1X', 'X2'],
 };
-
-const CONF = {
-  high:   { label: 'Élevée',  color: 'text-primary-400',  dot: 'bg-primary-400',  bar: 'bg-primary-400' },
-  medium: { label: 'Moyenne', color: 'text-amber-400',    dot: 'bg-amber-400',    bar: 'bg-amber-400' },
-  low:    { label: 'Faible',  color: 'text-gray-500',     dot: 'bg-gray-500',     bar: 'bg-gray-600' },
-};
-
-const MARKET_FILTERS = [
-  { key: 'all',   label: 'Meilleurs picks',  types: null },
-  { key: '1X2',   label: '1X2',              types: ['1', 'X', '2'] },
-  { key: 'btts',  label: 'BTTS',             types: ['btts'] },
-  { key: 'goals', label: 'Nombre de buts',   types: ['over25', 'over15'] },
-  { key: 'dc',    label: 'Double chance',    types: ['1X', 'X2'] },
-];
 
 const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club friendly', 'test match'];
 const isFriendlyMatch = (m) =>
   FRIENDLY_KEYWORDS.some((kw) => (m.competition?.name || '').toLowerCase().includes(kw));
 
 const FREE_DAILY_LIMIT = 3;
-
-function formatTabDate(d) {
-  if (isToday(d))     return "Aujourd'hui";
-  if (isYesterday(d)) return 'Hier';
-  if (isTomorrow(d))  return 'Demain';
-  return format(d, 'EEE dd', { locale: fr });
-}
 
 // ─── TeamLogo ──────────────────────────────────────────────────────────────────
 
@@ -78,15 +52,22 @@ function TeamLogo({ logo, teamId, name, size = 16 }) {
 
 // ─── PronoRow — ligne compact style BetMines ───────────────────────────────────
 
+const CONF_COLOR = {
+  high:   { color: 'text-primary-400', dot: 'bg-primary-400', bar: 'bg-primary-400' },
+  medium: { color: 'text-amber-400',   dot: 'bg-amber-400',   bar: 'bg-amber-400' },
+  low:    { color: 'text-gray-500',    dot: 'bg-gray-500',    bar: 'bg-gray-600' },
+};
+
 function PronoRow({ match }) {
+  const { t } = useTranslation();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
 
-  const conf = CONF[pred.confidence] || CONF.low;
+  const conf = CONF_COLOR[pred.confidence] || CONF_COLOR.low;
   const { data: realOdds } = useOdds(match.id, { enabled: match.status === 'SCHEDULED' });
 
   const pickType  = pred.bestPick.type;
-  const pickLabel = PICK_LABELS[pickType] || pred.bestPick.label;
+  const pickLabel = t(`pronostics.pickShort.${pickType}`, { defaultValue: pred.bestPick.label });
   const col       = pickType === '2' ? 'away' : pickType === 'X' ? 'draw' : 'home';
   const realOdd   = realOdds?.best?.[col] ?? null;
   const isReal    = !!realOdd;
@@ -194,6 +175,7 @@ function PronoRow({ match }) {
 // ─── CompetitionGroup ──────────────────────────────────────────────────────────
 
 function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
+  const { t } = useTranslation();
   return (
     <div className="bento-card overflow-hidden p-0">
       {/* En-tête compétition */}
@@ -220,10 +202,10 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
                                 bg-surface-800/75 backdrop-blur-[2px]">
                   <Lock size={14} className="text-primary-400 shrink-0" />
                   <p className="text-xs font-semibold text-gray-200 hidden sm:block">
-                    Limite gratuite atteinte
+                    {t('pronostics.freeLimitReached')}
                   </p>
                   <Link to="/abonnement" className="btn-primary text-xs py-1 px-3">
-                    Premium
+                    {t('common.premium')}
                   </Link>
                 </div>
               )}
@@ -238,10 +220,20 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
 // ─── Page principale ───────────────────────────────────────────────────────────
 
 export default function Pronostics() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
+
   usePageMeta(
-    'Pronostics',
+    t('pronostics.title'),
     'Pronostics football du jour avec probabilités 1X2, value bets et picks algorithmiques. Analyse IA des matchs.',
   );
+
+  const formatTabDate = (d) => {
+    if (isToday(d))     return t('common.today');
+    if (isYesterday(d)) return t('common.yesterday');
+    if (isTomorrow(d))  return t('common.tomorrow');
+    return format(d, 'EEE dd', { locale: dateLocale });
+  };
 
   const { isPremium } = useAuth();
   const [date,         setDate]         = useState(new Date());
@@ -282,8 +274,8 @@ export default function Pronostics() {
 
       // Filtre marché
       if (activeMarket !== 'all') {
-        const f = MARKET_FILTERS.find((x) => x.key === activeMarket);
-        if (f?.types && !f.types.includes(m.predictions.bestPick.type)) return false;
+        const types = MARKET_TYPES[activeMarket];
+        if (types && !types.includes(m.predictions.bestPick.type)) return false;
       }
 
       return true;
@@ -307,7 +299,7 @@ export default function Pronostics() {
   const grouped = useMemo(() => {
     const map = new Map();
     for (const m of filteredMatches) {
-      const key = m.competition?.name || 'Autres';
+      const key = m.competition?.name || t('common.other');
       if (!map.has(key)) map.set(key, { logo: m.competition?.logo || null, items: [] });
       map.get(key).items.push({ match: m });
     }
@@ -339,10 +331,10 @@ export default function Pronostics() {
       <div>
         <div className="flex items-center gap-2 mb-0.5">
           <TrendingUp size={17} className="text-primary-400" />
-          <h1 className="section-title">Pronostics</h1>
+          <h1 className="section-title">{t('pronostics.title')}</h1>
         </div>
         <p className="text-[11px] text-gray-500">
-          Picks générés par algorithme statistique &amp; IA — hors matchs amicaux
+          {t('pronostics.subtitle')}
         </p>
       </div>
 
@@ -351,7 +343,7 @@ export default function Pronostics() {
         <button
           onClick={() => setTabOffset((o) => o - 1)}
           className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors"
-          title="Jours précédents"
+          title={t('pronostics.prevDays')}
         >
           <ChevronLeft size={16} />
         </button>
@@ -371,7 +363,7 @@ export default function Pronostics() {
                     : 'text-gray-500 border-white/[0.06] hover:text-gray-300 hover:border-white/10'
                 }`}>
                 {formatTabDate(d)}
-                {dayPast && <span className="block text-[9px] text-gray-700 leading-none">résultats</span>}
+                {dayPast && <span className="block text-[9px] text-gray-700 leading-none">{t('pronostics.resultsLabel')}</span>}
               </button>
             );
           })}
@@ -380,7 +372,7 @@ export default function Pronostics() {
         <button
           onClick={() => setTabOffset((o) => o + 1)}
           className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors"
-          title="Jours suivants"
+          title={t('pronostics.nextDays')}
         >
           <ChevronRight size={16} />
         </button>
@@ -397,14 +389,14 @@ export default function Pronostics() {
           </button>
 
           <div ref={chipsRef} className="flex gap-1.5 overflow-x-auto scrollbar-hide flex-1">
-            {MARKET_FILTERS.map(({ key, label }) => (
+            {MARKET_KEYS.map((key) => (
               <button key={key} onClick={() => setActiveMarket(key)}
                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                   activeMarket === key
                     ? 'bg-select-500/20 text-select-400 border-select-500/40'
                     : 'text-gray-500 border-white/[0.08] hover:text-gray-300 hover:border-white/20'
                 }`}>
-                {label}
+                {key === '1X2' ? t('pronostics.marketFilters.oneXTwo') : key === 'dc' ? t('pronostics.marketFilters.doubleChance') : t(`pronostics.marketFilters.${key}`)}
               </button>
             ))}
           </div>
@@ -422,7 +414,7 @@ export default function Pronostics() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Équipe, ligue ou pays…"
+            placeholder={t('pronostics.searchPlaceholder')}
             className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-700/60 border border-white/[0.07] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-white/20 transition-colors"
           />
           {search && (
@@ -440,14 +432,14 @@ export default function Pronostics() {
         if (!finished.length) return null;
         let correct = 0;
         for (const m of finished) {
-          const t = m.predictions?.bestPick?.type;
+          const pt = m.predictions?.bestPick?.type;
           const h = m.homeScore, a = m.awayScore;
-          if (!t) continue;
+          if (!pt) continue;
           const ok =
-            (t === '1'      && h > a)  || (t === 'X'  && h === a) || (t === '2'  && a > h)  ||
-            (t === '1X'     && h >= a) || (t === 'X2' && a >= h)  ||
-            (t === 'over25' && h + a > 2.5) || (t === 'over15' && h + a > 1.5) ||
-            (t === 'btts'   && h > 0 && a > 0);
+            (pt === '1'      && h > a)  || (pt === 'X'  && h === a) || (pt === '2'  && a > h)  ||
+            (pt === '1X'     && h >= a) || (pt === 'X2' && a >= h)  ||
+            (pt === 'over25' && h + a > 2.5) || (pt === 'over15' && h + a > 1.5) ||
+            (pt === 'btts'   && h > 0 && a > 0);
           if (ok) correct++;
         }
         const pct = Math.round((correct / finished.length) * 100);
@@ -457,21 +449,21 @@ export default function Pronostics() {
           <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bg}`}>
             <Trophy size={16} className={color} />
             <div className="flex-1">
-              <p className="text-[12px] font-bold text-gray-200">Bilan du jour</p>
+              <p className="text-[12px] font-bold text-gray-200">{t('pronostics.dailyRecap')}</p>
               <p className="text-[11px] text-gray-500">
-                {correct} pronostic{correct > 1 ? 's' : ''} correct{correct > 1 ? 's' : ''} sur {finished.length} terminé{finished.length > 1 ? 's' : ''}
+                {t('pronostics.correctOutOf', { correct, total: finished.length })}
               </p>
             </div>
             <div className={`text-[22px] font-display font-bold ${color}`}>{pct}%</div>
             <div className="flex gap-1">
               {finished.map((m, i) => {
-                const t = m.predictions?.bestPick?.type;
+                const pt = m.predictions?.bestPick?.type;
                 const h = m.homeScore, a = m.awayScore;
                 const ok =
-                  (t === '1' && h > a) || (t === 'X' && h === a) || (t === '2' && a > h) ||
-                  (t === '1X' && h >= a) || (t === 'X2' && a >= h) ||
-                  (t === 'over25' && h + a > 2.5) || (t === 'over15' && h + a > 1.5) ||
-                  (t === 'btts' && h > 0 && a > 0);
+                  (pt === '1' && h > a) || (pt === 'X' && h === a) || (pt === '2' && a > h) ||
+                  (pt === '1X' && h >= a) || (pt === 'X2' && a >= h) ||
+                  (pt === 'over25' && h + a > 2.5) || (pt === 'over15' && h + a > 1.5) ||
+                  (pt === 'btts' && h > 0 && a > 0);
                 return (
                   <div key={i} className={`w-2 h-2 rounded-full ${ok ? 'bg-primary-400' : 'bg-red-400'}`} />
                 );
@@ -485,7 +477,7 @@ export default function Pronostics() {
       <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-surface-700/40 border border-white/[0.04]">
         <Info size={12} className="text-gray-600 shrink-0 mt-0.5" />
         <p className="text-[10px] text-gray-600 leading-relaxed">
-          Ces pronostics sont générés automatiquement. Ils ne constituent pas un conseil financier. Jouez de façon responsable.
+          {t('pronostics.disclaimerAuto')}
         </p>
       </div>
 
@@ -497,11 +489,11 @@ export default function Pronostics() {
       ) : filteredMatches.length === 0 ? (
         <div className="bento-card text-center py-12">
           <p className="text-3xl mb-3">📊</p>
-          <p className="text-gray-400 text-sm font-semibold">Aucun pronostic disponible</p>
+          <p className="text-gray-400 text-sm font-semibold">{t('pronostics.noPicks')}</p>
           <p className="text-gray-600 text-xs mt-1">
             {search
-              ? 'Aucun résultat pour cette recherche.'
-              : 'Les prédictions se calculent automatiquement lors de la synchronisation des matchs.'}
+              ? t('pronostics.noResultsSearch')
+              : t('pronostics.autoCalc')}
           </p>
         </div>
       ) : (
@@ -513,7 +505,7 @@ export default function Pronostics() {
               <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border-b border-amber-500/20">
                 <Zap size={11} className="text-amber-400 shrink-0" />
                 <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest flex-1">
-                  Value bets du jour
+                  {t('pronostics.valueBetsToday')}
                 </span>
                 <span className="text-[10px] text-amber-500 shrink-0">{valueBets.length}</span>
               </div>
@@ -529,10 +521,10 @@ export default function Pronostics() {
           {/* En-têtes colonnes (desktop) */}
           <div className="hidden sm:flex items-center gap-2 sm:gap-3 px-3 py-1">
             <div className="w-10 shrink-0" />
-            <div className="flex-1 text-[10px] font-bold uppercase tracking-widest text-gray-600">Équipes</div>
-            <div className="w-10 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">Prob</div>
-            <div className="w-28 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">Pick</div>
-            <div className="w-16 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">Cote</div>
+            <div className="flex-1 text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.teams')}</div>
+            <div className="w-10 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.prob')}</div>
+            <div className="w-28 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.pick')}</div>
+            <div className="w-16 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.odd')}</div>
           </div>
 
           {/* Groupes par compétition */}
@@ -552,21 +544,21 @@ export default function Pronostics() {
             <div className="bento-card text-center py-6">
               <Lock size={22} className="text-primary-400 mx-auto mb-2" />
               <p className="text-sm font-semibold text-gray-200 mb-1">
-                {filteredMatches.length - FREE_DAILY_LIMIT} pronostic{filteredMatches.length - FREE_DAILY_LIMIT > 1 ? 's' : ''} masqué{filteredMatches.length - FREE_DAILY_LIMIT > 1 ? 's' : ''}
+                {t('pronostics.hiddenPicks', { count: filteredMatches.length - FREE_DAILY_LIMIT })}
               </p>
               <p className="text-xs text-gray-500 mb-4">
-                Le plan gratuit est limité à {FREE_DAILY_LIMIT} picks/jour.
+                {t('pronostics.freeLimitDescShort', { limit: FREE_DAILY_LIMIT })}
               </p>
               <Link to="/abonnement" className="btn-primary px-6 py-2 text-sm inline-flex items-center gap-2">
                 <Zap size={14} />
-                Débloquer Premium — illimité
+                {t('pronostics.unlockPremium')}
               </Link>
             </div>
           )}
 
           <p className="text-[10px] text-gray-700 text-center pt-1">
-            {filteredMatches.length} pick{filteredMatches.length > 1 ? 's' : ''} disponible{filteredMatches.length > 1 ? 's' : ''}
-            {!isPremium && filteredMatches.length > FREE_DAILY_LIMIT && ` · ${FREE_DAILY_LIMIT} affichés (plan gratuit)`}
+            {t('pronostics.picksAvailable', { count: filteredMatches.length })}
+            {!isPremium && filteredMatches.length > FREE_DAILY_LIMIT && ` · ${t('pronostics.freeDisplayed', { limit: FREE_DAILY_LIMIT })}`}
           </p>
         </div>
       )}

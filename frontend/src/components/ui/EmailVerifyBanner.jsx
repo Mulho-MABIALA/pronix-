@@ -58,7 +58,7 @@ export default function EmailVerifyBanner() {
       <button
         onClick={() => { localStorage.setItem('emailBannerDismissed', '1'); setDismissed(true); }}
         className="p-0.5 rounded text-amber-600 hover:text-amber-400 transition-colors shrink-0"
-        aria-label="Fermer"
+        aria-label={t('common.close')}
       >
         <X size={13} />
       </button>

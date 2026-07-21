@@ -33,7 +33,7 @@ export default function MatchReminderButton({ matchId, scheduledAt, size = 16 })
       queryClient.invalidateQueries({ queryKey: ['reminders'] });
       toast(t('matches.reminderSet', 'Rappel activé — 1h avant le match'), 'success');
     },
-    onError: () => toast('Erreur lors de l\'activation du rappel', 'error'),
+    onError: () => toast(t('matches.reminderError'), 'error'),
   });
 
   const deleteMutation = useMutation({
@@ -66,8 +66,8 @@ export default function MatchReminderButton({ matchId, scheduledAt, size = 16 })
           ? 'text-amber-400 hover:text-amber-300 hover:bg-amber-500/10'
           : 'text-gray-600 hover:text-gray-400 hover:bg-white/[0.06]'
       }`}
-      aria-label={hasReminder ? 'Supprimer le rappel' : 'Activer le rappel (1h avant)'}
-      title={hasReminder ? 'Rappel activé · Cliquer pour supprimer' : 'Rappel 1h avant le match'}
+      aria-label={hasReminder ? t('matches.removeReminder') : t('matches.activateReminder')}
+      title={hasReminder ? t('matches.reminderActiveTooltip') : t('matches.reminderTooltip')}
     >
       {hasReminder ? <Bell size={size} className="fill-current" /> : <Bell size={size} />}
     </button>

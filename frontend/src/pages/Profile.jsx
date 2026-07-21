@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
@@ -113,6 +114,7 @@ function Section({ title, icon: Icon, children, action }) {
 
 /* ─── Section parrainage ─────────────────────────────────────────────────────── */
 function ReferralSection() {
+  const { t } = useTranslation();
   const toast = useToast();
   const [code, setCode] = useState(null);
   const [count, setCount] = useState(0);
@@ -140,7 +142,7 @@ function ReferralSection() {
     navigator.clipboard.writeText(shareUrl).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-      if (toast) toast('Lien de parrainage copié !', 'success');
+      if (toast) toast(t('profile.referral.linkCopiedToast'), 'success');
     });
   };
 
@@ -148,11 +150,11 @@ function ReferralSection() {
     <section className="bento-card space-y-4">
       <div className="flex items-center gap-2">
         <Gift size={16} className="text-gray-500" />
-        <h2 className="font-semibold text-gray-100 text-sm">Parrainage</h2>
+        <h2 className="font-semibold text-gray-100 text-sm">{t('profile.referral.title')}</h2>
       </div>
 
       <p className="text-xs text-gray-500 leading-relaxed">
-        Partage ton code et gagne des récompenses quand tes filleuls s'inscrivent sur fpronix.
+        {t('profile.referral.desc')}
       </p>
 
       {loading ? (
@@ -171,14 +173,14 @@ function ReferralSection() {
             }`}
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
-            {copied ? 'Copié' : 'Copier'}
+            {copied ? t('profile.referral.copied') : t('profile.referral.copy')}
           </button>
         </div>
       ) : null}
 
       {count > 0 && (
         <p className="text-xs text-gray-500">
-          <span className="text-primary-400 font-semibold">{count}</span> filleul{count > 1 ? 's' : ''} parrainé{count > 1 ? 's' : ''}
+          {t('profile.referral.referredCount', { count })}
         </p>
       )}
     </section>
@@ -189,6 +191,8 @@ function ReferralSection() {
    Page principale
 ══════════════════════════════════════════════════════════════════════════════ */
 export default function Profile() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const { user, logout, refreshUser } = useAuth();
   const queryClient = useQueryClient();
 
@@ -250,7 +254,7 @@ export default function Profile() {
     } catch (err) {
       console.error('Avatar upload failed:', err);
       setAvatarPreview(null);
-      alert('Erreur lors de l\'upload de la photo. Réessaie.');
+      alert(t('profile.avatarUploadError'));
     } finally {
       setUploading(false);
     }
@@ -298,7 +302,7 @@ export default function Profile() {
               className="hidden"
               onChange={handleAvatarChange}
             />
-            <p className="text-[10px] text-gray-600 text-center mt-1.5">Changer</p>
+            <p className="text-[10px] text-gray-600 text-center mt-1.5">{t('profile.changePhoto')}</p>
           </div>
 
           {/* Infos */}
@@ -309,7 +313,7 @@ export default function Profile() {
               </p>
               {isPremium && (
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full">
-                  <Crown size={10} /> Premium
+                  <Crown size={10} /> {t('profile.premium')}
                 </span>
               )}
             </div>
@@ -326,7 +330,7 @@ export default function Profile() {
                   <path d="M4.41 11.905a5.968 5.968 0 010-3.81V5.505H1.064a9.997 9.997 0 000 9 l3.345-2.6z" fill="#FBBC05"/>
                   <path d="M10 3.977c1.468 0 2.782.505 3.818 1.495l2.863-2.863C14.959 1 12.695 0 10 0 6.09 0 2.71 2.24 1.063 5.505l3.346 2.59C5.2 5.732 7.4 3.977 10 3.977z" fill="#EA4335"/>
                 </svg>
-                Connecté avec Google
+                {t('profile.googleConnected')}
               </span>
             )}
 
@@ -342,7 +346,7 @@ export default function Profile() {
         {/* Succès */}
         {saved && (
           <div className="flex items-center gap-2 bg-primary-500/10 border border-primary-500/30 text-primary-400 text-sm rounded-xl px-4 py-2 mt-4">
-            <Check size={14} /> Profil mis à jour
+            <Check size={14} /> {t('profile.profileUpdated')}
           </div>
         )}
 
@@ -352,7 +356,7 @@ export default function Profile() {
 
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">
-                Nom affiché
+                {t('profile.displayNameLabel')}
               </label>
               <input
                 type="text"
@@ -360,20 +364,20 @@ export default function Profile() {
                 value={form.displayName}
                 onChange={(e) => setForm({ ...form, displayName: e.target.value })}
                 maxLength={50}
-                placeholder="Ton nom public"
+                placeholder={t('profile.displayNamePlaceholder')}
               />
             </div>
 
             <div>
               <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">
-                Bio
+                {t('profile.bioLabel')}
               </label>
               <textarea
                 className="input resize-none h-24"
                 value={form.bio}
                 onChange={(e) => setForm({ ...form, bio: e.target.value })}
                 maxLength={300}
-                placeholder="Parle-toi un peu... équipe favorite, style de jeu..."
+                placeholder={t('profile.bioPlaceholder')}
               />
               <p className="text-right text-[10px] text-gray-600 mt-0.5">
                 {form.bio.length}/300
@@ -382,17 +386,17 @@ export default function Profile() {
 
             <div className="space-y-3 pt-1">
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Notifications
+                {t('profile.notifications')}
               </p>
               <Toggle
                 checked={form.notifEmail}
                 onChange={(v) => setForm({ ...form, notifEmail: v })}
-                label="Alertes par email"
+                label={t('profile.emailAlerts')}
               />
               <Toggle
                 checked={form.notifSms}
                 onChange={(v) => setForm({ ...form, notifSms: v })}
-                label="Alertes SMS"
+                label={t('profile.smsAlerts')}
               />
             </div>
 
@@ -402,16 +406,16 @@ export default function Profile() {
                 disabled={updateProfile.isPending}
                 className="btn-primary flex-1"
               >
-                {updateProfile.isPending ? 'Enregistrement…' : 'Enregistrer'}
+                {updateProfile.isPending ? t('profile.saving') : t('profile.save')}
               </button>
               <button onClick={handleCancel} className="btn-secondary flex-1">
-                Annuler
+                {t('profile.cancel')}
               </button>
             </div>
 
             {updateProfile.isError && (
               <p className="text-red-400 text-xs text-center">
-                Une erreur est survenue. Réessaie.
+                {t('profile.saveError')}
               </p>
             )}
           </div>
@@ -420,13 +424,13 @@ export default function Profile() {
             onClick={() => { setForm(initForm()); setEditing(true); }}
             className="btn-secondary w-full mt-4 flex items-center justify-center gap-2"
           >
-            <Pencil size={14} /> Modifier le profil
+            <Pencil size={14} /> {t('profile.editProfile')}
           </button>
         )}
       </section>
 
       {/* ── Abonnement ────────────────────────────────────────────────────────── */}
-      <Section title="Abonnement" icon={Crown}>
+      <Section title={t('profile.subscription')} icon={Crown}>
         {subLoading ? (
           <SkeletonCard />
         ) : subscription ? (
@@ -437,9 +441,9 @@ export default function Profile() {
                 <p className="text-xs text-gray-500">
                   {subscription.status === 'ACTIVE'
                     ? subscription.endDate
-                      ? `Expire le ${format(new Date(subscription.endDate), 'dd MMM yyyy', { locale: fr })}`
-                      : 'Sans date d\'expiration'
-                    : <span className="text-red-400">Expiré</span>
+                      ? t('profile.expiresOn', { date: format(new Date(subscription.endDate), 'dd MMM yyyy', { locale: dateLocale }) })
+                      : t('profile.noExpiration')
+                    : <span className="text-red-400">{t('profile.expired')}</span>
                   }
                 </p>
               </div>
@@ -450,8 +454,8 @@ export default function Profile() {
                 }`}
               >
                 {subscription.plan?.code === 'FREE' ? (
-                  <><Crown size={12} /> Passer Premium</>
-                ) : 'Gérer'}
+                  <><Crown size={12} /> {t('profile.goPremium')}</>
+                ) : t('profile.manage')}
               </Link>
             </div>
 
@@ -459,7 +463,7 @@ export default function Profile() {
               <details className="group">
                 <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-300 list-none flex items-center gap-1">
                   <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
-                  Historique des paiements ({payments.length})
+                  {t('profile.paymentHistory', { count: payments.length })}
                 </summary>
                 <div className="mt-2 space-y-1.5 text-xs">
                   {payments.map((p) => (
@@ -468,7 +472,7 @@ export default function Profile() {
                       className="flex items-center justify-between py-1.5 border-b border-surface-700/60 last:border-0"
                     >
                       <span className="text-gray-500">
-                        {format(new Date(p.createdAt), 'dd/MM/yyyy', { locale: fr })}
+                        {format(new Date(p.createdAt), 'dd/MM/yyyy', { locale: dateLocale })}
                       </span>
                       <span className="text-gray-400">{p.method}</span>
                       <span className="text-gray-300 font-medium">
@@ -484,36 +488,36 @@ export default function Profile() {
             )}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">Aucun abonnement trouvé</p>
+          <p className="text-gray-500 text-sm">{t('profile.noSubscription')}</p>
         )}
       </Section>
 
       {/* ── Statistiques tipster ──────────────────────────────────────────────── */}
       {stats && (
-        <Section title="Mes statistiques" icon={TrendingUp}>
+        <Section title={t('profile.myStats')} icon={TrendingUp}>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-gray-100">{stats.totalTips}</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">Pronostics</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">{t('profile.picks')}</p>
             </div>
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-primary-400">
                 {stats.successRate?.toFixed(0)}%
               </p>
-              <p className="text-[10px] text-gray-500 mt-0.5">Taux de réussite</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">{t('tipsters.successRate')}</p>
             </div>
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-gray-100">
                 {stats.totalTips > 0 ? (stats.successRate / 10).toFixed(1) : '—'}
               </p>
-              <p className="text-[10px] text-gray-500 mt-0.5">Score</p>
+              <p className="text-[10px] text-gray-500 mt-0.5">{t('profile.score')}</p>
             </div>
           </div>
           <div className="mt-1">
             <SuccessRateBar rate={stats.successRate} total={stats.totalTips} />
           </div>
           <Link to={`/tipsters/${user.id}`} className="btn-secondary w-full text-sm flex items-center justify-center gap-2">
-            <Star size={14} /> Voir mon profil public
+            <Star size={14} /> {t('profile.viewPublicProfile')}
           </Link>
         </Section>
       )}
@@ -523,7 +527,7 @@ export default function Profile() {
         <section>
           <h2 className="font-semibold text-gray-100 text-sm mb-3 flex items-center gap-2">
             <TrendingUp size={14} className="text-gray-500" />
-            Mes pronostics récents
+            {t('profile.recentPicksTitle')}
           </h2>
           <div className="space-y-2">
             {myTips.map((tip) => (
@@ -553,12 +557,12 @@ export default function Profile() {
       )}
 
       {/* ── Sécurité / compte ─────────────────────────────────────────────────── */}
-      <Section title="Compte" icon={Shield}>
+      <Section title={t('profile.account')} icon={Shield}>
         <div className="space-y-2">
           <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
             <div className="flex items-center gap-2">
               <Mail size={14} className="text-gray-500" />
-              <span className="text-sm text-gray-300">Email</span>
+              <span className="text-sm text-gray-300">{t('profile.email')}</span>
             </div>
             <span className="text-xs text-gray-500 truncate max-w-[180px]">{user?.email}</span>
           </div>
@@ -572,17 +576,17 @@ export default function Profile() {
                   <path d="M4.41 11.905a5.968 5.968 0 010-3.81V5.505H1.064a9.997 9.997 0 000 9l3.345-2.6z" fill="#FBBC05"/>
                   <path d="M10 3.977c1.468 0 2.782.505 3.818 1.495l2.863-2.863C14.959 1 12.695 0 10 0 6.09 0 2.71 2.24 1.063 5.505l3.346 2.59C5.2 5.732 7.4 3.977 10 3.977z" fill="#EA4335"/>
                 </svg>
-                <span className="text-sm text-gray-300">Connexion Google</span>
+                <span className="text-sm text-gray-300">{t('profile.googleLogin')}</span>
               </div>
               <Link to="/mot-de-passe-oublie" className="text-xs text-primary-400 hover:text-primary-300">
-                Définir un mot de passe
+                {t('profile.setPassword')}
               </Link>
             </div>
           ) : (
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-gray-300">Mot de passe</span>
+              <span className="text-sm text-gray-300">{t('profile.password')}</span>
               <Link to="/mot-de-passe-oublie" className="text-xs text-primary-400 hover:text-primary-300">
-                Modifier
+                {t('profile.editPassword')}
               </Link>
             </div>
           )}
@@ -598,7 +602,7 @@ export default function Profile() {
         className="w-full flex items-center justify-center gap-2 text-sm text-red-400 hover:text-red-300 py-3 rounded-xl hover:bg-red-500/5 transition-colors border border-transparent hover:border-red-500/20"
       >
         <LogOut size={15} />
-        Se déconnecter
+        {t('profile.logoutBtn')}
       </button>
     </div>
   );

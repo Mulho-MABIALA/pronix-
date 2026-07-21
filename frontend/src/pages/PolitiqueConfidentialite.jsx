@@ -1,112 +1,99 @@
+import { useTranslation } from 'react-i18next';
+
 export default function PolitiqueConfidentialite() {
+  const { t } = useTranslation();
+  const s2Items = t('privacy.sections.s2.items', { returnObjects: true });
+  const s3Items = t('privacy.sections.s3.items', { returnObjects: true });
+  const s5Items = t('privacy.sections.s5.items', { returnObjects: true });
+  const s7Items = t('privacy.sections.s7.items', { returnObjects: true });
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Politique de confidentialité</h1>
-        <p className="text-sm text-gray-500 mt-1">Dernière mise à jour : juin 2025</p>
+        <h1 className="font-display font-bold text-2xl text-gray-50">{t('privacy.title')}</h1>
+        <p className="text-sm text-gray-500 mt-1">{t('privacy.lastUpdated')}</p>
       </div>
 
-      <Section title="1. Responsable du traitement">
+      <Section title={t('privacy.sections.s1.title')}>
         <p>
-          fpronix SN, éditeur de la plateforme fpronix, est responsable du traitement de vos
-          données personnelles. Contact : <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
+          {t('privacy.sections.s1.body')} <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
         </p>
       </Section>
 
-      <Section title="2. Données collectées">
-        <p>Nous collectons les données suivantes :</p>
+      <Section title={t('privacy.sections.s2.title')}>
+        <p>{t('privacy.sections.s2.intro')}</p>
         <ul>
-          <li><strong className="text-gray-300">Données d'inscription :</strong> adresse e-mail, nom d'utilisateur, mot de passe (chiffré)</li>
-          <li><strong className="text-gray-300">Données de profil :</strong> nom affiché, biographie, équipes et ligues favorites</li>
-          <li><strong className="text-gray-300">Données de paiement :</strong> référence de transaction (nous ne stockons pas vos coordonnées bancaires)</li>
-          <li><strong className="text-gray-300">Données d'utilisation :</strong> pronostics publiés, préférences, historique de navigation sur la Plateforme</li>
-          <li><strong className="text-gray-300">Données techniques :</strong> adresse IP, type de navigateur, données de connexion</li>
+          {Array.isArray(s2Items) && s2Items.map((item, i) => (
+            <li key={i}><strong className="text-gray-300">{item.label} </strong>{item.text}</li>
+          ))}
         </ul>
       </Section>
 
-      <Section title="3. Finalités du traitement">
-        <p>Vos données sont utilisées pour :</p>
+      <Section title={t('privacy.sections.s3.title')}>
+        <p>{t('privacy.sections.s3.intro')}</p>
         <ul>
-          <li>Gérer votre compte et votre abonnement</li>
-          <li>Fournir les fonctionnalités de la Plateforme (pronostics, classements, statistiques)</li>
-          <li>Traiter vos paiements via nos prestataires (Wave, CinetPay, FedaPay)</li>
-          <li>Vous envoyer des notifications relatives à votre compte (si vous y avez consenti)</li>
-          <li>Améliorer nos services et détecter les fraudes</li>
-          <li>Respecter nos obligations légales</li>
+          {Array.isArray(s3Items) && s3Items.map((item, i) => <li key={i}>{item}</li>)}
         </ul>
       </Section>
 
-      <Section title="4. Base légale">
+      <Section title={t('privacy.sections.s4.title')}>
         <p>
-          Le traitement de vos données repose sur : l'exécution du contrat (CGU), votre consentement
-          (notifications), notre intérêt légitime (sécurité, amélioration du service) et nos
-          obligations légales.
+          {t('privacy.sections.s4.body')}
         </p>
       </Section>
 
-      <Section title="5. Partage des données">
+      <Section title={t('privacy.sections.s5.title')}>
         <p>
-          Vos données ne sont pas vendues à des tiers. Elles peuvent être partagées avec :
+          {t('privacy.sections.s5.intro')}
         </p>
         <ul>
-          <li>Nos prestataires de paiement (Wave, CinetPay, FedaPay) dans le cadre du traitement des transactions</li>
-          <li>Nos hébergeurs techniques (serveurs sécurisés en Europe)</li>
-          <li>Les autorités compétentes en cas d'obligation légale</li>
+          {Array.isArray(s5Items) && s5Items.map((item, i) => <li key={i}>{item}</li>)}
         </ul>
       </Section>
 
-      <Section title="6. Durée de conservation">
+      <Section title={t('privacy.sections.s6.title')}>
         <p>
-          Vos données sont conservées pendant la durée de votre compte, puis pendant 3 ans après
-          sa suppression pour des raisons légales. Les données de paiement sont conservées 10 ans
-          conformément aux obligations comptables.
+          {t('privacy.sections.s6.body')}
         </p>
       </Section>
 
-      <Section title="7. Vos droits">
+      <Section title={t('privacy.sections.s7.title')}>
         <p>
-          Conformément à la loi sénégalaise sur la protection des données personnelles (loi n°2008-12),
-          vous disposez des droits suivants :
+          {t('privacy.sections.s7.intro')}
         </p>
         <ul>
-          <li><strong className="text-gray-300">Droit d'accès :</strong> obtenir une copie de vos données</li>
-          <li><strong className="text-gray-300">Droit de rectification :</strong> corriger vos données inexactes</li>
-          <li><strong className="text-gray-300">Droit à l'effacement :</strong> demander la suppression de votre compte et de vos données</li>
-          <li><strong className="text-gray-300">Droit d'opposition :</strong> vous opposer à certains traitements</li>
-          <li><strong className="text-gray-300">Droit à la portabilité :</strong> recevoir vos données dans un format lisible</li>
+          {Array.isArray(s7Items) && s7Items.map((item, i) => (
+            <li key={i}><strong className="text-gray-300">{item.label} </strong>{item.text}</li>
+          ))}
         </ul>
         <p>
-          Pour exercer ces droits, contactez-nous à{' '}
+          {t('privacy.sections.s7.contactPrefix')}{' '}
           <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>.
-          Nous répondons dans un délai de 30 jours.
+          {' '}{t('privacy.sections.s7.responseTime')}
         </p>
       </Section>
 
-      <Section title="8. Cookies">
+      <Section title={t('privacy.sections.s8.title')}>
         <p>
-          La Plateforme utilise uniquement des cookies techniques nécessaires au fonctionnement
-          (session, préférences de thème). Aucun cookie publicitaire ou de tracking tiers n'est utilisé.
+          {t('privacy.sections.s8.body')}
         </p>
       </Section>
 
-      <Section title="9. Sécurité">
+      <Section title={t('privacy.sections.s9.title')}>
         <p>
-          Nous mettons en œuvre des mesures techniques et organisationnelles pour protéger vos données :
-          chiffrement HTTPS, mots de passe hachés (bcrypt), tokens JWT à durée limitée, accès restreint
-          aux données.
+          {t('privacy.sections.s9.body')}
         </p>
       </Section>
 
-      <Section title="10. Modifications">
+      <Section title={t('privacy.sections.s10.title')}>
         <p>
-          Nous pouvons modifier cette politique à tout moment. En cas de modification substantielle,
-          vous serez informé par e-mail ou par notification sur la Plateforme.
+          {t('privacy.sections.s10.body')}
         </p>
       </Section>
 
-      <Section title="11. Contact">
+      <Section title={t('privacy.sections.s11.title')}>
         <p>
-          Pour toute question : <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
+          {t('privacy.sections.s11.body')} <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
         </p>
       </Section>
     </div>

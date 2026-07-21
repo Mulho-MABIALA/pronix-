@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Trophy } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import TipsterCard from '../components/tipsters/TipsterCard';
 import { SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
 
 export default function Tipsters() {
+  const { t } = useTranslation();
   const [period, setPeriod] = useState('global');
   const [page, setPage] = useState(1);
 
@@ -23,21 +25,21 @@ export default function Tipsters() {
       <div>
         <div className="flex items-center gap-2">
           <Trophy size={22} className="text-primary-400" />
-          <h1 className="font-display font-bold text-2xl text-gray-100">Classement Tipsters</h1>
+          <h1 className="font-display font-bold text-2xl text-gray-100">{t('tipsters.leaderboardTitle')}</h1>
         </div>
         <p className="text-gray-500 text-sm mt-1">
-          Taux de réussite calculé automatiquement sur les pronostics vérifiés.
+          {t('tipsters.leaderboardDesc')}
         </p>
         <p className="disclaimer mt-2">
-          Ces données sont informatives. Aucune garantie de gain. Jouez de façon responsable.
+          {t('tipsters.disclaimer')}
         </p>
       </div>
 
       {/* Toggle période */}
-      <div className="flex gap-2" role="group" aria-label="Période du classement">
+      <div className="flex gap-2" role="group" aria-label={t('tipsters.periodGroupLabel')}>
         {[
-          { value: 'global', label: 'Global' },
-          { value: 'monthly', label: 'Ce mois' },
+          { value: 'global', label: t('tipsters.periodGlobal') },
+          { value: 'monthly', label: t('tipsters.periodMonthly') },
         ].map(({ value, label }) => (
           <button
             key={value}
@@ -60,8 +62,8 @@ export default function Tipsters() {
           ? (
             <div className="bento-card text-center py-12">
               <p className="text-4xl mb-3" aria-hidden="true">🏆</p>
-              <p className="text-gray-400">Aucun tipster classé pour le moment</p>
-              <p className="text-gray-500 text-sm mt-1">Il faut au moins 5 pronostics pour apparaître.</p>
+              <p className="text-gray-400">{t('tipsters.noTipsters')}</p>
+              <p className="text-gray-500 text-sm mt-1">{t('tipsters.noTipstersDesc')}</p>
             </div>
           )
           : tipsters.map((stats, i) => (
@@ -78,7 +80,7 @@ export default function Tipsters() {
             disabled={page === 1}
             className="btn-secondary text-sm disabled:opacity-40"
           >
-            ← Précédent
+            {t('tipsters.prev')}
           </button>
           <span className="text-sm text-gray-400">{page} / {pagination.pages}</span>
           <button
@@ -86,7 +88,7 @@ export default function Tipsters() {
             disabled={page >= pagination.pages}
             className="btn-secondary text-sm disabled:opacity-40"
           >
-            Suivant →
+            {t('tipsters.next')}
           </button>
         </div>
       )}

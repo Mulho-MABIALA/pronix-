@@ -1,17 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bot, Send, Lock } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 
-const SUGGESTIONS = [
-  'Quel est ton pronostic pour ce match ?',
-  'Qui est favori et pourquoi ?',
-  'Y a-t-il de la valeur sur les buts ?',
-  'Quelle est la tendance récente des deux équipes ?',
-];
+const SUGGESTION_KEYS = ['prediction', 'favorite', 'goalsValue', 'recentTrend'];
 
 export default function ChatIA({ matchId, matchLabel }) {
+  const { t } = useTranslation();
   const { user, isPremium } = useAuth();
   const [messages,  setMessages]  = useState([]);
   const [input,     setInput]     = useState('');
@@ -38,7 +35,7 @@ export default function ChatIA({ matchId, matchLabel }) {
       setMessages((prev) => [...prev, { role: 'ai', text: data.data.answer }]);
       setQuota(data.data.quota);
     } catch (err) {
-      const msg = err.response?.data?.message || 'Erreur lors de la réponse IA';
+      const msg = err.response?.data?.message || t('chatIA.aiError');
       setError(msg);
       // Retirer le dernier message utilisateur si erreur quota
       if (err.response?.status === 429) {
@@ -55,15 +52,15 @@ export default function ChatIA({ matchId, matchLabel }) {
       <section className="card p-4 space-y-3">
         <div className="flex items-center gap-2">
           <Bot size={15} className="text-violet-400" />
-          <h2 className="font-semibold text-gray-100 text-sm">Chat IA</h2>
+          <h2 className="font-semibold text-gray-100 text-sm">{t('chatIA.title')}</h2>
         </div>
         <div className="text-center py-6 space-y-3">
           <div className="w-12 h-12 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
             <Lock size={20} className="text-violet-400" />
           </div>
-          <p className="text-sm text-gray-400">Connectez-vous pour poser des questions sur ce match à l'IA</p>
+          <p className="text-sm text-gray-400">{t('chatIA.loginPrompt')}</p>
           <Link to="/connexion" className="btn-primary inline-flex px-6 py-2 text-sm">
-            Se connecter
+            {t('wallet.login')}
           </Link>
         </div>
       </section>
@@ -80,14 +77,14 @@ export default function ChatIA({ matchId, matchLabel }) {
           <div className="w-7 h-7 rounded-full bg-violet-500/15 flex items-center justify-center">
             <Bot size={14} className="text-violet-400" />
           </div>
-          <h2 className="font-semibold text-gray-100 text-sm">Chat IA</h2>
+          <h2 className="font-semibold text-gray-100 text-sm">{t('chatIA.title')}</h2>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/20 font-semibold">
-            Bêta
+            {t('chatIA.beta')}
           </span>
         </div>
         {quota && !quota.unlimited && (
           <span className="text-[11px] text-gray-500">
-            {quota.used}/{quota.limit} questions aujourd'hui
+            {t('chatIA.questionsToday', { used: quota.used, limit: quota.limit })}
           </span>
         )}
         {quota?.unlimited && (
@@ -133,15 +130,15 @@ export default function ChatIA({ matchId, matchLabel }) {
       {/* Suggestions (première fois) */}
       {messages.length === 0 && !loading && (
         <div className="space-y-2">
-          <p className="text-xs text-gray-500">Questions suggérées :</p>
+          <p className="text-xs text-gray-500">{t('chatIA.suggestedQuestions')}</p>
           <div className="flex flex-wrap gap-2">
-            {SUGGESTIONS.map((s) => (
+            {SUGGESTION_KEYS.map((k) => (
               <button
-                key={s}
-                onClick={() => sendMessage(s)}
+                key={k}
+                onClick={() => sendMessage(t(`chatIA.suggestions.${k}`))}
                 className="text-xs px-3 py-1.5 rounded-lg bg-surface-700/50 border border-white/[0.07] text-gray-400 hover:text-gray-200 hover:border-white/15 transition-colors text-left"
               >
-                {s}
+                {t(`chatIA.suggestions.${k}`)}
               </button>
             ))}
           </div>
@@ -154,7 +151,7 @@ export default function ChatIA({ matchId, matchLabel }) {
           {error}
           {!isPremium && error.includes('Quota') && (
             <Link to="/abonnement" className="ml-2 text-primary-400 underline font-semibold">
-              Passer Premium →
+              {t('chatIA.goPremiumArrow')}
             </Link>
           )}
         </div>
@@ -163,9 +160,9 @@ export default function ChatIA({ matchId, matchLabel }) {
       {/* Zone de saisie */}
       {quotaExhausted ? (
         <div className="text-center py-3 space-y-2">
-          <p className="text-xs text-gray-500">3 questions gratuites utilisées aujourd'hui</p>
+          <p className="text-xs text-gray-500">{t('chatIA.freeQuestionsUsed')}</p>
           <Link to="/abonnement" className="btn-primary inline-flex px-5 py-2 text-xs">
-            Premium — questions illimitées
+            {t('chatIA.premiumUnlimited')}
           </Link>
         </div>
       ) : (
@@ -177,7 +174,7 @@ export default function ChatIA({ matchId, matchLabel }) {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={`Ex: Qui est favori dans ${matchLabel} ?`}
+            placeholder={t('chatIA.inputPlaceholder', { matchLabel })}
             maxLength={500}
             disabled={loading}
             className="input flex-1 text-sm py-2"
@@ -192,7 +189,7 @@ export default function ChatIA({ matchId, matchLabel }) {
         </form>
       )}
 
-      <p className="disclaimer">Analyse indicative — pas un conseil de pari. Jouez de façon responsable.</p>
+      <p className="disclaimer">{t('chatIA.disclaimer')}</p>
     </section>
   );
 }

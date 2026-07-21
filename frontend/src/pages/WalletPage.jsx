@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Wallet, Trophy, TrendingUp, TrendingDown, Zap, Loader2, Info } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -9,27 +10,15 @@ import { useToast } from '../context/ToastContext';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { Link } from 'react-router-dom';
 
-const PRED_LABELS = {
-  HOME_WIN: '1 — Dom.', DRAW: 'X — Nul', AWAY_WIN: '2 — Ext.',
-  OVER_2_5: '+2.5', UNDER_2_5: '-2.5', BTTS_YES: 'BTTS Oui', BTTS_NO: 'BTTS Non',
-};
-
-const PREDICTIONS = [
-  { value: 'HOME_WIN', label: '1 — Domicile' },
-  { value: 'DRAW',     label: 'X — Nul' },
-  { value: 'AWAY_WIN', label: '2 — Extérieur' },
-  { value: 'OVER_2_5', label: '+2.5 buts' },
-  { value: 'UNDER_2_5', label: '-2.5 buts' },
-  { value: 'BTTS_YES',  label: 'BTTS Oui' },
-  { value: 'BTTS_NO',   label: 'BTTS Non' },
-];
+const PREDICTION_KEYS = ['HOME_WIN', 'DRAW', 'AWAY_WIN', 'OVER_2_5', 'UNDER_2_5', 'BTTS_YES', 'BTTS_NO'];
 
 function ResultBadgeSimple({ result }) {
-  if (!result) return <span className="text-xs text-gray-500 bg-surface-700 px-2 py-0.5 rounded-full">En cours</span>;
+  const { t } = useTranslation();
+  if (!result) return <span className="text-xs text-gray-500 bg-surface-700 px-2 py-0.5 rounded-full">{t('wallet.inProgress')}</span>;
   const map = {
-    WIN:  { label: 'Gagné',  cls: 'text-green-400 bg-green-500/10' },
-    LOSS: { label: 'Perdu',  cls: 'text-red-400 bg-red-500/10' },
-    VOID: { label: 'Annulé', cls: 'text-gray-400 bg-surface-700' },
+    WIN:  { label: t('wallet.won'),      cls: 'text-green-400 bg-green-500/10' },
+    LOSS: { label: t('wallet.lostBet'),  cls: 'text-red-400 bg-red-500/10' },
+    VOID: { label: t('wallet.voided'),   cls: 'text-gray-400 bg-surface-700' },
   };
   const s = map[result] || map.VOID;
   return <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${s.cls}`}>{s.label}</span>;
@@ -37,6 +26,8 @@ function ResultBadgeSimple({ result }) {
 
 // ─── Place Bet Form ────────────────────────────────────────────────────────────
 function PlaceBetForm({ balance, onSuccess }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const { addToast } = useToast();
   const queryClient = useQueryClient();
 
@@ -54,7 +45,7 @@ function PlaceBetForm({ balance, onSuccess }) {
   const placeMutation = useMutation({
     mutationFn: () => api.post('/wallet/bets', { matchId, prediction, odds: parseFloat(odds), stake: parseInt(stake) }),
     onSuccess: () => {
-      addToast('Pari placé ! Bonne chance 🎯', 'success');
+      addToast(t('wallet.betPlaced'), 'success');
       setMatchId('');
       setStake(100);
       queryClient.invalidateQueries({ queryKey: ['my-wallet'] });
@@ -62,7 +53,7 @@ function PlaceBetForm({ balance, onSuccess }) {
       onSuccess?.();
     },
     onError: (err) => {
-      addToast(err.response?.data?.message || 'Erreur lors du pari', 'error');
+      addToast(err.response?.data?.message || t('wallet.betError'), 'error');
     },
   });
 
@@ -73,21 +64,21 @@ function PlaceBetForm({ balance, onSuccess }) {
     <div className="bento-card space-y-4">
       <div className="flex items-center gap-2">
         <Zap size={16} className="text-primary-400" />
-        <h3 className="font-semibold text-gray-100">Placer un pari virtuel</h3>
+        <h3 className="font-semibold text-gray-100">{t('wallet.placeBetTitle')}</h3>
       </div>
 
       {/* Match selector */}
       <div>
-        <label className="block text-xs text-gray-400 mb-1.5">Match *</label>
+        <label className="block text-xs text-gray-400 mb-1.5">{t('wallet.matchLabel')}</label>
         <select
           value={matchId}
           onChange={(e) => setMatchId(e.target.value)}
           className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-primary-500"
         >
-          <option value="">— Sélectionner un match —</option>
+          <option value="">{t('wallet.selectMatch')}</option>
           {matches.map((m) => (
             <option key={m.id} value={m.id}>
-              {m.homeTeam} vs {m.awayTeam} ({format(new Date(m.matchDate), 'dd MMM HH:mm', { locale: fr })})
+              {m.homeTeam} vs {m.awayTeam} ({format(new Date(m.matchDate), 'dd MMM HH:mm', { locale: dateLocale })})
             </option>
           ))}
         </select>
@@ -95,19 +86,19 @@ function PlaceBetForm({ balance, onSuccess }) {
 
       {/* Prediction */}
       <div>
-        <label className="block text-xs text-gray-400 mb-1.5">Pronostic *</label>
+        <label className="block text-xs text-gray-400 mb-1.5">{t('wallet.predictionLabel')}</label>
         <div className="grid grid-cols-4 gap-2">
-          {PREDICTIONS.map((p) => (
+          {PREDICTION_KEYS.map((k) => (
             <button
-              key={p.value}
-              onClick={() => setPrediction(p.value)}
+              key={k}
+              onClick={() => setPrediction(k)}
               className={`py-1.5 px-1 rounded-lg text-xs font-medium transition-colors text-center ${
-                prediction === p.value
+                prediction === k
                   ? 'bg-primary-500 text-white'
                   : 'bg-surface-700 text-gray-400 hover:bg-surface-600'
               }`}
             >
-              {p.label}
+              {t(`wallet.predictions.${k}`, { defaultValue: k })}
             </button>
           ))}
         </div>
@@ -116,7 +107,7 @@ function PlaceBetForm({ balance, onSuccess }) {
       {/* Odds + Stake */}
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-xs text-gray-400 mb-1.5">Cote</label>
+          <label className="block text-xs text-gray-400 mb-1.5">{t('wallet.oddsLabel')}</label>
           <input
             type="number"
             value={odds}
@@ -128,7 +119,7 @@ function PlaceBetForm({ balance, onSuccess }) {
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1.5">Mise (pts)</label>
+          <label className="block text-xs text-gray-400 mb-1.5">{t('wallet.stakeLabel')}</label>
           <input
             type="number"
             value={stake}
@@ -143,7 +134,7 @@ function PlaceBetForm({ balance, onSuccess }) {
 
       {/* Gain potentiel */}
       <div className="flex items-center justify-between text-sm rounded-lg bg-surface-700 px-3 py-2">
-        <span className="text-gray-400">Gain potentiel</span>
+        <span className="text-gray-400">{t('wallet.potentialGain')}</span>
         <span className="text-primary-400 font-bold">{potentialGain.toLocaleString('fr-FR')} pts</span>
       </div>
 
@@ -152,11 +143,11 @@ function PlaceBetForm({ balance, onSuccess }) {
         disabled={!matchId || !prediction || !stake || placeMutation.isPending || stake > balance}
         className="w-full py-2.5 rounded-xl bg-primary-500 text-white font-semibold text-sm hover:bg-primary-400 transition-colors disabled:opacity-40"
       >
-        {placeMutation.isPending ? <Loader2 size={16} className="animate-spin mx-auto" /> : 'Parier'}
+        {placeMutation.isPending ? <Loader2 size={16} className="animate-spin mx-auto" /> : t('wallet.betBtn')}
       </button>
 
       {stake > balance && (
-        <p className="text-xs text-red-400 text-center">Mise supérieure à votre solde</p>
+        <p className="text-xs text-red-400 text-center">{t('wallet.stakeTooHigh')}</p>
       )}
     </div>
   );
@@ -164,6 +155,8 @@ function PlaceBetForm({ balance, onSuccess }) {
 
 // ─── Bet History ───────────────────────────────────────────────────────────────
 function BetHistory() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const { data, isLoading } = useQuery({
     queryKey: ['my-bets'],
     queryFn: () => api.get('/wallet/bets').then((r) => r.data),
@@ -172,7 +165,7 @@ function BetHistory() {
   const bets = data?.data || [];
 
   if (isLoading) return <SkeletonCard />;
-  if (!bets.length) return <p className="text-gray-500 text-sm text-center py-6">Aucun pari encore</p>;
+  if (!bets.length) return <p className="text-gray-500 text-sm text-center py-6">{t('wallet.noBets')}</p>;
 
   return (
     <div className="space-y-2">
@@ -183,9 +176,9 @@ function BetHistory() {
               {bet.match?.homeTeam} vs {bet.match?.awayTeam}
             </p>
             <p className="text-xs text-gray-500 mt-0.5">
-              {PRED_LABELS[bet.prediction] || bet.prediction}
-              {' '}· Cote {bet.odds}
-              {' '}· {format(new Date(bet.createdAt), 'dd MMM', { locale: fr })}
+              {t(`wallet.predictions.${bet.prediction}`, { defaultValue: bet.prediction })}
+              {' '}· {t('wallet.oddsShort', { odds: bet.odds })}
+              {' '}· {format(new Date(bet.createdAt), 'dd MMM', { locale: dateLocale })}
             </p>
           </div>
           <div className="text-right shrink-0">
@@ -205,6 +198,7 @@ function BetHistory() {
 
 // ─── Leaderboard ───────────────────────────────────────────────────────────────
 function Leaderboard() {
+  const { t } = useTranslation();
   const { data, isLoading } = useQuery({
     queryKey: ['wallet-leaderboard'],
     queryFn: () => api.get('/wallet/leaderboard').then((r) => r.data),
@@ -214,7 +208,7 @@ function Leaderboard() {
   const leaders = data?.data || [];
 
   if (isLoading) return <SkeletonCard />;
-  if (!leaders.length) return <p className="text-gray-500 text-sm text-center py-6">Aucun joueur encore</p>;
+  if (!leaders.length) return <p className="text-gray-500 text-sm text-center py-6">{t('wallet.noPlayers')}</p>;
 
   const medals = ['🥇', '🥈', '🥉'];
 
@@ -228,10 +222,10 @@ function Leaderboard() {
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium text-gray-200 truncate">
-              {entry.user?.profile?.displayName || entry.user?.username || 'Joueur'}
+              {entry.user?.profile?.displayName || entry.user?.username || t('wallet.player')}
             </p>
             <p className="text-xs text-gray-500">
-              {entry.totalWon.toLocaleString('fr-FR')} pts gagnés
+              {t('wallet.ptsWon', { count: entry.totalWon.toLocaleString('fr-FR') })}
             </p>
           </div>
           <div className="text-right shrink-0">
@@ -246,6 +240,7 @@ function Leaderboard() {
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 export default function WalletPage() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [tab, setTab] = useState('pari');
 
@@ -261,10 +256,10 @@ export default function WalletPage() {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center space-y-4">
         <Wallet size={48} className="text-primary-400 mx-auto" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">Portefeuille Virtuel</h1>
-        <p className="text-gray-400">Connectez-vous pour accéder à votre portefeuille et simuler des paris sans risque.</p>
+        <h1 className="font-display font-bold text-2xl text-gray-100">{t('wallet.title')}</h1>
+        <p className="text-gray-400">{t('wallet.loginPrompt')}</p>
         <Link to="/connexion" className="inline-block px-6 py-3 rounded-xl bg-primary-500 text-white font-semibold hover:bg-primary-400 transition-colors">
-          Se connecter
+          {t('wallet.login')}
         </Link>
       </div>
     );
@@ -286,7 +281,7 @@ export default function WalletPage() {
       {/* ── Solde header ── */}
       <div className="bento-card text-center space-y-1">
         <Wallet size={24} className="text-primary-400 mx-auto mb-2" />
-        <p className="text-xs text-gray-500 uppercase tracking-wider">Solde virtuel</p>
+        <p className="text-xs text-gray-500 uppercase tracking-wider">{t('wallet.virtualBalance')}</p>
         <p className="text-5xl font-display font-bold text-gray-100">
           {(wallet?.balance ?? 1000).toLocaleString('fr-FR')}
           <span className="text-lg text-gray-400 font-normal"> pts</span>
@@ -297,7 +292,7 @@ export default function WalletPage() {
               <TrendingUp size={13} />
               +{(wallet?.totalWon ?? 0).toLocaleString('fr-FR')}
             </div>
-            <p className="text-xs text-gray-500">Gains totaux</p>
+            <p className="text-xs text-gray-500">{t('wallet.totalWon')}</p>
           </div>
           <div className="w-px bg-surface-700" />
           <div className="text-center">
@@ -305,7 +300,7 @@ export default function WalletPage() {
               <TrendingDown size={13} />
               -{(wallet?.totalLost ?? 0).toLocaleString('fr-FR')}
             </div>
-            <p className="text-xs text-gray-500">Pertes totales</p>
+            <p className="text-xs text-gray-500">{t('wallet.totalLost')}</p>
           </div>
         </div>
       </div>
@@ -314,26 +309,26 @@ export default function WalletPage() {
       <div className="flex gap-2 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/20">
         <Info size={14} className="text-blue-400 shrink-0 mt-0.5" />
         <p className="text-xs text-blue-300">
-          Simulation uniquement — aucun argent réel n'est engagé. Vous commencez avec 1 000 points gratuits.
+          {t('wallet.simulationDisclaimer')}
         </p>
       </div>
 
       {/* ── Tabs ── */}
       <div className="flex gap-1 bg-surface-800 p-1 rounded-xl">
         {[
-          { id: 'pari', label: 'Parier' },
-          { id: 'historique', label: 'Mes paris' },
-          { id: 'classement', label: 'Classement' },
-        ].map((t) => (
+          { id: 'pari', labelKey: 'wallet.tabBet' },
+          { id: 'historique', labelKey: 'wallet.tabHistory' },
+          { id: 'classement', labelKey: 'wallet.tabLeaderboard' },
+        ].map((tabDef) => (
           <button
-            key={t.id}
-            onClick={() => setTab(t.id)}
+            key={tabDef.id}
+            onClick={() => setTab(tabDef.id)}
             className={`flex-1 py-2 rounded-lg text-sm font-medium transition-colors ${
-              tab === t.id ? 'bg-surface-600 text-gray-100' : 'text-gray-500 hover:text-gray-300'
+              tab === tabDef.id ? 'bg-surface-600 text-gray-100' : 'text-gray-500 hover:text-gray-300'
             }`}
           >
-            {tab === t.id && t.id === 'classement' && <Trophy size={12} className="inline mr-1" />}
-            {t.label}
+            {tab === tabDef.id && tabDef.id === 'classement' && <Trophy size={12} className="inline mr-1" />}
+            {t(tabDef.labelKey)}
           </button>
         ))}
       </div>
@@ -347,14 +342,14 @@ export default function WalletPage() {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <Trophy size={16} className="text-yellow-400" />
-            <h3 className="font-semibold text-gray-100">Classement des joueurs</h3>
+            <h3 className="font-semibold text-gray-100">{t('wallet.leaderboardTitle')}</h3>
           </div>
           <Leaderboard />
         </div>
       )}
 
       <p className="disclaimer text-center">
-        Simulation de paris à des fins de divertissement. Aucun gain réel possible. Jeu responsable.
+        {t('wallet.finalDisclaimer')}
       </p>
     </div>
   );

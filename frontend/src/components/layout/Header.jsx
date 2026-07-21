@@ -20,7 +20,7 @@ function FootballLogo() {
 
 /** Switcher FR / EN compact */
 function LangSwitcher() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const lang = i18n.language?.startsWith('en') ? 'en' : 'fr';
 
   const toggle = () => i18n.changeLanguage(lang === 'fr' ? 'en' : 'fr');
@@ -29,7 +29,7 @@ function LangSwitcher() {
     <button
       onClick={toggle}
       className="flex items-center gap-0 rounded-lg border border-white/[0.08] overflow-hidden text-[11px] font-bold"
-      aria-label="Changer de langue / Change language"
+      aria-label={t('header.langSwitcherLabel')}
     >
       {['fr', 'en'].map((l) => (
         <span
@@ -62,31 +62,35 @@ function OutilsDropdown() {
 
   const SECTIONS = [
     {
-      label: 'Outils',
+      sectionKey: 'tools',
+      label: t('header.dropdown.sections.tools'),
       items: [
-        { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,     desc: 'Filtrez par marché et confiance',      color: 'text-blue-400 bg-blue-500/10' },
-        { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,        desc: 'Créez votre ticket optimisé',          color: 'text-amber-400 bg-amber-500/10' },
-        { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2,  desc: 'Buts, BTTS, O2.5 par compétition',    color: 'text-purple-400 bg-purple-500/10' },
+        { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,     desc: t('tools.filtersDesc'),      color: 'text-blue-400 bg-blue-500/10' },
+        { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,        desc: t('tools.generatorDesc'),    color: 'text-amber-400 bg-amber-500/10' },
+        { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2,  desc: t('tools.statsLeaguesDesc'), color: 'text-purple-400 bg-purple-500/10' },
       ],
     },
     {
-      label: 'Communauté',
+      sectionKey: 'community',
+      label: t('header.dropdown.sections.community'),
       items: [
-        { to: '/combos',              label: 'Combinés',              Icon: Layers,    desc: 'Coupons multi-matchs partagés',         color: 'text-orange-400 bg-orange-500/10' },
-        { to: '/portefeuille-virtuel',label: 'Portefeuille virtuel',  Icon: Wallet,    desc: 'Simuler des paris sans risque',         color: 'text-yellow-400 bg-yellow-500/10' },
+        { to: '/combos',              label: t('header.dropdown.items.combos'),      Icon: Layers, desc: t('header.dropdown.items.combosDesc'),      color: 'text-orange-400 bg-orange-500/10' },
+        { to: '/portefeuille-virtuel',label: t('header.dropdown.items.wallet'),      Icon: Wallet, desc: t('header.dropdown.items.walletDesc'),      color: 'text-yellow-400 bg-yellow-500/10' },
       ],
     },
     {
-      label: 'Mon espace',
+      sectionKey: 'mySpace',
+      label: t('header.dropdown.sections.mySpace'),
       items: [
-        { to: '/mes-paris',           label: 'Mon carnet de paris',   Icon: BookOpen,  desc: 'Suivi de tes paris et ROI',            color: 'text-violet-400 bg-violet-500/10' },
-        { to: '/mes-paris',           label: 'Coach Personnel IA',    Icon: Brain,     desc: 'Conseils IA selon tes stats',          color: 'text-pink-400 bg-pink-500/10' },
+        { to: '/mes-paris',           label: t('header.dropdown.items.betTracker'),  Icon: BookOpen, desc: t('header.dropdown.items.betTrackerDesc'), color: 'text-violet-400 bg-violet-500/10' },
+        { to: '/mes-paris',           label: t('header.dropdown.items.aiCoach'),     Icon: Brain,    desc: t('header.dropdown.items.aiCoachDesc'),    color: 'text-pink-400 bg-pink-500/10' },
       ],
     },
     {
-      label: 'Intelligence IA',
+      sectionKey: 'aiIntelligence',
+      label: t('header.dropdown.sections.aiIntelligence'),
       items: [
-        { to: '/pronostics',          label: 'Pronostics IA',         Icon: Bot,       desc: 'Picks générés par le Tipster IA',      color: 'text-primary-400 bg-primary-500/10' },
+        { to: '/pronostics',          label: t('header.dropdown.items.aiPronostics'), Icon: Bot,     desc: t('header.dropdown.items.aiPronosticsDesc'), color: 'text-primary-400 bg-primary-500/10' },
       ],
     },
   ];
@@ -161,7 +165,7 @@ export default function Header() {
         </Link>
 
         {/* Nav desktop */}
-        <nav className="hidden md:flex items-center gap-0.5 flex-1" aria-label="Navigation principale">
+        <nav className="hidden md:flex items-center gap-0.5 flex-1" aria-label={t('header.mainNavLabel')}>
           {NAV_LINKS.map(({ to, label }) => (
             <NavLink key={to} to={to}
               className={({ isActive }) =>

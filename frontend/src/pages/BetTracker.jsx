@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Plus, TrendingUp, Trash2, ChevronDown, ChevronUp, X, Check, Clock } from 'lucide-react';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useToast } from '../context/ToastContext';
 import CoachPanel from '../components/ai/CoachPanel';
 
-const RESULT_COLORS = {
-  WIN:  { text: 'text-primary-400', bg: 'bg-primary-500/10', label: 'Gagné' },
-  LOSS: { text: 'text-red-400',     bg: 'bg-red-500/10',     label: 'Perdu' },
-  VOID: { text: 'text-gray-500',    bg: 'bg-white/[0.04]',   label: 'Annulé' },
+const RESULT_STYLES = {
+  WIN:  { text: 'text-primary-400', bg: 'bg-primary-500/10' },
+  LOSS: { text: 'text-red-400',     bg: 'bg-red-500/10' },
+  VOID: { text: 'text-gray-500',    bg: 'bg-white/[0.04]' },
 };
 
 function StatChip({ label, value, highlight }) {
@@ -25,6 +25,7 @@ function StatChip({ label, value, highlight }) {
 }
 
 function BetForm({ onClose, onSaved }) {
+  const { t } = useTranslation();
   const toast = useToast();
   const [form, setForm] = useState({
     teamA: '', teamB: '', prediction: '',
@@ -46,10 +47,10 @@ function BetForm({ onClose, onSaved }) {
         matchDate: new Date(form.matchDate).toISOString(),
         result: form.result || undefined,
       });
-      toast('Paris ajouté !', 'success');
+      toast(t('bets.addedSuccess'), 'success');
       onSaved();
     } catch {
-      toast('Erreur lors de l\'ajout', 'error');
+      toast(t('bets.addError'), 'error');
     } finally {
       setLoading(false);
     }
@@ -61,55 +62,55 @@ function BetForm({ onClose, onSaved }) {
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">Équipe dom.</label>
+          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.homeTeam')}</label>
           <input value={form.teamA} onChange={set('teamA')} required placeholder="PSG" className={inputClass} />
         </div>
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">Équipe ext.</label>
+          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.awayTeam')}</label>
           <input value={form.teamB} onChange={set('teamB')} required placeholder="OM" className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">Pronostic</label>
-        <input value={form.prediction} onChange={set('prediction')} required placeholder="Victoire domicile, +2.5 buts..." className={inputClass} />
+        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.prediction')}</label>
+        <input value={form.prediction} onChange={set('prediction')} required placeholder={t('bets.predictionPlaceholder')} className={inputClass} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">Cote</label>
+          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.odds')}</label>
           <input type="number" step="0.01" min="1" value={form.odds} onChange={set('odds')} required placeholder="1.85" className={inputClass} />
         </div>
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">Mise (FCFA)</label>
+          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.stakeFcfa')}</label>
           <input type="number" min="1" value={form.stake} onChange={set('stake')} required placeholder="5000" className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">Date & heure</label>
+        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.dateTime')}</label>
         <input type="datetime-local" value={form.matchDate} onChange={set('matchDate')} required className={inputClass} />
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">Résultat (optionnel)</label>
+        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.resultOptional')}</label>
         <select value={form.result} onChange={set('result')} className={inputClass}>
-          <option value="">En attente</option>
-          <option value="WIN">Gagné</option>
-          <option value="LOSS">Perdu</option>
-          <option value="VOID">Annulé</option>
+          <option value="">{t('bets.pending')}</option>
+          <option value="WIN">{t('bets.results.WIN')}</option>
+          <option value="LOSS">{t('bets.results.LOSS')}</option>
+          <option value="VOID">{t('bets.results.VOID')}</option>
         </select>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">Notes</label>
-        <textarea value={form.notes} onChange={set('notes')} placeholder="Analyse, raison du pick..." rows={2} className={inputClass + ' resize-none'} />
+        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.notes')}</label>
+        <textarea value={form.notes} onChange={set('notes')} placeholder={t('bets.notesPlaceholder')} rows={2} className={inputClass + ' resize-none'} />
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onClose} className="btn-secondary flex-1">Annuler</button>
+        <button type="button" onClick={onClose} className="btn-secondary flex-1">{t('common.cancel')}</button>
         <button type="submit" disabled={loading} className="btn-cta flex-1">
-          {loading ? '...' : 'Enregistrer'}
+          {loading ? '...' : t('common.save')}
         </button>
       </div>
     </form>
@@ -117,8 +118,10 @@ function BetForm({ onClose, onSaved }) {
 }
 
 function BetRow({ bet, onDelete, onResultChange }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const [expanded, setExpanded] = useState(false);
-  const res = RESULT_COLORS[bet.result];
+  const style = RESULT_STYLES[bet.result];
   const gain = bet.result === 'WIN' ? (bet.stake * bet.odds).toFixed(0) : null;
 
   return (
@@ -129,17 +132,17 @@ function BetRow({ bet, onDelete, onResultChange }) {
             {bet.teamA} vs {bet.teamB}
           </p>
           <p className="text-[11px] text-gray-500 truncate">
-            {bet.prediction} · Cote {bet.odds} · Mise {bet.stake.toLocaleString('fr-FR')} FCFA
+            {t('bets.rowSummary', { prediction: bet.prediction, odds: bet.odds, stake: bet.stake.toLocaleString('fr-FR') })}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          {res ? (
-            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg ${res.bg} ${res.text}`}>
-              {res.label}
+          {style ? (
+            <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-lg ${style.bg} ${style.text}`}>
+              {t(`bets.results.${bet.result}`)}
             </span>
           ) : (
             <span className="text-[11px] text-gray-600 flex items-center gap-1">
-              <Clock size={11} /> Attente
+              <Clock size={11} /> {t('bets.pending')}
             </span>
           )}
           {expanded ? <ChevronUp size={14} className="text-gray-600" /> : <ChevronDown size={14} className="text-gray-600" />}
@@ -150,14 +153,14 @@ function BetRow({ bet, onDelete, onResultChange }) {
         <div className="pt-2 border-t border-white/[0.05] space-y-3">
           {gain && (
             <p className="text-sm text-primary-400">
-              Gain : <strong>{parseInt(gain).toLocaleString('fr-FR')} FCFA</strong>
+              {t('bets.gain')} <strong>{parseInt(gain).toLocaleString('fr-FR')} FCFA</strong>
             </p>
           )}
           {bet.notes && (
             <p className="text-xs text-gray-500 leading-relaxed">{bet.notes}</p>
           )}
           <p className="text-[11px] text-gray-600">
-            {format(new Date(bet.matchDate), 'dd MMM yyyy HH:mm', { locale: fr })}
+            {format(new Date(bet.matchDate), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
           </p>
 
           {/* Changer le résultat */}
@@ -168,18 +171,18 @@ function BetRow({ bet, onDelete, onResultChange }) {
                 onClick={() => onResultChange(bet.id, r)}
                 className={`text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors ${
                   bet.result === r
-                    ? `${RESULT_COLORS[r].bg} ${RESULT_COLORS[r].text} border border-current`
+                    ? `${RESULT_STYLES[r].bg} ${RESULT_STYLES[r].text} border border-current`
                     : 'text-gray-600 bg-surface-700/40 hover:text-gray-300'
                 }`}
               >
-                {RESULT_COLORS[r].label}
+                {t(`bets.results.${r}`)}
               </button>
             ))}
             <button
               onClick={() => onDelete(bet.id)}
               className="ml-auto text-[11px] text-red-500 hover:text-red-400 flex items-center gap-1"
             >
-              <Trash2 size={12} /> Supprimer
+              <Trash2 size={12} /> {t('common.delete')}
             </button>
           </div>
         </div>
@@ -195,7 +198,7 @@ export default function BetTracker() {
   const [showForm, setShowForm] = useState(false);
   const [filter, setFilter] = useState('');
 
-  usePageMeta('Mon carnet de paris — fpronix', 'Suivez vos pronostics sportifs et analysez votre ROI.');
+  usePageMeta(t('bets.metaTitle'), t('bets.metaDesc'));
 
   const { data, isLoading } = useQuery({
     queryKey: ['bets', filter],
@@ -219,7 +222,7 @@ export default function BetTracker() {
 
   const handleDelete = async (id) => {
     await deleteMutation.mutateAsync(id);
-    toast('Paris supprimé', 'info');
+    toast(t('bets.deletedSuccess'), 'info');
   };
 
   const handleResultChange = async (id, result) => {
@@ -227,10 +230,10 @@ export default function BetTracker() {
   };
 
   const FILTERS = [
-    { value: '', label: 'Tous' },
-    { value: 'WIN', label: 'Gagnés' },
-    { value: 'LOSS', label: 'Perdus' },
-    { value: 'VOID', label: 'Annulés' },
+    { value: '', label: t('bets.filterAll') },
+    { value: 'WIN', label: t('bets.filterWon') },
+    { value: 'LOSS', label: t('bets.filterLost') },
+    { value: 'VOID', label: t('bets.filterVoided') },
   ];
 
   return (
@@ -239,21 +242,21 @@ export default function BetTracker() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-display font-bold text-gray-100">{t('bets.title')}</h1>
-          <p className="text-xs text-gray-500 mt-0.5">Suis tes pronostics et calcule ton ROI</p>
+          <p className="text-xs text-gray-500 mt-0.5">{t('bets.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
           className="btn-cta flex items-center gap-2 text-sm px-4"
         >
           {showForm ? <X size={15} /> : <Plus size={15} />}
-          {showForm ? 'Fermer' : t('bets.add')}
+          {showForm ? t('common.close') : t('bets.add')}
         </button>
       </div>
 
       {/* Formulaire d'ajout */}
       {showForm && (
         <div className="bento-card">
-          <h2 className="font-semibold text-gray-100 text-sm mb-4">Nouveau pari</h2>
+          <h2 className="font-semibold text-gray-100 text-sm mb-4">{t('bets.newBet')}</h2>
           <BetForm
             onClose={() => setShowForm(false)}
             onSaved={() => { setShowForm(false); queryClient.invalidateQueries({ queryKey: ['bets'] }); }}
@@ -264,7 +267,7 @@ export default function BetTracker() {
       {/* Statistiques */}
       {stats.settled > 0 && (
         <div className="grid grid-cols-3 gap-3">
-          <StatChip label="Parié" value={`${(stats.totalStaked || 0).toLocaleString('fr-FR')} F`} />
+          <StatChip label={t('bets.staked')} value={`${(stats.totalStaked || 0).toLocaleString('fr-FR')} F`} />
           <StatChip label={t('bets.winRate')} value={`${Math.round(stats.winRate || 0)}%`} highlight="text-primary-400" />
           <StatChip
             label={t('bets.roi')}
@@ -304,7 +307,7 @@ export default function BetTracker() {
           <p className="text-gray-300 font-semibold">{t('bets.noEntries')}</p>
           <p className="text-gray-500 text-sm">{t('bets.noEntriesDesc')}</p>
           <button onClick={() => setShowForm(true)} className="btn-cta inline-flex gap-2 mt-2">
-            <Plus size={15} /> Ajouter mon premier pari
+            <Plus size={15} /> {t('bets.addFirstBet')}
           </button>
         </div>
       ) : (

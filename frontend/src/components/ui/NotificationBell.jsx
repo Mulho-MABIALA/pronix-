@@ -18,10 +18,11 @@ function isStandalone() {
 
 /* ─── Bottom sheet iOS (rendu via portal pour éviter tout conflit z-index) ── */
 function IOSBottomSheet({ onClose }) {
+  const { t } = useTranslation();
   const STEPS = [
-    'Appuie sur Partager ↑ en bas de Safari',
-    "Sélectionne \"Sur l'écran d'accueil\"",
-    "Lance l'app installée et reviens activer les alertes",
+    t('notificationBell.iosStep1'),
+    t('notificationBell.iosStep2'),
+    t('notificationBell.iosStep3'),
   ];
 
   return createPortal(
@@ -49,7 +50,7 @@ function IOSBottomSheet({ onClose }) {
         {/* En-tête */}
         <div className="flex items-center justify-between px-5 pb-4 border-b border-white/[0.06]">
           <p className="font-semibold text-gray-100 text-base">
-            Activer les notifications
+            {t('notificationBell.enableNotifications')}
           </p>
           <button
             onClick={onClose}
@@ -62,8 +63,7 @@ function IOSBottomSheet({ onClose }) {
         {/* Contenu */}
         <div className="px-5 pt-4 space-y-5">
           <p className="text-sm text-gray-400 leading-relaxed">
-            Sur iPhone, les notifications push nécessitent l'app installée
-            depuis Safari <span className="text-gray-500">(iOS 16.4+)</span>.
+            {t('notificationBell.iosIntro')} <span className="text-gray-500">(iOS 16.4+)</span>.
           </p>
 
           {/* Étapes */}
@@ -84,7 +84,7 @@ function IOSBottomSheet({ onClose }) {
             className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-gray-200 transition-colors"
             style={{ background: 'rgba(255,255,255,0.07)' }}
           >
-            Compris
+            {t('notificationBell.gotIt')}
           </button>
         </div>
       </div>
@@ -129,8 +129,8 @@ export default function NotificationBell({ size = 18 }) {
         <button
           onClick={() => setShowIOSHint(true)}
           className="p-2 rounded-lg transition-colors text-gray-500 hover:text-gray-300 hover:bg-surface-700"
-          aria-label="Activer les notifications"
-          title="Notifications push — installer l'app d'abord"
+          aria-label={t('notificationBell.enableNotifications')}
+          title={t('notificationBell.iosInstallFirst')}
         >
           <BellOff size={size} strokeWidth={1.75} />
         </button>
@@ -155,8 +155,8 @@ export default function NotificationBell({ size = 18 }) {
           ? 'text-primary-400 hover:text-primary-300 hover:bg-surface-700'
           : 'text-gray-400 hover:text-gray-200 hover:bg-surface-700'
       }`}
-      aria-label={subscribed ? 'Désactiver les notifications' : 'Activer les notifications'}
-      title={subscribed ? 'Notifications activées' : 'Activer les notifications push'}
+      aria-label={subscribed ? t('notificationBell.disableNotifications') : t('notificationBell.enableNotifications')}
+      title={subscribed ? t('notificationBell.notificationsEnabled') : t('notificationBell.enablePushNotifications')}
     >
       {subscribed
         ? <Bell size={size} strokeWidth={1.75} />

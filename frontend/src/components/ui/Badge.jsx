@@ -1,20 +1,28 @@
+import { useTranslation } from 'react-i18next';
 import { CheckCircle, Star, TrendingUp, Award } from 'lucide-react';
 
-const BADGE_CONFIG = {
-  TOP_MOIS:  { label: 'Top du mois', icon: Star,       color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
-  TOP_10:    { label: 'Top 10',      icon: TrendingUp,  color: 'bg-blue-500/20 text-blue-400 border-blue-500/30' },
-  VERIFIED:  { label: 'Vérifié',     icon: CheckCircle, color: 'bg-primary-500/20 text-primary-400 border-primary-500/30' },
-  PRO:       { label: 'Pro',         icon: Award,       color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' },
+const BADGE_ICONS = {
+  TOP_MOIS: Star,
+  TOP_10: TrendingUp,
+  VERIFIED: CheckCircle,
+  PRO: Award,
+};
+
+const BADGE_COLORS = {
+  TOP_MOIS: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  TOP_10: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  VERIFIED: 'bg-primary-500/20 text-primary-400 border-primary-500/30',
+  PRO: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
 };
 
 export function TipsterBadge({ badgeCode }) {
-  const config = BADGE_CONFIG[badgeCode];
-  if (!config) return null;
-  const Icon = config.icon;
+  const { t } = useTranslation();
+  const Icon = BADGE_ICONS[badgeCode];
+  if (!Icon) return null;
   return (
-    <span className={`badge border ${config.color}`}>
+    <span className={`badge border ${BADGE_COLORS[badgeCode]}`}>
       <Icon size={10} />
-      {config.label}
+      {t(`badges.tipster.${badgeCode}`)}
     </span>
   );
 }
@@ -32,24 +40,25 @@ export function PlanBadge({ planCode }) {
 }
 
 export function MatchStatusBadge({ status }) {
-  const config = {
-    SCHEDULED: { label: 'Programmé',  style: 'bg-gray-500/20 text-gray-400' },
-    LIVE:      { label: 'En direct',  style: 'bg-live-500/20 text-live-400 animate-pulse' },
-    FINISHED:  { label: 'Terminé',    style: 'bg-surface-600 text-gray-400' },
-    POSTPONED: { label: 'Reporté',    style: 'bg-orange-500/20 text-orange-400' },
-    CANCELLED: { label: 'Annulé',     style: 'bg-red-900/20 text-red-600' },
+  const { t } = useTranslation();
+  const styles = {
+    SCHEDULED: 'bg-gray-500/20 text-gray-400',
+    LIVE:      'bg-live-500/20 text-live-400 animate-pulse',
+    FINISHED:  'bg-surface-600 text-gray-400',
+    POSTPONED: 'bg-orange-500/20 text-orange-400',
+    CANCELLED: 'bg-red-900/20 text-red-600',
   };
-  const { label, style } = config[status] || config.SCHEDULED;
-  return <span className={`badge ${style}`}>{label}</span>;
+  const key = styles[status] ? status : 'SCHEDULED';
+  return <span className={`badge ${styles[key]}`}>{t(`badges.matchStatus.${key}`)}</span>;
 }
 
 export function ResultBadge({ result }) {
-  const config = {
-    WIN:  { label: '✓ Réussi', style: 'bg-primary-500/20 text-primary-400' },
-    LOSS: { label: '✗ Raté',   style: 'bg-red-500/20 text-red-400' },
-    VOID: { label: '– Nul',    style: 'bg-gray-500/20 text-gray-400' },
+  const { t } = useTranslation();
+  const styles = {
+    WIN:  'bg-primary-500/20 text-primary-400',
+    LOSS: 'bg-red-500/20 text-red-400',
+    VOID: 'bg-gray-500/20 text-gray-400',
   };
-  if (!result) return <span className="badge bg-surface-600 text-gray-500">En attente</span>;
-  const { label, style } = config[result] || {};
-  return <span className={`badge ${style}`}>{label}</span>;
+  if (!result) return <span className="badge bg-surface-600 text-gray-500">{t('badges.result.PENDING')}</span>;
+  return <span className={`badge ${styles[result] || ''}`}>{t(`badges.result.${result}`)}</span>;
 }

@@ -1,20 +1,13 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
-const LEAGUES = [
-  { id: '61', name: 'Ligue 1 (France)' },
-  { id: '140', name: 'La Liga (Espagne)' },
-  { id: '39', name: 'Premier League' },
-  { id: '135', name: 'Serie A' },
-  { id: '78', name: 'Bundesliga' },
-  { id: '2', name: 'Champions League' },
-  { id: '892', name: 'Ligue Sénégalaise 1' },
-  { id: '529', name: 'AFCON' },
-];
+const LEAGUE_IDS = ['61', '140', '39', '135', '78', '2', '892', '529'];
 
 export default function Onboarding() {
+  const { t } = useTranslation();
   const { refreshUser } = useAuth();
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
@@ -40,27 +33,27 @@ export default function Onboarding() {
       <div className="w-full max-w-md space-y-6 animate-slide-up">
         <div className="text-center">
           <span className="text-4xl" aria-hidden="true">🎯</span>
-          <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">Personnalisez votre flux</h1>
-          <p className="text-gray-400 mt-2 text-sm">Sélectionnez les compétitions qui vous intéressent</p>
+          <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('onboarding.title')}</h1>
+          <p className="text-gray-400 mt-2 text-sm">{t('onboarding.subtitle')}</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3">
-          {LEAGUES.map((league) => (
+          {LEAGUE_IDS.map((id) => (
             <button
-              key={league.id}
-              onClick={() => toggle(league.id)}
-              aria-pressed={selected.includes(league.id)}
+              key={id}
+              onClick={() => toggle(id)}
+              aria-pressed={selected.includes(id)}
               className={`bento-card text-left transition-all ${
-                selected.includes(league.id) ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'text-gray-300 hover:border-surface-500'
+                selected.includes(id) ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'text-gray-300 hover:border-surface-500'
               }`}
             >
-              <span className="text-sm font-medium">{league.name}</span>
+              <span className="text-sm font-medium">{t(`onboarding.leagues.${id}`)}</span>
             </button>
           ))}
         </div>
 
         <button onClick={handleFinish} disabled={loading} className="btn-primary w-full">
-          {loading ? 'Enregistrement…' : selected.length > 0 ? 'Commencer' : 'Passer cette étape'}
+          {loading ? t('profile.saving') : selected.length > 0 ? t('onboarding.start') : t('onboarding.skip')}
         </button>
       </div>
     </div>

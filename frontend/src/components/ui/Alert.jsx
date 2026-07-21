@@ -1,4 +1,5 @@
 import { CheckCircle2, AlertCircle, Info, X, Sparkles } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const VARIANTS = {
   success: { icon: CheckCircle2, style: 'bg-primary-500/10 border-primary-500/25 text-primary-400' },
@@ -10,6 +11,7 @@ const VARIANTS = {
 
 /** Alerte unifiée (succès / erreur / info / avertissement) pour remplacer les divs colorés ad-hoc. */
 export default function Alert({ variant = 'info', children, onClose, className = '' }) {
+  const { t } = useTranslation();
   const { icon: Icon, style } = VARIANTS[variant] || VARIANTS.info;
   return (
     <div role="alert" className={`flex items-start gap-2.5 rounded-lg border px-3.5 py-3 text-sm animate-fade-in ${style} ${className}`}>
@@ -19,7 +21,7 @@ export default function Alert({ variant = 'info', children, onClose, className =
         <button
           type="button"
           onClick={onClose}
-          aria-label="Fermer"
+          aria-label={t('common.close')}
           className="shrink-0 opacity-60 hover:opacity-100 transition-opacity"
         >
           <X size={14} />

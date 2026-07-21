@@ -2,27 +2,16 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
+import { fr, enUS } from 'date-fns/locale';
+import { useTranslation } from 'react-i18next';
 import { Search, Plus, X, TrendingUp, Layers, Crown, ChevronDown, ChevronUp, Loader2, Info, Sparkles, Zap } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 
-const STRATEGIES = [
-  { value: 'safe',      label: 'Sécurisé',   desc: 'Cotes basses, max de sûreté' },
-  { value: 'balanced',  label: 'Équilibré',   desc: 'Risque / gain optimal' },
-  { value: 'ambitious', label: 'Ambitieux',   desc: 'Max de gain, plus de risques' },
-];
+const STRATEGY_KEYS = ['safe', 'balanced', 'ambitious'];
 
-const PREDICTIONS = [
-  { value: 'HOME_WIN',  label: '1', full: 'Victoire Dom.' },
-  { value: 'DRAW',      label: 'X', full: 'Match nul' },
-  { value: 'AWAY_WIN',  label: '2', full: 'Victoire Ext.' },
-  { value: 'OVER_2_5',  label: '+2.5', full: 'Plus de 2.5' },
-  { value: 'UNDER_2_5', label: '-2.5', full: 'Moins de 2.5' },
-  { value: 'BTTS_YES',  label: 'BTTS', full: 'Les 2 marquent' },
-  { value: 'BTTS_NO',   label: 'BTTS Non', full: 'Pas les 2' },
-];
+const PREDICTION_KEYS = ['HOME_WIN', 'DRAW', 'AWAY_WIN', 'OVER_2_5', 'UNDER_2_5', 'BTTS_YES', 'BTTS_NO'];
 
 // Cote suggérée selon le type de pari
 const SUGGESTED_ODDS = {
@@ -31,6 +20,8 @@ const SUGGESTED_ODDS = {
 };
 
 function MatchSelector({ onAdd, selectedIds }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const [search, setSearch] = useState('');
   const [open, setOpen] = useState(false);
 
@@ -59,7 +50,7 @@ function MatchSelector({ onAdd, selectedIds }) {
         className="w-full flex items-center gap-2 px-3 py-2.5 rounded-xl border border-surface-600 bg-surface-700 text-sm text-gray-300 hover:border-primary-500 transition-colors"
       >
         <Search size={14} className="text-gray-500" />
-        <span className="flex-1 text-left">Rechercher un match…</span>
+        <span className="flex-1 text-left">{t('comboCreate.searchMatch')}</span>
         {open ? <ChevronUp size={14} className="text-gray-500" /> : <ChevronDown size={14} className="text-gray-500" />}
       </button>
 
@@ -70,12 +61,12 @@ function MatchSelector({ onAdd, selectedIds }) {
               autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Équipe, compétition…"
+              placeholder={t('comboCreate.searchPlaceholder')}
               className="w-full bg-surface-700 rounded-lg px-3 py-1.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none"
             />
           </div>
           {filtered.length === 0 && (
-            <p className="text-xs text-gray-500 text-center py-4">Aucun match trouvé</p>
+            <p className="text-xs text-gray-500 text-center py-4">{t('comboCreate.noMatchFound')}</p>
           )}
           {filtered.map((m) => {
             const already = selectedIds.includes(m.id);
@@ -92,9 +83,9 @@ function MatchSelector({ onAdd, selectedIds }) {
                   {m.homeTeam} vs {m.awayTeam}
                 </p>
                 <p className="text-xs text-gray-500 mt-0.5">
-                  {m.competition?.name} · {format(new Date(m.matchDate || m.scheduledAt), 'dd MMM HH:mm', { locale: fr })}
+                  {m.competition?.name} · {format(new Date(m.matchDate || m.scheduledAt), 'dd MMM HH:mm', { locale: dateLocale })}
                 </p>
-                {already && <span className="text-xs text-primary-400">Déjà ajouté</span>}
+                {already && <span className="text-xs text-primary-400">{t('comboCreate.alreadyAdded')}</span>}
               </button>
             );
           })}
@@ -105,6 +96,8 @@ function MatchSelector({ onAdd, selectedIds }) {
 }
 
 function EntryRow({ entry, onUpdate, onRemove }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   return (
     <div className="bento-card space-y-2">
       <div className="flex items-start justify-between gap-2">
@@ -115,7 +108,7 @@ function EntryRow({ entry, onUpdate, onRemove }) {
           <p className="text-xs text-gray-500">
             {entry.match.competition?.name}
             {entry.match.matchDate && (
-              <> · {format(new Date(entry.match.matchDate), 'dd MMM HH:mm', { locale: fr })}</>
+              <> · {format(new Date(entry.match.matchDate), 'dd MMM HH:mm', { locale: dateLocale })}</>
             )}
           </p>
         </div>
@@ -129,25 +122,25 @@ function EntryRow({ entry, onUpdate, onRemove }) {
 
       {/* Prediction picker */}
       <div className="grid grid-cols-4 gap-1.5">
-        {PREDICTIONS.map((p) => (
+        {PREDICTION_KEYS.map((k) => (
           <button
-            key={p.value}
-            onClick={() => onUpdate(entry.match.id, { prediction: p.value, odds: SUGGESTED_ODDS[p.value] })}
+            key={k}
+            onClick={() => onUpdate(entry.match.id, { prediction: k, odds: SUGGESTED_ODDS[k] })}
             className={`py-1 px-1 rounded-lg text-[11px] font-semibold text-center transition-colors ${
-              entry.prediction === p.value
+              entry.prediction === k
                 ? 'bg-primary-500 text-white'
                 : 'bg-surface-700 text-gray-400 hover:bg-surface-600'
             }`}
-            title={p.full}
+            title={t(`comboCreate.predictions.${k}.full`)}
           >
-            {p.label}
+            {t(`comboCreate.predictions.${k}.label`)}
           </button>
         ))}
       </div>
 
       {/* Odds input */}
       <div className="flex items-center gap-2">
-        <label className="text-xs text-gray-500 whitespace-nowrap">Cote :</label>
+        <label className="text-xs text-gray-500 whitespace-nowrap">{t('comboCreate.oddsColon')}</label>
         <input
           type="number"
           value={entry.odds}
@@ -157,13 +150,14 @@ function EntryRow({ entry, onUpdate, onRemove }) {
           onChange={(e) => onUpdate(entry.match.id, { odds: parseFloat(e.target.value) || 1 })}
           className="w-24 bg-surface-700 border border-surface-600 rounded-lg px-2 py-1 text-sm text-gray-200 focus:outline-none focus:border-primary-500"
         />
-        <span className="text-xs text-gray-600">Cote suggérée automatiquement</span>
+        <span className="text-xs text-gray-600">{t('comboCreate.suggestedOdds')}</span>
       </div>
     </div>
   );
 }
 
 export default function ComboCreate() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth();
   const { addToast } = useToast();
@@ -192,11 +186,11 @@ export default function ComboCreate() {
         })),
       }),
     onSuccess: (res) => {
-      addToast('Combiné créé avec succès ! 🎯', 'success');
+      addToast(t('comboCreate.createdSuccess'), 'success');
       navigate(`/combos/${res.data.data.id}`);
     },
     onError: (err) => {
-      addToast(err.response?.data?.message || 'Erreur lors de la création', 'error');
+      addToast(err.response?.data?.message || t('comboCreate.createError'), 'error');
     },
   });
 
@@ -221,7 +215,7 @@ export default function ComboCreate() {
 
   const handleOptimize = async () => {
     if (entries.length < 2) {
-      addToast('Ajoutez au moins 2 matchs avant d\'optimiser', 'warning');
+      addToast(t('comboCreate.needTwoMatches'), 'warning');
       return;
     }
     setOptimizing(true);
@@ -232,7 +226,7 @@ export default function ComboCreate() {
       });
       const data = res.data?.data;
       if (!data?.success) {
-        addToast(data?.message || 'Optimisation impossible', 'error');
+        addToast(data?.message || t('comboCreate.optimizeImpossible'), 'error');
         return;
       }
       // Applique les picks suggérés par l'IA
@@ -243,9 +237,9 @@ export default function ComboCreate() {
           return { ...entry, prediction: suggestion.prediction, odds: suggestion.odds };
         })
       );
-      addToast(`✨ Picks optimisés par l'IA (stratégie ${strategy})`, 'success');
+      addToast(t('comboCreate.optimizedSuccess', { strategy: t(`comboCreate.strategies.${strategy}.label`) }), 'success');
     } catch {
-      addToast('Erreur lors de l\'optimisation', 'error');
+      addToast(t('comboCreate.optimizeError'), 'error');
     } finally {
       setOptimizing(false);
     }
@@ -254,9 +248,9 @@ export default function ComboCreate() {
   if (!user) {
     return (
       <div className="max-w-lg mx-auto px-4 py-20 text-center space-y-4">
-        <p className="text-gray-400">Connectez-vous pour créer un combiné.</p>
+        <p className="text-gray-400">{t('comboCreate.loginToCreate')}</p>
         <a href="/connexion" className="inline-block px-6 py-3 rounded-xl bg-primary-500 text-white font-semibold">
-          Se connecter
+          {t('wallet.login')}
         </a>
       </div>
     );
@@ -267,17 +261,17 @@ export default function ComboCreate() {
 
       {/* ── Header ── */}
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-100">Créer un combiné</h1>
-        <p className="text-gray-500 text-sm mt-0.5">Sélectionnez entre 2 et 15 matchs pour composer votre coupon</p>
+        <h1 className="font-display font-bold text-2xl text-gray-100">{t('comboCreate.title')}</h1>
+        <p className="text-gray-500 text-sm mt-0.5">{t('comboCreate.subtitle')}</p>
       </div>
 
       {/* ── Titre ── */}
       <div>
-        <label className="block text-xs text-gray-400 mb-1.5">Titre du combiné (optionnel)</label>
+        <label className="block text-xs text-gray-400 mb-1.5">{t('comboCreate.titleLabel')}</label>
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value.slice(0, 80))}
-          placeholder="Ex : Combo Ligue 1 du week-end"
+          placeholder={t('comboCreate.titlePlaceholder')}
           className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500"
         />
       </div>
@@ -286,7 +280,7 @@ export default function ComboCreate() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <label className="text-sm font-semibold text-gray-200">
-            Sélections
+            {t('comboCreate.selections')}
             {entries.length > 0 && (
               <span className="ml-2 text-xs text-gray-500">({entries.length}/15)</span>
             )}
@@ -294,7 +288,7 @@ export default function ComboCreate() {
           {entries.length > 0 && (
             <div className="flex items-center gap-1.5 text-sm font-bold text-primary-400">
               <TrendingUp size={13} />
-              Cote totale : {totalOdds.toFixed(2)}
+              {t('comboCreate.totalOdds', { odds: totalOdds.toFixed(2) })}
             </div>
           )}
         </div>
@@ -309,21 +303,21 @@ export default function ComboCreate() {
           <div className="bento-card border-primary-500/20 bg-primary-500/5 space-y-2">
             <div className="flex items-center gap-2">
               <Sparkles size={14} className="text-primary-400" />
-              <p className="text-xs font-semibold text-primary-300">Optimiser avec l'IA</p>
+              <p className="text-xs font-semibold text-primary-300">{t('comboCreate.optimizeWithAi')}</p>
             </div>
             <div className="flex gap-1.5">
-              {STRATEGIES.map((s) => (
+              {STRATEGY_KEYS.map((k) => (
                 <button
-                  key={s.value}
-                  onClick={() => setStrategy(s.value)}
-                  title={s.desc}
+                  key={k}
+                  onClick={() => setStrategy(k)}
+                  title={t(`comboCreate.strategies.${k}.desc`)}
                   className={`flex-1 text-xs py-1 rounded-lg font-medium transition-colors ${
-                    strategy === s.value
+                    strategy === k
                       ? 'bg-primary-500 text-white'
                       : 'bg-surface-700 text-gray-400 hover:bg-surface-600'
                   }`}
                 >
-                  {s.label}
+                  {t(`comboCreate.strategies.${k}.label`)}
                 </button>
               ))}
             </div>
@@ -333,9 +327,9 @@ export default function ComboCreate() {
               className="w-full flex items-center justify-center gap-2 py-2 rounded-xl border border-primary-500/30 text-primary-300 text-xs font-semibold hover:bg-primary-500/10 transition-colors disabled:opacity-50"
             >
               {optimizing ? (
-                <><Loader2 size={12} className="animate-spin" /> Optimisation en cours…</>
+                <><Loader2 size={12} className="animate-spin" /> {t('comboCreate.optimizing')}</>
               ) : (
-                <><Zap size={12} /> Optimiser mes picks</>
+                <><Zap size={12} /> {t('comboCreate.optimizeBtn')}</>
               )}
             </button>
           </div>
@@ -345,7 +339,7 @@ export default function ComboCreate() {
           <div className="flex items-center gap-2 p-3 rounded-xl bg-surface-800 border border-dashed border-surface-600">
             <Info size={14} className="text-gray-600 shrink-0" />
             <p className="text-xs text-gray-500">
-              Recherchez des matchs à venir et ajoutez-les à votre combiné
+              {t('comboCreate.searchAndAdd')}
             </p>
           </div>
         )}
@@ -365,8 +359,8 @@ export default function ComboCreate() {
         <div className="flex items-center gap-3 p-3 rounded-xl bg-surface-800">
           <Crown size={15} className="text-amber-400 shrink-0" />
           <div className="flex-1">
-            <p className="text-sm text-gray-200 font-medium">Combiné Premium</p>
-            <p className="text-xs text-gray-500">Visible uniquement pour les abonnés</p>
+            <p className="text-sm text-gray-200 font-medium">{t('comboCreate.premiumCombo')}</p>
+            <p className="text-xs text-gray-500">{t('comboCreate.premiumComboDesc')}</p>
           </div>
           <button
             onClick={() => setIsPremium((v) => !v)}
@@ -382,10 +376,10 @@ export default function ComboCreate() {
         <div className="bento-card bg-primary-500/5 border-primary-500/20 space-y-3">
           <div className="flex items-center justify-between text-sm">
             <span className="text-gray-400 flex items-center gap-1.5">
-              <Layers size={13} /> {entries.length} sélections
+              <Layers size={13} /> {t('combos.selectionsCount', { count: entries.length })}
             </span>
             <span className="font-bold text-primary-400 text-lg">
-              Cote × {totalOdds.toFixed(2)}
+              {t('comboCreate.oddsMultiplier', { odds: totalOdds.toFixed(2) })}
             </span>
           </div>
           <div className="space-y-1">
@@ -393,7 +387,7 @@ export default function ComboCreate() {
               <div key={e.match.id} className="flex justify-between text-xs text-gray-500">
                 <span className="truncate">{e.match.homeTeam} vs {e.match.awayTeam}</span>
                 <span className="shrink-0 ml-2 font-medium text-gray-400">
-                  {PREDICTIONS.find((p) => p.value === e.prediction)?.label || e.prediction}
+                  {t(`comboCreate.predictions.${e.prediction}.label`, { defaultValue: e.prediction })}
                   {' '}@ {e.odds.toFixed(2)}
                 </span>
               </div>
@@ -407,7 +401,7 @@ export default function ComboCreate() {
           onClick={() => navigate('/combos')}
           className="flex-1 py-3 rounded-xl border border-surface-600 text-gray-400 text-sm font-medium hover:bg-surface-700 transition-colors"
         >
-          Annuler
+          {t('comboCreate.cancel')}
         </button>
         <button
           onClick={() => createMutation.mutate()}
@@ -419,14 +413,14 @@ export default function ComboCreate() {
           ) : (
             <>
               <Plus size={16} />
-              Publier le combiné
+              {t('comboCreate.publish')}
             </>
           )}
         </button>
       </div>
 
       {entries.length > 0 && entries.length < 2 && (
-        <p className="text-xs text-gray-600 text-center">Ajoutez au moins 2 matchs pour publier</p>
+        <p className="text-xs text-gray-600 text-center">{t('comboCreate.needTwoToPublish')}</p>
       )}
     </div>
   );

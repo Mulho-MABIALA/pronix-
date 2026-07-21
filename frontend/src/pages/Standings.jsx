@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { BarChart2, ChevronDown, Search, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -8,6 +9,7 @@ import CompetitionLogo from '../components/ui/CompetitionLogo';
 
 // ─── Sélecteur de compétition avec logos + recherche ──────────────────────────
 function CompetitionPicker({ competitions, selectedId, onSelect }) {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const ref = useRef(null);
@@ -43,7 +45,7 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
             <span className="text-xs text-gray-500 shrink-0">{selected.country}</span>
           </>
         ) : (
-          <span className="flex-1 text-gray-500">— Choisir une compétition —</span>
+          <span className="flex-1 text-gray-500">{t('standings.choosePlaceholder')}</span>
         )}
         <ChevronDown size={16} className={`text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -57,7 +59,7 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
               autoFocus
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher une ligue ou un pays..."
+              placeholder={t('standings.searchPlaceholder')}
               className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-600 outline-none"
             />
             {search && (
@@ -70,7 +72,7 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
           {/* Liste */}
           <div className="max-h-72 overflow-y-auto">
             {filtered.length === 0 && (
-              <p className="px-4 py-6 text-center text-sm text-gray-500">Aucune compétition trouvée</p>
+              <p className="px-4 py-6 text-center text-sm text-gray-500">{t('standings.noCompetitionFound')}</p>
             )}
             {filtered.map((c) => (
               <button
@@ -100,10 +102,12 @@ const RESULT_COLORS = {
 };
 
 function StandingsTable({ standings, competitionName }) {
+  const { t } = useTranslation();
+
   if (standings.length === 0) {
     return (
       <div className="bento-card text-center py-8 text-gray-500 text-sm">
-        Pas encore de matchs terminés pour {competitionName}.
+        {t('standings.noMatchesFor', { name: competitionName })}
       </div>
     );
   }
@@ -114,13 +118,13 @@ function StandingsTable({ standings, competitionName }) {
         <thead>
           <tr className="text-xs text-gray-500 border-b border-surface-700">
             <th className="text-left py-2 pl-2 w-8">#</th>
-            <th className="text-left py-2">Équipe</th>
-            <th className="text-center py-2 w-8">J</th>
-            <th className="text-center py-2 w-8">G</th>
-            <th className="text-center py-2 w-8">N</th>
-            <th className="text-center py-2 w-8">P</th>
-            <th className="text-center py-2 w-10">DB</th>
-            <th className="text-center py-2 w-10 font-bold text-gray-300">Pts</th>
+            <th className="text-left py-2">{t('standings.team')}</th>
+            <th className="text-center py-2 w-8">{t('standings.played')}</th>
+            <th className="text-center py-2 w-8">{t('standings.won')}</th>
+            <th className="text-center py-2 w-8">{t('standings.drawn')}</th>
+            <th className="text-center py-2 w-8">{t('standings.lost')}</th>
+            <th className="text-center py-2 w-10">{t('standings.goalDiff')}</th>
+            <th className="text-center py-2 w-10 font-bold text-gray-300">{t('standings.points')}</th>
           </tr>
         </thead>
         <tbody>
@@ -153,14 +157,15 @@ function StandingsTable({ standings, competitionName }) {
         </tbody>
       </table>
       <p className="text-xs text-gray-600 mt-3 px-2">
-        Classement calculé à partir des matchs disponibles dans notre base de données.
+        {t('standings.calcDisclaimer')}
       </p>
     </div>
   );
 }
 
 export default function Standings() {
-  usePageMeta('Classements', 'Classements des ligues de football — points, buts, forme récente. Liga, Premier League, Ligue 1, Serie A et plus.');
+  const { t } = useTranslation();
+  usePageMeta(t('standings.title'), 'Classements des ligues de football — points, buts, forme récente. Liga, Premier League, Ligue 1, Serie A et plus.');
   const [selectedCompId, setSelectedCompId] = useState('');
 
   // Charger la liste des compétitions + classement de la compétition sélectionnée
@@ -181,13 +186,13 @@ export default function Standings() {
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
         <BarChart2 size={22} className="text-primary-400" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">Classements</h1>
+        <h1 className="font-display font-bold text-2xl text-gray-100">{t('standings.title')}</h1>
       </div>
 
       {/* Sélecteur de compétition */}
       <div className="bento-card">
         <label className="block text-sm font-medium text-gray-400 mb-2">
-          Compétition
+          {t('standings.competitionLabel')}
         </label>
         <CompetitionPicker
           competitions={competitions}
@@ -215,7 +220,7 @@ export default function Standings() {
 
       {!isLoading && !selectedCompId && competitions.length > 0 && (
         <div className="bento-card text-center py-8 text-gray-500 text-sm">
-          Sélectionnez une compétition pour afficher le classement.
+          {t('standings.selectPrompt')}
         </div>
       )}
     </div>

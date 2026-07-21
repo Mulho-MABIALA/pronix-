@@ -1,13 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { MessageCircle, X, Send, Bot, Loader2, ChevronDown } from 'lucide-react';
 import api from '../../services/api';
 
-const QUICK_QUESTIONS = [
-  'Comment fonctionne le portefeuille virtuel ?',
-  'C\'est quoi un tipster ?',
-  'Comment créer un combiné ?',
-  'Comment fonctionne l\'abonnement Premium ?',
-];
+const QUICK_QUESTION_KEYS = ['wallet', 'tipster', 'createCombo', 'premium'];
 
 function Message({ msg }) {
   const isBot = msg.role === 'assistant';
@@ -30,9 +26,10 @@ function Message({ msg }) {
 }
 
 export default function SupportChat() {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { role: 'assistant', content: 'Bonjour ! Je suis l\'assistant fpronix 🤖 Comment puis-je vous aider ?' }
+    { role: 'assistant', content: t('supportChat.greeting') }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -53,12 +50,12 @@ export default function SupportChat() {
     try {
       const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.content }));
       const res = await api.post('/support/chat', { message: msg, history });
-      const answer = res.data?.data?.answer || 'Je n\'ai pas pu répondre.';
+      const answer = res.data?.data?.answer || t('supportChat.noAnswer');
       setMessages((prev) => [...prev, { role: 'assistant', content: answer }]);
     } catch {
       setMessages((prev) => [...prev, {
         role: 'assistant',
-        content: 'Une erreur est survenue. Réessayez dans quelques instants.',
+        content: t('supportChat.error'),
       }]);
     } finally {
       setLoading(false);
@@ -79,7 +76,7 @@ export default function SupportChat() {
         <button
           onClick={() => setOpen(true)}
           className="fixed bottom-24 right-4 md:bottom-6 z-50 w-14 h-14 rounded-full bg-primary-500 shadow-lg flex items-center justify-center hover:bg-primary-400 active:scale-95 transition-all"
-          aria-label="Assistance fpronix"
+          aria-label={t('supportChat.ariaLabel')}
         >
           <MessageCircle size={24} className="text-white" />
           <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-surface-900" />
@@ -97,10 +94,10 @@ export default function SupportChat() {
               <Bot size={16} className="text-primary-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-100">Assistant fpronix</p>
+              <p className="text-sm font-semibold text-gray-100">{t('supportChat.assistantName')}</p>
               <p className="text-xs text-green-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-400 rounded-full inline-block" />
-                En ligne
+                {t('supportChat.online')}
               </p>
             </div>
             <button
@@ -129,14 +126,14 @@ export default function SupportChat() {
             {/* Questions rapides (affiché seulement au début) */}
             {messages.length <= 1 && (
               <div className="space-y-1.5 pt-2">
-                <p className="text-[10px] text-gray-600 uppercase tracking-wide">Questions fréquentes</p>
-                {QUICK_QUESTIONS.map((q) => (
+                <p className="text-[10px] text-gray-600 uppercase tracking-wide">{t('supportChat.quickQuestionsLabel')}</p>
+                {QUICK_QUESTION_KEYS.map((k) => (
                   <button
-                    key={q}
-                    onClick={() => sendMessage(q)}
+                    key={k}
+                    onClick={() => sendMessage(t(`supportChat.quickQuestions.${k}`))}
                     className="w-full text-left text-xs px-3 py-1.5 rounded-xl bg-surface-700 text-gray-300 hover:bg-surface-600 transition-colors"
                   >
-                    {q}
+                    {t(`supportChat.quickQuestions.${k}`)}
                   </button>
                 ))}
               </div>
@@ -152,7 +149,7 @@ export default function SupportChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKey}
-                placeholder="Votre question…"
+                placeholder={t('supportChat.inputPlaceholder')}
                 disabled={loading}
                 className="flex-1 bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 disabled:opacity-50"
               />

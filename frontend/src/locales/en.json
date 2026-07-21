@@ -39,6 +39,7 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "close": "Close",
+    "delete": "Delete",
     "yes": "Yes",
     "no": "No",
     "or": "or",
@@ -56,7 +57,11 @@
     "recommended": "Recommended",
     "bestValue": "Best value",
     "new": "New",
-    "beta": "Beta"
+    "beta": "Beta",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "tomorrow": "Tomorrow",
+    "other": "Other"
   },
   "home": {
     "hero": {
@@ -116,6 +121,11 @@
     "reminder": "Reminder",
     "reminderSet": "Reminder set",
     "reminderRemoved": "Reminder removed",
+    "reminderError": "Error activating the reminder",
+    "removeReminder": "Remove reminder",
+    "activateReminder": "Set reminder (1h before)",
+    "reminderActiveTooltip": "Reminder active · Click to remove",
+    "reminderTooltip": "Reminder 1h before the match",
     "live": "Live",
     "scheduled": "Upcoming",
     "finished": "Finished",
@@ -147,7 +157,51 @@
       "UNDER_2_5": "Under 2.5 goals",
       "BTTS_YES": "Both teams to score",
       "BTTS_NO": "Both teams not to score"
-    }
+    },
+    "pickShort": {
+      "1": "Home Win",
+      "X": "Draw",
+      "2": "Away Win",
+      "over25": "Over 2.5",
+      "over15": "Over 1.5",
+      "btts": "BTTS Yes",
+      "1X": "Double 1X",
+      "X2": "Double X2"
+    },
+    "confidenceLevels": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "marketFilters": {
+      "all": "Best picks",
+      "oneXTwo": "1X2",
+      "btts": "BTTS",
+      "goals": "Goal count",
+      "doubleChance": "Double chance"
+    },
+    "prevDays": "Previous days",
+    "nextDays": "Next days",
+    "resultsLabel": "results",
+    "searchPlaceholder": "Team, league or country…",
+    "noResultsSearch": "No results for this search.",
+    "autoCalc": "Predictions are calculated automatically when matches are synced.",
+    "valueBetsToday": "Today's value bets",
+    "columns": {
+      "teams": "Teams",
+      "prob": "Prob",
+      "pick": "Pick",
+      "odd": "Odds"
+    },
+    "freeLimitReached": "Free limit reached",
+    "hiddenPicks": "{{count}} hidden pick(s)",
+    "freeLimitDescShort": "The free plan is limited to {{limit}} picks/day.",
+    "unlockPremium": "Unlock Premium — unlimited",
+    "picksAvailable": "{{count}} pick(s) available",
+    "freeDisplayed": "{{limit}} shown (free plan)",
+    "dailyRecap": "Today's recap",
+    "correctOutOf": "{{correct}} correct out of {{total}} finished",
+    "disclaimerAuto": "These predictions are generated automatically. This is not financial advice. Please gamble responsibly."
   },
   "matchDetail": {
     "prediction": "Prediction",
@@ -167,7 +221,90 @@
     "bestPick": "Best pick",
     "aiAnalysis": "AI Analysis",
     "realData": "Real-time data",
-    "noData": "Data unavailable"
+    "noData": "Data unavailable",
+    "scorelinesTitle": "Likely score scenarios",
+    "poissonDisclaimer": "Calculated using Poisson distribution · indicative",
+    "probabilities1x2": "1X2 Probabilities",
+    "simulatedIndicative": "Simulated · indicative",
+    "home1Label": "1 · Home",
+    "drawXLabel": "X · Draw",
+    "away2Label": "2 · Away",
+    "predictedScore": "Predicted score",
+    "whyValueBet": "Why is this a value bet?",
+    "confidenceLevel": "Confidence {{level}}",
+    "algoPickOdds": "Algorithmic pick & odds",
+    "realBookmakers": "Real bookmakers",
+    "recommendedPick": "Recommended pick",
+    "oddsComparatorReal": "Odds comparator — bookmakers",
+    "oddsComparatorSimulated": "Odds comparator (simulated)",
+    "oddsInfoDisclaimer": "Odds provided for information only — not betting advice.",
+    "pickMarketLabels": {
+      "1": "Home win", "X": "Draw", "2": "Away win",
+      "1X": "Double chance 1X", "X2": "Double chance X2",
+      "over25": "Over 2.5 goals", "over15": "Over 1.5 goals", "btts": "Both teams to score"
+    },
+    "predictions": {
+      "HOME_WIN": "1 — Home win",
+      "DRAW": "X — Draw",
+      "AWAY_WIN": "2 — Away win",
+      "OVER_2_5": "+2.5 goals",
+      "UNDER_2_5": "-2.5 goals",
+      "BTTS_YES": "Both teams score",
+      "BTTS_NO": "Not both teams score"
+    },
+    "halftime": "Half-time",
+    "liveNow": "Live",
+    "finished": "Finished",
+    "tabData": "Match data",
+    "tabEvents": "Events",
+    "tabTips": "Picks",
+    "tabForm": "Form & H2H",
+    "statsNotAvailable": "Statistics not available for this match",
+    "statsEstimatedNote": "* Estimated statistics — real data with the paid plan",
+    "premiumDataTitle": "Premium data",
+    "premiumDataDesc": "Probable lineups, injuries, advanced statistics",
+    "upgradePremium": "Go Premium — {{price}} FCFA/month",
+    "aiAnalysisDesc": "Claude analyzes form, H2H and stats",
+    "usedTodayCount": "{{used}}/{{limit}} today",
+    "analyzing": "Analyzing…",
+    "analyzeMatch": "Analyze this match",
+    "analysisReady": "Analysis ready",
+    "analysesUsedCount": "{{used}}/{{limit}} analyses used",
+    "notFinancialAdvice": "This is not financial advice. No guarantee of winnings.",
+    "publishPromptTitle": "Publish your pick for this match",
+    "publishPromptDesc": "Become a tipster and climb the leaderboard",
+    "loginBtn": "Log in",
+    "publishTipTitle": "Publish a pick",
+    "tipPublishedSuccess": "Pick published successfully",
+    "yourPrediction": "Your pick",
+    "chooseResult": "Choose a result...",
+    "confidenceOutOf5": "Confidence: {{n}}/5",
+    "confidenceAriaLabel": "Confidence {{n}} out of 5",
+    "analysisOptional": "Analysis (optional)",
+    "analysisPlaceholder": "Share your analysis… (max 500 characters)",
+    "publishing": "Publishing…",
+    "publishTipBtn": "Publish my pick",
+    "tipstersPicksTitle": "Tipsters' picks",
+    "reportSent": "Report sent",
+    "reportBtn": "Report",
+    "noTipsYet": "No pick for this match yet. Be the first!",
+    "noEventsYet": "No events recorded for this match",
+    "autoUpdateNote": "Auto-updates every 30 seconds",
+    "assistLabel": "Assist: {{assist}}",
+    "noRecentMatches": "No recent matches available",
+    "noH2H": "No head-to-head available",
+    "draws": "Draws",
+    "reportReasonLabel": "Report reason",
+    "reportReasons": {
+      "misleading": "Misleading or false content",
+      "inappropriate": "Inappropriate or offensive content",
+      "spam": "Spam or advertising",
+      "other": "Other abusive behavior"
+    },
+    "sending": "Sending…",
+    "sendReport": "Send report",
+    "aiGenerationError": "Error during AI generation",
+    "formDataNotAvailable": "Form data not available"
   },
   "chat": {
     "title": "AI Chat",
@@ -266,7 +403,42 @@
     "termsLink": "Terms",
     "disclaimer18": "Platform for 18+ only. Not financial advice.",
     "privacy": "and our",
-    "privacyLink": "Privacy policy"
+    "privacyLink": "Privacy policy",
+    "forgotPasswordTitle": "Forgot password",
+    "emailSent": "Email sent",
+    "resetLinkSentDesc": "If this email exists, a reset link has been sent to you.",
+    "backToLogin": "Back to login",
+    "sending": "Sending…",
+    "sendLink": "Send link",
+    "invalidLink": "Invalid link",
+    "invalidOrExpiredLink": "Invalid or expired link",
+    "invalidOrExpiredLinkDot": "Invalid or expired link.",
+    "newPasswordTitle": "New password",
+    "newPasswordLabel": "New password",
+    "confirmLabel": "Confirm",
+    "resetBtn": "Reset",
+    "verifyEmailMetaTitle": "Email verification — fpronix",
+    "missingToken": "Missing token.",
+    "verifying": "Verifying...",
+    "emailVerified": "Email verified!",
+    "emailVerifiedDesc": "Your email address has been successfully confirmed.",
+    "homeArrow": "Home →"
+  },
+  "onboarding": {
+    "title": "Customize your feed",
+    "subtitle": "Select the competitions you're interested in",
+    "start": "Get started",
+    "skip": "Skip this step",
+    "leagues": {
+      "61": "Ligue 1 (France)",
+      "140": "La Liga (Spain)",
+      "39": "Premier League",
+      "135": "Serie A",
+      "78": "Bundesliga",
+      "2": "Champions League",
+      "892": "Senegalese Ligue 1",
+      "529": "AFCON"
+    }
   },
   "profile": {
     "title": "My profile",
@@ -274,9 +446,65 @@
     "favorites": "My favorites",
     "settings": "Settings",
     "editProfile": "Edit profile",
-    "changePassword": "Change password"
+    "changePassword": "Change password",
+    "changePhoto": "Change",
+    "premium": "Premium",
+    "googleConnected": "Connected with Google",
+    "profileUpdated": "Profile updated",
+    "displayNameLabel": "Display name",
+    "displayNamePlaceholder": "Your public name",
+    "bioLabel": "Bio",
+    "bioPlaceholder": "Tell us a bit about yourself... favorite team, playing style...",
+    "notifications": "Notifications",
+    "emailAlerts": "Email alerts",
+    "smsAlerts": "SMS alerts",
+    "saving": "Saving…",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saveError": "An error occurred. Please try again.",
+    "expiresOn": "Expires on {{date}}",
+    "noExpiration": "No expiration date",
+    "expired": "Expired",
+    "goPremium": "Go Premium",
+    "manage": "Manage",
+    "paymentHistory": "Payment history ({{count}})",
+    "noSubscription": "No subscription found",
+    "myStats": "My statistics",
+    "picks": "Picks",
+    "score": "Score",
+    "viewPublicProfile": "View my public profile",
+    "recentPicksTitle": "My recent picks",
+    "won": "✓ Won",
+    "lost": "✗ Lost",
+    "pending": "Pending",
+    "account": "Account",
+    "email": "Email",
+    "googleLogin": "Google login",
+    "setPassword": "Set a password",
+    "password": "Password",
+    "editPassword": "Edit",
+    "logoutBtn": "Log out",
+    "avatarUploadError": "Error uploading the photo. Please try again.",
+    "referral": {
+      "title": "Referral",
+      "desc": "Share your code and earn rewards when your referrals sign up on fpronix.",
+      "copied": "Copied",
+      "copy": "Copy",
+      "linkCopiedToast": "Referral link copied!",
+      "referredCount": "{{count}} referral(s)"
+    }
   },
   "tipsters": {
+    "leaderboardTitle": "Tipsters Leaderboard",
+    "leaderboardDesc": "Success rate automatically calculated from verified picks.",
+    "disclaimer": "This data is informational only. No guarantee of winnings. Please play responsibly.",
+    "periodGroupLabel": "Leaderboard period",
+    "periodGlobal": "Global",
+    "periodMonthly": "This month",
+    "noTipsters": "No ranked tipster yet",
+    "noTipstersDesc": "At least 5 picks are required to appear.",
+    "prev": "← Previous",
+    "next": "Next →",
     "title": "Tipsters",
     "subtitle": "The best forecasters in the community",
     "successRate": "Success rate",
@@ -284,6 +512,79 @@
     "rank": "Rank",
     "follow": "Follow",
     "unfollow": "Unfollow"
+  },
+  "filtersPage": {
+    "title": "Advanced filters",
+    "subtitle": "Filter today's and tomorrow's matches by your criteria",
+    "marketLabel": "Market",
+    "confidenceLabel": "Confidence level",
+    "minProbLabel": "Minimum probability:",
+    "valueOnly": "Value bets only (simulated odds)",
+    "loading": "Loading…",
+    "matchesFound": "{{count}} match(es) found",
+    "noMatchesFound": "No match matches these criteria",
+    "resetFilters": "Reset filters",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "marketOptions": {
+      "all": "All markets",
+      "1": "1 — Home",
+      "X": "X — Draw",
+      "2": "2 — Away",
+      "1X": "Double chance 1X",
+      "X2": "Double chance X2",
+      "over25": "Over 2.5 goals",
+      "over15": "Over 1.5 goals",
+      "btts": "Both teams to score"
+    },
+    "confOptions": {
+      "all": "All",
+      "high": "🟢 High (≥72%)",
+      "medium": "🟡 Medium (58–71%)",
+      "low": "⚪ Low (<58%)"
+    },
+    "pickLabels": {
+      "1": "Home", "X": "Draw", "2": "Away",
+      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2"
+    }
+  },
+  "tipsterProfile": {
+    "predLabels": {
+      "HOME_WIN": "1 — Home",
+      "DRAW": "X — Draw",
+      "AWAY_WIN": "2 — Away",
+      "OVER_2_5": "+2.5",
+      "UNDER_2_5": "-2.5",
+      "BTTS_YES": "BTTS Yes",
+      "BTTS_NO": "BTTS No"
+    },
+    "notFound": "Tipster not found",
+    "weeklyRoi": "Weekly ROI (last 8 weeks)",
+    "loadingComments": "Loading…",
+    "noComments": "No comments yet — be the first!",
+    "commentPlaceholder": "Your thoughts…",
+    "comments": "Comments",
+    "followersCount": "{{count}} follower(s)",
+    "following": "Following",
+    "follow": "Follow",
+    "unfollow": "Unfollow",
+    "loginToFollow": "Follow",
+    "picksCount": "Picks",
+    "globalSuccessRate": "Overall success rate",
+    "globalRank": "Global rank",
+    "monthlyRank": "Monthly rank",
+    "estimatedRoi": "Estimated ROI (simulated)",
+    "estimatedRoiTooltip": "Calculated from the success rate and a simulated average odd",
+    "subscribersCount": "{{count}} subscriber(s)",
+    "subscribed": "✓ Subscribed",
+    "unsubscribe": "Unsubscribe",
+    "subscribe": "Subscribe — {{price}} FCFA/month",
+    "loginToSubscribe": "Log in to subscribe",
+    "perMonth": "/month",
+    "recentPicks": "Recent picks",
+    "noRecentPicks": "No recent picks",
+    "reportTipster": "Report this tipster",
+    "disclaimer": "Success rate automatically calculated. No guarantee of winnings. Please play responsibly."
   },
   "standings": {
     "title": "Standings",
@@ -296,11 +597,21 @@
     "goalsFor": "GF",
     "goalsAgainst": "GA",
     "goalDiff": "GD",
-    "points": "Pts"
+    "points": "Pts",
+    "subtitle": "Points, goals, recent form by competition",
+    "competitionLabel": "Competition",
+    "choosePlaceholder": "— Choose a competition —",
+    "searchPlaceholder": "Search a league or country...",
+    "noCompetitionFound": "No competition found",
+    "noMatchesFor": "No finished matches yet for {{name}}.",
+    "calcDisclaimer": "Standings calculated from matches available in our database.",
+    "selectPrompt": "Select a competition to display the standings."
   },
   "machine": {
     "title": "Ticket generator",
+    "titleShort": "Ticket generator",
     "subtitle": "Build your AI-optimized ticket",
+    "subtitleShort": "Build a ticket optimized by the algorithm",
     "generate": "Generate my ticket",
     "generating": "Generating...",
     "noMatches": "No matches available for the selected filters",
@@ -313,11 +624,125 @@
     "templates": {
       "safe": "Safe",
       "balanced": "Balanced",
-      "ambitious": "Ambitious"
+      "ambitious": "Ambitious",
+      "safeSub": "Very reliable picks · modest odd",
+      "balancedSub": "Good odd / safety compromise",
+      "ambitiousSub": "Big odd · riskier"
     },
     "stake": {
       "label": "Stake",
       "potentialGain": "Potential gain"
+    },
+    "quickStart": "Quick start",
+    "customizeManually": "Customize manually →",
+    "selectionsCount": "Number of selections",
+    "market": "Market",
+    "confHigh": "🟢 High",
+    "confMedium": "🟡 Medium",
+    "confAll": "⚪ All",
+    "championship": "Championship",
+    "showAll": "Show all",
+    "excludeFriendly": "Exclude friendly matches",
+    "excludeFriendlyHint": "(unreliable picks without history)",
+    "pickSpecificMatches": "Choose specific matches",
+    "fixedCount": "{{count}} fixed",
+    "loadingMatches": "Loading matches…",
+    "noMatchesFilters": "No matches available with these filters",
+    "checkAll": "Check all ({{count}})",
+    "uncheckAll": "Uncheck all",
+    "selectedCount": "{{count}} selected",
+    "algoChooses": "Algorithm chooses",
+    "manualSelectionNote": "The ticket will be generated using only the checked matches.",
+    "noSelectionNote": "No match checked → the algorithm automatically picks the best ones.",
+    "searchingMatches": "Searching matches…",
+    "matchesAvailable": "{{count}} match(es) available",
+    "selectedManually": "{{count}} manually selected",
+    "bestRetained": "top {{count}} kept",
+    "ticketReduced": "· ticket reduced to {{count}}",
+    "loading": "Loading…",
+    "noMatchAvailable": "No match available",
+    "generateBtn": "Generate ticket",
+    "selectionsGenerated": "{{count}} selection(s) generated",
+    "copied": "Copied!",
+    "copy": "Copy",
+    "share": "Share",
+    "image": "Image",
+    "totalOdd": "Total odd",
+    "yourStake": "Your stake",
+    "noSelectionMatch": "No selection matches these criteria",
+    "tryLowerConfidence": "Try lowering the confidence level or widening the period",
+    "canvasGeneratedAt": "Generated on {{date}}",
+    "canvasFooter": "fpronix.com · Picks generated by algorithm · Please play responsibly",
+    "shareTitle": "My fpronix ticket",
+    "totalOddSimulated": "Simulated total odd: × {{odds}}",
+    "datePresets": {
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "threeDays": "3 days",
+      "week": "1 week",
+      "twoWeeks": "2 weeks",
+      "month": "1 month"
+    },
+    "allLeagues": "All leagues",
+    "pickLabels": {
+      "1": "Home", "X": "Draw", "2": "Away",
+      "1X": "1X", "X2": "X2", "12": "12",
+      "dnb1": "DNB1", "dnb2": "DNB2",
+      "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
+      "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
+      "btts": "BTTS✓", "nobtts": "BTTSx"
+    },
+    "marketGroups": {
+      "resultats": {
+        "label": "Match result",
+        "subtitle": "Who wins the match at the end of regular time?",
+        "markets": {
+          "auto": { "label": "Best auto pick", "desc": "The algorithm automatically selects the market with the highest probability among all those available for this match." },
+          "1": { "label": "1 — Home win", "desc": "The home team wins the match at the end of regular time. Lost if draw or away win." },
+          "X": { "label": "X — Draw", "desc": "Both teams finish the match with the same number of goals. Lost if either team wins." },
+          "2": { "label": "2 — Away win", "desc": "The visiting team wins the match. Lost if draw or home win." }
+        }
+      },
+      "doublechance": {
+        "label": "Double chance",
+        "subtitle": "You cover 2 outcomes out of 3 — safer, reduced odd.",
+        "markets": {
+          "1X": { "label": "1X — Home or Draw", "desc": "Won if home win OR draw. Lost only if the away team wins. Ideal for backing a strong home team without risking the draw." },
+          "X2": { "label": "X2 — Draw or Away", "desc": "Won if draw OR away win. Lost only if the home team wins. Good choice when the away side is favourite or solid." },
+          "12": { "label": "12 — Home or Away (no draw)", "desc": "Won if either team wins. Lost only in case of a draw. Perfect when a draw seems unlikely between two attacking teams." }
+        }
+      },
+      "dnb": {
+        "label": "Draw No Bet",
+        "subtitle": "Draw No Bet — your stake is refunded if the match is a draw.",
+        "markets": {
+          "dnb1": { "label": "DNB Home — Bet void if draw", "desc": "Won if home wins. Stake refunded if draw. Lost if away wins. Less risky than a simple 1 — covers against the draw." },
+          "dnb2": { "label": "DNB Away — Bet void if draw", "desc": "Won if away wins. Stake refunded if draw. Lost if home wins. Ideal for backing a visiting team without fearing the draw." }
+        }
+      },
+      "overunder": {
+        "label": "Total goals",
+        "subtitle": "Bet on the total number of goals scored in the match.",
+        "markets": {
+          "over05": { "label": "Over 0.5 goals — At least 1 goal", "desc": "Just one goal needs to be scored in the match to win. Very high probability (~97%). Low but safe odd." },
+          "over15": { "label": "Over 1.5 goals — At least 2 goals", "desc": "The match must have at least 2 goals in total. Very common in attacking matches. Solid bet on scoring teams." },
+          "over25": { "label": "Over 2.5 goals — At least 3 goals", "desc": "The match must total 3 goals or more (e.g. 2-1, 3-0, 2-2). The most popular Over/Under market on 1xbet." },
+          "over35": { "label": "Over 3.5 goals — At least 4 goals", "desc": "High-scoring match with 4 goals or more (e.g. 2-2, 3-1, 4-0). Good odd, recommended for derbies or attack-heavy matches." },
+          "over45": { "label": "Over 4.5 goals — At least 5 goals", "desc": "Very open match with 5 goals or more. High odd, recommended for matches between very attacking or defensively weak teams." },
+          "under15": { "label": "Under 1.5 goals — Maximum 1 goal", "desc": "The match ends with 0 or 1 goal. Bet on a closed, defensive match. Won if score is 0-0, 1-0 or 0-1." },
+          "under25": { "label": "Under 2.5 goals — Maximum 2 goals", "desc": "At most 2 goals in the match (0-0, 1-0, 0-1, 1-1, 2-0, 0-2). Suited to tense matches, cup games, or strong defences." },
+          "under35": { "label": "Under 3.5 goals — Maximum 3 goals", "desc": "The match has 3 goals or fewer. Good probability in balanced matches. Won if final score is 2-1, 1-1, 2-0, etc." },
+          "under45": { "label": "Under 4.5 goals — Maximum 4 goals", "desc": "The match doesn't exceed 4 goals. High probability (~80%). Lost only for very high-scoring matches (5 goals or more)." }
+        }
+      },
+      "btts": {
+        "label": "Both teams to score",
+        "subtitle": "Both Teams To Score — does each team score at least once?",
+        "markets": {
+          "btts": { "label": "BTTS Yes — Both teams score", "desc": "Both teams score at least 1 goal each (e.g. 1-1, 2-1, 1-2, 2-2). The exact score doesn't matter, only that both teams find the net." },
+          "nobtts": { "label": "BTTS No — At least one team fails to score", "desc": "At least one of the two teams finishes the match without scoring. Won if score is 1-0, 0-2, 2-0, or 0-0. Recommended when a team has a very solid defence." }
+        }
+      }
     }
   },
   "pwa": {
@@ -361,7 +786,38 @@
     "roi": "ROI",
     "winRate": "Win rate",
     "noEntries": "No bets recorded",
-    "noEntriesDesc": "Start tracking your bets to analyze your performance."
+    "noEntriesDesc": "Start tracking your bets to analyze your performance.",
+    "metaTitle": "My bet tracker — fpronix",
+    "metaDesc": "Track your sports picks and analyze your ROI.",
+    "subtitle": "Track your picks and calculate your ROI",
+    "newBet": "New bet",
+    "staked": "Staked",
+    "addFirstBet": "Add my first bet",
+    "addedSuccess": "Bet added!",
+    "addError": "Error while adding",
+    "deletedSuccess": "Bet deleted",
+    "homeTeam": "Home team",
+    "awayTeam": "Away team",
+    "prediction": "Prediction",
+    "predictionPlaceholder": "Home win, +2.5 goals...",
+    "odds": "Odds",
+    "stakeFcfa": "Stake (FCFA)",
+    "dateTime": "Date & time",
+    "resultOptional": "Result (optional)",
+    "pending": "Pending",
+    "notes": "Notes",
+    "notesPlaceholder": "Analysis, reason for the pick...",
+    "results": {
+      "WIN": "Won",
+      "LOSS": "Lost",
+      "VOID": "Voided"
+    },
+    "rowSummary": "{{prediction}} · Odds {{odds}} · Stake {{stake}} FCFA",
+    "gain": "Gain:",
+    "filterAll": "All",
+    "filterWon": "Won",
+    "filterLost": "Lost",
+    "filterVoided": "Voided"
   },
   "errors": {
     "notFound": "Page not found",
@@ -370,5 +826,775 @@
     "serverError": "Server error",
     "unauthorized": "Unauthorized access",
     "sessionExpired": "Session expired, please log in again."
+  },
+  "notFound": {
+    "viewMatches": "View matches"
+  },
+  "matchCard": {
+    "htShort": "HT",
+    "simulatedOdd": "Simulated odds",
+    "shareWhatsApp": "Share on WhatsApp"
+  },
+  "liveAnalysis": {
+    "analyzing": "Analyzing the match…",
+    "title": "Live AI analysis",
+    "halftime": "Half-time",
+    "updatedAt": "Updated: {{time}}",
+    "momentum": {
+      "HOME": "Home in good form",
+      "AWAY": "Away dominant",
+      "BALANCED": "Balanced match"
+    }
+  },
+  "coachPanel": {
+    "bettorScore": "bettor score",
+    "analyzingHistory": "Analyzing your history…",
+    "title": "AI Personal Coach",
+    "analysisOfLastBets": "Analysis of your last {{count}} bets",
+    "avgOdds": "Avg. odds",
+    "strength": "Strength",
+    "toAvoid": "To avoid",
+    "wonFraction": "{{wins}}/{{total}} won",
+    "predLabels": {
+      "HOME_WIN": "Home win",
+      "AWAY_WIN": "Away win",
+      "DRAW": "Draw",
+      "OVER_2_5": "Over 2.5",
+      "UNDER_2_5": "Under 2.5",
+      "BTTS_YES": "Both teams score",
+      "BTTS_NO": "BTTS No"
+    }
+  },
+  "chatIA": {
+    "title": "AI Chat",
+    "loginPrompt": "Log in to ask the AI questions about this match",
+    "beta": "Beta",
+    "questionsToday": "{{used}}/{{limit}} questions today",
+    "suggestedQuestions": "Suggested questions:",
+    "aiError": "Error getting AI response",
+    "goPremiumArrow": "Go Premium →",
+    "freeQuestionsUsed": "3 free questions used today",
+    "premiumUnlimited": "Premium — unlimited questions",
+    "inputPlaceholder": "E.g.: Who's favorite in {{matchLabel}}?",
+    "disclaimer": "Indicative analysis — not betting advice. Play responsibly.",
+    "suggestions": {
+      "prediction": "What's your prediction for this match?",
+      "favorite": "Who's the favorite and why?",
+      "goalsValue": "Is there value on goals?",
+      "recentTrend": "What's the recent trend for both teams?"
+    }
+  },
+  "supportChat": {
+    "greeting": "Hi! I'm the fpronix assistant 🤖 How can I help you?",
+    "noAnswer": "I couldn't answer that.",
+    "error": "An error occurred. Please try again in a moment.",
+    "ariaLabel": "fpronix support",
+    "assistantName": "fpronix Assistant",
+    "online": "Online",
+    "quickQuestionsLabel": "Frequently asked",
+    "inputPlaceholder": "Your question…",
+    "quickQuestions": {
+      "wallet": "How does the virtual wallet work?",
+      "tipster": "What's a tipster?",
+      "createCombo": "How do I create a combo?",
+      "premium": "How does the Premium subscription work?"
+    }
+  },
+  "toolsCarousel": {
+    "title": "fpronix Tools",
+    "prev": "Previous",
+    "next": "Next",
+    "goTo": "Go to {{title}}",
+    "tools": {
+      "filtres": {
+        "badge": "Tool",
+        "title": "Advanced filters",
+        "description": "Filter matches by market, confidence, and probability to find the best opportunities.",
+        "cta": "Try it"
+      },
+      "machine": {
+        "badge": "Popular",
+        "title": "Ticket generator",
+        "description": "Generate an optimized combo ticket based on your criteria, ready to share as an image.",
+        "cta": "Generate"
+      },
+      "pronostics": {
+        "badge": "Community",
+        "title": "Tipster predictions",
+        "description": "Follow predictions published by the top tipsters and their real success rate.",
+        "cta": "Discover"
+      },
+      "stats": {
+        "badge": "Data",
+        "title": "Stats by league",
+        "description": "Average goals, BTTS, Over 2.5 — compare all competitions worldwide at a glance.",
+        "cta": "Compare"
+      },
+      "combos": {
+        "badge": "Community",
+        "title": "Combos",
+        "description": "Create your combo tickets, share them, and discover the community's with the AI optimizer.",
+        "cta": "Explore"
+      },
+      "bettracker": {
+        "badge": "Tracking",
+        "title": "My bets & AI Coach",
+        "description": "Log your bets, track your ROI in real time, and get personalized advice from the AI Coach.",
+        "cta": "Track"
+      },
+      "wallet": {
+        "badge": "Simulation",
+        "title": "Virtual wallet",
+        "description": "Bet risk-free with virtual money and test your strategies before betting for real.",
+        "cta": "Simulate"
+      },
+      "classements": {
+        "badge": "Data",
+        "title": "Standings",
+        "description": "Tables for every league, calculated live from synced results.",
+        "cta": "View"
+      },
+      "cdm2026": {
+        "badge": "Event",
+        "title": "2026 World Cup",
+        "description": "Schedule, groups, and predictions dedicated to the USA-Canada-Mexico World Cup.",
+        "cta": "Discover"
+      }
+    }
+  },
+  "badges": {
+    "tipster": {
+      "TOP_MOIS": "Top of the month",
+      "TOP_10": "Top 10",
+      "VERIFIED": "Verified",
+      "PRO": "Pro"
+    },
+    "matchStatus": {
+      "SCHEDULED": "Scheduled",
+      "LIVE": "Live",
+      "FINISHED": "Finished",
+      "POSTPONED": "Postponed",
+      "CANCELLED": "Cancelled"
+    },
+    "result": {
+      "WIN": "✓ Won",
+      "LOSS": "✗ Lost",
+      "VOID": "– Void",
+      "PENDING": "Pending"
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: June 2025",
+    "sections": {
+      "s1": {
+        "title": "1. Data controller",
+        "body": "fpronix SN, publisher of the fpronix platform, is responsible for processing your personal data. Contact:"
+      },
+      "s2": {
+        "title": "2. Data collected",
+        "intro": "We collect the following data:",
+        "items": [
+          { "label": "Registration data:", "text": "email address, username, password (encrypted)" },
+          { "label": "Profile data:", "text": "display name, bio, favorite teams and leagues" },
+          { "label": "Payment data:", "text": "transaction reference (we do not store your banking details)" },
+          { "label": "Usage data:", "text": "published predictions, preferences, browsing history on the Platform" },
+          { "label": "Technical data:", "text": "IP address, browser type, connection data" }
+        ]
+      },
+      "s3": {
+        "title": "3. Purposes of processing",
+        "intro": "Your data is used to:",
+        "items": [
+          "Manage your account and subscription",
+          "Provide Platform features (predictions, standings, statistics)",
+          "Process your payments via our providers (Wave, CinetPay, FedaPay)",
+          "Send you notifications related to your account (if you consented)",
+          "Improve our services and detect fraud",
+          "Comply with our legal obligations"
+        ]
+      },
+      "s4": {
+        "title": "4. Legal basis",
+        "body": "The processing of your data is based on: performance of the contract (ToS), your consent (notifications), our legitimate interest (security, service improvement), and our legal obligations."
+      },
+      "s5": {
+        "title": "5. Data sharing",
+        "intro": "Your data is not sold to third parties. It may be shared with:",
+        "items": [
+          "Our payment providers (Wave, CinetPay, FedaPay) as part of transaction processing",
+          "Our technical hosting providers (secure servers in Europe)",
+          "Competent authorities in case of legal obligation"
+        ]
+      },
+      "s6": {
+        "title": "6. Retention period",
+        "body": "Your data is kept for the duration of your account, then for 3 years after its deletion for legal reasons. Payment data is kept for 10 years in accordance with accounting obligations."
+      },
+      "s7": {
+        "title": "7. Your rights",
+        "intro": "In accordance with Senegalese law on the protection of personal data (law no. 2008-12), you have the following rights:",
+        "items": [
+          { "label": "Right of access:", "text": "obtain a copy of your data" },
+          { "label": "Right of rectification:", "text": "correct your inaccurate data" },
+          { "label": "Right to erasure:", "text": "request deletion of your account and data" },
+          { "label": "Right to object:", "text": "object to certain processing" },
+          { "label": "Right to portability:", "text": "receive your data in a readable format" }
+        ],
+        "contactPrefix": "To exercise these rights, contact us at",
+        "responseTime": "We respond within 30 days."
+      },
+      "s8": {
+        "title": "8. Cookies",
+        "body": "The Platform only uses technical cookies necessary for operation (session, theme preferences). No advertising or third-party tracking cookies are used."
+      },
+      "s9": {
+        "title": "9. Security",
+        "body": "We implement technical and organizational measures to protect your data: HTTPS encryption, hashed passwords (bcrypt), time-limited JWT tokens, restricted data access."
+      },
+      "s10": {
+        "title": "10. Changes",
+        "body": "We may modify this policy at any time. In case of substantial modification, you will be informed by email or by notification on the Platform."
+      },
+      "s11": {
+        "title": "11. Contact",
+        "body": "For any question:"
+      }
+    }
+  },
+  "cgu": {
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: June 2025",
+    "sections": {
+      "s1": {
+        "title": "1. Purpose",
+        "body": "fpronix (hereinafter \"the Platform\") is a football information and statistics service published by fpronix SN. These Terms of Service (ToS) govern access to and use of the Platform by any user (hereinafter \"the User\")."
+      },
+      "s2": {
+        "title": "2. Acceptance of terms",
+        "body": "By accessing the Platform, the User unreservedly accepts these ToS. If the User does not accept these terms, they must immediately stop using the Platform."
+      },
+      "s3": {
+        "title": "3. Service description",
+        "intro": "fpronix offers:",
+        "items": [
+          "Statistics and data related to football matches",
+          "Predictions published by users (tipsters)",
+          "Algorithmic analysis tools",
+          "A Premium subscription giving access to advanced features"
+        ],
+        "important": "IMPORTANT: fpronix never offers sports betting services under any circumstances. Information published on the Platform is provided for purely informational and educational purposes. It does not constitute financial advice or investment recommendations."
+      },
+      "s4": {
+        "title": "4. Registration and user account",
+        "body1": "Access to certain features requires creating an account. The User agrees to provide accurate information and maintain the confidentiality of their credentials. Any activity carried out from their account is their responsibility.",
+        "body2": "The User must be at least 18 years old to register on the Platform."
+      },
+      "s5": {
+        "title": "5. Premium subscription",
+        "body1": "The Premium subscription is available for 8.99 USD per month. Payment is processed via Wave, CinetPay, or FedaPay. The subscription renews monthly and can be canceled at any time.",
+        "body2": "In case of non-payment, access to Premium features will be suspended at the expiration date of the current subscription."
+      },
+      "s6": {
+        "title": "6. User content",
+        "body1": "Predictions published by users (tipsters) are the sole responsibility of their authors. fpronix does not guarantee the accuracy, relevance, or past or future performance of these predictions.",
+        "body2": "The User shall not publish any illegal, offensive, misleading content or content infringing on third-party rights. fpronix reserves the right to remove any non-compliant content and to suspend the offending account."
+      },
+      "s7": {
+        "title": "7. Liability",
+        "body1": "fpronix cannot be held liable for any financial loss related to the use of information published on the Platform. The User uses this information at their own risk.",
+        "body2": "fpronix does not guarantee continuous availability of the Platform and reserves the right to modify or interrupt it at any time."
+      },
+      "s8": {
+        "title": "8. Intellectual property",
+        "body": "All content on the Platform (text, images, logos, algorithms) is protected by intellectual property law. Any reproduction or use without prior authorization is prohibited."
+      },
+      "s9": {
+        "title": "9. Personal data",
+        "bodyPrefix": "The collection and processing of personal data is governed by our",
+        "linkText": "Privacy Policy"
+      },
+      "s10": {
+        "title": "10. Applicable law",
+        "body": "These ToS are governed by Senegalese law. Any dispute will be submitted to the competent courts of Dakar, Senegal."
+      },
+      "s11": {
+        "title": "11. Contact",
+        "body": "For any question regarding these ToS, you can contact us at: "
+      }
+    }
+  },
+  "faq": {
+    "title": "Frequently asked questions",
+    "noAnswer": "Can't find your answer?",
+    "contactUs": "Contact us",
+    "otherQuestions": "Have other questions?",
+    "respondWithin24h": "Our team responds within 24h.",
+    "sendEmail": "Send an email",
+    "categories": {
+      "general": "General",
+      "account": "Account & Subscription",
+      "matches": "Matches & Data",
+      "tipsters": "Predictions & Tipsters",
+      "notifications": "Notifications",
+      "technical": "Technical issues"
+    },
+    "questions": {
+      "general": {
+        "whatIsFpronix": {
+          "q": "What is fpronix?",
+          "a": "fpronix is a football statistics and predictions platform. It lets you follow matches in real time, check tipster analyses, and use data-driven decision-support tools."
+        },
+        "sportsBetting": {
+          "q": "Does fpronix offer sports betting?",
+          "a": "No. fpronix is exclusively an information and statistics platform. We do not offer any sports betting service and are not affiliated with any gambling operator. Published predictions are personal opinions, not guarantees."
+        },
+        "whoCanUse": {
+          "q": "Who can use fpronix?",
+          "a": "Anyone aged 18 or older. Some features (publishing predictions, access to advanced data) require a Premium account."
+        }
+      },
+      "account": {
+        "createAccount": {
+          "q": "How do I create an account?",
+          "a": "Click \"Sign up\" in the top right, enter your email and choose a password. Signing up is free."
+        },
+        "freeVsPremium": {
+          "q": "What's the difference between FREE and Premium?",
+          "a": "The FREE plan gives you access to matches, standings, and other tipsters' predictions. The Premium plan (8.99 USD/month) lets you publish your own predictions, access AI analysis (Claude), advanced data, and team lineups."
+        },
+        "howToPay": {
+          "q": "How do I pay for Premium?",
+          "a": "We accept Wave, Orange Money, Free Money, and credit card via CinetPay and FedaPay. Go to the \"Subscription\" page to choose your payment method."
+        },
+        "cancelSub": {
+          "q": "Can I cancel my subscription?",
+          "a": "Yes, at any time from your profile. Cancellation takes effect at the end of the current period — you keep access until the expiration date."
+        },
+        "forgotPassword": {
+          "q": "I forgot my password, what should I do?",
+          "a": "Click \"Forgot password\" on the login page. A reset link will be sent to your email."
+        }
+      },
+      "matches": {
+        "dataSource": {
+          "q": "Where does the match data come from?",
+          "a": "Data is automatically synced from FotMob, a recognized source of football data. Syncing happens every 4 hours."
+        },
+        "noStats": {
+          "q": "Why do some matches not show statistics?",
+          "a": "Detailed statistics (possession, shots, corners) are only available once the match has started. For scheduled matches, only contextual data (form, H2H) is shown."
+        },
+        "leaguesAvailable": {
+          "q": "Which leagues are available?",
+          "a": "fpronix covers the major African leagues (Senegal, Ivory Coast, Mali, Ghana, Egypt…) as well as major European competitions (Premier League, Ligue 1, La Liga, Serie A, Champions League). The list grows regularly."
+        }
+      },
+      "tipsters": {
+        "howToPublish": {
+          "q": "How do I publish a prediction?",
+          "a": "You need an active Premium account. Go to a scheduled match's page, select your prediction, choose your confidence level (1 to 5), and publish. You can only publish one prediction per match."
+        },
+        "rankingWorks": {
+          "q": "How does the tipster ranking work?",
+          "a": "The ranking is based on success rate (% of correct predictions) with a minimum of one published prediction. Stats are automatically recalculated after each finished match."
+        },
+        "aiAnalysis": {
+          "q": "What is AI analysis (Claude)?",
+          "a": "For each scheduled match, Premium subscribers can trigger an automatic analysis by Claude (Anthropic's AI). The AI analyzes team form, head-to-head history, and stats to suggest a prediction. The limit is 5 analyses per day."
+        },
+        "reliablePicks": {
+          "q": "Are predictions reliable?",
+          "a": "Predictions are user opinions or algorithmic suggestions. They carry no guarantee. Sport is unpredictable — even the best tipsters don't win every time."
+        },
+        "reportAbuse": {
+          "q": "How do I report an abusive prediction?",
+          "a": "On each prediction's card, click the report icon. Our moderation team will review the report and take appropriate action."
+        }
+      },
+      "notifications": {
+        "enableNotifs": {
+          "q": "How do I enable notifications?",
+          "a": "Click the bell icon in the menu. Your browser will ask for permission to send notifications. Once enabled, you'll receive alerts for results and important events."
+        },
+        "mobileNotifs": {
+          "q": "Do notifications work on mobile?",
+          "a": "Yes, on Android and iOS (Safari) provided you've added fpronix to your home screen or use a compatible browser (Chrome, Edge, Firefox)."
+        }
+      },
+      "technical": {
+        "siteNotLoading": {
+          "q": "The site isn't loading properly, what should I do?",
+          "a": "Try clearing your browser cache (Ctrl+Shift+R or Cmd+Shift+R). If the problem persists, contact us at contact@pronix.sn describing the issue and your browser."
+        },
+        "paymentFailed": {
+          "q": "My payment failed but I was charged, what should I do?",
+          "a": "Contact us immediately at contact@pronix.sn with your transaction reference. We'll verify the payment and activate your subscription manually if needed."
+        }
+      }
+    }
+  },
+  "paymentConfirm": {
+    "verifying": "Verifying payment…",
+    "mayTakeSeconds": "This may take a few seconds",
+    "cancelledTitle": "Payment cancelled",
+    "cancelledDesc": "Your payment was not completed. No amount was charged.",
+    "retry": "Try again",
+    "pendingTitle": "Payment in progress…",
+    "pendingDesc": "Your payment is being processed. If your subscription is not active within a few minutes, contact support.",
+    "checkSubscription": "Check my subscription",
+    "confirmedTitle": "Payment confirmed!",
+    "confirmedDesc": "Your subscription is now active. Enjoy full access.",
+    "simulationRef": "(Simulation — ref. {{ref}})",
+    "exploreMatches": "Explore matches"
+  },
+  "news": {
+    "title": "News",
+    "loadError": "Unable to load news. Please try again later.",
+    "noNews": "No news available at the moment."
+  },
+  "blog": {
+    "title": "Blog",
+    "metaTitle": "Football Blog — Analysis & Tips",
+    "metaDesc": "Articles, analysis and football tips by fpronix experts. Predictions, strategies and football news.",
+    "all": "All",
+    "loadError": "Unable to load articles.",
+    "noArticles": "No articles available at the moment.",
+    "previous": "Previous",
+    "next": "Next",
+    "byAuthor": "by {{author}}",
+    "articleFallback": "Article",
+    "articleNotFound": "Article not found.",
+    "backToBlog": "Back to blog",
+    "metaDescFallback": "{{title}} — fpronix blog",
+    "viewsCount": "{{count}} views",
+    "viewAllArticles": "View all articles",
+    "categories": {
+      "general": "General",
+      "analyse": "Analysis",
+      "pronostic": "Prediction",
+      "actualite": "News",
+      "conseil": "Tips"
+    }
+  },
+  "teamPage": {
+    "metaTitle": "{{name}} — Stats & Squad",
+    "metaTitleFallback": "Team",
+    "metaDesc": "Team profile, squad, results and upcoming matches for {{name}} on fpronix.",
+    "teamNotFound": "Team not found or API Football not configured.",
+    "otherPosition": "Other",
+    "foundedIn": "Founded in {{year}}",
+    "currentSeasonStats": "Current season stats",
+    "matchesPlayed": "Matches played",
+    "wins": "Wins",
+    "goalsScored": "Goals scored",
+    "avgGoalsPerMatch": "Avg. goals / match",
+    "goalsConceded": "Goals conceded",
+    "upcomingMatches": "Upcoming matches",
+    "lastResults": "Last results",
+    "squadCount": "Squad ({{count}} players)"
+  },
+  "combos": {
+    "title": "Combos",
+    "subtitle": "Multi-pick tickets shared by the community",
+    "create": "Create",
+    "tabExplore": "Explore",
+    "tabMine": "My combos",
+    "noneYet": "No combos yet",
+    "beFirst": "Be the first to create a ticket!",
+    "prev": "Prev",
+    "next": "Next",
+    "noneOfYours": "You don't have any combos yet",
+    "createFirst": "Create my first combo",
+    "new": "New",
+    "createAndShare": "Create and share your combos",
+    "loginToCreate": "Log in to create your own tickets",
+    "anonymous": "Anonymous",
+    "comboOf": "Combo from {{date}}",
+    "by": "by",
+    "successRatePct": "{{rate}}% success",
+    "delete": "Delete",
+    "moreSelections": "+{{count}} more selections",
+    "selectionsCount": "{{count}} selections",
+    "oddsShort": "Odds {{odds}}",
+    "view": "View",
+    "deleted": "Combo deleted",
+    "deleteError": "Error while deleting"
+  },
+  "comboDetail": {
+    "defaultTitle": "fpronix combo",
+    "linkCopied": "Link copied!",
+    "premiumCombo": "Premium combo",
+    "premiumComboDesc": "This combo is reserved for Premium subscribers. Upgrade your plan to access it.",
+    "viewSubscriptions": "View subscriptions",
+    "back": "Back",
+    "notFound": "Combo not found.",
+    "backToCombos": "Back to combos",
+    "byPrefix": "By",
+    "share": "Share",
+    "confirmDelete": "Delete this combo?",
+    "totalOdds": "Total odds",
+    "result": "Result",
+    "pending": "Pending",
+    "wonCount": "{{count}} won",
+    "lostCount": "{{count}} lost",
+    "pendingCount": "{{count}} pending",
+    "ticketSelections": "Ticket selections",
+    "shareThis": "Share this combo",
+    "createMine": "Create my own",
+    "oddsDisclaimer": "The odds shown are indicative. Check the real odds with your bookmaker before betting. Play responsibly.",
+    "predLabels": {
+      "HOME_WIN": "1 — Home",
+      "DRAW": "X — Draw",
+      "AWAY_WIN": "2 — Away",
+      "OVER_2_5": "Over 2.5 goals",
+      "UNDER_2_5": "Under 2.5 goals",
+      "BTTS_YES": "Both teams score",
+      "BTTS_NO": "BTTS No"
+    }
+  },
+  "comboCreate": {
+    "searchMatch": "Search for a match…",
+    "searchPlaceholder": "Team, competition…",
+    "noMatchFound": "No match found",
+    "alreadyAdded": "Already added",
+    "oddsColon": "Odds:",
+    "suggestedOdds": "Odds suggested automatically",
+    "title": "Create a combo",
+    "subtitle": "Select between 2 and 15 matches to build your ticket",
+    "titleLabel": "Combo title (optional)",
+    "titlePlaceholder": "E.g.: Weekend Ligue 1 combo",
+    "selections": "Selections",
+    "totalOdds": "Total odds: {{odds}}",
+    "optimizeWithAi": "Optimize with AI",
+    "optimizing": "Optimizing…",
+    "optimizeBtn": "Optimize my picks",
+    "searchAndAdd": "Search for upcoming matches and add them to your combo",
+    "premiumCombo": "Premium combo",
+    "premiumComboDesc": "Visible only to subscribers",
+    "oddsMultiplier": "Odds × {{odds}}",
+    "cancel": "Cancel",
+    "publish": "Publish combo",
+    "needTwoToPublish": "Add at least 2 matches to publish",
+    "createdSuccess": "Combo created successfully! 🎯",
+    "createError": "Error while creating",
+    "needTwoMatches": "Add at least 2 matches before optimizing",
+    "optimizeImpossible": "Optimization not possible",
+    "optimizedSuccess": "✨ Picks optimized by AI (strategy {{strategy}})",
+    "optimizeError": "Error during optimization",
+    "loginToCreate": "Log in to create a combo.",
+    "strategies": {
+      "safe": { "label": "Safe", "desc": "Low odds, maximum safety" },
+      "balanced": { "label": "Balanced", "desc": "Optimal risk / reward" },
+      "ambitious": { "label": "Ambitious", "desc": "Max reward, more risk" }
+    },
+    "predictions": {
+      "HOME_WIN": { "label": "1", "full": "Home win" },
+      "DRAW": { "label": "X", "full": "Draw" },
+      "AWAY_WIN": { "label": "2", "full": "Away win" },
+      "OVER_2_5": { "label": "+2.5", "full": "Over 2.5" },
+      "UNDER_2_5": { "label": "-2.5", "full": "Under 2.5" },
+      "BTTS_YES": { "label": "BTTS", "full": "Both teams score" },
+      "BTTS_NO": { "label": "BTTS No", "full": "Not both score" }
+    }
+  },
+  "wallet": {
+    "title": "Virtual Wallet",
+    "loginPrompt": "Log in to access your wallet and simulate risk-free bets.",
+    "login": "Log in",
+    "virtualBalance": "Virtual balance",
+    "totalWon": "Total winnings",
+    "totalLost": "Total losses",
+    "simulationDisclaimer": "Simulation only — no real money is involved. You start with 1,000 free points.",
+    "tabBet": "Bet",
+    "tabHistory": "My bets",
+    "tabLeaderboard": "Leaderboard",
+    "leaderboardTitle": "Player leaderboard",
+    "finalDisclaimer": "Betting simulation for entertainment purposes only. No real winnings possible. Play responsibly.",
+    "placeBetTitle": "Place a virtual bet",
+    "matchLabel": "Match *",
+    "selectMatch": "— Select a match —",
+    "predictionLabel": "Prediction *",
+    "oddsLabel": "Odds",
+    "stakeLabel": "Stake (pts)",
+    "potentialGain": "Potential gain",
+    "betBtn": "Bet",
+    "stakeTooHigh": "Stake exceeds your balance",
+    "betPlaced": "Bet placed! Good luck 🎯",
+    "betError": "Error placing bet",
+    "noBets": "No bets yet",
+    "noPlayers": "No players yet",
+    "player": "Player",
+    "ptsWon": "{{count}} pts won",
+    "oddsShort": "Odds {{odds}}",
+    "inProgress": "In progress",
+    "won": "Won",
+    "lostBet": "Lost",
+    "voided": "Voided",
+    "predictions": {
+      "HOME_WIN": "1 — Home",
+      "DRAW": "X — Draw",
+      "AWAY_WIN": "2 — Away",
+      "OVER_2_5": "+2.5 goals",
+      "UNDER_2_5": "-2.5 goals",
+      "BTTS_YES": "BTTS Yes",
+      "BTTS_NO": "BTTS No"
+    }
+  },
+  "statsLigues": {
+    "title": "League stats",
+    "subtitle": "Statistics calculated from finished matches in the database",
+    "searchPlaceholder": "Search for a league or country…",
+    "noData": "No data available",
+    "noDataHint": "Stats are calculated from finished matches in the database.",
+    "matchesCount": "{{count}} matches",
+    "goalsPerMatch": "goals/match",
+    "home": "Home",
+    "draw": "Draw",
+    "away": "Away",
+    "marketsLabel": "Markets:",
+    "sortOptions": {
+      "avgGoals": "Avg. goals",
+      "bttsRate": "BTTS",
+      "over25Rate": "O2.5",
+      "homeWinRate": "% Home",
+      "totalMatches": "Matches"
+    }
+  },
+  "planCard": {
+    "recommended": "Recommended",
+    "free": "Free",
+    "perYear": "/year",
+    "perMonth": "/month",
+    "monthlyEquiv": "(≈ {{amount}} FCFA/month)",
+    "featuresLabel": "Features of the {{plan}} plan",
+    "currentPlan": "Current plan",
+    "defaultPlan": "Default plan",
+    "subscribeLabel": "Subscribe to the {{plan}} plan",
+    "loading": "Loading…",
+    "choosePlan": "Choose {{plan}}"
+  },
+  "tipsterCard": {
+    "profileOf": "Profile of {{name}}",
+    "roiTooltip": "Estimated ROI — calculated from the success rate and a simulated average odd"
+  },
+  "formResult": {
+    "win": "Win",
+    "draw": "Draw",
+    "loss": "Loss",
+    "recentForm": "Recent form"
+  },
+  "oddsChip": {
+    "realOddTooltip": "Real bookmaker odds",
+    "simulatedOddTooltip": "Simulated odds — indicative data",
+    "valueBetTooltip": "Simulated value bet — the estimated edge is calculated on indicative odds"
+  },
+  "adminLayout": {
+    "adminConsole": "Admin Console",
+    "groups": {
+      "overview": "Overview",
+      "community": "Community",
+      "data": "Data",
+      "content": "Content",
+      "intelligence": "Intelligence"
+    },
+    "items": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "tipsters": "Tipsters",
+      "reports": "Reports",
+      "competitions": "Competitions",
+      "matches": "Matches",
+      "payments": "Payments",
+      "finances": "Finances",
+      "blogSeo": "SEO Blog",
+      "aiAgents": "AI Agents",
+      "notifications": "Notifications"
+    },
+    "viewSite": "View site",
+    "logout": "Log out",
+    "openMenu": "Open menu",
+    "administration": "Administration",
+    "copyright": "© {{year}} fpronix — All rights reserved"
+  },
+  "disclaimer": {
+    "intro": "fpronix provides data and statistics for informational purposes only.",
+    "warning": "This is not financial advice. No guarantee of winnings is promised.",
+    "playResponsibly": "Play responsibly. 18+ only.",
+    "termsLink": "Terms",
+    "privacyLink": "Privacy Policy",
+    "faqLink": "FAQ",
+    "contactLink": "Contact"
+  },
+  "trialBanner": {
+    "lastDay": "Last day of your free trial!",
+    "daysLeft": "Your free trial ends in {{count}} days",
+    "suffix": "keep access to unlimited picks, stats and AI analysis",
+    "goPremium": "Go Premium"
+  },
+  "header": {
+    "langSwitcherLabel": "Changer de langue / Change language",
+    "mainNavLabel": "Main navigation",
+    "dropdown": {
+      "sections": {
+        "tools": "Tools",
+        "community": "Community",
+        "mySpace": "My space",
+        "aiIntelligence": "AI Intelligence"
+      },
+      "items": {
+        "combos": "Combos",
+        "combosDesc": "Shared multi-match tickets",
+        "wallet": "Virtual wallet",
+        "walletDesc": "Simulate bets risk-free",
+        "betTracker": "My bet tracker",
+        "betTrackerDesc": "Track your bets and ROI",
+        "aiCoach": "AI Personal Coach",
+        "aiCoachDesc": "AI advice based on your stats",
+        "aiPronostics": "AI Picks",
+        "aiPronosticsDesc": "Picks generated by the AI Tipster"
+      }
+    }
+  },
+  "bottomNav": {
+    "standingsDesc": "League standings",
+    "tipstersDesc": "Top tipsters",
+    "wallet": "Wallet",
+    "betTrackerDesc": "Track your bets and your ROI",
+    "exploreTitle": "Explore fpronix",
+    "application": "Application",
+    "installApp": "Install the app",
+    "quickAccessHome": "Quick access from your home screen",
+    "addToHomeScreen": "Add to home screen",
+    "howToInstall": "How to install:",
+    "iosStep1Prefix": "1. Tap",
+    "iosShare": "Share",
+    "iosStep1Suffix": "at the bottom of Safari",
+    "iosStep2Prefix": "2. Scroll down and select",
+    "iosStep2Action": "\"Add to Home Screen\"",
+    "iosStep3Prefix": "3. Tap",
+    "iosAdd": "Add",
+    "genericInstallHint": "Use your browser menu → \"Add to Home Screen\"",
+    "mobileNavLabel": "Mobile navigation"
+  },
+  "notificationBell": {
+    "iosStep1": "Tap Share ↑ at the bottom of Safari",
+    "iosStep2": "Select \"Add to Home Screen\"",
+    "iosStep3": "Launch the installed app and come back to enable alerts",
+    "enableNotifications": "Enable notifications",
+    "iosIntro": "On iPhone, push notifications require the app installed from Safari",
+    "gotIt": "Got it",
+    "iosInstallFirst": "Push notifications — install the app first",
+    "disableNotifications": "Disable notifications",
+    "notificationsEnabled": "Notifications enabled",
+    "enablePushNotifications": "Enable push notifications"
+  },
+  "pwaBanner": {
+    "installTitle": "Install fpronix",
+    "tapOn": "Tap",
+    "share": "Share",
+    "then": "then",
+    "homeScreenAction": "\"Add to Home Screen\"",
+    "toInstallApp": "to install the app."
   }
 }

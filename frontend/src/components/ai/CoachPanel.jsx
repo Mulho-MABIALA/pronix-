@@ -1,24 +1,27 @@
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import { Brain, TrendingUp, TrendingDown, Star, AlertCircle, Loader2 } from 'lucide-react';
 import api from '../../services/api';
 
-const PRED_FR = {
-  HOME_WIN: 'Victoire domicile', AWAY_WIN: 'Victoire extérieur', DRAW: 'Match nul',
-  OVER_2_5: 'Plus de 2.5', UNDER_2_5: 'Moins de 2.5',
-  BTTS_YES: 'Les 2 marquent', BTTS_NO: 'BTTS Non',
+const PRED_KEYS = {
+  HOME_WIN: 'HOME_WIN', AWAY_WIN: 'AWAY_WIN', DRAW: 'DRAW',
+  OVER_2_5: 'OVER_2_5', UNDER_2_5: 'UNDER_2_5',
+  BTTS_YES: 'BTTS_YES', BTTS_NO: 'BTTS_NO',
 };
 
 function ScoreRing({ score }) {
+  const { t } = useTranslation();
   const color = score >= 70 ? 'text-green-400' : score >= 45 ? 'text-amber-400' : 'text-red-400';
   return (
     <div className={`text-center ${color}`}>
       <p className="text-4xl font-display font-black">{score}</p>
-      <p className="text-xs text-gray-500 mt-0.5">score parieur</p>
+      <p className="text-xs text-gray-500 mt-0.5">{t('coachPanel.bettorScore')}</p>
     </div>
   );
 }
 
 export default function CoachPanel() {
+  const { t } = useTranslation();
   const { data, isLoading, error } = useQuery({
     queryKey: ['coach-advice'],
     queryFn: () => api.get('/coach/advice').then((r) => r.data.data),
@@ -29,7 +32,7 @@ export default function CoachPanel() {
     return (
       <div className="bento-card flex items-center gap-3 text-gray-500">
         <Loader2 size={16} className="animate-spin text-primary-400" />
-        <span className="text-sm">Analyse de votre historique en cours…</span>
+        <span className="text-sm">{t('coachPanel.analyzingHistory')}</span>
       </div>
     );
   }
@@ -41,7 +44,7 @@ export default function CoachPanel() {
       <div className="bento-card flex items-start gap-3">
         <AlertCircle size={18} className="text-amber-400 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-semibold text-gray-200">Coach Personnel IA</p>
+          <p className="text-sm font-semibold text-gray-200">{t('coachPanel.title')}</p>
           <p className="text-xs text-gray-500 mt-0.5">{data.message}</p>
         </div>
       </div>
@@ -58,8 +61,8 @@ export default function CoachPanel() {
           <Brain size={16} className="text-primary-400" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-gray-100">Coach Personnel IA</p>
-          <p className="text-xs text-gray-500">Analyse de vos {stats.total} derniers paris</p>
+          <p className="text-sm font-semibold text-gray-100">{t('coachPanel.title')}</p>
+          <p className="text-xs text-gray-500">{t('coachPanel.analysisOfLastBets', { count: stats.total })}</p>
         </div>
       </div>
 
@@ -67,7 +70,7 @@ export default function CoachPanel() {
       <div className="grid grid-cols-4 gap-2">
         <div className="bento-card text-center py-2 px-1">
           <p className="text-lg font-display font-bold text-gray-100">{stats.winRate}%</p>
-          <p className="text-[10px] text-gray-500">Réussite</p>
+          <p className="text-[10px] text-gray-500">{t('tipsters.successRate')}</p>
         </div>
         <div className="bento-card text-center py-2 px-1">
           <p className={`text-lg font-display font-bold ${Number(stats.roi) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
@@ -77,7 +80,7 @@ export default function CoachPanel() {
         </div>
         <div className="bento-card text-center py-2 px-1">
           <p className="text-lg font-display font-bold text-gray-100">{stats.avgOdds}</p>
-          <p className="text-[10px] text-gray-500">Cote moy.</p>
+          <p className="text-[10px] text-gray-500">{t('coachPanel.avgOdds')}</p>
         </div>
         {advice?.score != null && (
           <div className="bento-card text-center py-2 px-1">
@@ -92,12 +95,12 @@ export default function CoachPanel() {
           <div className="bento-card flex items-start gap-2 border-green-500/20 bg-green-500/5">
             <TrendingUp size={14} className="text-green-400 mt-0.5 shrink-0" />
             <div>
-              <p className="text-[10px] text-green-400 font-semibold uppercase tracking-wide">Point fort</p>
+              <p className="text-[10px] text-green-400 font-semibold uppercase tracking-wide">{t('coachPanel.strength')}</p>
               <p className="text-xs text-gray-300 mt-0.5">
-                {PRED_FR[stats.strongestType.name] || stats.strongestType.name}
+                {t(`coachPanel.predLabels.${PRED_KEYS[stats.strongestType.name]}`, { defaultValue: stats.strongestType.name })}
               </p>
               <p className="text-[10px] text-gray-500">
-                {stats.strongestType.wins}/{stats.strongestType.total} gagnés
+                {t('coachPanel.wonFraction', { wins: stats.strongestType.wins, total: stats.strongestType.total })}
               </p>
             </div>
           </div>
@@ -106,12 +109,12 @@ export default function CoachPanel() {
           <div className="bento-card flex items-start gap-2 border-red-500/20 bg-red-500/5">
             <TrendingDown size={14} className="text-red-400 mt-0.5 shrink-0" />
             <div>
-              <p className="text-[10px] text-red-400 font-semibold uppercase tracking-wide">À éviter</p>
+              <p className="text-[10px] text-red-400 font-semibold uppercase tracking-wide">{t('coachPanel.toAvoid')}</p>
               <p className="text-xs text-gray-300 mt-0.5">
-                {PRED_FR[stats.weakestType.name] || stats.weakestType.name}
+                {t(`coachPanel.predLabels.${PRED_KEYS[stats.weakestType.name]}`, { defaultValue: stats.weakestType.name })}
               </p>
               <p className="text-[10px] text-gray-500">
-                {stats.weakestType.wins}/{stats.weakestType.total} gagnés
+                {t('coachPanel.wonFraction', { wins: stats.weakestType.wins, total: stats.weakestType.total })}
               </p>
             </div>
           </div>

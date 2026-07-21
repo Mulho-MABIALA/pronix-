@@ -1,7 +1,9 @@
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billingCycle = 'MONTHLY' }) {
+  const { t } = useTranslation();
   const isFree = plan.code === 'FREE';
   const isPremium = plan.code === 'PREMIUM';
   const isYearly = billingCycle === 'YEARLY';
@@ -19,7 +21,7 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
     >
       {isPremium && (
         <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-          <span className="badge bg-primary-500 text-white text-xs px-3 py-1">Recommandé</span>
+          <span className="badge bg-primary-500 text-white text-xs px-3 py-1">{t('planCard.recommended')}</span>
         </div>
       )}
 
@@ -28,15 +30,15 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
         <h3 className="font-display font-bold text-xl text-gray-100">{plan.displayName}</h3>
         <div className="mt-2 flex items-end gap-1 flex-wrap">
           {isFree ? (
-            <span className="text-3xl font-display font-bold text-gray-100">Gratuit</span>
+            <span className="text-3xl font-display font-bold text-gray-100">{t('planCard.free')}</span>
           ) : (
             <>
               <span className="text-3xl font-display font-bold text-gray-100">
                 {fmt(displayPrice)}
               </span>
-              <span className="text-gray-500 pb-1"> FCFA{isYearly ? '/an' : '/mois'}</span>
+              <span className="text-gray-500 pb-1"> FCFA{isYearly ? t('planCard.perYear') : t('planCard.perMonth')}</span>
               {monthlyEquiv && (
-                <span className="text-xs text-primary-400 pb-1 ml-1">(≈ {fmt(monthlyEquiv)} FCFA/mois)</span>
+                <span className="text-xs text-primary-400 pb-1 ml-1">{t('planCard.monthlyEquiv', { amount: fmt(monthlyEquiv) })}</span>
               )}
             </>
           )}
@@ -44,7 +46,7 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
       </div>
 
       {/* Fonctionnalités */}
-      <ul className="space-y-2 flex-1" aria-label={`Fonctionnalités du plan ${plan.displayName}`}>
+      <ul className="space-y-2 flex-1" aria-label={t('planCard.featuresLabel', { plan: plan.displayName })}>
         {(plan.features || []).map((feat, i) => (
           <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
             <Check size={16} className="text-primary-400 mt-0.5 shrink-0" aria-hidden="true" />
@@ -56,20 +58,20 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
       {/* Bouton */}
       {isCurrentPlan ? (
         <div className="btn-secondary opacity-70 cursor-default justify-center">
-          Plan actuel
+          {t('planCard.currentPlan')}
         </div>
       ) : isFree ? (
         <div className="btn-secondary opacity-50 cursor-default justify-center">
-          Plan par défaut
+          {t('planCard.defaultPlan')}
         </div>
       ) : (
         <button
           onClick={() => onSelect(plan)}
           disabled={loading}
           className="btn-primary w-full"
-          aria-label={`S'abonner au plan ${plan.displayName}`}
+          aria-label={t('planCard.subscribeLabel', { plan: plan.displayName })}
         >
-          {loading ? 'Chargement…' : `Choisir ${plan.displayName}`}
+          {loading ? t('planCard.loading') : t('planCard.choosePlan', { plan: plan.displayName })}
         </button>
       )}
     </motion.div>

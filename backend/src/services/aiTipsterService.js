@@ -12,10 +12,28 @@ try {
   if (env.ANTHROPIC_API_KEY) client = new Anthropic({ apiKey: env.ANTHROPIC_API_KEY });
 } catch { /* SDK absent */ }
 
+const AI_AVATAR = '/logo-circle.png';
+
 // Récupère ou crée le compte tipster IA
 async function getOrCreateAITipster() {
-  let user = await prisma.user.findUnique({ where: { email: AI_EMAIL } });
-  if (user) return user;
+  let user = await prisma.user.findUnique({ where: { email: AI_EMAIL }, include: { profile: true } });
+
+  if (user) {
+    // Auto-réparation : ajoute le logo de profil s'il manque (comptes créés avant son ajout)
+    if (!user.profile?.avatar) {
+      await prisma.profile.upsert({
+        where: { userId: user.id },
+        update: { avatar: AI_AVATAR },
+        create: {
+          userId: user.id,
+          displayName: '🤖 fpronix IA',
+          bio: 'Agent IA de fpronix — pronostics quotidiens générés automatiquement par intelligence artificielle à partir des données des matchs.',
+          avatar: AI_AVATAR,
+        },
+      });
+    }
+    return user;
+  }
 
   user = await prisma.user.create({
     data: {
@@ -27,6 +45,7 @@ async function getOrCreateAITipster() {
         create: {
           displayName: '🤖 fpronix IA',
           bio: 'Agent IA de fpronix — pronostics quotidiens générés automatiquement par intelligence artificielle à partir des données des matchs.',
+          avatar: AI_AVATAR,
         },
       },
       tipsterStats: {

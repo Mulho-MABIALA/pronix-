@@ -9,6 +9,8 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { TipsterBadge, ResultBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
+import Avatar from '../components/ui/Avatar';
+import TeamLogo from '../components/ui/TeamLogo';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
 import { estimateTipsterROI } from '../utils/mockOdds';
 import { useAnalytics } from '../hooks/useAnalytics';
@@ -155,16 +157,31 @@ function TipCard({ tip }) {
   const { t, i18n } = useTranslation();
   const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   const [showComments, setShowComments] = useState(false);
+  const match = tip.match;
   return (
     <div className="bento-card space-y-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <Link to={`/matchs/${tip.matchId}`} className="text-sm font-medium text-gray-200 hover:text-primary-300 truncate block">
-            {tip.match?.homeTeam} vs {tip.match?.awayTeam}
+          <Link to={`/matchs/${tip.matchId}`} className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-primary-300 truncate">
+            <TeamLogo logo={match?.homeTeamLogo} teamId={match?.homeTeamId} name={match?.homeTeam} size={16} />
+            <span className="truncate">{match?.homeTeam}</span>
+            <span className="text-gray-600 shrink-0">vs</span>
+            <TeamLogo logo={match?.awayTeamLogo} teamId={match?.awayTeamId} name={match?.awayTeam} size={16} />
+            <span className="truncate">{match?.awayTeam}</span>
           </Link>
-          <p className="text-xs text-gray-500 mt-0.5">
-            {t(`tipsterProfile.predLabels.${tip.prediction}`, { defaultValue: tip.prediction })}
-            {' '}· {format(new Date(tip.createdAt), 'dd MMM', { locale: dateLocale })}
+          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5 flex-wrap">
+            {match?.competition?.name && (
+              <span className="inline-flex items-center gap-1">
+                {match.competition.logo && (
+                  <img src={match.competition.logo} alt="" className="w-3 h-3 object-contain shrink-0" />
+                )}
+                {match.competition.name}
+              </span>
+            )}
+            <span>
+              {t(`tipsterProfile.predLabels.${tip.prediction}`, { defaultValue: tip.prediction })}
+              {' '}· {format(new Date(tip.createdAt), 'dd MMM', { locale: dateLocale })}
+            </span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -291,9 +308,7 @@ export default function TipsterProfile() {
       {/* ── Profil header ── */}
       <section className="bento-card">
         <div className="flex items-start gap-4">
-          <div className="h-16 w-16 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-2xl font-bold shrink-0">
-            {displayName.charAt(0).toUpperCase()}
-          </div>
+          <Avatar user={tipster} name={displayName} size={64} className="text-2xl" />
           <div className="flex-1 min-w-0">
             <h1 className="font-display font-bold text-xl text-gray-100">{displayName}</h1>
             <p className="text-gray-500 text-sm">@{tipster.username}</p>

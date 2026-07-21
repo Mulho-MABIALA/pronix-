@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { TipsterBadge } from '../ui/Badge';
 import SuccessRateBar from '../ui/SuccessRateBar';
+import Avatar from '../ui/Avatar';
 import { estimateTipsterROI } from '../../utils/mockOdds';
 
 const PODIUM_RING = {
@@ -32,9 +33,7 @@ export default function TipsterCard({ stats, rank }) {
       </span>
 
       {/* Avatar */}
-      <div className={`h-10 w-10 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 font-bold shrink-0 ${PODIUM_RING[rank] || ''}`}>
-        {displayName.charAt(0).toUpperCase()}
-      </div>
+      <Avatar user={user} name={displayName} size={40} className={PODIUM_RING[rank] || ''} />
 
       {/* Infos */}
       <div className="flex-1 min-w-0">

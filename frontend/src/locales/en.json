@@ -818,13 +818,13 @@
     "error": "Error sending email. Please try again later."
   },
   "bets": {
-    "title": "My bet tracker",
+    "title": "My tips tracker",
     "add": "Add a bet",
     "roi": "ROI",
     "winRate": "Win rate",
     "noEntries": "No bets recorded",
     "noEntriesDesc": "Start tracking your bets to analyze your performance.",
-    "metaTitle": "My bet tracker — fpronix",
+    "metaTitle": "My tips tracker — fpronix",
     "metaDesc": "Track your sports picks and analyze your ROI.",
     "subtitle": "Track your picks and calculate your ROI",
     "newBet": "New bet",
@@ -887,6 +887,7 @@
     "bettorScore": "bettor score",
     "analyzingHistory": "Analyzing your history…",
     "title": "AI Personal Coach",
+    "premiumLocked": "Unlock personalized advice from AI analysis of your tips with a Premium subscription.",
     "analysisOfLastBets": "Analysis of your last {{count}} bets",
     "avgOdds": "Avg. odds",
     "strength": "Strength",
@@ -967,8 +968,8 @@
       },
       "bettracker": {
         "badge": "Tracking",
-        "title": "My bets & AI Coach",
-        "description": "Log your bets, track your ROI in real time, and get personalized advice from the AI Coach.",
+        "title": "Tracker & AI Coach",
+        "description": "Log your tips, track your ROI in real time, and get personalized advice from the AI Coach.",
         "cta": "Track"
       },
       "classements": {
@@ -1421,8 +1422,8 @@
         "aiIntelligence": "AI Intelligence"
       },
       "items": {
-        "betTracker": "My bet tracker",
-        "betTrackerDesc": "Track your bets and ROI",
+        "betTracker": "My tips tracker",
+        "betTrackerDesc": "Track your tips and ROI",
         "aiCoach": "AI Personal Coach",
         "aiCoachDesc": "AI advice based on your stats",
         "aiPronostics": "AI Picks",
@@ -1433,7 +1434,7 @@
   "bottomNav": {
     "standingsDesc": "League standings",
     "tipstersDesc": "Top tipsters",
-    "betTrackerDesc": "Track your bets and your ROI",
+    "betTrackerDesc": "Track your tips and your ROI",
     "exploreTitle": "Explore fpronix",
     "application": "Application",
     "installApp": "Install the app",

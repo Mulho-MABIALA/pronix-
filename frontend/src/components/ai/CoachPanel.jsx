@@ -1,7 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
-import { Brain, TrendingUp, TrendingDown, Star, AlertCircle, Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Brain, TrendingUp, TrendingDown, Star, AlertCircle, Loader2, Lock } from 'lucide-react';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const PRED_KEYS = {
   HOME_WIN: 'HOME_WIN', AWAY_WIN: 'AWAY_WIN', DRAW: 'DRAW',
@@ -22,11 +24,26 @@ function ScoreRing({ score }) {
 
 export default function CoachPanel() {
   const { t } = useTranslation();
+  const { isPremium } = useAuth();
   const { data, isLoading, error } = useQuery({
     queryKey: ['coach-advice'],
     queryFn: () => api.get('/coach/advice').then((r) => r.data.data),
     staleTime: 5 * 60 * 1000,
+    enabled: isPremium,
   });
+
+  if (!isPremium) {
+    return (
+      <div className="bento-card text-center py-6">
+        <Lock size={22} className="text-primary-400 mx-auto mb-2" />
+        <p className="text-sm font-semibold text-gray-200 mb-1">{t('coachPanel.title')}</p>
+        <p className="text-xs text-gray-500 mb-4">{t('coachPanel.premiumLocked')}</p>
+        <Link to="/abonnement" className="btn-primary px-6 py-2 text-sm inline-flex items-center gap-2">
+          {t('common.premium')}
+        </Link>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (

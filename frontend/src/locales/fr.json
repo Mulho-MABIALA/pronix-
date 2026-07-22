@@ -818,13 +818,13 @@
     "error": "Erreur lors de l'envoi. Réessaie plus tard."
   },
   "bets": {
-    "title": "Mon carnet de paris",
+    "title": "Suivi de mes pronostics",
     "add": "Ajouter un pari",
     "roi": "ROI",
     "winRate": "Taux de réussite",
     "noEntries": "Aucun pari enregistré",
     "noEntriesDesc": "Commence à suivre tes paris pour analyser tes performances.",
-    "metaTitle": "Mon carnet de paris — fpronix",
+    "metaTitle": "Suivi de mes pronostics — fpronix",
     "metaDesc": "Suivez vos pronostics sportifs et analysez votre ROI.",
     "subtitle": "Suis tes pronostics et calcule ton ROI",
     "newBet": "Nouveau pari",
@@ -887,6 +887,7 @@
     "bettorScore": "score parieur",
     "analyzingHistory": "Analyse de votre historique en cours…",
     "title": "Coach Personnel IA",
+    "premiumLocked": "Débloque des conseils personnalisés basés sur l'analyse IA de tes pronostics avec l'abonnement Premium.",
     "analysisOfLastBets": "Analyse de vos {{count}} derniers paris",
     "avgOdds": "Cote moy.",
     "strength": "Point fort",
@@ -967,8 +968,8 @@
       },
       "bettracker": {
         "badge": "Suivi",
-        "title": "Mes paris & Coach IA",
-        "description": "Enregistre tes paris, suis ton ROI en temps réel et reçois des conseils personnalisés du Coach IA.",
+        "title": "Suivi & Coach IA",
+        "description": "Enregistre tes pronostics, suis ton ROI en temps réel et reçois des conseils personnalisés du Coach IA.",
         "cta": "Suivre"
       },
       "classements": {
@@ -1421,8 +1422,8 @@
         "aiIntelligence": "Intelligence IA"
       },
       "items": {
-        "betTracker": "Mon carnet de paris",
-        "betTrackerDesc": "Suivi de tes paris et ROI",
+        "betTracker": "Suivi de mes pronostics",
+        "betTrackerDesc": "Suivi de tes pronostics et ROI",
         "aiCoach": "Coach Personnel IA",
         "aiCoachDesc": "Conseils IA selon tes stats",
         "aiPronostics": "Pronostics IA",
@@ -1433,7 +1434,7 @@
   "bottomNav": {
     "standingsDesc": "Classements des ligues",
     "tipstersDesc": "Top pronostiqueurs",
-    "betTrackerDesc": "Suis tes paris et ton ROI",
+    "betTrackerDesc": "Suis tes pronostics et ton ROI",
     "exploreTitle": "Explorer fpronix",
     "application": "Application",
     "installApp": "Installer l'app",

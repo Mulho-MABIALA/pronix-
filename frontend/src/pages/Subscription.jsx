@@ -169,7 +169,8 @@ export default function Subscription() {
     setError('');
     setLoading(true);
     try {
-      const { data: res } = await api.post('/payments/geniuspay/init', { planId: plan.id, billingCycle });
+      // PayDunya a remplacé GeniusPay comme moyen de paiement actif
+      const { data: res } = await api.post('/payments/paydunya/init', { planId: plan.id, billingCycle });
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');

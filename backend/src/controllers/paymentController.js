@@ -5,6 +5,7 @@ const waveService = require('../services/waveService');
 const cinetpayService = require('../services/cinetpayService');
 const fedapayService = require('../services/fedapayService');
 const geniuspayService = require('../services/geniuspayService');
+const paydunyaService = require('../services/paydunyaService');
 const { AppError } = require('../middleware/errorHandler');
 const env = require('../config/env');
 const { notifyUser } = require('./pushController');
@@ -463,10 +464,121 @@ async function handleGeniuspayWebhook(req, res) {
   }
 }
 
+// ─── Initier un paiement PayDunya (checkout unifié : Wave, Orange, MTN, carte…) ─
+// Remplace GeniusPay comme moyen de paiement actif (voir routes/payments.js —
+// les routes GeniusPay sont commentées mais le code reste en place ci-dessus).
+async function initiatePaydunyaPayment(req, res, next) {
+  try {
+    const schema = z.object({
+      planId:       z.string().uuid(),
+      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+    });
+    const { planId, billingCycle } = schema.parse(req.body);
+
+    const plan = await prisma.plan.findUnique({ where: { id: planId } });
+    if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
+
+    const amount = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:     req.user.id,
+        amount,
+        method:     'MOBILE_MONEY',
+        status:     'PENDING',
+        provider:   'paydunya',
+        providerRef: `PD-${Date.now()}-${req.user.id.slice(0, 8)}`,
+        metadata:   { planId, billingCycle },
+      },
+    });
+
+    const returnUrl   = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${payment.providerRef}`;
+    const cancelUrl   = `${env.FRONTEND_URL}/abonnement/erreur?ref=${payment.providerRef}`;
+    const callbackUrl = `${env.BACKEND_URL || ''}/api/payments/paydunya/webhook`;
+
+    const isSandbox = !env.PAYDUNYA_MASTER_KEY;
+    const pdData = isSandbox
+      ? paydunyaService.mockCheckout({ customData: { paymentId: payment.id, planId, billingCycle, userId: req.user.id } })
+      : await paydunyaService.createInvoice({
+          amount,
+          description: `Abonnement fpronix ${plan.displayName} — ${billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel'}`,
+          returnUrl,
+          cancelUrl,
+          callbackUrl,
+          customData: { paymentId: payment.id, planId, billingCycle, userId: req.user.id },
+        });
+
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data:  { transactionId: pdData.token },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId:   payment.id,
+        checkoutUrl: pdData.checkout_url,
+        reference:   pdData.token,
+        sandbox:     isSandbox,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Webhook PayDunya (IPN) ────────────────────────────────────────────────────
+async function handlePaydunyaWebhook(req, res) {
+  // PayDunya poste en x-www-form-urlencoded : data[token], data[status], data[hash]...
+  const data = req.body?.data || {};
+  const { token, hash } = data;
+
+  console.log(`[Webhook PayDunya] ← Reçu: token=${token}`);
+
+  // Répondre 200 immédiatement (PayDunya n'attend pas de traitement synchrone)
+  res.json({ received: true });
+
+  try {
+    if (!paydunyaService.verifyWebhookHash(hash)) {
+      console.warn('[Webhook PayDunya] Hash invalide — IPN ignoré');
+      return;
+    }
+
+    if (!token) {
+      console.warn('[Webhook PayDunya] Token manquant dans l\'IPN');
+      return;
+    }
+
+    // Double vérification auprès de l'API PayDunya (source de vérité)
+    const confirmed = await paydunyaService.confirmInvoice(token);
+    if (!confirmed || confirmed.status !== 'completed') {
+      console.log(`[Webhook PayDunya] Statut non complété pour token=${token} — ignoré`);
+      return;
+    }
+
+    const payment = await prisma.payment.findFirst({
+      where: { transactionId: token, status: 'PENDING', provider: 'paydunya' },
+    });
+
+    if (!payment) {
+      console.warn(`[Webhook PayDunya] Paiement PENDING introuvable — token=${token}`);
+      return;
+    }
+
+    const { planId, billingCycle } = payment.metadata;
+    await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    console.log(`[Webhook PayDunya] ✅ Abonnement activé pour userId=${payment.userId}`);
+  } catch (err) {
+    console.error('[Webhook PayDunya] Erreur traitement:', err.message, err.stack);
+  }
+}
+
 module.exports = {
   initiateWavePayment, handleWaveWebhook,
   initiateCinetpayPayment, handleCinetpayWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
+  // GeniusPay — mis de côté (remplacé par PayDunya), conservé pour réactivation future
   initiateGeniuspayPayment, handleGeniuspayWebhook,
+  initiatePaydunyaPayment, handlePaydunyaWebhook,
   verifyPayment,
 };

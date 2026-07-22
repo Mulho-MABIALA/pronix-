@@ -5,7 +5,9 @@ const {
   initiateWavePayment, handleWaveWebhook,
   initiateCinetpayPayment, handleCinetpayWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
+  // GeniusPay — mis de côté (remplacé par PayDunya), import conservé pour réactivation future
   initiateGeniuspayPayment, handleGeniuspayWebhook,
+  initiatePaydunyaPayment, handlePaydunyaWebhook,
   verifyPayment,
 } = require('../controllers/paymentController');
 
@@ -22,14 +24,18 @@ const paymentLimit = rateLimit({
 router.post('/wave/webhook',      handleWaveWebhook);
 router.post('/cinetpay/webhook',  handleCinetpayWebhook);
 router.post('/fedapay/webhook',   handleFedapayWebhook);
-router.post('/geniuspay/webhook', handleGeniuspayWebhook);
+// GeniusPay — mis de côté (remplacé par PayDunya). Code conservé, route désactivée :
+// router.post('/geniuspay/webhook', handleGeniuspayWebhook);
+router.post('/paydunya/webhook',  handlePaydunyaWebhook);
 
 // Paiements initiés par l'utilisateur (authentifié)
 router.use(authenticate);
 router.post('/wave/init',      paymentLimit, initiateWavePayment);
 router.post('/cinetpay/init',  paymentLimit, initiateCinetpayPayment);
 router.post('/fedapay/init',   paymentLimit, initiateFedapayPayment);
-router.post('/geniuspay/init', paymentLimit, initiateGeniuspayPayment);
+// GeniusPay — mis de côté (remplacé par PayDunya). Code conservé, route désactivée :
+// router.post('/geniuspay/init', paymentLimit, initiateGeniuspayPayment);
+router.post('/paydunya/init',  paymentLimit, initiatePaydunyaPayment);
 router.get('/verify',          verifyPayment);
 
 module.exports = router;

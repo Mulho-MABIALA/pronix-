@@ -12,6 +12,7 @@ const envSchema = z.object({
   JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('30d'),
   FRONTEND_URL: z.string().default('http://localhost:3000'),
+  BACKEND_URL: z.string().default('https://fpronix.com'), // URL publique de l'API (callback_url PayDunya, etc.)
   FOOTBALL_API_KEY: z.string().optional(),
   FOOTBALL_API_HOST: z.string().default('v3.football.api-sports.io'),
   FOOTBALL_API_BASE_URL: z.string().default('https://v3.football.api-sports.io'),
@@ -29,6 +30,13 @@ const envSchema = z.object({
   GENIUSPAY_API_SECRET: z.string().optional(),     // sk_sandbox_xxx ou sk_live_xxx
   GENIUSPAY_WEBHOOK_SECRET: z.string().optional(), // whsec_sandbox_xxx ou whsec_live_xxx
   GENIUSPAY_BASE_URL: z.string().default('https://geniuspay.ci/api/v1/merchant'),
+  // PayDunya — agrégateur remplaçant GeniusPay (Wave, Orange Money, MTN, carte…)
+  PAYDUNYA_MASTER_KEY: z.string().optional(),
+  PAYDUNYA_PRIVATE_KEY: z.string().optional(),  // test_private_xxx ou live_private_xxx
+  PAYDUNYA_PUBLIC_KEY: z.string().optional(),
+  PAYDUNYA_TOKEN: z.string().optional(),
+  PAYDUNYA_BASE_URL: z.string().default('https://app.paydunya.com/api/v1'),
+  PAYDUNYA_STORE_NAME: z.string().default('fpronix'),
   SMTP_HOST: z.string().default('smtp.gmail.com'),
   SMTP_PORT: z.string().default('587').transform(Number),
   SMTP_SECURE: z.string().default('false').transform((v) => v === 'true'),

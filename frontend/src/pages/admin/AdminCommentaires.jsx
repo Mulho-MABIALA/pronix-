@@ -87,9 +87,13 @@ export default function AdminCommentaires() {
             {comments.map(comment => (
               <div key={comment.id} className="flex items-start gap-4 p-4 hover:bg-white/[0.02] transition-colors group">
                 {/* Avatar */}
-                <div className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center text-gray-400 text-sm font-bold shrink-0">
-                  {(comment.user?.profile?.displayName || comment.user?.username)?.charAt(0).toUpperCase()}
-                </div>
+                {comment.user?.profile?.avatar ? (
+                  <img src={comment.user.profile.avatar} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-white/[0.08] flex items-center justify-center text-gray-400 text-sm font-bold shrink-0">
+                    {(comment.user?.profile?.displayName || comment.user?.username)?.charAt(0).toUpperCase()}
+                  </div>
+                )}
 
                 {/* Contenu */}
                 <div className="flex-1 min-w-0">

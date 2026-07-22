@@ -54,9 +54,13 @@ function TicketCard({ ticket, onReply, onStatus }) {
         onClick={() => setOpen(o => !o)}
       >
         <div className="flex items-start gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-sm font-bold shrink-0">
-            {displayName?.charAt(0).toUpperCase()}
-          </div>
+          {ticket.user?.profile?.avatar ? (
+            <img src={ticket.user.profile.avatar} alt="" className="w-9 h-9 rounded-full object-cover shrink-0" />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-sm font-bold shrink-0">
+              {displayName?.charAt(0).toUpperCase()}
+            </div>
+          )}
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">{ticket.subject}</p>
             <p className="text-[11px] text-gray-500 mt-0.5">

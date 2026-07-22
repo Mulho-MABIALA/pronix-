@@ -91,9 +91,13 @@ export default function AdminPayments() {
                     <tr key={p.id} className="hover:bg-surface-700/40 transition-colors">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
-                          <div className="w-7 h-7 rounded-full bg-surface-700 flex items-center justify-center text-gray-400 text-xs font-bold shrink-0">
-                            {p.user?.username?.charAt(0).toUpperCase()}
-                          </div>
+                          {p.user?.profile?.avatar ? (
+                            <img src={p.user.profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                          ) : (
+                            <div className="w-7 h-7 rounded-full bg-surface-700 flex items-center justify-center text-gray-400 text-xs font-bold shrink-0">
+                              {p.user?.username?.charAt(0).toUpperCase()}
+                            </div>
+                          )}
                           <div>
                             <p className="text-sm font-medium text-gray-200">{p.user?.profile?.displayName || p.user?.username}</p>
                             <p className="text-xs text-gray-500 truncate max-w-[160px]">{p.user?.email}</p>

@@ -1489,6 +1489,8 @@
     "draw": "Draw",
     "away": "Away",
     "marketsLabel": "Markets:",
+    "lowSample": "Low sample size",
+    "lowSampleHint": "Leagues with fewer than 10 matches played are pushed to the bottom of the ranking (unreliable data).",
     "sortOptions": {
       "avgGoals": "Avg. goals",
       "bttsRate": "BTTS",

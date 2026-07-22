@@ -359,6 +359,8 @@ function generateMockStats(match) {
 }
 
 // ─── Stats par ligue ──────────────────────────────────────────────────────────
+const LEAGUE_STATS_MIN_SAMPLE = 10; // en dessous, l'échantillon est trop faible pour être fiable
+
 async function getLeagueStats(req, res, next) {
   try {
     const competitions = await prisma.competition.findMany({
@@ -393,6 +395,7 @@ async function getLeagueStats(req, res, next) {
         return {
           competition:  { id: comp.id, name: comp.name, country: comp.country, logo: comp.logo },
           totalMatches: n,
+          lowSample:    n < LEAGUE_STATS_MIN_SAMPLE,
           avgGoals:     Math.round((totalGoals / n) * 100) / 100,
           bttsRate:     Math.round((btts   / n) * 100),
           over25Rate:   Math.round((over25  / n) * 100),

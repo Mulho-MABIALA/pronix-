@@ -1489,6 +1489,8 @@
     "draw": "Nul",
     "away": "Ext.",
     "marketsLabel": "Marchés :",
+    "lowSample": "Échantillon faible",
+    "lowSampleHint": "Les ligues avec moins de 10 matchs joués sont reléguées en fin de classement (données peu fiables).",
     "sortOptions": {
       "avgGoals": "Moy. buts",
       "bttsRate": "BTTS",

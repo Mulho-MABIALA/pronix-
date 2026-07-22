@@ -50,6 +50,11 @@ export default function StatsLigues() {
     .filter(r => r.competition.name.toLowerCase().includes(search.toLowerCase()) ||
                  r.competition.country.toLowerCase().includes(search.toLowerCase()))
     .sort((a, b) => {
+      // Échantillon trop faible (< 10 matchs) : toujours relégué en fin de classement,
+      // sauf quand on trie explicitement par nombre de matchs.
+      if (sort !== 'totalMatches' && a.lowSample !== b.lowSample) {
+        return a.lowSample ? 1 : -1;
+      }
       const diff = a[sort] - b[sort];
       return asc ? diff : -diff;
     });
@@ -98,6 +103,7 @@ export default function StatsLigues() {
             {SORT_KEYS.map(k => <SortBtn key={k} k={k} />)}
           </div>
         </div>
+        <p className="text-[10px] text-gray-600">{t('statsLigues.lowSampleHint')}</p>
       </div>
 
       {/* Table */}
@@ -116,14 +122,21 @@ export default function StatsLigues() {
       ) : (
         <div className="px-4 card overflow-hidden divide-y divide-white/[0.04]">
           {rows.map((r) => (
-            <div key={r.competition.id} className="px-4 py-3 space-y-2.5">
+            <div key={r.competition.id} className={`px-4 py-3 space-y-2.5 ${r.lowSample ? 'opacity-60' : ''}`}>
               {/* Ligne compétition */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
                   <CompLogo logo={r.competition.logo} name={r.competition.name} />
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-gray-200 truncate">{r.competition.name}</p>
-                    <p className="text-[10px] text-gray-600">{r.competition.country} · {t('statsLigues.matchesCount', { count: r.totalMatches })}</p>
+                    <p className="text-[10px] text-gray-600 flex items-center gap-1.5 flex-wrap">
+                      <span>{r.competition.country} · {t('statsLigues.matchesCount', { count: r.totalMatches })}</span>
+                      {r.lowSample && (
+                        <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-semibold">
+                          {t('statsLigues.lowSample')}
+                        </span>
+                      )}
+                    </p>
                   </div>
                 </div>
                 <div className="shrink-0 text-right pl-3">

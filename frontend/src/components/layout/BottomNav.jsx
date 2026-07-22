@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, Wallet, Layers, BookOpen, Brain, Bot } from 'lucide-react';
+import { Home, Calendar, TrendingUp, User, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain, Bot } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -36,8 +36,6 @@ function ExplorerDrawer({ open, onClose }) {
       items: [
         { to: '/classements',           label: t('nav.standings'),       Icon: Trophy,  desc: t('bottomNav.standingsDesc'), color: 'text-green-400 bg-green-500/10' },
         { to: '/tipsters',              label: t('nav.tipsters'),        Icon: Users,   desc: t('bottomNav.tipstersDesc'),  color: 'text-primary-400 bg-primary-500/10' },
-        { to: '/portefeuille-virtuel',  label: t('bottomNav.wallet'),    Icon: Wallet,  desc: t('header.dropdown.items.walletDesc'), color: 'text-yellow-400 bg-yellow-500/10' },
-        { to: '/combos',               label: t('header.dropdown.items.combos'), Icon: Layers,  desc: t('header.dropdown.items.combosDesc'), color: 'text-orange-400 bg-orange-500/10' },
       ],
     },
     {

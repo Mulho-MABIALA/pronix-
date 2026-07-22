@@ -60,7 +60,7 @@ export default function ChatIA({ matchId, matchLabel }) {
           </div>
           <p className="text-sm text-gray-400">{t('chatIA.loginPrompt')}</p>
           <Link to="/connexion" className="btn-primary inline-flex px-6 py-2 text-sm">
-            {t('wallet.login')}
+            {t('auth.loginCta')}
           </Link>
         </div>
       </section>

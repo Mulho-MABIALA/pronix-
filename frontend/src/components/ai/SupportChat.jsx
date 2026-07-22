@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { MessageCircle, X, Send, Bot, Loader2, ChevronDown } from 'lucide-react';
 import api from '../../services/api';
 
-const QUICK_QUESTION_KEYS = ['wallet', 'tipster', 'createCombo', 'premium'];
+const QUICK_QUESTION_KEYS = ['tipster', 'premium'];
 
 function Message({ msg }) {
   const isBot = msg.role === 'assistant';

@@ -37,10 +37,6 @@ import BetTracker from './pages/BetTracker';
 import TeamPage from './pages/TeamPage';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
-import WalletPage from './pages/WalletPage';
-import CombosPage from './pages/CombosPage';
-import ComboCreate from './pages/ComboCreate';
-import ComboDetail from './pages/ComboDetail';
 
 // Admin pages
 import AdminDashboard from './pages/admin/Dashboard';
@@ -119,10 +115,6 @@ export default function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
-                <Route path="/portefeuille-virtuel" element={<WalletPage />} />
-                <Route path="/combos" element={<CombosPage />} />
-                <Route path="/combos/creer" element={<ProtectedRoute><ComboCreate /></ProtectedRoute>} />
-                <Route path="/combos/:id" element={<ComboDetail />} />
                 <Route path="/equipes/:id" element={<TeamPage />} />
                 <Route path="/blog" element={<BlogList />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />

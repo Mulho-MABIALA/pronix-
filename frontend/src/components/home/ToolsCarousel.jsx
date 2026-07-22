@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ChevronLeft, ChevronRight, SlidersHorizontal, Zap, TrendingUp, BarChart2,
-  Layers, ClipboardList, Wallet, Trophy, Globe,
+  ClipboardList, Trophy, Globe,
 } from 'lucide-react';
 
 const TOOLS = [
@@ -33,22 +33,10 @@ const TOOLS = [
     gradient: 'linear-gradient(135deg, #160a20 0%, #2a1238 55%, #a855f7 130%)',
   },
   {
-    id: 'combos',
-    to: '/combos',
-    icon: Layers,
-    gradient: 'linear-gradient(135deg, #06131a 0%, #0b2733 55%, #06b6d4 130%)',
-  },
-  {
     id: 'bettracker',
     to: '/mes-paris',
     icon: ClipboardList,
     gradient: 'linear-gradient(135deg, #1a0a0e 0%, #331420 55%, #ec4899 130%)',
-  },
-  {
-    id: 'wallet',
-    to: '/portefeuille-virtuel',
-    icon: Wallet,
-    gradient: 'linear-gradient(135deg, #0d1a06 0%, #1e330b 55%, #84cc16 130%)',
   },
   {
     id: 'classements',

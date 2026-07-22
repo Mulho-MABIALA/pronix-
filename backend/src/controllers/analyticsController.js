@@ -3,7 +3,7 @@ const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 
 const ALLOWED_EVENTS = [
-  'tipster_view', 'tip_view', 'match_view', 'combo_view',
+  'tipster_view', 'tip_view', 'match_view',
   'conversion_attempt', 'search', 'blog_view', 'team_view',
 ];
 

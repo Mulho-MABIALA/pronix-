@@ -4,7 +4,7 @@ import {
   Search, UserCheck, UserX, ChevronLeft, ChevronRight, Filter, Download,
   Crown, X, RefreshCw, Mail, Calendar, Target, TrendingUp, Shield,
   CheckCircle, XCircle, Copy, Gift, Clock, Users, CreditCard,
-  MessageSquare, ArrowUpDown, StickyNote, Send, Wallet, AlertTriangle,
+  MessageSquare, ArrowUpDown, StickyNote, Send, AlertTriangle,
   ChevronDown, ExternalLink, Star, Trash2, Smartphone,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -60,7 +60,6 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
   const [emailOpen, setEmailOpen]     = useState(false);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody]       = useState('');
-  const [creditAmt, setCreditAmt]       = useState(10);
 
   const plan    = user.subscription?.plan?.code || 'FREE';
   const subEnds = user.subscription?.endsAt;
@@ -91,12 +90,6 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
     mutationFn: () => api.post(`/admin/users/${user.id}/send-email`, { subject: emailSubject, message: emailBody }),
     onSuccess: () => { setEmailOpen(false); setEmailSubject(''); setEmailBody(''); },
     onError: (e) => alert(e?.response?.data?.message || 'Erreur envoi email'),
-  });
-
-  const creditWallet = useMutation({
-    mutationFn: () => api.post(`/admin/users/${user.id}/wallet/credit`, { amount: creditAmt }),
-    onSuccess: () => alert(`+${creditAmt} crédits ajoutés`),
-    onError: (e) => alert(e?.response?.data?.message || 'Erreur crédit wallet'),
   });
 
   const { data: tipsData } = useQuery({
@@ -278,27 +271,6 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                 </div>
               </div>
             )}
-
-            {/* Wallet crédit */}
-            <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wider mb-3 flex items-center gap-1.5"><Wallet size={12} /> Créditer le wallet</p>
-              <div className="flex items-center gap-2">
-                {[5, 10, 20, 50, 100].map(amt => (
-                  <button key={amt} onClick={() => setCreditAmt(amt)}
-                    className={`px-3 py-1.5 rounded-lg border text-xs font-medium transition-colors ${
-                      creditAmt === amt ? 'border-primary-500/40 bg-primary-500/15 text-primary-400' : 'border-white/[0.08] text-gray-500 hover:text-gray-300'
-                    }`}
-                  >
-                    +{amt}
-                  </button>
-                ))}
-                <button onClick={() => creditWallet.mutate()} disabled={creditWallet.isPending}
-                  className="ml-auto flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20 text-xs font-semibold transition-colors disabled:opacity-40">
-                  {creditWallet.isPending ? <RefreshCw size={12} className="animate-spin" /> : <Wallet size={12} />}
-                  Créditer
-                </button>
-              </div>
-            </div>
 
             {/* Envoyer email */}
             <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>

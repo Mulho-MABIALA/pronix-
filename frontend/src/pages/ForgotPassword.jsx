@@ -47,7 +47,7 @@ export default function ForgotPassword() {
         )}
 
         <p className="text-center text-sm text-gray-500">
-          <Link to="/connexion" className="text-primary-400 hover:underline">← {t('comboDetail.back')}</Link>
+          <Link to="/connexion" className="text-primary-400 hover:underline">← {t('common.back')}</Link>
         </p>
       </div>
     </div>

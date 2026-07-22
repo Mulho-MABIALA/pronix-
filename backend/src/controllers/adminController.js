@@ -262,24 +262,6 @@ async function updateAdminNote(req, res, next) {
   } catch (err) { next(err); }
 }
 
-async function creditUserWallet(req, res, next) {
-  try {
-    const { userId } = req.params;
-    const { amount, description } = z.object({
-      amount:      z.number().min(1).max(10000),
-      description: z.string().default('Crédit administrateur'),
-    }).parse(req.body);
-
-    const wallet = await prisma.virtualWallet.upsert({
-      where: { userId },
-      update: { balance: { increment: amount } },
-      create: { userId, balance: amount },
-    });
-
-    res.json({ success: true, data: wallet, message: `+${amount} crédits ajoutés` });
-  } catch (err) { next(err); }
-}
-
 async function getUserTips(req, res, next) {
   try {
     const { userId } = req.params;
@@ -1000,7 +982,6 @@ module.exports = {
   updateUserRole,
   cancelUserSubscription,
   updateAdminNote,
-  creditUserWallet,
   getUserTips,
   getUserPayments,
   getUserReferrals,

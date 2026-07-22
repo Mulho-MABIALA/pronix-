@@ -8,7 +8,6 @@ const {
   updateUserRole,
   cancelUserSubscription,
   updateAdminNote,
-  creditUserWallet,
   getUserTips,
   getUserPayments,
   getUserReferrals,
@@ -43,7 +42,6 @@ router.patch('/users/:userId/role',                updateUserRole);
 router.patch('/users/:userId/note',                updateAdminNote);
 router.post('/users/:userId/send-email',           sendEmailToUser);
 router.delete('/users/:userId/subscription',       cancelUserSubscription);
-router.post('/users/:userId/wallet/credit',        creditUserWallet);
 router.post('/users/:userId/activate-subscription',activateUserSubscription);
 router.get('/users/:userId/tips',                  getUserTips);
 router.get('/users/:userId/payments',              getUserPayments);

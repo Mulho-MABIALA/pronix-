@@ -47,7 +47,7 @@ export default function VerifyEmail() {
             <XCircle size={40} className="text-red-400 mx-auto" />
             <h1 className="text-xl font-bold text-gray-100">{t('auth.invalidLink')}</h1>
             <p className="text-gray-500 text-sm">{message}</p>
-            <Link to="/" className="btn-secondary inline-flex mt-2">{t('comboDetail.back')}</Link>
+            <Link to="/" className="btn-secondary inline-flex mt-2">{t('common.back')}</Link>
           </>
         )}
       </div>

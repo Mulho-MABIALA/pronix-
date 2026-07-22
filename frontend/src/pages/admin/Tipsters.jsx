@@ -76,9 +76,13 @@ export default function AdminTipsters() {
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
                           <div className="relative">
-                            <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-sm font-bold">
-                              {t.username?.charAt(0).toUpperCase()}
-                            </div>
+                            {t.profile?.avatar ? (
+                              <img src={t.profile.avatar} alt="" className="w-8 h-8 rounded-full object-cover" />
+                            ) : (
+                              <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-sm font-bold">
+                                {t.username?.charAt(0).toUpperCase()}
+                              </div>
+                            )}
                             {rank <= 3 && (
                               <Trophy size={10} className={`absolute -top-1 -right-1 ${rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-gray-400' : 'text-orange-500'}`} />
                             )}

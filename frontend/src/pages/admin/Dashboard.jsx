@@ -345,9 +345,13 @@ function TopTipsters({ data }) {
               <span className="w-5 text-center text-sm shrink-0">
                 {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-600">{i + 1}</span>}
               </span>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
-                {tip.displayName?.charAt(0).toUpperCase()}
-              </div>
+              {tip.avatar ? (
+                <img src={tip.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
+              ) : (
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
+                  {tip.displayName?.charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold text-gray-200 truncate group-hover:text-white transition-colors">
                   {tip.displayName}
@@ -392,12 +396,17 @@ function RecentUsers({ data }) {
           const plan      = u.subscription?.plan?.code || 'FREE';
           const isPremium = plan === 'PREMIUM';
           const letter    = (u.profile?.displayName || u.username)?.charAt(0).toUpperCase();
+          const avatar    = u.profile?.avatar;
           return (
             <div key={u.id}
               className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-white/[0.08] ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
-                {letter}
-              </div>
+              {avatar ? (
+                <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-white/[0.08]" />
+              ) : (
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-white/[0.08] ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
+                  {letter}
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="text-[13px] font-medium text-gray-200 truncate">

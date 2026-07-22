@@ -120,6 +120,7 @@ async function getDashboard(req, res, next) {
         topTipsters: topTipsters.map(t => ({
           id: t.userId,
           displayName: t.user.profile?.displayName || t.user.username,
+          avatar: t.user.profile?.avatar || null,
           successRate: t.successRate,
           totalTips: t.totalTips,
         })),

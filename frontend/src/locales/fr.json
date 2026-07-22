@@ -515,7 +515,7 @@
   },
   "filtersPage": {
     "title": "Filtres avancés",
-    "subtitle": "Filtrez les matchs d'aujourd'hui et demain selon vos critères",
+    "subtitle": "Filtrez les matchs à venir sur des critères statistiques ou sur nos pronostics IA",
     "marketLabel": "Marché",
     "confidenceLabel": "Niveau de confiance",
     "minProbLabel": "Probabilité minimale :",
@@ -546,6 +546,41 @@
     "pickLabels": {
       "1": "Domicile", "X": "Nul", "2": "Extérieur",
       "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2"
+    },
+    "aiSectionTitle": "Affiner sur nos pronostics IA",
+    "advancedSectionTitle": "Filtres statistiques avancés",
+    "advancedHint": "Basé sur l'historique réel de nos matchs — gratuit et sans limite.",
+    "dateRangeLabel": "Plage de dates",
+    "leaguesLabel": "Ligues",
+    "allLeaguesChip": "Toutes les ligues",
+    "statEventLabel": "Événement statistique",
+    "statEventOptions": {
+      "over15": "+1.5 buts",
+      "over25": "+2.5 buts",
+      "over35": "+3.5 buts",
+      "under15": "-1.5 buts",
+      "under25": "-2.5 buts",
+      "under35": "-3.5 buts",
+      "btts_yes": "BTTS Oui",
+      "btts_no": "BTTS Non"
+    },
+    "thresholdsLabel": "Seuils statistiques",
+    "homeLast10Label": "Domicile — % sur les 10 derniers matchs",
+    "awayLast10Label": "Extérieur — % sur les 10 derniers matchs",
+    "homeLeagueLabel": "Domicile à domicile (championnat)",
+    "awayLeagueLabel": "Extérieur à l'extérieur (championnat)",
+    "h2hLabel": "Confrontations directes (5 derniers)",
+    "avgScoredLabel": "Buts marqués — moyenne mini (5 derniers)",
+    "avgConcededLabel": "Buts encaissés — moyenne maxi (5 derniers)",
+    "noLimit": "Illimité",
+    "anyLevel": "Peu importe",
+    "search": "Rechercher",
+    "reset": "Réinitialiser",
+    "statsRow": {
+      "home": "Dom.",
+      "away": "Ext.",
+      "h2h": "H2H",
+      "insufficientData": "Historique insuffisant"
     }
   },
   "tipsterProfile": {

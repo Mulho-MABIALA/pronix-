@@ -410,6 +410,190 @@ async function getLeagueStats(req, res, next) {
   }
 }
 
+// ─── Filtre statistique avancé (façon BetMines — 100% calculé sur nos données locales) ──
+// Aucun appel API externe ici : tout est dérivé des matchs FINISHED déjà en base,
+// pour éviter de consommer le quota API-Football (100 req/jour en plan gratuit).
+
+const ADVANCED_EVENTS = {
+  over15:   (h, a) => (h + a) > 1.5,
+  over25:   (h, a) => (h + a) > 2.5,
+  over35:   (h, a) => (h + a) > 3.5,
+  under15:  (h, a) => (h + a) < 1.5,
+  under25:  (h, a) => (h + a) < 2.5,
+  under35:  (h, a) => (h + a) < 3.5,
+  btts_yes: (h, a) => h > 0 && a > 0,
+  btts_no:  (h, a) => !(h > 0 && a > 0),
+};
+
+function advEventHit(event, m) {
+  if (m.homeScore == null || m.awayScore == null) return null;
+  const fn = ADVANCED_EVENTS[event];
+  return fn ? fn(m.homeScore, m.awayScore) : null;
+}
+
+function advPct(matches, event) {
+  const results = matches.map((m) => advEventHit(event, m)).filter((v) => v !== null);
+  if (!results.length) return { pct: null, n: 0 };
+  const hits = results.filter(Boolean).length;
+  return { pct: Math.round((hits / results.length) * 100), n: results.length };
+}
+
+function advGoalsFor(m, teamName) {
+  const isHome = m.homeTeam === teamName;
+  return {
+    scored:   isHome ? m.homeScore : m.awayScore,
+    conceded: isHome ? m.awayScore : m.homeScore,
+  };
+}
+
+function advAvgGoals(matches, teamName) {
+  const rows = matches.map((m) => advGoalsFor(m, teamName)).filter((r) => r.scored != null && r.conceded != null);
+  if (!rows.length) return { avgScored: null, avgConceded: null, n: 0 };
+  const scored   = rows.reduce((s, r) => s + r.scored, 0)   / rows.length;
+  const conceded = rows.reduce((s, r) => s + r.conceded, 0) / rows.length;
+  return { avgScored: Math.round(scored * 100) / 100, avgConceded: Math.round(conceded * 100) / 100, n: rows.length };
+}
+
+async function getAdvancedFilterMatches(req, res, next) {
+  try {
+    const schema = z.object({
+      dateFrom:       z.string().optional(),
+      dateTo:         z.string().optional(),
+      competitionIds: z.string().optional(), // liste séparée par des virgules
+      event:          z.enum(Object.keys(ADVANCED_EVENTS)).default('over25'),
+      homeLast10Min:  z.string().optional().transform((v) => (v ? Number(v) : 0)),
+      awayLast10Min:  z.string().optional().transform((v) => (v ? Number(v) : 0)),
+      homeLeagueMin:  z.string().optional().transform((v) => (v ? Number(v) : 0)),
+      awayLeagueMin:  z.string().optional().transform((v) => (v ? Number(v) : 0)),
+      h2hMin:         z.string().optional().transform((v) => (v ? Number(v) : 0)),
+      avgScoredMin:   z.string().optional().transform((v) => (v ? Number(v) : 0)),
+      avgConcededMax: z.string().optional().transform((v) => (v !== undefined && v !== '' ? Number(v) : null)),
+      limit:          z.string().default('80').transform((v) => Math.min(Number(v), 200)),
+    });
+
+    const {
+      dateFrom, dateTo, competitionIds, event,
+      homeLast10Min, awayLast10Min, homeLeagueMin, awayLeagueMin,
+      h2hMin, avgScoredMin, avgConcededMax, limit,
+    } = schema.parse(req.query);
+
+    const today     = new Date().toISOString().split('T')[0];
+    const startDate = new Date(dateFrom || today);
+    const endDate   = new Date(dateTo || dateFrom || today);
+    endDate.setDate(endDate.getDate() + 1);
+
+    const where = {
+      scheduledAt: { gte: startDate, lt: endDate },
+      status: { in: ['SCHEDULED', 'LIVE'] },
+    };
+    if (competitionIds) {
+      const ids = competitionIds.split(',').map((s) => s.trim()).filter(Boolean);
+      if (ids.length) where.competitionId = { in: ids };
+    }
+
+    const candidates = await prisma.match.findMany({
+      where,
+      include: { competition: true },
+      orderBy: { scheduledAt: 'asc' },
+      take: 300, // pool de matchs candidats avant filtrage statistique
+    });
+
+    if (candidates.length === 0) {
+      return res.json({ success: true, data: [], meta: { event, total: 0, candidatesScanned: 0 } });
+    }
+
+    // ── Récupération en masse (1-2 requêtes) des matchs terminés impliqués ────
+    const teamNames = [...new Set(candidates.flatMap((m) => [m.homeTeam, m.awayTeam]))];
+    const compIdsInvolved = [...new Set(candidates.map((m) => m.competitionId))];
+
+    const [formPool, leaguePool] = await Promise.all([
+      prisma.match.findMany({
+        where: {
+          status: 'FINISHED',
+          homeScore: { not: null },
+          OR: [{ homeTeam: { in: teamNames } }, { awayTeam: { in: teamNames } }],
+        },
+        orderBy: { scheduledAt: 'desc' },
+        take: Math.min(6000, teamNames.length * 25),
+        select: { homeTeam: true, awayTeam: true, homeScore: true, awayScore: true, competitionId: true },
+      }),
+      prisma.match.findMany({
+        where: {
+          status: 'FINISHED',
+          homeScore: { not: null },
+          competitionId: { in: compIdsInvolved },
+        },
+        select: { homeTeam: true, awayTeam: true, homeScore: true, awayScore: true, competitionId: true },
+      }),
+    ]);
+
+    // Regroupement par équipe (formPool est déjà trié desc → l'ordre est préservé)
+    const byTeam = new Map(teamNames.map((n) => [n, []]));
+    for (const m of formPool) {
+      if (byTeam.has(m.homeTeam)) byTeam.get(m.homeTeam).push(m);
+      if (byTeam.has(m.awayTeam)) byTeam.get(m.awayTeam).push(m);
+    }
+
+    const results = [];
+
+    for (const match of candidates) {
+      const homeAll = byTeam.get(match.homeTeam) || [];
+      const awayAll = byTeam.get(match.awayTeam) || [];
+
+      const homeLast10 = homeAll.slice(0, 10);
+      const awayLast10 = awayAll.slice(0, 10);
+      const homeLast5  = homeAll.slice(0, 5);
+      const awayLast5  = awayAll.slice(0, 5);
+
+      const homeLeague = leaguePool.filter((m) => m.competitionId === match.competitionId && m.homeTeam === match.homeTeam);
+      const awayLeague = leaguePool.filter((m) => m.competitionId === match.competitionId && m.awayTeam === match.awayTeam);
+
+      const h2h = homeAll.filter((m) =>
+        (m.homeTeam === match.homeTeam && m.awayTeam === match.awayTeam) ||
+        (m.homeTeam === match.awayTeam && m.awayTeam === match.homeTeam)
+      ).slice(0, 5);
+
+      const homeLast10Stat = advPct(homeLast10, event);
+      const awayLast10Stat = advPct(awayLast10, event);
+      const homeLeagueStat = advPct(homeLeague, event);
+      const awayLeagueStat = advPct(awayLeague, event);
+      const h2hStat         = advPct(h2h, event);
+      const homeGoals       = advAvgGoals(homeLast5, match.homeTeam);
+      const awayGoals       = advAvgGoals(awayLast5, match.awayTeam);
+
+      // ── Application des seuils demandés ─────────────────────────────────────
+      if (homeLast10Min && (homeLast10Stat.pct ?? -1) < homeLast10Min) continue;
+      if (awayLast10Min && (awayLast10Stat.pct ?? -1) < awayLast10Min) continue;
+      if (homeLeagueMin && (homeLeagueStat.pct ?? -1) < homeLeagueMin) continue;
+      if (awayLeagueMin && (awayLeagueStat.pct ?? -1) < awayLeagueMin) continue;
+      if (h2hMin && (h2hStat.pct ?? -1) < h2hMin) continue;
+      if (avgScoredMin) {
+        const best = Math.max(homeGoals.avgScored ?? -1, awayGoals.avgScored ?? -1);
+        if (best < avgScoredMin) continue;
+      }
+      if (avgConcededMax != null) {
+        const worst = Math.min(homeGoals.avgConceded ?? Infinity, awayGoals.avgConceded ?? Infinity);
+        if (worst > avgConcededMax) continue;
+      }
+
+      results.push({
+        ...match,
+        teamStats: {
+          home: { last10: homeLast10Stat, league: homeLeagueStat, avgScored: homeGoals.avgScored, avgConceded: homeGoals.avgConceded, formN: homeGoals.n },
+          away: { last10: awayLast10Stat, league: awayLeagueStat, avgScored: awayGoals.avgScored, avgConceded: awayGoals.avgConceded, formN: awayGoals.n },
+          h2h: h2hStat,
+        },
+      });
+
+      if (results.length >= limit) break;
+    }
+
+    res.json({ success: true, data: results, meta: { event, total: results.length, candidatesScanned: candidates.length } });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ─── Cotes réelles (The Odds API) ────────────────────────────────────────────
 async function getMatchOdds(req, res, next) {
   try {
@@ -465,4 +649,4 @@ async function getMatchEvents(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents };
+module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches };

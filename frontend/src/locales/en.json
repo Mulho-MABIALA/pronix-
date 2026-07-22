@@ -515,7 +515,7 @@
   },
   "filtersPage": {
     "title": "Advanced filters",
-    "subtitle": "Filter today's and tomorrow's matches by your criteria",
+    "subtitle": "Filter upcoming matches by statistical criteria or by our AI tips",
     "marketLabel": "Market",
     "confidenceLabel": "Confidence level",
     "minProbLabel": "Minimum probability:",
@@ -546,6 +546,41 @@
     "pickLabels": {
       "1": "Home", "X": "Draw", "2": "Away",
       "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2"
+    },
+    "aiSectionTitle": "Refine on our AI tips",
+    "advancedSectionTitle": "Advanced statistical filters",
+    "advancedHint": "Based on the real history of our matches — free, no limits.",
+    "dateRangeLabel": "Date range",
+    "leaguesLabel": "Leagues",
+    "allLeaguesChip": "All leagues",
+    "statEventLabel": "Statistical event",
+    "statEventOptions": {
+      "over15": "+1.5 goals",
+      "over25": "+2.5 goals",
+      "over35": "+3.5 goals",
+      "under15": "-1.5 goals",
+      "under25": "-2.5 goals",
+      "under35": "-3.5 goals",
+      "btts_yes": "BTTS Yes",
+      "btts_no": "BTTS No"
+    },
+    "thresholdsLabel": "Statistical thresholds",
+    "homeLast10Label": "Home team — % over last 10 matches",
+    "awayLast10Label": "Away team — % over last 10 matches",
+    "homeLeagueLabel": "Home team at home (league)",
+    "awayLeagueLabel": "Away team away (league)",
+    "h2hLabel": "Head-to-head (last 5)",
+    "avgScoredLabel": "Goals scored — min average (last 5)",
+    "avgConcededLabel": "Goals conceded — max average (last 5)",
+    "noLimit": "No limit",
+    "anyLevel": "Any",
+    "search": "Search",
+    "reset": "Reset",
+    "statsRow": {
+      "home": "Home",
+      "away": "Away",
+      "h2h": "H2H",
+      "insufficientData": "Not enough history"
     }
   },
   "tipsterProfile": {

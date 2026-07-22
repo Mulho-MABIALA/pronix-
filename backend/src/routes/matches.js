@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { authenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
-const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents } = require('../controllers/matchController');
+const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
 const { setReminder, deleteReminder } = require('../controllers/remindersController');
 const { getLiveAnalysis } = require('../services/liveAnalysisService');
@@ -13,6 +13,7 @@ router.get('/', getMatches);
 router.get('/competitions', getCompetitions);
 router.get('/standings', getStandings);
 router.get('/league-stats', getLeagueStats);
+router.get('/advanced-filter', getAdvancedFilterMatches);
 
 // Détail avec plan optionnel
 router.get('/:id', (req, res, next) => {

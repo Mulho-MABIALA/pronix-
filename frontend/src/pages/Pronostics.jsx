@@ -238,9 +238,14 @@ export default function Pronostics() {
   const { isPremium } = useAuth();
   const [date,         setDate]         = useState(new Date());
   const [activeMarket, setActiveMarket] = useState('all');
+  const [leagueIds,    setLeagueIds]    = useState([]);
   const [search,       setSearch]       = useState('');
   const [tabOffset,    setTabOffset]    = useState(0); // décalage fenêtre onglets
   const chipsRef = useRef(null);
+
+  function toggleLeague(id) {
+    setLeagueIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
+  }
 
   const dateStr = format(date, 'yyyy-MM-dd');
   const isPastDay = isPast(startOfDay(addDays(date, 1))) && !isToday(date);
@@ -256,11 +261,27 @@ export default function Pronostics() {
 
   // ── Filtres ────────────────────────────────────────────────────────────────
 
+  // Ligues disponibles pour le jour sélectionné (dérivées des matchs déjà chargés)
+  const availableCompetitions = useMemo(() => {
+    const all = data?.data || [];
+    const map = new Map();
+    for (const m of all) {
+      if (!m.predictions?.bestPick) continue;
+      if (isFriendlyMatch(m)) continue;
+      const c = m.competition;
+      if (c && !map.has(c.id)) map.set(c.id, c);
+    }
+    return [...map.values()].sort((a, b) => a.name.localeCompare(b.name));
+  }, [data]);
+
   const filteredMatches = useMemo(() => {
     const all = data?.data || [];
     return all.filter((m) => {
       if (!m.predictions?.bestPick) return false;
       if (isFriendlyMatch(m)) return false;
+
+      // Filtre ligue
+      if (leagueIds.length && !leagueIds.includes(m.competition?.id)) return false;
 
       // Recherche texte
       if (search) {
@@ -280,7 +301,7 @@ export default function Pronostics() {
 
       return true;
     });
-  }, [data, search, activeMarket]);
+  }, [data, search, activeMarket, leagueIds]);
 
   // ── Value bets ─────────────────────────────────────────────────────────────
 
@@ -406,6 +427,33 @@ export default function Pronostics() {
             <ChevronRight size={15} />
           </button>
         </div>
+
+        {/* Chips ligues */}
+        {availableCompetitions.length > 0 && (
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-1.5 min-w-max">
+              <button onClick={() => setLeagueIds([])}
+                className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
+                  leagueIds.length === 0
+                    ? 'bg-select-500/20 text-select-400 border-select-500/40'
+                    : 'text-gray-500 border-white/[0.08] hover:text-gray-300 hover:border-white/20'
+                }`}>
+                {t('pronostics.allLeagues')}
+              </button>
+              {availableCompetitions.map((c) => (
+                <button key={c.id} onClick={() => toggleLeague(c.id)}
+                  className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
+                    leagueIds.includes(c.id)
+                      ? 'bg-select-500/20 text-select-400 border-select-500/40'
+                      : 'text-gray-500 border-white/[0.08] hover:text-gray-300 hover:border-white/20'
+                  }`}>
+                  <CompetitionLogo logo={c.logo} size={14} />
+                  {c.name}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Barre de recherche */}
         <div className="relative">

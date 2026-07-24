@@ -6,8 +6,11 @@ import PWABanner from '../ui/PWABanner';
 import EmailVerifyBanner from '../ui/EmailVerifyBanner';
 import TrialBanner from '../ui/TrialBanner';
 import SupportChat from '../ai/SupportChat';
+import { useSwipeBack } from '../../hooks/useSwipeBack';
 
 export default function Layout() {
+  useSwipeBack();
+
   return (
     <div className="min-h-dvh flex flex-col">
       <Header />

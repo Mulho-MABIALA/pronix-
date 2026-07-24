@@ -27,6 +27,28 @@ const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club 
 const isFriendlyMatch = (m) =>
   FRIENDLY_KEYWORDS.some((kw) => (m.competition?.name || '').toLowerCase().includes(kw));
 
+// Vérifie si un pick s'est réalisé au vu du score final
+function pickIsCorrect(pt, h, a) {
+  return (
+    (pt === '1'      && h > a)  || (pt === 'X'  && h === a) || (pt === '2'  && a > h)  ||
+    (pt === '1X'     && h >= a) || (pt === 'X2' && a >= h)  ||
+    (pt === 'over25' && h + a > 2.5) || (pt === 'over15' && h + a > 1.5) ||
+    (pt === 'btts'   && h > 0 && a > 0)
+  );
+}
+
+// Calcule {correct, total, pct} sur une liste de matchs terminés
+function buildBilan(list) {
+  let correct = 0;
+  for (const m of list) {
+    const pt = m.predictions?.bestPick?.type;
+    if (!pt) continue;
+    if (pickIsCorrect(pt, m.homeScore, m.awayScore)) correct++;
+  }
+  const total = list.length;
+  return { correct, total, pct: total ? Math.round((correct / total) * 100) : 0 };
+}
+
 const FREE_DAILY_LIMIT = 3;
 
 // ─── TeamLogo ──────────────────────────────────────────────────────────────────
@@ -85,16 +107,7 @@ function PronoRow({ match }) {
   // Résultat pour matchs terminés
   let resultCorrect = null;
   if (isFinished && match.homeScore !== null) {
-    const hWon = match.homeScore > match.awayScore;
-    const aWon = match.awayScore > match.homeScore;
-    const draw = match.homeScore === match.awayScore;
-    const t    = pickType;
-    resultCorrect =
-      (t === '1'      && hWon) || (t === 'X'  && draw) || (t === '2'  && aWon) ||
-      (t === '1X'     && (hWon || draw)) || (t === 'X2' && (aWon || draw)) ||
-      (t === 'over25' && (match.homeScore + match.awayScore) > 2.5) ||
-      (t === 'over15' && (match.homeScore + match.awayScore) > 1.5) ||
-      (t === 'btts'   && match.homeScore > 0 && match.awayScore > 0);
+    resultCorrect = pickIsCorrect(pickType, match.homeScore, match.awayScore);
   }
 
   const timeStr = match.status === 'FINISHED' && match.homeScore !== null
@@ -474,49 +487,38 @@ export default function Pronostics() {
         </div>
       </div>
 
-      {/* Bilan du jour — visible uniquement pour les jours passés */}
+      {/* Bilans — visible uniquement pour les jours passés */}
       {isPastDay && (() => {
         const finished = filteredMatches.filter((m) => m.status === 'FINISHED' && m.homeScore !== null);
         if (!finished.length) return null;
-        let correct = 0;
-        for (const m of finished) {
-          const pt = m.predictions?.bestPick?.type;
-          const h = m.homeScore, a = m.awayScore;
-          if (!pt) continue;
-          const ok =
-            (pt === '1'      && h > a)  || (pt === 'X'  && h === a) || (pt === '2'  && a > h)  ||
-            (pt === '1X'     && h >= a) || (pt === 'X2' && a >= h)  ||
-            (pt === 'over25' && h + a > 2.5) || (pt === 'over15' && h + a > 1.5) ||
-            (pt === 'btts'   && h > 0 && a > 0);
-          if (ok) correct++;
-        }
-        const pct = Math.round((correct / finished.length) * 100);
-        const color = pct >= 60 ? 'text-primary-400' : pct >= 40 ? 'text-amber-400' : 'text-red-400';
-        const bg    = pct >= 60 ? 'border-primary-500/20 bg-primary-500/[0.04]' : pct >= 40 ? 'border-amber-500/20 bg-amber-500/[0.04]' : 'border-red-500/20 bg-red-500/[0.04]';
+
+        const general = buildBilan(finished);
+        const finishedValueBets = valueBets.filter((m) => m.status === 'FINISHED' && m.homeScore !== null);
+        const valueBilan = finishedValueBets.length ? buildBilan(finishedValueBets) : null;
+
+        const BilanCard = ({ Icon, label, bilan }) => {
+          const color = bilan.pct >= 60 ? 'text-primary-400' : bilan.pct >= 40 ? 'text-amber-400' : 'text-red-400';
+          const bg    = bilan.pct >= 60 ? 'border-primary-500/20 bg-primary-500/[0.04]' : bilan.pct >= 40 ? 'border-amber-500/20 bg-amber-500/[0.04]' : 'border-red-500/20 bg-red-500/[0.04]';
+          return (
+            <div className={`flex-1 flex items-center gap-3 px-4 py-3 rounded-xl border ${bg}`}>
+              <Icon size={16} className={color} />
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-bold text-gray-200 truncate">{label}</p>
+                <p className="text-[11px] text-gray-500">
+                  {t('pronostics.correctOutOf', { correct: bilan.correct, total: bilan.total })}
+                </p>
+              </div>
+              <div className={`text-[22px] font-display font-bold shrink-0 ${color}`}>{bilan.pct}%</div>
+            </div>
+          );
+        };
+
         return (
-          <div className={`flex items-center gap-3 px-4 py-3 rounded-xl border ${bg}`}>
-            <Trophy size={16} className={color} />
-            <div className="flex-1">
-              <p className="text-[12px] font-bold text-gray-200">{t('pronostics.dailyRecap')}</p>
-              <p className="text-[11px] text-gray-500">
-                {t('pronostics.correctOutOf', { correct, total: finished.length })}
-              </p>
-            </div>
-            <div className={`text-[22px] font-display font-bold ${color}`}>{pct}%</div>
-            <div className="flex gap-1">
-              {finished.map((m, i) => {
-                const pt = m.predictions?.bestPick?.type;
-                const h = m.homeScore, a = m.awayScore;
-                const ok =
-                  (pt === '1' && h > a) || (pt === 'X' && h === a) || (pt === '2' && a > h) ||
-                  (pt === '1X' && h >= a) || (pt === 'X2' && a >= h) ||
-                  (pt === 'over25' && h + a > 2.5) || (pt === 'over15' && h + a > 1.5) ||
-                  (pt === 'btts' && h > 0 && a > 0);
-                return (
-                  <div key={i} className={`w-2 h-2 rounded-full ${ok ? 'bg-primary-400' : 'bg-red-400'}`} />
-                );
-              })}
-            </div>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <BilanCard Icon={Trophy} label={t('pronostics.dailyRecap')} bilan={general} />
+            {valueBilan && (
+              <BilanCard Icon={Zap} label={t('pronostics.valueBetsRecap')} bilan={valueBilan} />
+            )}
           </div>
         );
       })()}

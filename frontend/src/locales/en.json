@@ -201,7 +201,8 @@
     "unlockPremium": "Unlock Premium — unlimited",
     "picksAvailable": "{{count}} pick(s) available",
     "freeDisplayed": "{{limit}} shown (free plan)",
-    "dailyRecap": "Today's recap",
+    "dailyRecap": "Overall recap",
+    "valueBetsRecap": "Value bets recap",
     "correctOutOf": "{{correct}} correct out of {{total}} finished",
     "disclaimerAuto": "These predictions are generated automatically. This is not financial advice. Please gamble responsibly."
   },

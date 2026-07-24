@@ -201,7 +201,8 @@
     "unlockPremium": "Débloquer Premium — illimité",
     "picksAvailable": "{{count}} pick(s) disponible(s)",
     "freeDisplayed": "{{limit}} affichés (plan gratuit)",
-    "dailyRecap": "Bilan du jour",
+    "dailyRecap": "Bilan général",
+    "valueBetsRecap": "Bilan value bets",
     "correctOutOf": "{{correct}} correct(s) sur {{total}} terminé(s)",
     "disclaimerAuto": "Ces pronostics sont générés automatiquement. Ils ne constituent pas un conseil financier. Jouez de façon responsable."
   },

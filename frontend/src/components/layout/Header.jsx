@@ -218,7 +218,7 @@ export default function Header() {
                 <User size={17} />
               </Link>
               <button onClick={logout}
-                className="p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-white/[0.05] transition-colors"
+                className="hidden md:inline-flex p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-white/[0.05] transition-colors"
                 aria-label={t('nav.logout')}>
                 <LogOut size={17} />
               </button>

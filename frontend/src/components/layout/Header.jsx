@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain, Bot } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 
@@ -76,13 +76,6 @@ function OutilsDropdown() {
       items: [
         { to: '/mes-paris',           label: t('header.dropdown.items.betTracker'),  Icon: BookOpen, desc: t('header.dropdown.items.betTrackerDesc'), color: 'text-violet-400 bg-violet-500/10' },
         { to: '/mes-paris',           label: t('header.dropdown.items.aiCoach'),     Icon: Brain,    desc: t('header.dropdown.items.aiCoachDesc'),    color: 'text-pink-400 bg-pink-500/10' },
-      ],
-    },
-    {
-      sectionKey: 'aiIntelligence',
-      label: t('header.dropdown.sections.aiIntelligence'),
-      items: [
-        { to: '/pronostics',          label: t('header.dropdown.items.aiPronostics'), Icon: Bot,     desc: t('header.dropdown.items.aiPronosticsDesc'), color: 'text-primary-400 bg-primary-500/10' },
       ],
     },
   ];

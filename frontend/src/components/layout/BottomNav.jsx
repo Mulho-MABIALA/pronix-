@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain, Bot } from 'lucide-react';
+import { Home, Calendar, TrendingUp, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -44,13 +44,6 @@ function ExplorerDrawer({ open, onClose }) {
       items: [
         { to: '/mes-paris',  label: t('header.dropdown.items.betTracker'), Icon: BookOpen, desc: t('bottomNav.betTrackerDesc'), color: 'text-violet-400 bg-violet-500/10' },
         { to: '/mes-paris',  label: t('header.dropdown.items.aiCoach'),    Icon: Brain,    desc: t('header.dropdown.items.aiCoachDesc'), color: 'text-pink-400 bg-pink-500/10' },
-      ],
-    },
-    {
-      key: 'aiIntelligence',
-      label: t('header.dropdown.sections.aiIntelligence'),
-      items: [
-        { to: '/pronostics',  label: t('header.dropdown.items.aiPronostics'), Icon: Bot,  desc: t('header.dropdown.items.aiPronosticsDesc'), color: 'text-primary-400 bg-primary-500/10' },
       ],
     },
   ];

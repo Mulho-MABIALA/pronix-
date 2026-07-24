@@ -17,6 +17,7 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
+import { StandingsTable } from './Standings';
 
 // ── Scénarios de score probable ──────────────────────────────────────────────
 function ScorelineSection({ match }) {
@@ -516,6 +517,15 @@ export default function MatchDetail() {
     refetchInterval: (query) => query.state.data?.matchStatus === 'LIVE' ? 30_000 : false,
   });
 
+  const { data: standingsData, isLoading: standingsLoading } = useQuery({
+    queryKey: ['match-standings', data?.data?.competition?.id],
+    queryFn: () => api.get('/matches/standings', {
+      params: { competitionId: data.data.competition.id },
+    }).then((r) => r.data),
+    enabled: activeTab === 'standings' && !!data?.data?.competition?.id,
+    staleTime: 5 * 60 * 1000,
+  });
+
   const match = data?.data;
   const tips  = tipsData?.data || [];
 
@@ -685,6 +695,9 @@ export default function MatchDetail() {
           )}
           <Tab label={`${t('matchDetail.tabTips')}${tips.length ? ` (${tips.length})` : ''}`} active={activeTab === 'tips'} onClick={() => setActiveTab('tips')} />
           <Tab label={t('matchDetail.tabForm')} active={activeTab === 'form'} onClick={() => setActiveTab('form')} />
+          {match.competition?.id && (
+            <Tab label={t('matchDetail.tabStandings')} active={activeTab === 'standings'} onClick={() => setActiveTab('standings')} />
+          )}
         </div>
       </div>
 
@@ -1057,6 +1070,27 @@ export default function MatchDetail() {
                   <H2HSection h2h={contextData.data.h2h} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
                 </div>
               </div>
+            )}
+          </section>
+        )}
+
+        {/* ── Onglet : Classement ──────────────────────────────────────── */}
+        {activeTab === 'standings' && (
+          <section>
+            {standingsLoading ? (
+              <SkeletonCard className="h-64" />
+            ) : (
+              <>
+                <StandingsTable
+                  standings={standingsData?.data?.standings || []}
+                  competitionName={match.competition?.name || ''}
+                />
+                <div className="text-center mt-3">
+                  <Link to="/classements" className="text-xs text-primary-400 hover:text-primary-300 font-medium">
+                    {t('matchDetail.viewFullStandings')}
+                  </Link>
+                </div>
+              </>
             )}
           </section>
         )}

@@ -101,7 +101,7 @@ const RESULT_COLORS = {
   L: 'bg-red-500',
 };
 
-function StandingsTable({ standings, competitionName }) {
+export function StandingsTable({ standings, competitionName }) {
   const { t } = useTranslation();
 
   if (standings.length === 0) {

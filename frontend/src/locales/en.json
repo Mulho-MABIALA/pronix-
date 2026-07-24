@@ -261,6 +261,8 @@
     "tabEvents": "Events",
     "tabTips": "Picks",
     "tabForm": "Form & H2H",
+    "tabStandings": "Standings",
+    "viewFullStandings": "View full standings",
     "statsNotAvailable": "Statistics not available for this match",
     "statsEstimatedNote": "* Estimated statistics — real data with the paid plan",
     "premiumDataTitle": "Premium data",

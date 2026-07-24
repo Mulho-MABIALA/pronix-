@@ -25,7 +25,9 @@ function imgUrl(id) {
 function Row({ ids, direction = 'left', className = '' }) {
   // doublé pour boucler sans coupure
   const track = [...ids, ...ids];
-  const anim = direction === 'left' ? 'animate-marquee' : 'animate-marquee-reverse';
+  // Animation défilante seulement à partir de md — statique sur mobile pour éviter
+  // que le fond ne "bouge" en continu sur petit écran
+  const anim = direction === 'left' ? 'md:animate-marquee' : 'md:animate-marquee-reverse';
 
   return (
     <div className={`flex gap-3 w-max ${anim} ${className}`}>

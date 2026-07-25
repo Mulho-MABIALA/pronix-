@@ -119,18 +119,18 @@ export default function Home() {
 
       {/* ── Matchs du jour ───────────────────────────────────────── */}
       <section>
-        <div className="flex items-center justify-between mb-3">
-          <h2 className="section-title flex items-center gap-2.5">
-            <span className="w-1 h-4 rounded-full bg-primary-400" />
-            {t('home.todayMatches')}
+        <div className="flex items-center justify-between gap-2 mb-3">
+          <h2 className="section-title flex items-center gap-2 min-w-0">
+            <span className="w-1 h-4 rounded-full bg-primary-400 shrink-0" />
+            <span className="truncate">{t('home.todayMatches')}</span>
             {liveCount > 0 && (
-              <span className="live-pill">
+              <span className="live-pill shrink-0">
                 <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />
                 {liveCount} {t('matches.live')}
               </span>
             )}
           </h2>
-          <Link to="/matchs" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
+          <Link to="/matchs" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium shrink-0">
             {t('common.seeAll')} <ChevronRight size={14} />
           </Link>
         </div>
@@ -161,12 +161,12 @@ export default function Home() {
 
         {/* Top tipsters */}
         <section>
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="section-title flex items-center gap-2.5">
-              <span className="w-1 h-4 rounded-full bg-primary-400" />
-              {t('home.topTipsters')}
+          <div className="flex items-center justify-between gap-2 mb-3">
+            <h2 className="section-title flex items-center gap-2 min-w-0">
+              <span className="w-1 h-4 rounded-full bg-primary-400 shrink-0" />
+              <span className="truncate">{t('home.topTipsters')}</span>
             </h2>
-            <Link to="/tipsters" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium">
+            <Link to="/tipsters" className="flex items-center gap-0.5 text-xs text-primary-400 hover:text-primary-300 transition-colors font-medium shrink-0">
               {t('tipsters.title')} <ChevronRight size={14} />
             </Link>
           </div>

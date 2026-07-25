@@ -18,6 +18,8 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
 
   const ref = params.get('ref');
   const mock = params.get('mock');
+  const isTipsterFlow = params.get('type') === 'tipster';
+  const tipsterId = params.get('tipsterId');
 
   useEffect(() => {
     let cancelled = false;
@@ -83,7 +85,9 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
             {t('paymentConfirm.cancelledDesc')}
           </p>
           <div className="flex flex-col gap-2 pt-4">
-            <Link to="/abonnement" className="btn-primary">{t('paymentConfirm.retry')}</Link>
+            <Link to={isTipsterFlow && tipsterId ? `/tipsters/${tipsterId}` : '/abonnement'} className="btn-primary">
+              {t('paymentConfirm.retry')}
+            </Link>
             <Link to="/" className="btn-secondary">{t('errors.backHome')}</Link>
           </div>
         </div>
@@ -113,13 +117,21 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
     <div className="min-h-dvh flex items-center justify-center px-4">
       <div className="bento-card max-w-sm w-full text-center space-y-4 py-10">
         <CheckCircle size={48} className="text-primary-400 mx-auto" aria-hidden="true" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">{t('paymentConfirm.confirmedTitle')}</h1>
-        <p className="text-gray-400">{t('paymentConfirm.confirmedDesc')}</p>
+        <h1 className="font-display font-bold text-2xl text-gray-100">
+          {isTipsterFlow ? t('paymentConfirm.tipsterConfirmedTitle') : t('paymentConfirm.confirmedTitle')}
+        </h1>
+        <p className="text-gray-400">
+          {isTipsterFlow ? t('paymentConfirm.tipsterConfirmedDesc') : t('paymentConfirm.confirmedDesc')}
+        </p>
         {mock === '1' && (
           <p className="text-xs text-gray-600">{t('paymentConfirm.simulationRef', { ref })}</p>
         )}
         <div className="flex flex-col gap-2 pt-4">
-          <Link to="/matchs" className="btn-primary">{t('paymentConfirm.exploreMatches')}</Link>
+          {isTipsterFlow && tipsterId ? (
+            <Link to={`/tipsters/${tipsterId}`} className="btn-primary">{t('paymentConfirm.viewTipsterProfile')}</Link>
+          ) : (
+            <Link to="/matchs" className="btn-primary">{t('paymentConfirm.exploreMatches')}</Link>
+          )}
           <Link to="/profil" className="btn-secondary">{t('profile.subscription')}</Link>
         </div>
       </div>

@@ -37,6 +37,38 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
   }).catch(() => {});
 }
 
+// ─── Helper : active/renouvelle un abonnement à un plan TIPSTER après paiement ─
+async function activateTipsterSubscription(subscriberId, tipsterId, planId, paymentId) {
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + 1);
+
+  await prisma.$transaction([
+    prisma.tipsterSubscription.upsert({
+      where:  { subscriberId_planId: { subscriberId, planId } },
+      update: { status: 'ACTIVE', startDate: new Date(), endDate },
+      create: { subscriberId, planId, status: 'ACTIVE', endDate },
+    }),
+    prisma.payment.update({
+      where: { id: paymentId },
+      data:  { status: 'COMPLETED' },
+    }),
+  ]);
+
+  notifyUser(subscriberId, {
+    title: '🎉 Abonnement tipster activé',
+    body:  'Vous suivez maintenant les pronostics premium de ce tipster.',
+    url:   '/tipsters',
+    tag:   'tipster-subscription-confirmed',
+  }).catch(() => {});
+
+  notifyUser(tipsterId, {
+    title: '💰 Nouvel abonné premium !',
+    body:  'Quelqu\'un vient de s\'abonner à votre plan payant.',
+    url:   '/profil',
+    tag:   'tipster-new-subscriber',
+  }).catch(() => {});
+}
+
 // ─── Initier un paiement Wave ──────────────────────────────────────────────────
 async function initiateWavePayment(req, res, next) {
   try {
@@ -210,8 +242,17 @@ async function verifyPayment(req, res, next) {
       });
 
       if (payment && payment.status === 'PENDING') {
-        const { planId, billingCycle } = payment.metadata;
-        await activateSubscription(req.user.id, planId, billingCycle, payment.id);
+        if (payment.metadata?.type === 'tipster') {
+          const { tipsterId, planId } = payment.metadata;
+          await activateTipsterSubscription(req.user.id, tipsterId, planId, payment.id);
+        } else {
+          const { planId, billingCycle } = payment.metadata;
+          await activateSubscription(req.user.id, planId, billingCycle, payment.id);
+        }
+      }
+
+      if (payment?.metadata?.type === 'tipster') {
+        return res.json({ success: true, data: { confirmed: true, type: 'tipster', tipsterId: payment.metadata.tipsterId } });
       }
 
       const sub = await prisma.subscription.findUnique({
@@ -231,6 +272,9 @@ async function verifyPayment(req, res, next) {
     }
 
     if (payment.status === 'COMPLETED') {
+      if (payment.metadata?.type === 'tipster') {
+        return res.json({ success: true, data: { confirmed: true, type: 'tipster', tipsterId: payment.metadata.tipsterId } });
+      }
       const sub = await prisma.subscription.findUnique({
         where: { userId: req.user.id },
         include: { plan: true },
@@ -565,11 +609,85 @@ async function handlePaydunyaWebhook(req, res) {
       return;
     }
 
-    const { planId, billingCycle } = payment.metadata;
-    await activateSubscription(payment.userId, planId, billingCycle, payment.id);
-    console.log(`[Webhook PayDunya] ✅ Abonnement activé pour userId=${payment.userId}`);
+    if (payment.metadata?.type === 'tipster') {
+      const { tipsterId, planId } = payment.metadata;
+      await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
+      console.log(`[Webhook PayDunya] ✅ Abonnement tipster activé pour userId=${payment.userId} → tipster=${tipsterId}`);
+    } else {
+      const { planId, billingCycle } = payment.metadata;
+      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+      console.log(`[Webhook PayDunya] ✅ Abonnement activé pour userId=${payment.userId}`);
+    }
   } catch (err) {
     console.error('[Webhook PayDunya] Erreur traitement:', err.message, err.stack);
+  }
+}
+
+// ─── Initier un paiement PayDunya pour s'abonner au plan payant d'un TIPSTER ──
+// Réutilise le même webhook /paydunya/webhook — distingué via metadata.type='tipster'
+async function initiateTipsterPaydunyaPayment(req, res, next) {
+  try {
+    const schema = z.object({ tipsterId: z.string().uuid() });
+    const { tipsterId } = schema.parse(req.body);
+
+    if (tipsterId === req.user.id) {
+      throw new AppError('Vous ne pouvez pas vous abonner à vous-même', 400, 'SELF_SUBSCRIBE');
+    }
+
+    const plan = await prisma.tipsterPlan.findUnique({ where: { tipsterId } });
+    if (!plan || !plan.isActive) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
+
+    const existing = await prisma.tipsterSubscription.findUnique({
+      where: { subscriberId_planId: { subscriberId: req.user.id, planId: plan.id } },
+    });
+    if (existing && existing.status === 'ACTIVE' && existing.endDate && existing.endDate > new Date()) {
+      throw new AppError('Déjà abonné à ce tipster', 409, 'ALREADY_SUBSCRIBED');
+    }
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:      req.user.id,
+        amount:      plan.price,
+        method:      'MOBILE_MONEY',
+        status:      'PENDING',
+        provider:    'paydunya',
+        providerRef: `PDT-${Date.now()}-${req.user.id.slice(0, 8)}`,
+        metadata:    { type: 'tipster', tipsterId, planId: plan.id },
+      },
+    });
+
+    const returnUrl   = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${payment.providerRef}&type=tipster&tipsterId=${tipsterId}`;
+    const cancelUrl   = `${env.FRONTEND_URL}/abonnement/erreur?ref=${payment.providerRef}&type=tipster&tipsterId=${tipsterId}`;
+    const callbackUrl = `${env.BACKEND_URL || ''}/api/payments/paydunya/webhook`;
+
+    const isSandbox = !env.PAYDUNYA_MASTER_KEY;
+    const pdData = isSandbox
+      ? paydunyaService.mockCheckout({ customData: { paymentId: payment.id, type: 'tipster', tipsterId, planId: plan.id, userId: req.user.id } })
+      : await paydunyaService.createInvoice({
+          amount: plan.price,
+          description: `Abonnement tipster — ${plan.name}`,
+          returnUrl,
+          cancelUrl,
+          callbackUrl,
+          customData: { paymentId: payment.id, type: 'tipster', tipsterId, planId: plan.id, userId: req.user.id },
+        });
+
+    await prisma.payment.update({
+      where: { id: payment.id },
+      data:  { transactionId: pdData.token },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId:   payment.id,
+        checkoutUrl: pdData.checkout_url,
+        reference:   pdData.token,
+        sandbox:     isSandbox,
+      },
+    });
+  } catch (err) {
+    next(err);
   }
 }
 
@@ -580,5 +698,6 @@ module.exports = {
   // GeniusPay — mis de côté (remplacé par PayDunya), conservé pour réactivation future
   initiateGeniuspayPayment, handleGeniuspayWebhook,
   initiatePaydunyaPayment, handlePaydunyaWebhook,
+  initiateTipsterPaydunyaPayment,
   verifyPayment,
 };

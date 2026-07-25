@@ -254,8 +254,10 @@ export default function TipsterProfile() {
   });
 
   const subscribeMutation = useMutation({
-    mutationFn: () => api.post(`/tipster-plans/${userId}/subscribe`),
-    onSuccess: () => refetchSub(),
+    mutationFn: () => api.post('/payments/tipster/paydunya/init', { tipsterId: userId }),
+    onSuccess: ({ data }) => {
+      if (data?.data?.checkoutUrl) window.location.href = data.data.checkoutUrl;
+    },
   });
 
   const unsubscribeMutation = useMutation({
@@ -437,14 +439,23 @@ export default function TipsterProfile() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => subscribeMutation.mutate()}
-                disabled={subscribeMutation.isPending}
-                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors disabled:opacity-40"
-              >
-                {subscribeMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} />}
-                {t('tipsterProfile.subscribe', { price: plan.price.toLocaleString('fr-FR') })}
-              </button>
+              <>
+                <button
+                  onClick={() => subscribeMutation.mutate()}
+                  disabled={subscribeMutation.isPending}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors disabled:opacity-40"
+                >
+                  {subscribeMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Crown size={14} />}
+                  {subscribeMutation.isPending
+                    ? t('tipsterProfile.redirectingPayment')
+                    : t('tipsterProfile.subscribe', { price: plan.price.toLocaleString('fr-FR') })}
+                </button>
+                {subscribeMutation.isError && (
+                  <p className="text-xs text-red-400 text-center">
+                    {subscribeMutation.error?.response?.data?.message || t('tipsterProfile.subscribeError')}
+                  </p>
+                )}
+              </>
             )
           ) : (
             <Link

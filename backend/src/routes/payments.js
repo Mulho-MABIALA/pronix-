@@ -8,6 +8,7 @@ const {
   // GeniusPay — mis de côté (remplacé par PayDunya), import conservé pour réactivation future
   initiateGeniuspayPayment, handleGeniuspayWebhook,
   initiatePaydunyaPayment, handlePaydunyaWebhook,
+  initiateTipsterPaydunyaPayment,
   verifyPayment,
 } = require('../controllers/paymentController');
 
@@ -36,6 +37,8 @@ router.post('/fedapay/init',   paymentLimit, initiateFedapayPayment);
 // GeniusPay — mis de côté (remplacé par PayDunya). Code conservé, route désactivée :
 // router.post('/geniuspay/init', paymentLimit, initiateGeniuspayPayment);
 router.post('/paydunya/init',  paymentLimit, initiatePaydunyaPayment);
+// Abonnement payant à un tipster (même provider PayDunya, webhook partagé)
+router.post('/tipster/paydunya/init', paymentLimit, initiateTipsterPaydunyaPayment);
 router.get('/verify',          verifyPayment);
 
 module.exports = router;

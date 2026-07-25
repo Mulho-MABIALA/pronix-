@@ -58,9 +58,15 @@ async function getPlan(req, res, next) {
   } catch (err) { next(err); }
 }
 
-// POST /tipster-plans/:tipsterId/subscribe — s'abonner (authentifié)
+// POST /tipster-plans/:tipsterId/subscribe — octroi manuel (ADMIN uniquement)
+// Le flux payant normal passe par POST /payments/tipster/paydunya/init — cet
+// endpoint reste pour un octroi manuel exceptionnel (support, geste commercial).
 async function subscribe(req, res, next) {
   try {
+    if (req.user.role !== 'ADMIN') {
+      throw new AppError('Utilisez le paiement PayDunya pour vous abonner à un tipster', 403, 'PAYMENT_REQUIRED');
+    }
+
     const { tipsterId } = req.params;
     if (tipsterId === req.user.id) {
       throw new AppError('Vous ne pouvez pas vous abonner à vous-même', 400, 'SELF_SUBSCRIBE');
@@ -78,8 +84,6 @@ async function subscribe(req, res, next) {
       throw new AppError('Déjà abonné à ce tipster', 409, 'ALREADY_SUBSCRIBED');
     }
 
-    // TODO: Intégrer GeniusPay ici pour le paiement
-    // Pour l'instant : abonnement direct (gratuit ou paiement manuel)
     const endDate = new Date();
     endDate.setMonth(endDate.getMonth() + 1);
 

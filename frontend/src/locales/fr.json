@@ -620,6 +620,8 @@
     "unsubscribe": "Se désabonner",
     "subscribe": "S'abonner — {{price}} FCFA/mois",
     "loginToSubscribe": "Se connecter pour s'abonner",
+    "redirectingPayment": "Redirection vers le paiement…",
+    "subscribeError": "Erreur lors de l'initialisation du paiement. Réessayez.",
     "perMonth": "/mois",
     "recentPicks": "Pronostics récents",
     "noRecentPicks": "Aucun pronostic récent",
@@ -1272,6 +1274,9 @@
     "checkSubscription": "Vérifier mon abonnement",
     "confirmedTitle": "Paiement confirmé !",
     "confirmedDesc": "Votre abonnement est maintenant actif. Profitez de l'accès complet.",
+    "tipsterConfirmedTitle": "Abonnement tipster activé !",
+    "tipsterConfirmedDesc": "Vous suivez maintenant les pronostics premium de ce tipster.",
+    "viewTipsterProfile": "Voir le profil du tipster",
     "simulationRef": "(Simulation — réf. {{ref}})",
     "exploreMatches": "Explorer les matchs"
   },

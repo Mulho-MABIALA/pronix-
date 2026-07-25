@@ -620,6 +620,8 @@
     "unsubscribe": "Unsubscribe",
     "subscribe": "Subscribe — {{price}} FCFA/month",
     "loginToSubscribe": "Log in to subscribe",
+    "redirectingPayment": "Redirecting to payment…",
+    "subscribeError": "Error starting the payment. Please try again.",
     "perMonth": "/month",
     "recentPicks": "Recent picks",
     "noRecentPicks": "No recent picks",
@@ -1272,6 +1274,9 @@
     "checkSubscription": "Check my subscription",
     "confirmedTitle": "Payment confirmed!",
     "confirmedDesc": "Your subscription is now active. Enjoy full access.",
+    "tipsterConfirmedTitle": "Tipster subscription activated!",
+    "tipsterConfirmedDesc": "You now follow this tipster's premium picks.",
+    "viewTipsterProfile": "View tipster profile",
     "simulationRef": "(Simulation — ref. {{ref}})",
     "exploreMatches": "Explore matches"
   },

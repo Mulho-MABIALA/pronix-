@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { Flag, Crown, Users, Loader2, Heart, HeartOff, MessageCircle, Send, ChevronDown, ChevronUp, TrendingUp } from 'lucide-react';
+import { Flag, Crown, Users, Loader2, Heart, HeartOff, MessageCircle, Send, ChevronDown, ChevronUp, TrendingUp, Save, Power } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { TipsterBadge, ResultBadge } from '../components/ui/Badge';
@@ -265,6 +265,23 @@ export default function TipsterProfile() {
     onSuccess: () => refetchSub(),
   });
 
+  // ── Gestion du plan (propriétaire uniquement) ──────────────────────────────
+  const isOwnProfile = user?.id === userId;
+  const [planForm, setPlanForm] = useState(null); // { name, description, price, isActive }
+  const [planFormInit, setPlanFormInit] = useState(false);
+
+  const upsertPlanMutation = useMutation({
+    mutationFn: (data) => api.post('/tipster-plans', data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['tipster-plan', userId] }),
+  });
+
+  const { data: subscribersData } = useQuery({
+    queryKey: ['tipster-subscribers', userId],
+    queryFn: () => api.get('/tipster-plans/mine/subscribers').then((r) => r.data),
+    enabled: isOwnProfile && !!user,
+    staleTime: 60 * 1000,
+  });
+
   const followMutation = useMutation({
     mutationFn: () => api.post(`/follows/${userId}`),
     onSuccess: () => {
@@ -287,6 +304,20 @@ export default function TipsterProfile() {
   const isFollowing = followStatus?.following;
   const followerCount = followerData?.count ?? 0;
 
+  // Initialise le formulaire de plan une fois les données chargées (propriétaire)
+  useEffect(() => {
+    if (!isOwnProfile || planFormInit) return;
+    if (planData !== undefined) {
+      setPlanForm({
+        name: plan?.name || 'Plan Premium',
+        description: plan?.description || '',
+        price: plan?.price || 1000,
+        isActive: plan?.isActive ?? true,
+      });
+      setPlanFormInit(true);
+    }
+  }, [isOwnProfile, planData, planFormInit, plan]);
+
   if (isLoading) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
@@ -300,7 +331,7 @@ export default function TipsterProfile() {
   if (!tipster) return <div className="text-center py-20 text-gray-500">{t('tipsterProfile.notFound')}</div>;
 
   const displayName = tipster.profile?.displayName || tipster.username;
-  const isOwn = user?.id === userId;
+  const isOwn = isOwnProfile;
   const roi = stats?.totalTips > 0 ? estimateTipsterROI(stats.successRate, userId) : null;
   const weeklyChartData = weeklyData?.data || inlineWeekly || [];
 
@@ -464,6 +495,100 @@ export default function TipsterProfile() {
             >
               {t('tipsterProfile.loginToSubscribe')}
             </Link>
+          )}
+        </div>
+      )}
+
+      {/* ── Gestion du plan tipster (propriétaire uniquement) ── */}
+      {isOwn && stats && planForm && (
+        <div className="bento-card space-y-4">
+          <div className="flex items-center gap-2">
+            <Crown size={16} className="text-primary-400" />
+            <p className="font-semibold text-gray-100">{t('tipsterProfile.managePlanTitle')}</p>
+          </div>
+          <p className="text-xs text-gray-500">{t('tipsterProfile.managePlanDesc')}</p>
+
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">{t('tipsterProfile.planNameLabel')}</label>
+              <input
+                type="text"
+                value={planForm.name}
+                onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
+                maxLength={100}
+                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-white/[0.08] text-sm text-gray-100 focus:outline-none focus:border-primary-500/50"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">{t('tipsterProfile.planDescLabel')}</label>
+              <textarea
+                value={planForm.description}
+                onChange={(e) => setPlanForm({ ...planForm, description: e.target.value })}
+                maxLength={500}
+                rows={2}
+                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-white/[0.08] text-sm text-gray-100 focus:outline-none focus:border-primary-500/50 resize-none"
+              />
+            </div>
+            <div>
+              <label className="text-xs text-gray-500 mb-1 block">{t('tipsterProfile.planPriceLabel')}</label>
+              <input
+                type="number"
+                min={100}
+                max={100000}
+                step={100}
+                value={planForm.price}
+                onChange={(e) => setPlanForm({ ...planForm, price: Number(e.target.value) })}
+                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-white/[0.08] text-sm text-gray-100 focus:outline-none focus:border-primary-500/50"
+              />
+            </div>
+            <button
+              onClick={() => setPlanForm({ ...planForm, isActive: !planForm.isActive })}
+              className="flex items-center gap-2 text-xs"
+            >
+              <Power size={13} className={planForm.isActive ? 'text-primary-400' : 'text-gray-600'} />
+              <span className={planForm.isActive ? 'text-primary-400' : 'text-gray-500'}>
+                {planForm.isActive ? t('tipsterProfile.planActiveLabel') : t('tipsterProfile.planInactiveLabel')}
+              </span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => upsertPlanMutation.mutate(planForm)}
+            disabled={upsertPlanMutation.isPending || !planForm.name || planForm.price < 100}
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary-500 text-white text-sm font-semibold hover:bg-primary-400 transition-colors disabled:opacity-40"
+          >
+            {upsertPlanMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            {t('tipsterProfile.savePlan')}
+          </button>
+          {upsertPlanMutation.isSuccess && (
+            <p className="text-xs text-primary-400 text-center">{t('tipsterProfile.planSaved')}</p>
+          )}
+          {upsertPlanMutation.isError && (
+            <p className="text-xs text-red-400 text-center">
+              {upsertPlanMutation.error?.response?.data?.message || t('tipsterProfile.planSaveError')}
+            </p>
+          )}
+
+          {/* Liste des abonnés */}
+          {plan && (
+            <div className="pt-2 border-t border-white/[0.06]">
+              <p className="text-xs font-semibold text-gray-300 mb-2 flex items-center gap-1.5">
+                <Users size={12} />
+                {t('tipsterProfile.mySubscribers', { count: subscribersData?.total ?? 0 })}
+              </p>
+              {subscribersData?.data?.length ? (
+                <div className="space-y-1.5">
+                  {subscribersData.data.map((sub) => (
+                    <div key={sub.id} className="flex items-center gap-2 text-xs text-gray-400">
+                      <Avatar user={sub.subscriber} name={sub.subscriber?.profile?.displayName || sub.subscriber?.username} size={22} />
+                      <span className="truncate">{sub.subscriber?.profile?.displayName || sub.subscriber?.username}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-600">{t('tipsterProfile.noSubscribers')}</p>
+              )}
+            </div>
           )}
         </div>
       )}

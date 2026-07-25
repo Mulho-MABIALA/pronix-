@@ -53,8 +53,8 @@ export default function TipsterCard({ stats, rank }) {
       </div>
 
       {/* Taux de réussite */}
-      <div className="shrink-0 w-24 space-y-1">
-        <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="sm" />
+      <div className="shrink-0 w-16 sm:w-24 space-y-1">
+        <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="sm" stacked />
         {roi != null && (
           <p
             className={`text-[10px] text-right font-semibold tabular-nums ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}

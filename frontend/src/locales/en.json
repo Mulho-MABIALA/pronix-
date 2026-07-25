@@ -14,7 +14,8 @@
     "admin": "Admin",
     "lightMode": "Light mode",
     "darkMode": "Dark mode",
-    "explorer": "Explore"
+    "explorer": "Explore",
+    "transparency": "Transparency"
   },
   "tools": {
     "filters": "Advanced filters",
@@ -1489,6 +1490,7 @@
   "bottomNav": {
     "standingsDesc": "League standings",
     "tipstersDesc": "Top tipsters",
+    "transparencyDesc": "Real track record, tipsters and AI",
     "betTrackerDesc": "Track your tips and your ROI",
     "exploreTitle": "Explore fpronix",
     "application": "Application",

@@ -14,7 +14,8 @@
     "admin": "Admin",
     "lightMode": "Mode clair",
     "darkMode": "Mode sombre",
-    "explorer": "Explorer"
+    "explorer": "Explorer",
+    "transparency": "Transparence"
   },
   "tools": {
     "filters": "Filtres avancés",
@@ -1489,6 +1490,7 @@
   "bottomNav": {
     "standingsDesc": "Classements des ligues",
     "tipstersDesc": "Top pronostiqueurs",
+    "transparencyDesc": "Taux de réussite réel, tipsters et IA",
     "betTrackerDesc": "Suis tes pronostics et ton ROI",
     "exploreTitle": "Explorer fpronix",
     "application": "Application",

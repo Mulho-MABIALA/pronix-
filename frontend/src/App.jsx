@@ -31,6 +31,7 @@ import NotFound from './pages/NotFound';
 import CGU from './pages/CGU';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
 import FAQ from './pages/FAQ';
+import Transparency from './pages/Transparency';
 import CoupeDuMonde2026 from './pages/CoupeDuMonde2026';
 import VerifyEmail from './pages/VerifyEmail';
 import BetTracker from './pages/BetTracker';
@@ -113,6 +114,7 @@ export default function App() {
                 <Route path="/cgu" element={<CGU />} />
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/faq" element={<FAQ />} />
+                <Route path="/transparence" element={<Transparency />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
                 <Route path="/equipes/:id" element={<TeamPage />} />

@@ -10,7 +10,9 @@ export default function Disclaimer() {
           <strong>{t('disclaimer.warning')}</strong>{' '}
           {t('disclaimer.playResponsibly')}
         </p>
-        <div className="flex items-center justify-center gap-4 text-xs text-gray-600">
+        <div className="flex items-center justify-center gap-4 text-xs text-gray-600 flex-wrap">
+          <a href="/transparence" className="hover:text-gray-400 transition-colors">{t('disclaimer.transparencyLink')}</a>
+          <span aria-hidden="true">·</span>
           <a href="/cgu" className="hover:text-gray-400 transition-colors">{t('disclaimer.termsLink')}</a>
           <span aria-hidden="true">·</span>
           <a href="/politique-confidentialite" className="hover:text-gray-400 transition-colors">{t('disclaimer.privacyLink')}</a>

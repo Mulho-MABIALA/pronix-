@@ -160,7 +160,7 @@ export default function Home() {
       <div className="grid md:grid-cols-2 gap-6 items-start">
 
         {/* Top tipsters */}
-        <section>
+        <section className="min-w-0">
           <div className="flex items-center justify-between gap-2 mb-3">
             <h2 className="section-title flex items-center gap-2 min-w-0">
               <span className="w-1 h-4 rounded-full bg-primary-400 shrink-0" />
@@ -189,7 +189,7 @@ export default function Home() {
 
         {/* Premium CTA ou activité */}
         {!isPremium ? (
-          <section>
+          <section className="min-w-0">
             <h2 className="section-title mb-3 flex items-center gap-2.5">
               <span className="w-1 h-4 rounded-full bg-orange-400" />
               {t('home.premiumCta')}
@@ -225,7 +225,7 @@ export default function Home() {
             </div>
           </section>
         ) : (
-          <section>
+          <section className="min-w-0">
             <h2 className="section-title mb-3 flex items-center gap-2.5">
               <span className="w-1 h-4 rounded-full bg-primary-400" />
               {t('home.yourSpace')}

@@ -45,7 +45,7 @@ function BilanSection({ icon: Icon, title, desc, data, locale }) {
   if (!data) return null;
 
   return (
-    <div className="bento-card space-y-4">
+    <div className="bento-card space-y-4 min-w-0">
       <div className="flex items-center gap-2">
         <Icon size={18} className="text-primary-400" />
         <p className="font-semibold text-gray-100">{title}</p>

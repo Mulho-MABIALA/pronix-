@@ -661,7 +661,8 @@
     "noCompetitionFound": "No competition found",
     "noMatchesFor": "No finished matches yet for {{name}}.",
     "calcDisclaimer": "Standings calculated from matches available in our database.",
-    "selectPrompt": "Select a competition to display the standings."
+    "selectPrompt": "Select a competition to display the standings.",
+    "popularLeagues": "Quick access"
   },
   "machine": {
     "title": "Ticket generator",
@@ -1417,6 +1418,18 @@
     "openMenu": "Open menu",
     "administration": "Administration",
     "copyright": "© {{year}} fpronix — All rights reserved"
+  },
+  "competitionSeo": {
+    "standingsTitle": "{{name}} standings",
+    "standingsDesc": "Full {{name}} ({{country}}) table — points, wins, losses and team form, updated continuously.",
+    "pronosticsTitle": "{{name}} predictions today",
+    "pronosticsDesc": "Free AI predictions for every {{name}} ({{country}}) match today — probabilities, simulated odds and value bets.",
+    "notFound": "Competition not found.",
+    "seeAllStandings": "See all standings",
+    "seeAllPronostics": "See all predictions",
+    "seePronosticsFor": "See {{name}} predictions",
+    "seeStandingsFor": "See {{name}} standings",
+    "noMatchesToday": "No matches in this competition today."
   },
   "transparency": {
     "badge": "Full transparency",

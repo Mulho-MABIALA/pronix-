@@ -661,7 +661,8 @@
     "noCompetitionFound": "Aucune compétition trouvée",
     "noMatchesFor": "Pas encore de matchs terminés pour {{name}}.",
     "calcDisclaimer": "Classement calculé à partir des matchs disponibles dans notre base de données.",
-    "selectPrompt": "Sélectionnez une compétition pour afficher le classement."
+    "selectPrompt": "Sélectionnez une compétition pour afficher le classement.",
+    "popularLeagues": "Accès rapide"
   },
   "machine": {
     "title": "Générateur de tickets",
@@ -1417,6 +1418,18 @@
     "openMenu": "Ouvrir le menu",
     "administration": "Administration",
     "copyright": "© {{year}} fpronix — Tous droits réservés"
+  },
+  "competitionSeo": {
+    "standingsTitle": "Classement {{name}}",
+    "standingsDesc": "Classement complet de {{name}} ({{country}}) — points, victoires, défaites et forme des équipes, mis à jour en continu.",
+    "pronosticsTitle": "Pronostics {{name}} du jour",
+    "pronosticsDesc": "Pronostics IA gratuits pour tous les matchs de {{name}} ({{country}}) aujourd'hui — probabilités, cotes simulées et value bets.",
+    "notFound": "Compétition introuvable.",
+    "seeAllStandings": "Voir tous les classements",
+    "seeAllPronostics": "Voir tous les pronostics",
+    "seePronosticsFor": "Voir les pronostics {{name}}",
+    "seeStandingsFor": "Voir le classement {{name}}",
+    "noMatchesToday": "Aucun match dans cette compétition aujourd'hui."
   },
   "transparency": {
     "badge": "Transparence totale",

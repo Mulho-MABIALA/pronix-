@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const prisma = require('../config/database');
 const env = require('../config/env');
+const { slugify } = require('../utils/slugify');
 
 const router = Router();
 
@@ -53,7 +54,7 @@ router.get('/', async (req, res, next) => {
       }),
       prisma.competition.findMany({
         where: { isDisplayed: true },
-        select: { id: true },
+        select: { id: true, name: true, updatedAt: true },
         take: 50,
       }),
     ]);
@@ -66,7 +67,18 @@ router.get('/', async (req, res, next) => {
       url(`${BASE}/tipsters/${t.id}`, 'weekly', '0.6', t.updatedAt.toISOString().slice(0, 10))
     );
 
-    const allUrls = [...staticUrls, ...matchUrls, ...tipsterUrls];
+    // Pages SEO par compétition — classement + pronostics du jour
+    const competitionUrls = competitions.flatMap((c) => {
+      const slug = slugify(c.name);
+      if (!slug) return [];
+      const lastmod = c.updatedAt.toISOString().slice(0, 10);
+      return [
+        url(`${BASE}/classements/${slug}`, 'daily', '0.6', lastmod),
+        url(`${BASE}/pronostics/${slug}`, 'hourly', '0.6', lastmod),
+      ];
+    });
+
+    const allUrls = [...staticUrls, ...matchUrls, ...tipsterUrls, ...competitionUrls];
 
     res.setHeader('Content-Type', 'application/xml; charset=utf-8');
     res.setHeader('Cache-Control', 'public, max-age=3600');

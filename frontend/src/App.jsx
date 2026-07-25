@@ -32,6 +32,8 @@ import CGU from './pages/CGU';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
 import FAQ from './pages/FAQ';
 import Transparency from './pages/Transparency';
+import CompetitionStandings from './pages/CompetitionStandings';
+import CompetitionPronostics from './pages/CompetitionPronostics';
 import CoupeDuMonde2026 from './pages/CoupeDuMonde2026';
 import VerifyEmail from './pages/VerifyEmail';
 import BetTracker from './pages/BetTracker';
@@ -105,7 +107,9 @@ export default function App() {
                 <Route path="/abonnement/erreur" element={<PaymentConfirmation error />} />
                 <Route path="/actualites" element={<News />} />
                 <Route path="/classements" element={<Standings />} />
+                <Route path="/classements/:slug" element={<CompetitionStandings />} />
                 <Route path="/pronostics" element={<Pronostics />} />
+                <Route path="/pronostics/:slug" element={<CompetitionPronostics />} />
                 <Route path="/coupe-du-monde-2026" element={<CoupeDuMonde2026 />} />
                 <Route path="/outils/filtres" element={<Filtres />} />
                 <Route path="/outils/machine" element={<Machine />} />

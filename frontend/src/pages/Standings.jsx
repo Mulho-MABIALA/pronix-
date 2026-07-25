@@ -1,8 +1,10 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { Link } from 'react-router-dom';
 import { BarChart2, ChevronDown, Search, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
+import { slugify } from '../utils/slugify';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
@@ -219,9 +221,30 @@ export default function Standings() {
       )}
 
       {!isLoading && !selectedCompId && competitions.length > 0 && (
-        <div className="bento-card text-center py-8 text-gray-500 text-sm">
-          {t('standings.selectPrompt')}
-        </div>
+        <>
+          <div className="bento-card text-center py-8 text-gray-500 text-sm">
+            {t('standings.selectPrompt')}
+          </div>
+
+          {/* Liens directs — pages dédiées par compétition (SEO + accès rapide) */}
+          <div className="space-y-2">
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1">
+              {t('standings.popularLeagues')}
+            </p>
+            <div className="flex flex-wrap gap-1.5">
+              {competitions.slice(0, 12).map((c) => (
+                <Link
+                  key={c.id}
+                  to={`/classements/${slugify(c.name)}`}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] hover:border-primary-500/30 hover:bg-primary-500/[0.05] transition-colors text-xs text-gray-300"
+                >
+                  <CompetitionLogo logo={c.logo} size={14} />
+                  {c.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

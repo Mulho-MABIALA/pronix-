@@ -66,13 +66,16 @@ async function getTransparencyStats(req, res, next) {
     const aiSince = new Date();
     aiSince.setDate(aiSince.getDate() - AI_WINDOW_DAYS);
 
+    // Note : pas de filtre Prisma sur `predictions` (champ Json?) — la syntaxe
+    // `NOT: { predictions: null }` n'est pas valide pour un champ Json dans ce
+    // client Prisma (nécessite Prisma.DbNull/JsonNull). On filtre plutôt côté
+    // JS ci-dessous (pickType manquant => ignoré), plus simple et sans risque.
     const finishedMatches = await prisma.match.findMany({
       where: {
         status: 'FINISHED',
         scheduledAt: { gte: aiSince },
         homeScore: { not: null },
         awayScore: { not: null },
-        NOT: { predictions: null },
       },
       select: { homeScore: true, awayScore: true, predictions: true, scheduledAt: true },
     });

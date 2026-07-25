@@ -389,6 +389,7 @@
     "confirmPassword": "Confirm password",
     "passwordMismatch": "Passwords do not match",
     "freeNoCommit": "Free, no commitment",
+    "referralInviteBanner": "You were invited by a friend on fpronix — welcome!",
     "forgotPassword": "Forgot password?",
     "loginTitle": "Welcome to fpronix",
     "loginSubtitle": "Log in to access your predictions",
@@ -492,11 +493,12 @@
     "avatarUploadError": "Error uploading the photo. Please try again.",
     "referral": {
       "title": "Referral",
-      "desc": "Share your code and earn rewards when your referrals sign up on fpronix.",
+      "desc": "Share your link: as soon as a friend subscribes to a paid plan thanks to you, you get 7 days of Premium for free.",
       "copied": "Copied",
       "copy": "Copy",
       "linkCopiedToast": "Referral link copied!",
-      "referredCount": "{{count}} referral(s)"
+      "referredCount": "{{count}} referral(s) signed up",
+      "rewardedCount": "{{count}} reward(s) earned — {{days}} Premium days total"
     }
   },
   "tipsters": {

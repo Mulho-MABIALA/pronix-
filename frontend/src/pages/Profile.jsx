@@ -113,11 +113,15 @@ function Section({ title, icon: Icon, children, action }) {
 }
 
 /* ─── Section parrainage ─────────────────────────────────────────────────────── */
+// Doit rester synchronisé avec REFERRAL_REWARD_DAYS dans referralController.js (backend)
+const REFERRAL_REWARD_DAYS = 7;
+
 function ReferralSection() {
   const { t } = useTranslation();
   const toast = useToast();
   const [code, setCode] = useState(null);
   const [count, setCount] = useState(0);
+  const [rewardedCount, setRewardedCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -127,6 +131,7 @@ function ReferralSection() {
       const { data } = await api.get('/referrals/my-code');
       setCode(data.data.code);
       setCount(data.data.referralCount);
+      setRewardedCount(data.data.rewardedCount || 0);
     } catch {
       // silent
     } finally {
@@ -181,6 +186,11 @@ function ReferralSection() {
       {count > 0 && (
         <p className="text-xs text-gray-500">
           {t('profile.referral.referredCount', { count })}
+        </p>
+      )}
+      {rewardedCount > 0 && (
+        <p className="text-xs text-primary-400 font-medium">
+          {t('profile.referral.rewardedCount', { count: rewardedCount, days: rewardedCount * REFERRAL_REWARD_DAYS })}
         </p>
       )}
     </section>

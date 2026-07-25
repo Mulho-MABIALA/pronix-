@@ -1,23 +1,36 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useTranslation } from 'react-i18next';
+import { Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 export default function Register() {
   const { t } = useTranslation();
   const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const refCode = searchParams.get('ref');
   const [form, setForm] = useState({ email: '', username: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
+  // Enregistre le parrainage après inscription — best-effort, jamais bloquant
+  // (code invalide, auto-parrainage ou déjà parrainé sont silencieusement ignorés).
+  const registerReferralIfAny = () => {
+    if (!refCode) return;
+    api.post(`/referrals/use/${encodeURIComponent(refCode)}`).catch(() => {});
+  };
 
   const handleGoogleSuccess = async (credential) => {
     setError('');
     setLoading(true);
     try {
       const user = await loginWithGoogle(credential);
-      navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
+      const isNewAccount = user.profile?.onboardingDone === false;
+      if (isNewAccount) registerReferralIfAny();
+      navigate(isNewAccount ? '/onboarding' : '/');
     } catch (err) {
       setError(err.response?.data?.message || t('errors.serverError'));
     } finally {
@@ -35,6 +48,7 @@ export default function Register() {
     setLoading(true);
     try {
       await register(form.email, form.password, form.username);
+      registerReferralIfAny();
       navigate('/onboarding');
     } catch (err) {
       setError(err.response?.data?.message || t('errors.serverError'));
@@ -51,6 +65,13 @@ export default function Register() {
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.registerTitle')}</h1>
           <p className="text-gray-500 text-sm mt-1">{t('auth.freeNoCommit')}</p>
         </div>
+
+        {refCode && (
+          <div className="flex items-center gap-2.5 px-4 py-3 rounded-xl bg-primary-500/10 border border-primary-500/20 text-primary-300 text-sm">
+            <Gift size={16} className="shrink-0" />
+            {t('auth.referralInviteBanner')}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="bento-card space-y-4" noValidate>
           {error && (

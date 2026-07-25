@@ -2,10 +2,64 @@ const crypto = require('crypto');
 const { z } = require('zod');
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
+const { notifyUser } = require('./pushController');
+
+// Récompense de parrainage : nombre de jours Premium offerts au parrain
+// quand son filleul s'abonne pour la première fois.
+const REFERRAL_REWARD_DAYS = 7;
 
 // Génère un code référence unique (6 chars alphanumériques upper)
 function generateCode() {
   return crypto.randomBytes(4).toString('hex').toUpperCase().slice(0, 6);
+}
+
+// ─── Récompenser le parrain quand son filleul active un abonnement payant ─────
+// Appelé depuis activateSubscription() (paymentController.js) après CHAQUE
+// paiement confirmé, tous providers confondus (Wave/CinetPay/FedaPay/PayDunya).
+// Idempotent : ne récompense qu'une seule fois par filleul (status PENDING → REWARDED).
+async function grantReferralReward(refereeId) {
+  try {
+    const referral = await prisma.referral.findUnique({ where: { refereeId } });
+    if (!referral || referral.status === 'REWARDED') return;
+
+    const referrer = await prisma.user.findUnique({
+      where: { id: referral.referrerId },
+      include: { subscription: { include: { plan: true } } },
+    });
+    if (!referrer) return;
+
+    const sub = referrer.subscription;
+    const hasPaidPlan = sub && sub.status === 'ACTIVE' && sub.plan?.code !== 'FREE';
+
+    if (hasPaidPlan) {
+      // Déjà abonné payant : on prolonge son abonnement en cours
+      const base = sub.endDate && sub.endDate > new Date() ? sub.endDate : new Date();
+      const newEnd = new Date(base);
+      newEnd.setDate(newEnd.getDate() + REFERRAL_REWARD_DAYS);
+      await prisma.subscription.update({ where: { userId: referrer.id }, data: { endDate: newEnd } });
+    } else {
+      // Sinon : on prolonge son essai Premium (mécanisme déjà existant)
+      const base = referrer.trialEndsAt && referrer.trialEndsAt > new Date() ? referrer.trialEndsAt : new Date();
+      const newEnd = new Date(base);
+      newEnd.setDate(newEnd.getDate() + REFERRAL_REWARD_DAYS);
+      await prisma.user.update({ where: { id: referrer.id }, data: { trialEndsAt: newEnd } });
+    }
+
+    await prisma.referral.update({
+      where: { id: referral.id },
+      data: { status: 'REWARDED', rewardedAt: new Date() },
+    });
+
+    notifyUser(referrer.id, {
+      title: '🎉 Votre filleul s\'est abonné !',
+      body: `+${REFERRAL_REWARD_DAYS} jours Premium offerts grâce à votre parrainage.`,
+      url: '/profil',
+      tag: 'referral-reward',
+    }).catch(() => {});
+  } catch (err) {
+    // Ne jamais faire échouer l'activation d'abonnement à cause d'un bonus parrainage
+    console.error('[Referral] Erreur grantReferralReward:', err.message);
+  }
 }
 
 // GET /api/referrals/my-code  — obtenir (ou créer) son code
@@ -113,4 +167,4 @@ async function getMyReferrals(req, res, next) {
   }
 }
 
-module.exports = { getMyCode, useReferralCode, getMyReferrals };
+module.exports = { getMyCode, useReferralCode, getMyReferrals, grantReferralReward, REFERRAL_REWARD_DAYS };

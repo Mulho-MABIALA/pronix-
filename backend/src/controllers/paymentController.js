@@ -9,6 +9,7 @@ const paydunyaService = require('../services/paydunyaService');
 const { AppError } = require('../middleware/errorHandler');
 const env = require('../config/env');
 const { notifyUser } = require('./pushController');
+const { grantReferralReward } = require('./referralController');
 
 // ─── Helper : active/renouvelle l'abonnement après paiement validé ───────────
 async function activateSubscription(userId, planId, billingCycle, paymentId) {
@@ -35,6 +36,9 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
     url:   '/profil',
     tag:   'subscription-confirmed',
   }).catch(() => {});
+
+  // Récompense de parrainage (si ce paiement est le 1er abonnement payant d'un filleul)
+  grantReferralReward(userId).catch(() => {});
 }
 
 // ─── Helper : active/renouvelle un abonnement à un plan TIPSTER après paiement ─

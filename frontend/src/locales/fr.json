@@ -389,6 +389,7 @@
     "confirmPassword": "Confirmer le mot de passe",
     "passwordMismatch": "Les mots de passe ne correspondent pas",
     "freeNoCommit": "Gratuit, sans engagement",
+    "referralInviteBanner": "Tu as été invité(e) par un ami sur fpronix — bienvenue !",
     "forgotPassword": "Mot de passe oublié ?",
     "loginTitle": "Bienvenue sur fpronix",
     "loginSubtitle": "Connectez-vous pour accéder à vos pronostics",
@@ -492,11 +493,12 @@
     "avatarUploadError": "Erreur lors de l'upload de la photo. Réessaie.",
     "referral": {
       "title": "Parrainage",
-      "desc": "Partage ton code et gagne des récompenses quand tes filleuls s'inscrivent sur fpronix.",
+      "desc": "Partage ton lien : dès qu'un ami s'abonne à un plan payant grâce à toi, tu reçois 7 jours Premium offerts.",
       "copied": "Copié",
       "copy": "Copier",
       "linkCopiedToast": "Lien de parrainage copié !",
-      "referredCount": "{{count}} filleul(s) parrainé(s)"
+      "referredCount": "{{count}} filleul(s) inscrit(s)",
+      "rewardedCount": "{{count}} récompense(s) obtenue(s) — {{days}} jours Premium au total"
     }
   },
   "tipsters": {

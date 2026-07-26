@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History } from 'lucide-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { TeamLogo } from '../components/matches/MatchCard';
+import TicketHistory from '../components/machine/TicketHistory';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 
@@ -397,6 +402,11 @@ function getConfidence(prob) {
 
 export default function Machine() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [view, setView]               = useState('generator'); // 'generator' | 'history'
   const [nbPicks, setNbPicks]         = useState(5);
   const [marketGroup, setMarketGroup] = useState('resultats');
   const [market, setMarket]           = useState('auto');
@@ -552,6 +562,30 @@ export default function Machine() {
     ? ticket.reduce((acc, row) => acc * row.odd, 1).toFixed(2)
     : null;
 
+  const saveTicketMutation = useMutation({
+    mutationFn: () => {
+      const entries = ticket.map((row) => ({
+        matchId: row.match.id,
+        prediction: row.pick.type,
+        odds: row.odd,
+      }));
+      return api.post('/tickets', { entries, totalOdds }).then((r) => r.data);
+    },
+    onSuccess: () => {
+      toast(t('machine.ticketSaved'), 'success');
+      queryClient.invalidateQueries({ queryKey: ['ticket-history'] });
+    },
+    onError: (err) => {
+      toast(err?.response?.data?.message || t('machine.ticketSaveError'), 'error');
+    },
+  });
+
+  function handleSaveTicket() {
+    if (!ticket || ticket.length === 0) return;
+    if (!user) { navigate('/connexion'); return; }
+    saveTicketMutation.mutate();
+  }
+
   return (
     <div className="max-w-2xl mx-auto py-5 space-y-5">
 
@@ -564,6 +598,30 @@ export default function Machine() {
         <p className="text-xs text-gray-500">{t('machine.subtitleShort')}</p>
       </div>
 
+      {/* Onglets Générateur / Historique */}
+      <div className="px-4 flex items-center gap-2">
+        <button
+          onClick={() => setView('generator')}
+          className="filter-chip"
+          data-active={view === 'generator'}
+        >
+          <Zap size={13} />
+          {t('machine.tabGenerator')}
+        </button>
+        <button
+          onClick={() => setView('history')}
+          className="filter-chip"
+          data-active={view === 'history'}
+        >
+          <History size={13} />
+          {t('machine.tabHistory')}
+        </button>
+      </div>
+
+      {view === 'history' ? (
+        <TicketHistory />
+      ) : (
+      <>
       {/* Paramètres */}
       <div className="px-4 card p-4 space-y-4">
 
@@ -909,14 +967,21 @@ export default function Machine() {
         <div className="px-4 space-y-3">
 
           {/* ── Barre résultat ────────────────────────────────────────── */}
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-y-2">
             <p className="text-sm font-semibold text-gray-200">
               {t('machine.selectionsGenerated', { count: ticket.length })}
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <button onClick={generateTicket}
                 className="p-1.5 rounded-lg border border-white/[0.06] text-gray-500 hover:text-gray-300 transition-colors">
                 <RefreshCw size={13} />
+              </button>
+              <button onClick={handleSaveTicket} disabled={saveTicketMutation.isPending}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors disabled:opacity-50">
+                {saveTicketMutation.isPending
+                  ? <RefreshCw size={12} className="animate-spin" />
+                  : <Save size={12} />}
+                {t('machine.save')}
               </button>
               <button onClick={copyTicket}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors">
@@ -1026,6 +1091,8 @@ export default function Machine() {
 
           <p className="text-[10px] text-gray-600 text-center">{ODDS_DISCLAIMER}</p>
         </div>
+      )}
+      </>
       )}
     </div>
   );

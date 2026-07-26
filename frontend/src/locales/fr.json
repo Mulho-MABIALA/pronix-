@@ -733,6 +733,21 @@
     "canvasFooter": "fpronix.com · Pronostics générés par algorithme · Jouez de façon responsable",
     "shareTitle": "Mon ticket fpronix",
     "totalOddSimulated": "Cote totale simulée : × {{odds}}",
+    "tabGenerator": "Générateur",
+    "tabHistory": "Historique",
+    "save": "Enregistrer",
+    "ticketSaved": "Ticket enregistré",
+    "ticketSaveError": "Impossible d'enregistrer le ticket. Réessayez.",
+    "ticketDeleteError": "Impossible de supprimer le ticket. Réessayez.",
+    "deleteTicket": "Supprimer le ticket",
+    "historyLoginRequired": "Connectez-vous pour retrouver vos tickets enregistrés.",
+    "noSavedTickets": "Aucun ticket enregistré",
+    "noSavedTicketsDesc": "Générez un ticket puis appuyez sur \"Enregistrer\" pour le retrouver ici.",
+    "ticketResult": {
+      "won": "Gagné",
+      "lost": "Perdu",
+      "pending": "En attente"
+    },
     "datePresets": {
       "today": "Aujourd'hui",
       "tomorrow": "Demain",

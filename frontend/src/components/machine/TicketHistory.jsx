@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
-import { Trash2, CheckCircle2, XCircle, Clock, Ticket, Share2, Download, RefreshCw } from 'lucide-react';
+import { Trash2, CheckCircle2, XCircle, Clock, Ticket, Share2, Download, RefreshCw, TrendingUp } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
@@ -18,10 +18,10 @@ const RESULT_STYLES = {
   PENDING: { label: 'pending', bg: 'bg-amber-500/15 text-amber-400 border-amber-500/25',        Icon: Clock },
 };
 
-const LEG_ICON = {
-  WIN:  <CheckCircle2 size={13} className="text-primary-400 shrink-0" />,
-  LOSS: <XCircle size={13} className="text-red-400 shrink-0" />,
-  VOID: <span className="text-[10px] text-gray-500 shrink-0">R</span>,
+const LEG_STYLES = {
+  WIN:  { Icon: CheckCircle2, labelKey: 'legWin',  color: 'text-primary-400' },
+  LOSS: { Icon: XCircle,      labelKey: 'legLoss', color: 'text-red-400' },
+  VOID: { Icon: Clock,        labelKey: 'legVoid', color: 'text-gray-400' },
 };
 
 export default function TicketHistory() {
@@ -97,6 +97,7 @@ export default function TicketHistory() {
   }
 
   const tickets = data?.data || [];
+  const stats = data?.stats;
 
   if (tickets.length === 0) {
     return (
@@ -112,6 +113,30 @@ export default function TicketHistory() {
 
   return (
     <div className="px-4 space-y-3">
+      {stats && (
+        <div className="card p-4 flex items-center gap-3">
+          <div className="shrink-0 w-11 h-11 rounded-xl bg-primary-500/15 flex items-center justify-center">
+            <TrendingUp size={20} className="text-primary-400" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] text-gray-500 uppercase tracking-wider">{t('machine.successRate')}</p>
+            {stats.resolved > 0 ? (
+              <>
+                <p className="text-lg font-black text-gray-100">{stats.winRate}%</p>
+                <p className="text-[11px] text-gray-500">
+                  {t('machine.successRateDetail', { won: stats.won, resolved: stats.resolved })}
+                  {stats.pending > 0 && ` · ${t('machine.successRatePending', { count: stats.pending })}`}
+                </p>
+              </>
+            ) : (
+              <p className="text-xs text-gray-500 mt-0.5">
+                {t('machine.noResolvedTickets')}
+                {stats.pending > 0 && ` · ${t('machine.successRatePending', { count: stats.pending })}`}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
       {tickets.map((ticket) => {
         const rs = RESULT_STYLES[ticket.result] || RESULT_STYLES.PENDING;
         return (
@@ -149,23 +174,29 @@ export default function TicketHistory() {
               </div>
             </div>
 
-            <div className="space-y-1.5 divide-y divide-white/[0.04]">
-              {ticket.entries.map((e) => (
-                <div key={e.id} className="flex items-center gap-2 pt-1.5 first:pt-0 min-w-0">
-                  {LEG_ICON[e.legResult] || <Clock size={13} className="text-gray-600 shrink-0" />}
-                  <div className="flex items-center gap-1 min-w-0 flex-1">
-                    <TeamLogo logo={e.match.homeTeamLogo} name={e.match.homeTeam} size={14} />
-                    <span className="text-xs text-gray-300 truncate">{e.match.homeTeam}</span>
-                    <span className="text-[10px] text-gray-600 shrink-0">vs</span>
-                    <TeamLogo logo={e.match.awayTeamLogo} name={e.match.awayTeam} size={14} />
-                    <span className="text-xs text-gray-300 truncate">{e.match.awayTeam}</span>
+            <div className="space-y-2 divide-y divide-white/[0.04]">
+              {ticket.entries.map((e) => {
+                const ls = LEG_STYLES[e.legResult];
+                return (
+                  <div key={e.id} className="flex items-center gap-2 pt-2 first:pt-0 min-w-0">
+                    <div className="flex items-center gap-1 min-w-0 flex-1">
+                      <TeamLogo logo={e.match.homeTeamLogo} name={e.match.homeTeam} size={14} />
+                      <span className="text-xs text-gray-300 truncate">{e.match.homeTeam}</span>
+                      <span className="text-[10px] text-gray-600 shrink-0">vs</span>
+                      <TeamLogo logo={e.match.awayTeamLogo} name={e.match.awayTeam} size={14} />
+                      <span className="text-xs text-gray-300 truncate">{e.match.awayTeam}</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-gray-400 shrink-0">
+                      {t(`machine.pickLabels.${e.prediction}`, { defaultValue: e.prediction })}
+                    </span>
+                    <span className="text-[10px] text-gray-600 shrink-0 tabular-nums">{formatOdd(e.odds)}</span>
+                    <span className={`inline-flex items-center gap-1 shrink-0 text-[10px] font-bold ${ls ? ls.color : 'text-gray-600'}`}>
+                      {ls ? <ls.Icon size={12} /> : <Clock size={12} />}
+                      {t(`machine.${ls ? ls.labelKey : 'legPending'}`)}
+                    </span>
                   </div>
-                  <span className="text-[10px] font-bold text-gray-400 shrink-0">
-                    {t(`machine.pickLabels.${e.prediction}`, { defaultValue: e.prediction })}
-                  </span>
-                  <span className="text-[10px] text-gray-600 shrink-0 tabular-nums">{formatOdd(e.odds)}</span>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">

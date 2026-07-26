@@ -752,6 +752,10 @@
     "legLoss": "Perdu",
     "legVoid": "Remboursé",
     "legPending": "En attente",
+    "successRate": "Taux de réussite",
+    "successRateDetail": "{{won}} gagné(s) sur {{resolved}} résolu(s)",
+    "successRatePending": "{{count}} en attente",
+    "noResolvedTickets": "Aucun ticket résolu pour l'instant",
     "datePresets": {
       "today": "Aujourd'hui",
       "tomorrow": "Demain",

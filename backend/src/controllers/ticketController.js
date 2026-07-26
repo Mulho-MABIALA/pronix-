@@ -95,7 +95,26 @@ async function getTicketHistory(req, res, next) {
       return { ...combo, entries, result };
     });
 
-    res.json({ success: true, data });
+    // Taux de réussite — calculé uniquement sur les tickets déjà résolus
+    // (Gagné/Perdu), les tickets en attente ne comptent ni pour ni contre.
+    const wonCount = data.filter((c) => c.result === 'WON').length;
+    const lostCount = data.filter((c) => c.result === 'LOST').length;
+    const pendingCount = data.filter((c) => c.result === 'PENDING').length;
+    const resolvedCount = wonCount + lostCount;
+    const winRate = resolvedCount > 0 ? Math.round((wonCount / resolvedCount) * 1000) / 10 : null;
+
+    res.json({
+      success: true,
+      data,
+      stats: {
+        total: data.length,
+        won: wonCount,
+        lost: lostCount,
+        pending: pendingCount,
+        resolved: resolvedCount,
+        winRate,
+      },
+    });
   } catch (err) { next(err); }
 }
 

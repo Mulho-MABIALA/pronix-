@@ -752,6 +752,10 @@
     "legLoss": "Lost",
     "legVoid": "Refunded",
     "legPending": "Pending",
+    "successRate": "Success rate",
+    "successRateDetail": "{{won}} won out of {{resolved}} resolved",
+    "successRatePending": "{{count}} pending",
+    "noResolvedTickets": "No resolved tickets yet",
     "datePresets": {
       "today": "Today",
       "tomorrow": "Tomorrow",

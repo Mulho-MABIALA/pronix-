@@ -8,7 +8,7 @@ import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { TeamLogo } from '../matches/MatchCard';
-import { formatOdd } from '../../utils/mockOdds';
+import { OddsChip } from '../ui/OddsChip';
 import { SkeletonCard } from '../ui/SkeletonLoader';
 import { drawTicketCanvas } from '../../utils/ticketCanvas';
 
@@ -19,10 +19,11 @@ const RESULT_STYLES = {
 };
 
 const LEG_STYLES = {
-  WIN:  { Icon: CheckCircle2, labelKey: 'legWin',  color: 'text-primary-400' },
-  LOSS: { Icon: XCircle,      labelKey: 'legLoss', color: 'text-red-400' },
-  VOID: { Icon: Clock,        labelKey: 'legVoid', color: 'text-gray-400' },
+  WIN:  { Icon: CheckCircle2, labelKey: 'legWin',  color: 'text-primary-400', bg: 'bg-primary-500/10 border-primary-500/20' },
+  LOSS: { Icon: XCircle,      labelKey: 'legLoss', color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20' },
+  VOID: { Icon: Clock,        labelKey: 'legVoid', color: 'text-gray-400',    bg: 'bg-white/[0.03] border-white/[0.08]' },
 };
+const LEG_PENDING_STYLE = { color: 'text-gray-500', bg: 'bg-white/[0.03] border-white/[0.06]' };
 
 export default function TicketHistory() {
   const { t, i18n } = useTranslation();
@@ -174,26 +175,35 @@ export default function TicketHistory() {
               </div>
             </div>
 
-            <div className="space-y-2 divide-y divide-white/[0.04]">
-              {ticket.entries.map((e) => {
-                const ls = LEG_STYLES[e.legResult];
+            <div className="divide-y divide-white/[0.04]">
+              {ticket.entries.map((e, idx) => {
+                const ls = LEG_STYLES[e.legResult] || LEG_PENDING_STYLE;
+                const LegIcon = ls.Icon || Clock;
                 return (
-                  <div key={e.id} className="flex items-center gap-2 pt-2 first:pt-0 min-w-0">
-                    <div className="flex items-center gap-1 min-w-0 flex-1">
-                      <TeamLogo logo={e.match.homeTeamLogo} name={e.match.homeTeam} size={14} />
-                      <span className="text-xs text-gray-300 truncate">{e.match.homeTeam}</span>
-                      <span className="text-[10px] text-gray-600 shrink-0">vs</span>
-                      <TeamLogo logo={e.match.awayTeamLogo} name={e.match.awayTeam} size={14} />
-                      <span className="text-xs text-gray-300 truncate">{e.match.awayTeam}</span>
+                  <div key={e.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
+                    <span className="w-4 shrink-0 text-center text-[11px] font-bold text-gray-600">{idx + 1}</span>
+                    <div className="flex-1 min-w-0 space-y-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <TeamLogo logo={e.match.homeTeamLogo} name={e.match.homeTeam} size={15} />
+                        <p className="text-xs font-medium text-gray-200 truncate">{e.match.homeTeam}</p>
+                      </div>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <TeamLogo logo={e.match.awayTeamLogo} name={e.match.awayTeam} size={15} />
+                        <p className="text-xs font-medium text-gray-200 truncate">{e.match.awayTeam}</p>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-bold text-gray-400 shrink-0">
-                      {t(`machine.pickLabels.${e.prediction}`, { defaultValue: e.prediction })}
-                    </span>
-                    <span className="text-[10px] text-gray-600 shrink-0 tabular-nums">{formatOdd(e.odds)}</span>
-                    <span className={`inline-flex items-center gap-1 shrink-0 text-[10px] font-bold ${ls ? ls.color : 'text-gray-600'}`}>
-                      {ls ? <ls.Icon size={12} /> : <Clock size={12} />}
-                      {t(`machine.${ls ? ls.labelKey : 'legPending'}`)}
-                    </span>
+                    <div className={`shrink-0 text-center px-2 py-1 rounded-lg border ${ls.bg}`}>
+                      <span className={`block text-[11px] font-bold ${ls.color}`}>
+                        {t(`machine.pickLabels.${e.prediction}`, { defaultValue: e.prediction })}
+                      </span>
+                      <span className={`flex items-center justify-center gap-0.5 text-[9px] font-semibold ${ls.color}`}>
+                        <LegIcon size={9} />
+                        {t(`machine.${e.legResult ? LEG_STYLES[e.legResult].labelKey : 'legPending'}`)}
+                      </span>
+                    </div>
+                    <div className="shrink-0">
+                      <OddsChip odd={e.odds} />
+                    </div>
                   </div>
                 );
               })}

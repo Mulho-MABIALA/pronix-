@@ -7,10 +7,81 @@ import api from '../services/api';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 
-function drawTicketCanvas(ticket, totalOdds, t) {
+// Passe une URL de logo externe (media.api-sports.io) par notre proxy same-origin
+// pour éviter de "tainted" le canvas (sinon canvas.toBlob() plante silencieusement
+// et le partage/téléchargement du ticket ne fonctionne plus du tout).
+function proxiedLogoUrl(url) {
+  if (!url) return null;
+  return `${api.defaults.baseURL}/img-proxy?url=${encodeURIComponent(url)}`;
+}
+
+// Précharge un logo (via le proxy) en HTMLImageElement. Résout `null` en cas
+// d'échec (image manquante, timeout...) plutôt que de rejeter — un logo absent
+// ne doit jamais empêcher la génération du ticket.
+function loadLogo(url) {
+  const proxied = proxiedLogoUrl(url);
+  if (!proxied) return Promise.resolve(null);
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload  = () => resolve(img);
+    img.onerror = () => resolve(null);
+    setTimeout(() => resolve(null), 5000);
+    img.src = proxied;
+  });
+}
+
+// Dessine un petit cercle avec les initiales de l'équipe (fallback si le logo
+// n'a pas pu être chargé).
+function drawTeamFallback(ctx, name, cx, cy, r) {
+  ctx.fillStyle = '#2a2b2d';
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.fillStyle = '#8a8f96';
+  ctx.font = `bold ${Math.round(r)}px system-ui`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  const initials = (name || '?').trim().slice(0, 2).toUpperCase();
+  ctx.fillText(initials, cx, cy + 1);
+  ctx.textBaseline = 'alphabetic';
+}
+
+function drawTeamLogo(ctx, img, name, x, sizeCenterY, size) {
+  const r = size / 2;
+  const cx = x + r;
+  if (img) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(cx, sizeCenterY, r, 0, Math.PI * 2);
+    ctx.closePath();
+    ctx.clip();
+    ctx.drawImage(img, x, sizeCenterY - r, size, size);
+    ctx.restore();
+  } else {
+    drawTeamFallback(ctx, name, cx, sizeCenterY, r);
+  }
+}
+
+// Précharge tous les logos (uniques) nécessaires au ticket avant de dessiner.
+// Retourne une Map url -> HTMLImageElement|null déjà résolue (consommable
+// de façon synchrone pendant le dessin du canvas).
+async function preloadTicketLogos(ticket) {
+  const urls = new Set();
+  ticket.forEach((row) => {
+    if (row.match.homeTeamLogo) urls.add(row.match.homeTeamLogo);
+    if (row.match.awayTeamLogo) urls.add(row.match.awayTeamLogo);
+  });
+  const entries = await Promise.all([...urls].map(async (u) => [u, await loadLogo(u)]));
+  return new Map(entries);
+}
+
+async function drawTicketCanvas(ticket, totalOdds, t) {
+  const logoMap = await preloadTicketLogos(ticket);
+  const getLogo = (url) => (url ? logoMap.get(url) || null : null);
+
   const W = 640;
-  const ROW_H = 70;
-  const HEADER_H = 90;
+  const ROW_H = 92;
+  const HEADER_H = 92;
   const FOOTER_H = 56;
   const H = HEADER_H + ticket.length * ROW_H + FOOTER_H;
 
@@ -45,7 +116,7 @@ function drawTicketCanvas(ticket, totalOdds, t) {
   ctx.textAlign = 'left';
   ctx.fillText('fpronix — Mon Ticket', 58, 30);
 
-  ctx.fillStyle = '#555555';
+  ctx.fillStyle = '#9a9fa6';
   ctx.font = '11px system-ui';
   ctx.fillText(`${t('machine.canvasGeneratedAt', { date: format(new Date(), 'dd/MM/yyyy à HH:mm') })} · ${t('machine.selectionsGenerated', { count: ticket.length })}`, 58, 46);
 
@@ -56,7 +127,7 @@ function drawTicketCanvas(ticket, totalOdds, t) {
   ctx.fillText(`${t('machine.totalOdd')} × ${totalOdds}`, W - 16, 30);
 
   // Ligne séparatrice
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(16, HEADER_H - 10);
@@ -65,14 +136,21 @@ function drawTicketCanvas(ticket, totalOdds, t) {
 
   // Picks
   const CONF_BG   = { high: '#1aa65622', medium: '#f59e0b22', low: '#3a3a3a' };
-  const CONF_TEXT = { high: '#2ec16a',   medium: '#fbbf24',   low: '#888888' };
+  const CONF_TEXT = { high: '#2ec16a',   medium: '#fbbf24',   low: '#9a9fa6' };
+  const LOGO_SIZE = 22;
 
   ticket.forEach((row, i) => {
     const y = HEADER_H + i * ROW_H;
 
+    // Fond alterné léger — aide à distinguer chaque ligne d'un coup d'œil
+    if (i % 2 === 1) {
+      ctx.fillStyle = 'rgba(255,255,255,0.02)';
+      ctx.fillRect(0, y, W, ROW_H);
+    }
+
     // Séparateur
     if (i > 0) {
-      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(16, y);
@@ -81,58 +159,81 @@ function drawTicketCanvas(ticket, totalOdds, t) {
     }
 
     // Numéro
-    ctx.fillStyle = '#444444';
+    ctx.fillStyle = '#5a5f66';
     ctx.font = 'bold 11px system-ui';
     ctx.textAlign = 'left';
-    ctx.fillText(`${i + 1}`, 16, y + 22);
+    ctx.fillText(`${i + 1}`, 16, y + 26);
 
-    // Match
+    const textX = 34 + LOGO_SIZE + 10;
+    const badgeW = 84;
+    const maxNameWidth = (W - 16 - badgeW - 8) - textX;
+
+    // Équipe domicile — logo + nom
+    drawTeamLogo(ctx, getLogo(row.match.homeTeamLogo), row.match.homeTeam, 34, y + 24, LOGO_SIZE);
     ctx.fillStyle = '#e5e7eb';
     ctx.font = 'bold 13px system-ui';
-    ctx.fillText(`${row.match.homeTeam} vs ${row.match.awayTeam}`, 34, y + 22);
+    ctx.textAlign = 'left';
+    ctx.fillText(fitText(ctx, row.match.homeTeam, maxNameWidth), textX, y + 28);
+
+    // Équipe extérieure — logo + nom
+    drawTeamLogo(ctx, getLogo(row.match.awayTeamLogo), row.match.awayTeam, 34, y + 52, LOGO_SIZE);
+    ctx.fillStyle = '#e5e7eb';
+    ctx.font = 'bold 13px system-ui';
+    ctx.fillText(fitText(ctx, row.match.awayTeam, maxNameWidth), textX, y + 56);
 
     // Compétition + heure
-    ctx.fillStyle = '#555555';
+    ctx.fillStyle = '#7a7f86';
     ctx.font = '10px system-ui';
     ctx.fillText(
       `${row.match.competition?.name || ''} · ${format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}`,
-      34, y + 38
+      34, y + 78
     );
 
     // Badge pick
-    const badgeW = 80;
+    const badgeH = 62;
     const badgeX = W - 16 - badgeW;
-    const badgeY = y + 9;
+    const badgeY = y + (ROW_H - badgeH) / 2;
     ctx.fillStyle = CONF_BG[row.conf];
-    roundRect(ctx, badgeX, badgeY, badgeW, 46, 8);
+    roundRect(ctx, badgeX, badgeY, badgeW, badgeH, 10);
     ctx.fill();
 
     ctx.fillStyle = CONF_TEXT[row.conf];
     ctx.font = 'bold 12px system-ui';
     ctx.textAlign = 'center';
-    ctx.fillText(t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type }), badgeX + badgeW / 2, badgeY + 14);
+    ctx.fillText(t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type }), badgeX + badgeW / 2, badgeY + 20);
+    ctx.font = 'bold 16px system-ui';
+    ctx.fillText(`${row.pick.prob}%`, badgeX + badgeW / 2, badgeY + 39);
+    ctx.fillStyle = row.value ? '#fbbf24' : '#9a9fa6';
     ctx.font = 'bold 11px system-ui';
-    ctx.fillText(`${row.pick.prob}%`, badgeX + badgeW / 2, badgeY + 28);
-    ctx.fillStyle = row.value ? '#fbbf24' : '#888888';
-    ctx.font = 'bold 10px system-ui';
-    ctx.fillText(`${formatOdd(row.odd)}${row.value ? ' ⚡' : ''}`, badgeX + badgeW / 2, badgeY + 41);
+    ctx.fillText(`cote ${formatOdd(row.odd)}${row.value ? ' ⚡' : ''}`, badgeX + badgeW / 2, badgeY + 54);
   });
 
   // Footer
   const fy = HEADER_H + ticket.length * ROW_H + 10;
-  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
   ctx.beginPath();
   ctx.moveTo(16, fy);
   ctx.lineTo(W - 16, fy);
   ctx.stroke();
 
-  ctx.fillStyle = '#333333';
+  ctx.fillStyle = '#5a5f66';
   ctx.font = '10px system-ui';
   ctx.textAlign = 'center';
   ctx.fillText(t('machine.canvasFooter'), W / 2, fy + 24);
 
   return canvas;
+}
+
+// Tronque un texte avec "…" pour qu'il tienne dans maxWidth (évite le
+// chevauchement avec le badge de pick à droite sur les noms d'équipe longs).
+function fitText(ctx, text, maxWidth) {
+  if (ctx.measureText(text).width <= maxWidth) return text;
+  let truncated = text;
+  while (truncated.length > 1 && ctx.measureText(`${truncated}…`).width > maxWidth) {
+    truncated = truncated.slice(0, -1);
+  }
+  return `${truncated}…`;
 }
 
 function roundRect(ctx, x, y, w, h, r) {
@@ -412,7 +513,7 @@ export default function Machine() {
     if (!ticket || ticket.length === 0) return;
     setSharing(true);
     try {
-      const canvas = drawTicketCanvas(ticket, totalOdds, t);
+      const canvas = await drawTicketCanvas(ticket, totalOdds, t);
       canvas.toBlob(async (blob) => {
         const file = new File([blob], 'ticket-statfoot.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {

@@ -34,6 +34,7 @@ const oddsAlertsRoutes   = require('./routes/oddsAlerts');
 const coachRoutes        = require('./routes/coach');
 const supportRoutes      = require('./routes/support');
 const transparencyRoutes = require('./routes/transparency');
+const imgProxyRoutes     = require('./routes/imgProxy');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -104,6 +105,7 @@ app.use('/api/odds-alerts', oddsAlertsRoutes);
 app.use('/api/coach', coachRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/transparency', transparencyRoutes);
+app.use('/api/img-proxy', imgProxyRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API

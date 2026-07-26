@@ -748,6 +748,10 @@
       "lost": "Lost",
       "pending": "Pending"
     },
+    "legWin": "Won",
+    "legLoss": "Lost",
+    "legVoid": "Refunded",
+    "legPending": "Pending",
     "datePresets": {
       "today": "Today",
       "tomorrow": "Tomorrow",

@@ -17,7 +17,7 @@ function WhatsAppIcon({ className }) {
 const FOTMOB_CDN = (id) =>
   id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png` : null;
 
-function TeamLogo({ logo, teamId, name, size = 20 }) {
+export function TeamLogo({ logo, teamId, name, size = 20 }) {
   const [err, setErr] = useState(false);
   const src = logo || FOTMOB_CDN(teamId);
   if (src && !err) {

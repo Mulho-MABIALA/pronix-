@@ -4,6 +4,7 @@ import { format, addDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot } from 'lucide-react';
 import api from '../services/api';
+import { TeamLogo } from '../components/matches/MatchCard';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 
@@ -991,16 +992,21 @@ export default function Machine() {
                 return (
                   <div key={row.match.id} className="flex items-center gap-3 px-4 py-3">
                     <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-600">{idx + 1}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-1.5">
-                        <p className="text-sm font-medium text-gray-200 truncate">{row.match.homeTeam} vs {row.match.awayTeam}</p>
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <TeamLogo logo={row.match.homeTeamLogo} teamId={row.match.homeTeamId} name={row.match.homeTeam} size={16} />
+                        <p className="text-sm font-medium text-gray-200 truncate">{row.match.homeTeam}</p>
                         {row.match.predictions?.aiGenerated && (
                           <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
                             <Bot size={8} />IA
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-gray-600 mt-0.5">
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <TeamLogo logo={row.match.awayTeamLogo} teamId={row.match.awayTeamId} name={row.match.awayTeam} size={16} />
+                        <p className="text-sm font-medium text-gray-200 truncate">{row.match.awayTeam}</p>
+                      </div>
+                      <p className="text-[10px] text-gray-600">
                         {row.match.competition?.name} · {format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}
                       </p>
                     </div>

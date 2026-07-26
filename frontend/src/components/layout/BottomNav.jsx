@@ -25,7 +25,6 @@ function ExplorerDrawer({ open, onClose }) {
       key: 'tools',
       label: t('nav.tools'),
       items: [
-        { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,      desc: t('tools.generatorDesc'),    color: 'text-amber-400 bg-amber-500/10' },
         { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,   desc: t('tools.filtersDesc'),      color: 'text-blue-400 bg-blue-500/10' },
         { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2, desc: t('tools.statsLeaguesDesc'), color: 'text-purple-400 bg-purple-500/10' },
       ],

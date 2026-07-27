@@ -10,6 +10,7 @@ const { AppError } = require('../middleware/errorHandler');
 const env = require('../config/env');
 const { notifyUser } = require('./pushController');
 const { grantReferralReward } = require('./referralController');
+const { grantPartnerCommission } = require('./partnerController');
 
 // ─── Helper : active/renouvelle l'abonnement après paiement validé ───────────
 async function activateSubscription(userId, planId, billingCycle, paymentId) {
@@ -39,6 +40,9 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
 
   // Récompense de parrainage (si ce paiement est le 1er abonnement payant d'un filleul)
   grantReferralReward(userId).catch(() => {});
+
+  // Commission partenaire/influenceur (si l'utilisateur est venu via un code partenaire)
+  grantPartnerCommission(userId, paymentId).catch(() => {});
 }
 
 // ─── Helper : active/renouvelle un abonnement à un plan TIPSTER après paiement ─

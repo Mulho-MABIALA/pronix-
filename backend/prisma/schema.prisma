@@ -106,6 +106,7 @@ model User {
   emailVerifications EmailVerification[]
   referralsGiven     Referral[]         @relation("ReferrerUser")
   referralReceived   Referral?          @relation("RefereeUser")
+  partnerConversion  PartnerConversion?
   betEntries           BetEntry[]
   matchReminders       MatchReminder[]
   blogPosts            BlogPost[]            @relation("BlogAuthor")
@@ -190,6 +191,57 @@ model Referral {
   @@map("referrals")
 }
 
+// ─── PROGRAMME PARTENAIRES (INFLUENCEURS) ──────────────────────────────────────
+// Partenariat à la performance : un influenceur reçoit un code unique et touche
+// un pourcentage (commissionRate) sur chaque abonnement payé par une personne
+// venue via ce code. Distinct du parrainage classique (Referral) qui récompense
+// en jours Premium plutôt qu'en argent — ici la commission est calculée en FCFA
+// à chaque paiement réel et payée manuellement (Mobile Money) par l'admin.
+model Partner {
+  id             String    @id @default(uuid())
+  name           String
+  code           String    @unique
+  commissionRate Float     // ex: 0.30 = 30% du montant du paiement
+  contact        String?   // WhatsApp / téléphone, pour le versement de la commission
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  conversions PartnerConversion[]
+
+  @@map("partners")
+}
+
+model PartnerConversion {
+  id        String   @id @default(uuid())
+  partnerId String
+  partner   Partner  @relation(fields: [partnerId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  commissions PartnerCommission[]
+
+  @@index([partnerId])
+  @@map("partner_conversions")
+}
+
+model PartnerCommission {
+  id               String    @id @default(uuid())
+  conversionId     String
+  conversion       PartnerConversion @relation(fields: [conversionId], references: [id], onDelete: Cascade)
+  paymentId        String    @unique
+  payment          Payment   @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount           Int       // montant du paiement, en FCFA
+  commissionAmount Float     // montant × commissionRate au moment du paiement
+  status           String    @default("PENDING") // PENDING | PAID
+  paidAt           DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([conversionId])
+  @@map("partner_commissions")
+}
+
 // ─── ABONNEMENTS & PAIEMENTS ───────────────────────────────────────────────────
 
 model Plan {
@@ -245,6 +297,8 @@ model Payment {
   metadata       Json?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+
+  partnerCommission PartnerCommission?
 
   @@index([userId])
   @@index([status])

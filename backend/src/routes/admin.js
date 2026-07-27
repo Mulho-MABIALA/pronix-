@@ -27,6 +27,10 @@ const {
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
 } = require('../controllers/adminController');
 const { adminBroadcast, getPushStats } = require('../controllers/pushController');
+const {
+  getAdminPartners, createPartner, updatePartner,
+  getPartnerCommissions, markCommissionPaid, markAllCommissionsPaid,
+} = require('../controllers/partnerController');
 
 const router = Router();
 
@@ -82,5 +86,13 @@ router.delete('/comments/:commentId', deleteAdminComment);
 router.get('/support/tickets', getAdminSupportTickets);
 router.post('/support/tickets/:ticketId/reply', replyToSupportTicket);
 router.patch('/support/tickets/:ticketId/status', updateTicketStatus);
+
+// Programme Partenaires (influenceurs)
+router.get('/partners', getAdminPartners);
+router.post('/partners', createPartner);
+router.patch('/partners/:id', updatePartner);
+router.get('/partners/:id/commissions', getPartnerCommissions);
+router.patch('/partners/commissions/:id/mark-paid', markCommissionPaid);
+router.patch('/partners/:id/mark-all-paid', markAllCommissionsPaid);
 
 module.exports = router;

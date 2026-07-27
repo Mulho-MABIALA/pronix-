@@ -12,15 +12,16 @@ export default function Register() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get('ref');
+  const partnerCode = searchParams.get('partner');
   const [form, setForm] = useState({ email: '', username: '', password: '', confirm: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Enregistre le parrainage après inscription — best-effort, jamais bloquant
-  // (code invalide, auto-parrainage ou déjà parrainé sont silencieusement ignorés).
+  // Enregistre le parrainage/partenariat après inscription — best-effort, jamais
+  // bloquant (code invalide, déjà attribué etc. sont silencieusement ignorés).
   const registerReferralIfAny = () => {
-    if (!refCode) return;
-    api.post(`/referrals/use/${encodeURIComponent(refCode)}`).catch(() => {});
+    if (refCode) api.post(`/referrals/use/${encodeURIComponent(refCode)}`).catch(() => {});
+    if (partnerCode) api.post(`/partners/use/${encodeURIComponent(partnerCode)}`).catch(() => {});
   };
 
   const handleGoogleSuccess = async (credential) => {

@@ -36,6 +36,7 @@ const supportRoutes      = require('./routes/support');
 const transparencyRoutes = require('./routes/transparency');
 const imgProxyRoutes     = require('./routes/imgProxy');
 const ticketsRoutes      = require('./routes/tickets');
+const partnersRoutes     = require('./routes/partners');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -108,6 +109,7 @@ app.use('/api/support', supportRoutes);
 app.use('/api/transparency', transparencyRoutes);
 app.use('/api/img-proxy', imgProxyRoutes);
 app.use('/api/tickets', ticketsRoutes);
+app.use('/api/partners', partnersRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API

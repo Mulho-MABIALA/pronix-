@@ -1441,6 +1441,8 @@
     "viewSite": "View site",
     "logout": "Log out",
     "openMenu": "Open menu",
+    "collapseSidebar": "Collapse menu",
+    "expandSidebar": "Expand menu",
     "administration": "Administration",
     "copyright": "© {{year}} fpronix — All rights reserved"
   },

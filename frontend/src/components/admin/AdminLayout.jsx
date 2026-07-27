@@ -1,12 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone,
+  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+
+const SIDEBAR_COLLAPSE_KEY = 'admin-sidebar-collapsed';
 
 const NAV_GROUPS = [
   {
@@ -48,7 +50,7 @@ const NAV_GROUPS = [
   },
 ];
 
-function NavItem({ to, itemKey, Icon, end, badge, onClose }) {
+function NavItem({ to, itemKey, Icon, end, badge, onClose, collapsed }) {
   const { t } = useTranslation();
   const label = t(`adminLayout.items.${itemKey}`);
   return (
@@ -56,8 +58,11 @@ function NavItem({ to, itemKey, Icon, end, badge, onClose }) {
       to={to}
       end={end}
       onClick={onClose}
+      title={collapsed ? label : undefined}
       className={({ isActive }) =>
-        `relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
+        `relative flex items-center gap-3 rounded-xl text-[13px] font-medium transition-all duration-150 group ${
+          collapsed ? 'justify-center px-2 py-2.5' : 'px-3 py-2.5'
+        } ${
           isActive
             ? 'bg-primary-500/15 text-primary-300'
             : 'text-white/75 hover:text-white hover:bg-white/[0.06]'
@@ -71,18 +76,18 @@ function NavItem({ to, itemKey, Icon, end, badge, onClose }) {
             <span className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 rounded-r-full bg-primary-400" />
           )}
           <Icon size={16} strokeWidth={isActive ? 2.2 : 1.8} className="shrink-0" />
-          <span className="flex-1 leading-none">{label}</span>
+          {!collapsed && <span className="flex-1 leading-none">{label}</span>}
           {badge === 'alert' && (
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400 shrink-0" />
+            <span className={`w-1.5 h-1.5 rounded-full bg-red-400 shrink-0 ${collapsed ? 'absolute top-1.5 right-1.5' : ''}`} />
           )}
-          {isActive && <ChevronRight size={12} className="text-primary-400/60 shrink-0" />}
+          {!collapsed && isActive && <ChevronRight size={12} className="text-primary-400/60 shrink-0" />}
         </>
       )}
     </NavLink>
   );
 }
 
-function SidebarContent({ onClose }) {
+function SidebarContent({ onClose, collapsed }) {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -91,15 +96,17 @@ function SidebarContent({ onClose }) {
     <div className="flex flex-col h-full select-none">
 
       {/* ── Logo ───────────────────────────────────────────────────────────── */}
-      <div className="flex items-center justify-between px-4 h-[60px] shrink-0 border-b border-white/[0.06]">
-        <Link to="/admin" onClick={onClose} className="flex items-center gap-2.5 group">
+      <div className={`flex items-center h-[60px] shrink-0 border-b border-white/[0.06] ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
+        <Link to="/admin" onClick={onClose} className="flex items-center gap-2.5 group min-w-0">
           <img src="/logo-circle.png" alt="fpronix" className="w-8 h-8 rounded-full shrink-0" />
-          <div>
-            <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight">
-              fp<span className="text-primary-400">ronix</span>
-            </p>
-            <p className="text-[9px] text-white/55 uppercase tracking-[0.15em] font-semibold">{t('adminLayout.adminConsole')}</p>
-          </div>
+          {!collapsed && (
+            <div className="min-w-0">
+              <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight truncate">
+                fp<span className="text-primary-400">ronix</span>
+              </p>
+              <p className="text-[9px] text-white/55 uppercase tracking-[0.15em] font-semibold truncate">{t('adminLayout.adminConsole')}</p>
+            </div>
+          )}
         </Link>
         {onClose && (
           <button onClick={onClose}
@@ -110,15 +117,18 @@ function SidebarContent({ onClose }) {
       </div>
 
       {/* ── Navigation ─────────────────────────────────────────────────────── */}
-      <nav className="flex-1 overflow-y-auto py-4 px-2.5 space-y-5" aria-label="Admin navigation">
+      <nav className={`flex-1 overflow-y-auto py-4 space-y-5 ${collapsed ? 'px-2' : 'px-2.5'}`} aria-label="Admin navigation">
         {NAV_GROUPS.map(({ groupKey, items }) => (
           <div key={groupKey}>
-            <p className="px-3 mb-1.5 text-[10px] font-bold text-white/45 uppercase tracking-[0.12em]">
-              {t(`adminLayout.groups.${groupKey}`)}
-            </p>
+            {!collapsed && (
+              <p className="px-3 mb-1.5 text-[10px] font-bold text-white/45 uppercase tracking-[0.12em]">
+                {t(`adminLayout.groups.${groupKey}`)}
+              </p>
+            )}
+            {collapsed && <div className="mx-2 mb-1.5 border-t border-white/[0.06]" />}
             <div className="space-y-0.5">
               {items.map((item) => (
-                <NavItem key={item.to} {...item} onClose={onClose} />
+                <NavItem key={item.to} {...item} onClose={onClose} collapsed={collapsed} />
               ))}
             </div>
           </div>
@@ -126,28 +136,46 @@ function SidebarContent({ onClose }) {
       </nav>
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}
-      <div className="px-2.5 pb-3 pt-2 border-t border-white/[0.06] space-y-1 shrink-0">
+      <div className={`pb-3 pt-2 border-t border-white/[0.06] space-y-1 shrink-0 ${collapsed ? 'px-2' : 'px-2.5'}`}>
         <Link to="/" target="_blank"
-          className="flex items-center gap-3 px-3 py-2 rounded-xl text-[13px] text-white/65 hover:text-white hover:bg-white/[0.06] transition-colors">
+          title={collapsed ? t('adminLayout.viewSite') : undefined}
+          className={`flex items-center gap-3 rounded-xl text-[13px] text-white/65 hover:text-white hover:bg-white/[0.06] transition-colors ${collapsed ? 'justify-center px-2 py-2' : 'px-3 py-2'}`}>
           <ExternalLink size={14} />
-          {t('adminLayout.viewSite')}
+          {!collapsed && t('adminLayout.viewSite')}
         </Link>
 
-        <div className="flex items-center gap-2.5 px-3 py-2 mt-0.5 rounded-xl">
-          <div className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0">
-            {user?.username?.charAt(0).toUpperCase()}
+        {collapsed ? (
+          <div className="flex flex-col items-center gap-2 pt-1.5">
+            <div
+              title={user?.username}
+              className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0">
+              {user?.username?.charAt(0).toUpperCase()}
+            </div>
+            <button
+              onClick={() => { logout(); navigate('/connexion'); }}
+              className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
+              aria-label={t('adminLayout.logout')}
+              title={t('adminLayout.logout')}>
+              <LogOut size={14} />
+            </button>
           </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-[12px] font-semibold text-white/90 truncate leading-tight">{user?.username}</p>
-            <p className="text-[10px] text-white/55 truncate mt-0.5">{user?.email}</p>
+        ) : (
+          <div className="flex items-center gap-2.5 px-3 py-2 mt-0.5 rounded-xl">
+            <div className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0">
+              {user?.username?.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-[12px] font-semibold text-white/90 truncate leading-tight">{user?.username}</p>
+              <p className="text-[10px] text-white/55 truncate mt-0.5">{user?.email}</p>
+            </div>
+            <button
+              onClick={() => { logout(); navigate('/connexion'); }}
+              className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
+              aria-label={t('adminLayout.logout')}>
+              <LogOut size={14} />
+            </button>
           </div>
-          <button
-            onClick={() => { logout(); navigate('/connexion'); }}
-            className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
-            aria-label={t('adminLayout.logout')}>
-            <LogOut size={14} />
-          </button>
-        </div>
+        )}
       </div>
     </div>
   );
@@ -156,14 +184,33 @@ function SidebarContent({ onClose }) {
 export default function AdminLayout() {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === '1';
+  });
+
+  useEffect(() => {
+    window.localStorage.setItem(SIDEBAR_COLLAPSE_KEY, collapsed ? '1' : '0');
+  }, [collapsed]);
 
   return (
     <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
 
       {/* ── Sidebar desktop ─────────────────────────────────────────────────── */}
-      <aside className="hidden md:flex flex-col w-56 shrink-0 fixed inset-y-0 left-0 z-30 border-r border-white/[0.06]"
+      <aside className={`hidden md:flex flex-col shrink-0 fixed inset-y-0 left-0 z-30 border-r border-white/[0.06] transition-[width] duration-200 ${collapsed ? 'w-16' : 'w-56'}`}
         style={{ background: 'rgba(14,15,17,0.98)', backdropFilter: 'blur(20px)' }}>
-        <SidebarContent />
+        <SidebarContent collapsed={collapsed} />
+
+        {/* Bouton réduire / agrandir */}
+        <button
+          onClick={() => setCollapsed((v) => !v)}
+          className="hidden md:flex absolute top-[26px] -right-3 w-6 h-6 rounded-full items-center justify-center border border-white/[0.1] text-white/50 hover:text-white hover:border-white/20 transition-colors z-40"
+          style={{ background: '#1a1b1e' }}
+          aria-label={collapsed ? t('adminLayout.expandSidebar') : t('adminLayout.collapseSidebar')}
+          title={collapsed ? t('adminLayout.expandSidebar') : t('adminLayout.collapseSidebar')}
+        >
+          {collapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
+        </button>
       </aside>
 
       {/* ── Sidebar mobile (overlay) ─────────────────────────────────────────── */}
@@ -178,7 +225,7 @@ export default function AdminLayout() {
       )}
 
       {/* ── Zone principale ──────────────────────────────────────────────────── */}
-      <div className="flex-1 md:ml-56 flex flex-col min-h-screen">
+      <div className={`flex-1 flex flex-col min-h-screen transition-[margin] duration-200 ${collapsed ? 'md:ml-16' : 'md:ml-56'}`}>
 
         {/* Topbar mobile */}
         <div className="md:hidden flex items-center gap-3 px-4 h-14 border-b border-white/[0.06] sticky top-0 z-20"

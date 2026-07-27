@@ -13,13 +13,27 @@ function formatAmount(amount) {
   return new Intl.NumberFormat('fr-FR').format(Math.round(amount)) + ' XOF';
 }
 
-function StatPill({ icon: Icon, label, value, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
+// Carte de stat globale (en haut de page) — même style que /admin/finances.
+function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
   return (
-    <div className={`flex items-center gap-2 px-3 py-2 rounded-xl ${bg}`}>
-      <Icon size={14} className={color} />
-      <div>
-        <p className="text-[10px] text-gray-500 leading-none">{label}</p>
-        <p className={`text-sm font-bold leading-tight mt-0.5 ${color}`}>{value}</p>
+    <div className="rounded-2xl border border-white/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
+      <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
+        <Icon size={16} className={color} />
+      </div>
+      <p className="text-lg font-bold text-white leading-tight truncate">{value}</p>
+      <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+    </div>
+  );
+}
+
+// Mini-stat compacte, utilisée en ligne dans chaque carte partenaire.
+function MiniStat({ icon: Icon, label, value, color = 'text-gray-300' }) {
+  return (
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/[0.06] bg-white/[0.02]">
+      <Icon size={12} className={color} />
+      <div className="leading-none">
+        <p className={`text-xs font-bold ${color}`}>{value}</p>
+        <p className="text-[9px] text-gray-600 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -184,11 +198,11 @@ export default function AdminPartners() {
       </div>
 
       {/* Stats globales */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <StatPill icon={Users} label="Partenaires" value={partners.length} color="text-blue-400" bg="bg-blue-500/10" />
-        <StatPill icon={Users} label="Filleuls apportés" value={totalConversions} color="text-purple-400" bg="bg-purple-500/10" />
-        <StatPill icon={Clock} label="Commissions dues" value={formatAmount(totalDue)} color="text-amber-400" bg="bg-amber-500/10" />
-        <StatPill icon={CircleCheck} label="Déjà versées" value={formatAmount(totalPaid)} color="text-primary-400" bg="bg-primary-500/10" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard icon={Users} label="Partenaires" value={partners.length} color="text-blue-400" bg="bg-blue-500/10" />
+        <StatCard icon={Users} label="Filleuls apportés" value={totalConversions} color="text-purple-400" bg="bg-purple-500/10" />
+        <StatCard icon={Clock} label="Commissions dues" value={formatAmount(totalDue)} color="text-amber-400" bg="bg-amber-500/10" />
+        <StatCard icon={CircleCheck} label="Déjà versées" value={formatAmount(totalPaid)} color="text-primary-400" bg="bg-primary-500/10" />
       </div>
 
       {/* Formulaire ajout */}
@@ -294,8 +308,8 @@ export default function AdminPartners() {
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <StatPill icon={Users} label="Filleuls" value={p.conversionCount} color="text-gray-300" bg="bg-white/[0.04]" />
-                <StatPill icon={Clock} label="Dû" value={formatAmount(p.totalDue)} color="text-amber-400" bg="bg-amber-500/10" />
+                <MiniStat icon={Users} label="Filleuls" value={p.conversionCount} color="text-gray-300" />
+                <MiniStat icon={Clock} label="Dû" value={formatAmount(p.totalDue)} color="text-amber-400" />
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">

@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const cookieParser = require('cookie-parser');
 
 const { errorHandler } = require('./middleware/errorHandler');
 
@@ -49,6 +50,7 @@ app.use(cors({
   origin: env.FRONTEND_URL,
   credentials: true,
 }));
+app.use(cookieParser());
 app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 
 // Rate limiting global (100 req/15min par IP)

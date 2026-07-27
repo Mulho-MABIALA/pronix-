@@ -7,6 +7,7 @@ const prisma = require('../config/database');
 const env = require('../config/env');
 const { AppError } = require('../middleware/errorHandler');
 const { sendWelcomeEmail, sendPasswordResetEmail, sendEmailVerification } = require('../services/emailService');
+const { REFRESH_COOKIE, setAuthCookies, clearAuthCookies } = require('../config/cookies');
 
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -99,19 +100,22 @@ async function register(req, res, next) {
 
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
+    const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.refreshToken.create({
       data: {
         userId: user.id,
         token: refreshTokenValue,
-        expiresAt: getRefreshExpiryDate(),
+        expiresAt: refreshExpiresAt,
       },
     });
+
+    setAuthCookies(res, { accessToken, refreshToken: refreshTokenValue, refreshExpiresAt });
 
     const { password: _, ...userSafe } = user;
     res.status(201).json({
       success: true,
       message: 'Compte créé avec succès',
-      data: { user: userSafe, accessToken, refreshToken: refreshTokenValue },
+      data: { user: userSafe },
     });
   } catch (err) {
     next(err);
@@ -143,17 +147,20 @@ async function login(req, res, next) {
 
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
+    const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.$transaction([
       prisma.refreshToken.create({
-        data: { userId: user.id, token: refreshTokenValue, expiresAt: getRefreshExpiryDate() },
+        data: { userId: user.id, token: refreshTokenValue, expiresAt: refreshExpiresAt },
       }),
       prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }),
     ]);
 
+    setAuthCookies(res, { accessToken, refreshToken: refreshTokenValue, refreshExpiresAt });
+
     const { password: _, ...userSafe } = user;
     res.json({
       success: true,
-      data: { user: userSafe, accessToken, refreshToken: refreshTokenValue },
+      data: { user: userSafe },
     });
   } catch (err) {
     next(err);
@@ -161,9 +168,14 @@ async function login(req, res, next) {
 }
 
 // ─── Renouvellement du token ─────────────────────────────────────────────────
+// Le refresh token est lu depuis le cookie httpOnly (path /api/auth), plus
+// depuis le corps de la requête — le frontend n'a plus besoin de le transmettre.
 async function refreshToken(req, res, next) {
   try {
-    const { refreshToken: token } = z.object({ refreshToken: z.string() }).parse(req.body);
+    const token = req.cookies?.[REFRESH_COOKIE];
+    if (!token) {
+      throw new AppError('Refresh token manquant', 401, 'INVALID_REFRESH_TOKEN');
+    }
 
     const stored = await prisma.refreshToken.findUnique({
       where: { token },
@@ -171,25 +183,28 @@ async function refreshToken(req, res, next) {
     });
 
     if (!stored || stored.expiresAt < new Date() || !stored.user.isActive) {
+      clearAuthCookies(res);
       throw new AppError('Refresh token invalide ou expiré', 401, 'INVALID_REFRESH_TOKEN');
     }
 
     // Rotation du refresh token (sécurité) + mise à jour lastLoginAt
     await prisma.refreshToken.delete({ where: { id: stored.id } });
     const newRefreshToken = generateRefreshToken();
+    const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.$transaction([
       prisma.refreshToken.create({
-        data: { userId: stored.userId, token: newRefreshToken, expiresAt: getRefreshExpiryDate() },
+        data: { userId: stored.userId, token: newRefreshToken, expiresAt: refreshExpiresAt },
       }),
       prisma.user.update({ where: { id: stored.userId }, data: { lastLoginAt: new Date() } }),
     ]);
 
     const accessToken = generateAccessToken(stored.userId);
-    const { password: _, ...userSafe } = stored.user;
+    setAuthCookies(res, { accessToken, refreshToken: newRefreshToken, refreshExpiresAt });
 
+    const { password: _, ...userSafe } = stored.user;
     res.json({
       success: true,
-      data: { user: userSafe, accessToken, refreshToken: newRefreshToken },
+      data: { user: userSafe },
     });
   } catch (err) {
     next(err);
@@ -199,8 +214,11 @@ async function refreshToken(req, res, next) {
 // ─── Déconnexion ─────────────────────────────────────────────────────────────
 async function logout(req, res, next) {
   try {
-    const { refreshToken: token } = z.object({ refreshToken: z.string() }).parse(req.body);
-    await prisma.refreshToken.deleteMany({ where: { token } });
+    const token = req.cookies?.[REFRESH_COOKIE];
+    if (token) {
+      await prisma.refreshToken.deleteMany({ where: { token } });
+    }
+    clearAuthCookies(res);
     res.json({ success: true, message: 'Déconnecté avec succès' });
   } catch (err) {
     next(err);
@@ -319,14 +337,17 @@ async function googleAuth(req, res, next) {
 
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
+    const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.refreshToken.create({
-      data: { userId: user.id, token: refreshTokenValue, expiresAt: getRefreshExpiryDate() },
+      data: { userId: user.id, token: refreshTokenValue, expiresAt: refreshExpiresAt },
     });
+
+    setAuthCookies(res, { accessToken, refreshToken: refreshTokenValue, refreshExpiresAt });
 
     const { password: _, ...userSafe } = user;
     res.json({
       success: true,
-      data: { user: userSafe, accessToken, refreshToken: refreshTokenValue },
+      data: { user: userSafe },
     });
   } catch (err) {
     next(err);

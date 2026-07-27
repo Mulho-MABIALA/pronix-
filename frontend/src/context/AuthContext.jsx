@@ -7,15 +7,15 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Les tokens vivent désormais dans des cookies httpOnly posés par le serveur
+  // (plus de localStorage) — on ne peut donc plus "voir" si l'utilisateur est
+  // connecté côté JS ; on le déduit en interrogeant /auth/me au chargement.
   const loadUser = useCallback(async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) { setLoading(false); return; }
     try {
       const { data } = await api.get('/auth/me');
       setUser(data.data);
     } catch {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -25,32 +25,24 @@ export function AuthProvider({ children }) {
 
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
-    localStorage.setItem('accessToken', data.data.accessToken);
-    localStorage.setItem('refreshToken', data.data.refreshToken);
     setUser(data.data.user);
     return data.data.user;
   };
 
   const register = async (email, password, username) => {
     const { data } = await api.post('/auth/register', { email, password, username });
-    localStorage.setItem('accessToken', data.data.accessToken);
-    localStorage.setItem('refreshToken', data.data.refreshToken);
     setUser(data.data.user);
     return data.data.user;
   };
 
   const loginWithGoogle = async (credential) => {
     const { data } = await api.post('/auth/google', { credential });
-    localStorage.setItem('accessToken', data.data.accessToken);
-    localStorage.setItem('refreshToken', data.data.refreshToken);
     setUser(data.data.user);
     return data.data.user;
   };
 
   const logout = async () => {
-    const refreshToken = localStorage.getItem('refreshToken');
-    try { await api.post('/auth/logout', { refreshToken }); } catch {}
-    localStorage.clear();
+    try { await api.post('/auth/logout'); } catch {}
     setUser(null);
   };
 

@@ -1,24 +1,30 @@
 import axios from 'axios';
 
+// Nettoyage : anciens tokens JWT stockés en localStorage avant la migration
+// vers les cookies httpOnly — ils ne servent plus à rien, on les efface.
+localStorage.removeItem('accessToken');
+localStorage.removeItem('refreshToken');
+
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api',
+  baseURL: API_BASE,
   headers: { 'Content-Type': 'application/json' },
   timeout: 15000,
+  // Authentification par cookies httpOnly (access + refresh token) — le
+  // navigateur les envoie/reçoit automatiquement, plus besoin d'en-tête
+  // Authorization ni de stockage en localStorage (protège contre le vol
+  // de session en cas de faille XSS ailleurs sur le site).
+  withCredentials: true,
 });
 
-// Injecte le token dans chaque requête
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
-  return config;
-});
-
-// Gestion du token expiré — tentative de refresh automatique
+// Gestion du token expiré — tentative de refresh automatique via le cookie
+// httpOnly (le serveur pose de nouveaux cookies dans la réponse).
 let isRefreshing = false;
 let failedQueue = [];
 
-function processQueue(error, token = null) {
-  failedQueue.forEach((prom) => (error ? prom.reject(error) : prom.resolve(token)));
+function processQueue(error) {
+  failedQueue.forEach((prom) => (error ? prom.reject(error) : prom.resolve()));
   failedQueue = [];
 }
 
@@ -31,34 +37,18 @@ api.interceptors.response.use(
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
-        }).then((token) => {
-          original.headers.Authorization = `Bearer ${token}`;
-          return api(original);
-        });
+        }).then(() => api(original));
       }
 
       original._retry = true;
       isRefreshing = true;
 
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        isRefreshing = false;
-        localStorage.clear();
-        window.location.href = '/connexion';
-        return Promise.reject(error);
-      }
-
       try {
-        const { data } = await axios.post('/api/auth/refresh-token', { refreshToken });
-        localStorage.setItem('accessToken', data.data.accessToken);
-        localStorage.setItem('refreshToken', data.data.refreshToken);
-        api.defaults.headers.common.Authorization = `Bearer ${data.data.accessToken}`;
-        processQueue(null, data.data.accessToken);
-        original.headers.Authorization = `Bearer ${data.data.accessToken}`;
+        await axios.post(`${API_BASE}/auth/refresh-token`, {}, { withCredentials: true });
+        processQueue(null);
         return api(original);
       } catch (refreshError) {
-        processQueue(refreshError, null);
-        localStorage.clear();
+        processQueue(refreshError);
         window.location.href = '/connexion';
         return Promise.reject(refreshError);
       } finally {

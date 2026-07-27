@@ -2,16 +2,25 @@ const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const prisma = require('../config/database');
 const { AppError } = require('./errorHandler');
+const { ACCESS_COOKIE } = require('../config/cookies');
+
+// Lit le token depuis le cookie httpOnly (mode normal) ou, à défaut,
+// depuis l'en-tête Authorization (compat. clients externes / API directe).
+function extractToken(req) {
+  if (req.cookies?.[ACCESS_COOKIE]) return req.cookies[ACCESS_COOKIE];
+  const authHeader = req.headers.authorization;
+  if (authHeader?.startsWith('Bearer ')) return authHeader.slice(7);
+  return null;
+}
 
 // Vérifie le JWT access token et attache l'utilisateur à req
 async function authenticate(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
+    const token = extractToken(req);
+    if (!token) {
       throw new AppError('Token d\'authentification manquant', 401, 'UNAUTHORIZED');
     }
 
-    const token = authHeader.slice(7);
     let payload;
     try {
       payload = jwt.verify(token, env.JWT_ACCESS_SECRET);
@@ -52,9 +61,8 @@ function requireAdmin(req, res, next) {
 // Auth optionnelle : lit le token si présent, ne bloque pas si absent
 async function optionalAuthenticate(req, res, next) {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) return next();
-    const token = authHeader.slice(7);
+    const token = extractToken(req);
+    if (!token) return next();
     let payload;
     try { payload = jwt.verify(token, env.JWT_ACCESS_SECRET); } catch { return next(); }
     const user = await prisma.user.findUnique({

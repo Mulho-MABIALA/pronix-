@@ -24,10 +24,12 @@ function isStandalone() {
   );
 }
 
-// Signale au serveur que l'app est installée (une seule fois, si connecté)
+// Signale au serveur que l'app est installée (une seule fois, si connecté).
+// Le token d'auth vit maintenant dans un cookie httpOnly illisible en JS : on
+// ne peut plus vérifier la connexion ici, on tente l'appel et on ignore
+// silencieusement le 401 si l'utilisateur n'est pas connecté.
 function reportInstalled() {
   if (localStorage.getItem(INSTALLED_FLAG)) return;
-  if (!localStorage.getItem('accessToken')) return;
   api.post('/auth/app-installed')
     .then(() => localStorage.setItem(INSTALLED_FLAG, '1'))
     .catch(() => {});

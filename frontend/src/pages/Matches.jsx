@@ -14,6 +14,62 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh';
 
 const GROUP_LIMIT = 5;
 
+// ── Priorité d'affichage des compétitions ───────────────────────────────────
+// 1) Les 7 plus grands championnats (dans cet ordre précis)
+// 2) Les autres grands tournois internationaux en cours (Coupe du monde, Euro...)
+// 3) Les matchs amicaux impliquant au moins une équipe connue
+// 4) Tout le reste, dans l'ordre où il arrive de l'API
+const PRIORITY_LEAGUES = [
+  { name: 'Premier League', country: 'England' },
+  { name: 'La Liga', country: 'Spain' },
+  { name: 'Serie A', country: 'Italy' },
+  { name: 'Bundesliga', country: 'Germany' },
+  { name: 'Ligue 1', country: 'France' },
+  { name: 'UEFA Champions League' },
+  { name: 'Africa Cup of Nations' },
+];
+
+const TOURNAMENT_KEYWORDS = [
+  'world cup', 'euro champ', 'european champ', 'copa america',
+  'africa cup of nations', 'afcon', 'nations league', 'confederations cup',
+  'caf champions league', 'copa libertadores', 'coupe du monde', "coupe d'afrique",
+];
+
+const KNOWN_TEAMS = [
+  'real madrid', 'barcelona', 'manchester united', 'manchester city', 'liverpool',
+  'chelsea', 'arsenal', 'bayern munich', 'borussia dortmund', 'paris saint-germain', 'psg',
+  'juventus', 'ac milan', 'inter milan', 'atletico madrid', 'tottenham',
+  'brazil', 'argentina', 'france', 'portugal', 'spain', 'england', 'germany', 'italy',
+  'netherlands', 'belgium', 'senegal', 'ivory coast', "côte d'ivoire", 'cameroon',
+  'nigeria', 'ghana', 'morocco', 'algeria', 'egypt', 'tunisia', 'mali', 'rd congo',
+];
+
+function isFriendlyCompetition(name) {
+  return name.includes('friendl') || name.includes('amical');
+}
+
+function competitionPriority(name, country, matchesInGroup) {
+  const n = (name || '').toLowerCase();
+  const c = (country || '').toLowerCase();
+
+  const bigIdx = PRIORITY_LEAGUES.findIndex((l) => {
+    if (l.name.toLowerCase() !== n) return false;
+    return !l.country || l.country.toLowerCase() === c;
+  });
+  if (bigIdx !== -1) return bigIdx;
+
+  if (TOURNAMENT_KEYWORDS.some((k) => n.includes(k))) return 7;
+
+  if (isFriendlyCompetition(n)) {
+    const hasKnownTeam = matchesInGroup.some((m) =>
+      KNOWN_TEAMS.some((team) => m.homeTeam?.toLowerCase().includes(team) || m.awayTeam?.toLowerCase().includes(team))
+    );
+    if (hasKnownTeam) return 8;
+  }
+
+  return 20;
+}
+
 export default function Matches() {
   const { t, i18n } = useTranslation();
   const queryClient = useQueryClient();
@@ -68,10 +124,14 @@ export default function Matches() {
 
   const byCompetition = matches.reduce((acc, match) => {
     const key = match.competition?.name || 'Autre';
-    if (!acc[key]) acc[key] = { logo: match.competition?.logo || null, list: [] };
+    if (!acc[key]) acc[key] = { logo: match.competition?.logo || null, country: match.competition?.country || null, list: [] };
     acc[key].list.push(match);
     return acc;
   }, {});
+
+  const sortedCompetitionEntries = Object.entries(byCompetition).sort(([nameA, groupA], [nameB, groupB]) => {
+    return competitionPriority(nameA, groupA.country, groupA.list) - competitionPriority(nameB, groupB.country, groupB.list);
+  });
 
   const pullProgress = Math.min(pullDistance / threshold, 1);
   const showPTR = pulling || refreshing;
@@ -216,7 +276,7 @@ export default function Matches() {
           </div>
         ) : (
           <div className="space-y-5">
-            {Object.entries(byCompetition).map(([compName, { logo, list: compMatches }]) => {
+            {sortedCompetitionEntries.map(([compName, { logo, list: compMatches }]) => {
               const isExpanded = !!expandedGroups[compName];
               const hasMore    = compMatches.length > GROUP_LIMIT;
               const visible    = isExpanded ? compMatches : compMatches.slice(0, GROUP_LIMIT);

@@ -48,7 +48,16 @@ export default function MatchCard({ match }) {
   const minute     = match.minute === 'HT' ? t('matchCard.htShort') : match.minute;
   const homeWins   = hasScore && match.homeScore > match.awayScore;
   const awayWins   = hasScore && match.awayScore > match.homeScore;
+  const isDraw     = hasScore && match.homeScore === match.awayScore;
   const pred       = match.predictions;
+
+  // Couleur des scores — vert pour le vainqueur, ambre en cas de nul,
+  // rouge "live" pendant le match, pour attirer l'oeil sur le résultat.
+  const scoreColor = (isWinner) => {
+    if (isLive) return 'text-live-400';
+    if (isDraw) return 'text-amber-400';
+    return isWinner ? 'text-primary-400' : 'text-gray-500';
+  };
 
   const shareText = `⚽ ${match.homeTeam} vs ${match.awayTeam}${
     match.competition?.name ? `\n🏆 ${match.competition.name}` : ''
@@ -105,10 +114,10 @@ export default function MatchCard({ match }) {
       <div className="shrink-0 text-right w-5 space-y-2.5">
         {hasScore ? (
           <>
-            <span className={`block text-sm font-display font-bold tabular-nums leading-none ${homeWins ? 'text-white' : 'text-gray-500'}`}>
+            <span className={`block text-sm font-display font-bold tabular-nums leading-none ${scoreColor(homeWins)}`}>
               {match.homeScore}
             </span>
-            <span className={`block text-sm font-display font-bold tabular-nums leading-none ${awayWins ? 'text-white' : 'text-gray-500'}`}>
+            <span className={`block text-sm font-display font-bold tabular-nums leading-none ${scoreColor(awayWins)}`}>
               {match.awayScore}
             </span>
           </>

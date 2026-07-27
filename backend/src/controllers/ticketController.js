@@ -5,8 +5,67 @@
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { resolvePick } = require('../utils/pickResult');
+const { getUserPlanCode } = require('../middleware/subscription');
 
 const MAX_ENTRIES = 20;
+const FREE_TICKET_DAILY_LIMIT = 3;
+
+function today() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+function isPremiumUser(user) {
+  return ['PREMIUM', 'PRO', 'LIFETIME'].includes(getUserPlanCode(user));
+}
+
+// GET /api/tickets/quota — statut du quota (lecture seule, n'incrémente pas)
+async function getTicketQuota(req, res, next) {
+  try {
+    if (isPremiumUser(req.user)) {
+      return res.json({ success: true, data: { used: 0, limit: null, unlimited: true } });
+    }
+    const quota = await prisma.ticketQuota.findUnique({
+      where: { userId_date: { userId: req.user.id, date: today() } },
+    });
+    res.json({
+      success: true,
+      data: { used: quota?.count || 0, limit: FREE_TICKET_DAILY_LIMIT, unlimited: false },
+    });
+  } catch (err) { next(err); }
+}
+
+// POST /api/tickets/quota/consume — vérifie et incrémente le quota journalier
+// (appelé à chaque clic sur "Générer" côté frontend, avant de construire le ticket)
+async function consumeTicketQuota(req, res, next) {
+  try {
+    if (isPremiumUser(req.user)) {
+      return res.json({ success: true, data: { allowed: true, used: 0, limit: null, unlimited: true } });
+    }
+
+    const date = today();
+    const quota = await prisma.ticketQuota.upsert({
+      where:  { userId_date: { userId: req.user.id, date } },
+      create: { userId: req.user.id, date, count: 1 },
+      update: { count: { increment: 1 } },
+    });
+
+    if (quota.count > FREE_TICKET_DAILY_LIMIT) {
+      await prisma.ticketQuota.update({
+        where: { userId_date: { userId: req.user.id, date } },
+        data:  { count: { decrement: 1 } },
+      });
+      return res.json({
+        success: true,
+        data: { allowed: false, used: FREE_TICKET_DAILY_LIMIT, limit: FREE_TICKET_DAILY_LIMIT, unlimited: false },
+      });
+    }
+
+    res.json({
+      success: true,
+      data: { allowed: true, used: quota.count, limit: FREE_TICKET_DAILY_LIMIT, unlimited: false },
+    });
+  } catch (err) { next(err); }
+}
 
 // POST /api/tickets — enregistrer un ticket généré
 async function saveTicket(req, res, next) {
@@ -130,4 +189,4 @@ async function deleteTicket(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { saveTicket, getTicketHistory, deleteTicket };
+module.exports = { saveTicket, getTicketHistory, deleteTicket, getTicketQuota, consumeTicketQuota };

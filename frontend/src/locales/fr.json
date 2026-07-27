@@ -492,6 +492,10 @@
     "editPassword": "Modifier",
     "logoutBtn": "Se déconnecter",
     "avatarUploadError": "Erreur lors de l'upload de la photo. Réessaie.",
+    "contact": {
+      "title": "Contact & support",
+      "desc": "Une question, un problème ? Notre équipe te répond directement."
+    },
     "referral": {
       "title": "Parrainage",
       "desc": "Partage ton lien : dès qu'un ami s'abonne à un plan payant grâce à toi, tu reçois 7 jours Premium offerts.",
@@ -756,6 +760,9 @@
     "successRateDetail": "{{won}} gagné(s) sur {{resolved}} résolu(s)",
     "successRatePending": "{{count}} en attente",
     "noResolvedTickets": "Aucun ticket résolu pour l'instant",
+    "ticketsToday": "{{used}}/{{limit}} tickets gratuits utilisés aujourd'hui",
+    "ticketQuotaExceededDesc": "Vous avez atteint la limite de {{limit}} tickets gratuits aujourd'hui. Passez Premium pour générer sans limite.",
+    "premiumUnlimitedTickets": "Passer Premium",
     "datePresets": {
       "today": "Aujourd'hui",
       "tomorrow": "Demain",

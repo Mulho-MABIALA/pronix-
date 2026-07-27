@@ -142,6 +142,21 @@
   .filter-chip[data-active="true"][data-variant="live"] .chip-count {
     background: rgba(239,68,68,0.2);
   }
+  /* Onglet Historique — identité ambrée discrète même inactif, plus marquée si actif */
+  .filter-chip[data-variant="history"] {
+    color: theme('colors.amber.500' / 70%);
+    border-color: rgba(245,158,11,0.18);
+  }
+  .filter-chip[data-variant="history"]:hover {
+    color: theme('colors.amber.400');
+  }
+  .filter-chip[data-active="true"][data-variant="history"] {
+    @apply bg-amber-500/15 text-amber-400;
+    border-color: rgba(245,158,11,0.35);
+  }
+  .filter-chip[data-active="true"][data-variant="history"] .chip-count {
+    background: rgba(245,158,11,0.2);
+  }
 
   /* ── "Voir plus / Voir moins" — repli des groupes longs ──────────────── */
   .see-more-btn {

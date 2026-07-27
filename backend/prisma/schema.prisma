@@ -103,6 +103,7 @@ model User {
   passwordResets     PasswordReset[]
   pushSubscriptions  PushSubscription[]
   chatQuotas         ChatQuota[]
+  ticketQuotas       TicketQuota[]
   emailVerifications EmailVerification[]
   referralsGiven     Referral[]         @relation("ReferrerUser")
   referralReceived   Referral?          @relation("RefereeUser")
@@ -448,6 +449,22 @@ model ChatQuota {
 
   @@unique([userId, date])
   @@map("chat_quotas")
+}
+
+// ─── QUOTA GÉNÉRATEUR DE TICKETS ────────────────────────────────────────────
+// Même principe que ChatQuota : 3 générations/jour pour les comptes gratuits,
+// illimité pour PREMIUM/PRO/LIFETIME (et pendant l'essai 7 jours).
+
+model TicketQuota {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String   // format YYYY-MM-DD
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("ticket_quotas")
 }
 
 // ─── DÉPENSES (SORTIES) ───────────────────────────────────────────────────────

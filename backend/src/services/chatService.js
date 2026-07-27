@@ -10,6 +10,7 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const prisma    = require('../config/database');
 const env       = require('../config/env');
+const { getUserPlanCode } = require('../middleware/subscription');
 
 let client = null;
 try {
@@ -64,7 +65,10 @@ async function askAboutMatch(matchId, question, user) {
     throw new Error('Service IA non disponible (clé API manquante)');
   }
 
-  const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(user?.plan?.code);
+  // NB : on dérive le plan via getUserPlanCode() (abonnement actif + essai 7 jours),
+  // pas via user.plan.code qui n'existe pas sur l'objet User (bug corrigé — sans ça,
+  // même les comptes Premium/Pro/Lifetime étaient limités à 3 questions/jour).
+  const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(getUserPlanCode(user));
 
   // Vérifier et incrémenter le quota en DB
   const quota = await checkAndIncrementQuota(user.id, isPremium);

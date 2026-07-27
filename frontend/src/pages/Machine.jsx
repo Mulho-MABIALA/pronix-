@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -160,7 +160,7 @@ function getConfidence(prob) {
 
 export default function Machine() {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isPremium } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -220,6 +220,17 @@ export default function Machine() {
 
   const isLoading = rangeQ.isLoading;
 
+  // Quota de génération gratuite (3/jour) — même principe que le Chat IA.
+  // Non affiché/consommé pour les comptes Premium/Pro/Lifetime (illimité).
+  const quotaQ = useQuery({
+    queryKey: ['ticket-quota'],
+    queryFn: () => api.get('/tickets/quota').then((r) => r.data.data),
+    enabled: !!user,
+    staleTime: 60 * 1000,
+  });
+  const [quotaError, setQuotaError] = useState('');
+  const quotaExhausted = !!user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && quotaQ.data.used >= quotaQ.data.limit;
+
   // Mots-clés identifiant les matchs amicaux
   const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club friendly', 'test match'];
 
@@ -269,7 +280,26 @@ export default function Machine() {
     setTicket(null);
   }
 
-  function generateTicket() {
+  async function generateTicket() {
+    setQuotaError('');
+
+    // Quota gratuit (3 générations/jour) — les comptes Premium/Pro/Lifetime
+    // ne passent pas par cette vérification côté UI, mais le backend la
+    // ferait de toute façon sauter (getUserPlanCode) si jamais elle était appelée.
+    if (user && !isPremium) {
+      try {
+        const { data } = await api.post('/tickets/quota/consume');
+        queryClient.invalidateQueries(['ticket-quota']);
+        if (!data.data.allowed) {
+          setQuotaError(t('machine.ticketQuotaExceededDesc', { limit: data.data.limit }));
+          return;
+        }
+      } catch {
+        // En cas d'erreur réseau sur la vérification, on ne bloque pas la génération
+        // (mieux vaut un ticket généré sans compteur à jour qu'une page cassée).
+      }
+    }
+
     let candidates = availableCandidates;
     // Si des matchs ont été épinglés manuellement, limiter à ceux-là
     if (pinnedMatchIds.size > 0) {
@@ -370,6 +400,7 @@ export default function Machine() {
           onClick={() => setView('history')}
           className="filter-chip"
           data-active={view === 'history'}
+          data-variant="history"
         >
           <History size={13} />
           {t('machine.tabHistory')}
@@ -712,12 +743,36 @@ export default function Machine() {
           )}
         </div>
 
-        {/* Bouton générer */}
-        <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
-          className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed">
-          <Zap size={16} />
-          {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
-        </button>
+        {/* Bouton générer — ou upsell si quota gratuit épuisé */}
+        {quotaExhausted ? (
+          <div className="w-full rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 flex items-center justify-between gap-3 flex-wrap">
+            <div className="flex items-center gap-2 min-w-0">
+              <Sparkles size={16} className="text-amber-400 shrink-0" />
+              <p className="text-xs text-amber-200 leading-snug">
+                {t('machine.ticketQuotaExceededDesc', { limit: quotaQ.data?.limit || 3 })}
+              </p>
+            </div>
+            <Link to="/abonnement" className="btn-primary shrink-0 px-3 py-2 text-xs whitespace-nowrap">
+              {t('machine.premiumUnlimitedTickets')}
+            </Link>
+          </div>
+        ) : (
+          <>
+            <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
+              className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed">
+              <Zap size={16} />
+              {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
+            </button>
+            {user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && (
+              <p className="text-center text-[10px] text-gray-500 mt-1.5">
+                {t('machine.ticketsToday', { used: quotaQ.data.used, limit: quotaQ.data.limit })}
+              </p>
+            )}
+            {quotaError && (
+              <p className="text-center text-[10px] text-amber-400 mt-1.5">{quotaError}</p>
+            )}
+          </>
+        )}
       </div>
 
       {/* Résultat */}
@@ -735,7 +790,7 @@ export default function Machine() {
                 <RefreshCw size={13} />
               </button>
               <button onClick={handleSaveTicket} disabled={saveTicketMutation.isPending}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors disabled:opacity-50">
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary-500/25 bg-primary-500/15 text-xs font-bold text-primary-400 hover:bg-primary-500/25 transition-colors disabled:opacity-50">
                 {saveTicketMutation.isPending
                   ? <RefreshCw size={12} className="animate-spin" />
                   : <Save size={12} />}
@@ -747,7 +802,7 @@ export default function Machine() {
                 {copied ? t('machine.copied') : t('machine.copy')}
               </button>
               <button onClick={shareTicket} disabled={sharing}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors disabled:opacity-50">
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-select-500/25 bg-select-500/15 text-xs font-bold text-select-400 hover:bg-select-500/25 transition-colors disabled:opacity-50">
                 {sharing
                   ? <RefreshCw size={12} className="animate-spin" />
                   : navigator.share ? <Share2 size={12} /> : <Download size={12} />}

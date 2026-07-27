@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
+  MessageCircle, HelpCircle,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -194,6 +195,46 @@ function ReferralSection() {
         </p>
       )}
     </section>
+  );
+}
+
+/* ─── Section contact / support fpronix ────────────────────────────────────── */
+const SUPPORT_EMAIL = 'support@fpronix.com';
+const SUPPORT_WHATSAPP = '+221787308706';
+const SUPPORT_WHATSAPP_LINK = 'https://wa.me/221787308706';
+
+function ContactSection() {
+  const { t } = useTranslation();
+  return (
+    <Section title={t('profile.contact.title')} icon={HelpCircle}>
+      <p className="text-xs text-gray-500 leading-relaxed mb-1">
+        {t('profile.contact.desc')}
+      </p>
+      <div className="space-y-2">
+        <a
+          href={`mailto:${SUPPORT_EMAIL}`}
+          className="flex items-center justify-between gap-2 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2.5 hover:border-white/[0.15] transition-colors"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <Mail size={15} className="text-gray-500 shrink-0" />
+            <span className="text-sm text-gray-300 truncate">{SUPPORT_EMAIL}</span>
+          </div>
+          <ChevronRight size={14} className="text-gray-600 shrink-0" />
+        </a>
+        <a
+          href={SUPPORT_WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-between gap-2 bg-primary-500/10 border border-primary-500/25 rounded-xl px-3 py-2.5 hover:border-primary-500/40 transition-colors"
+        >
+          <div className="flex items-center gap-2 min-w-0">
+            <MessageCircle size={15} className="text-primary-400 shrink-0" />
+            <span className="text-sm text-primary-300 font-medium truncate">{SUPPORT_WHATSAPP}</span>
+          </div>
+          <ChevronRight size={14} className="text-primary-500/60 shrink-0" />
+        </a>
+      </div>
+    </Section>
   );
 }
 
@@ -602,6 +643,9 @@ export default function Profile() {
           )}
         </div>
       </Section>
+
+      {/* ── Contact / support ─────────────────────────────────────────────────── */}
+      <ContactSection />
 
       {/* ── Parrainage ────────────────────────────────────────────────────────── */}
       <ReferralSection />

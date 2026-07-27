@@ -492,6 +492,10 @@
     "editPassword": "Edit",
     "logoutBtn": "Log out",
     "avatarUploadError": "Error uploading the photo. Please try again.",
+    "contact": {
+      "title": "Contact & support",
+      "desc": "A question, an issue? Our team replies directly."
+    },
     "referral": {
       "title": "Referral",
       "desc": "Share your link: as soon as a friend subscribes to a paid plan thanks to you, you get 7 days of Premium for free.",
@@ -756,6 +760,9 @@
     "successRateDetail": "{{won}} won out of {{resolved}} resolved",
     "successRatePending": "{{count}} pending",
     "noResolvedTickets": "No resolved tickets yet",
+    "ticketsToday": "{{used}}/{{limit}} free tickets used today",
+    "ticketQuotaExceededDesc": "You've reached the limit of {{limit}} free tickets today. Go Premium to generate without limits.",
+    "premiumUnlimitedTickets": "Go Premium",
     "datePresets": {
       "today": "Today",
       "tomorrow": "Tomorrow",

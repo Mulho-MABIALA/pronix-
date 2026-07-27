@@ -636,9 +636,25 @@ export default function MatchDetail() {
           <div className="text-center shrink-0 px-2">
             {['FINISHED', 'LIVE'].includes(match.status) ? (
               <>
-                <p className={`font-display font-bold text-4xl ${match.status === 'LIVE' ? 'text-live-400' : 'text-gray-100'}`}>
-                  {match.homeScore} — {match.awayScore}
-                </p>
+                {(() => {
+                  const isLiveNow = match.status === 'LIVE';
+                  const isDraw    = match.homeScore === match.awayScore;
+                  const homeWins  = match.homeScore > match.awayScore;
+                  const awayWins  = match.awayScore > match.homeScore;
+                  // Vert = vainqueur, ambre = match nul, rouge = en direct (résultat pas encore acquis)
+                  const scoreColor = (isWinner) => {
+                    if (isLiveNow) return 'text-live-400';
+                    if (isDraw) return 'text-amber-400';
+                    return isWinner ? 'text-primary-400' : 'text-gray-400';
+                  };
+                  return (
+                    <p className="font-display font-bold text-4xl">
+                      <span className={scoreColor(homeWins)}>{match.homeScore}</span>
+                      <span className="text-gray-600"> — </span>
+                      <span className={scoreColor(awayWins)}>{match.awayScore}</span>
+                    </p>
+                  );
+                })()}
                 {match.status === 'LIVE' && (
                   <p className="flex items-center justify-center gap-1.5 mt-1.5">
                     <span className="w-2 h-2 rounded-full bg-live-500 animate-pulse" aria-hidden="true" />

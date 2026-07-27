@@ -395,7 +395,7 @@
     "loginTitle": "Welcome to fpronix",
     "loginSubtitle": "Log in to access your predictions",
     "registerTitle": "Create an account",
-    "registerSubtitle": "Join thousands of bettors",
+    "registerSubtitle": "Join thousands of tipsters",
     "loginCta": "Log in",
     "registerCta": "Create my account",
     "googleLogin": "Continue with Google",
@@ -870,20 +870,20 @@
   },
   "bets": {
     "title": "My tips tracker",
-    "add": "Add a bet",
+    "add": "Add a pick",
     "roi": "ROI",
     "winRate": "Win rate",
-    "noEntries": "No bets recorded",
-    "noEntriesDesc": "Start tracking your bets to analyze your performance.",
+    "noEntries": "No picks recorded",
+    "noEntriesDesc": "Start tracking your picks to analyze your performance.",
     "metaTitle": "My tips tracker — fpronix",
     "metaDesc": "Track your sports picks and analyze your ROI.",
     "subtitle": "Track your picks and calculate your ROI",
-    "newBet": "New bet",
+    "newBet": "New pick",
     "staked": "Staked",
-    "addFirstBet": "Add my first bet",
-    "addedSuccess": "Bet added!",
+    "addFirstBet": "Add my first pick",
+    "addedSuccess": "Pick added!",
     "addError": "Error while adding",
-    "deletedSuccess": "Bet deleted",
+    "deletedSuccess": "Pick deleted",
     "homeTeam": "Home team",
     "awayTeam": "Away team",
     "prediction": "Prediction",
@@ -935,11 +935,11 @@
     }
   },
   "coachPanel": {
-    "bettorScore": "bettor score",
+    "bettorScore": "tipster score",
     "analyzingHistory": "Analyzing your history…",
     "title": "AI Personal Coach",
     "premiumLocked": "Unlock personalized advice from AI analysis of your tips with a Premium subscription.",
-    "analysisOfLastBets": "Analysis of your last {{count}} bets",
+    "analysisOfLastBets": "Analysis of your last {{count}} picks",
     "avgOdds": "Avg. odds",
     "strength": "Strength",
     "toAvoid": "To avoid",
@@ -1300,11 +1300,11 @@
       "technical": {
         "siteNotLoading": {
           "q": "The site isn't loading properly, what should I do?",
-          "a": "Try clearing your browser cache (Ctrl+Shift+R or Cmd+Shift+R). If the problem persists, contact us at contact@pronix.sn describing the issue and your browser."
+          "a": "Try clearing your browser cache (Ctrl+Shift+R or Cmd+Shift+R). If the problem persists, contact us at support@fpronix.com describing the issue and your browser."
         },
         "paymentFailed": {
           "q": "My payment failed but I was charged, what should I do?",
-          "a": "Contact us immediately at contact@pronix.sn with your transaction reference. We'll verify the payment and activate your subscription manually if needed."
+          "a": "Contact us immediately at support@fpronix.com with your transaction reference. We'll verify the payment and activate your subscription manually if needed."
         }
       }
     }

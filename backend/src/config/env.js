@@ -42,10 +42,10 @@ const envSchema = z.object({
   SMTP_SECURE: z.string().default('false').transform((v) => v === 'true'),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  EMAIL_FROM: z.string().default('Statistique Foot <noreply@statistiquefoot.sn>'),
+  EMAIL_FROM: z.string().default('Fpronix <noreply@fpronix.com>'),
   GOOGLE_CLIENT_ID: z.string().optional(),
   BCRYPT_ROUNDS: z.string().default('12').transform(Number),
-  APP_NAME: z.string().default('Statistique Foot'),
+  APP_NAME: z.string().default('Fpronix'),
   ANTHROPIC_API_KEY: z.string().optional(),
   ODDS_API_KEY: z.string().optional(),       // The Odds API — https://the-odds-api.com (500 req/mois gratuit)
   RESEND_API_KEY: z.string().optional(),     // Resend — https://resend.com (3000 mails/mois gratuit)

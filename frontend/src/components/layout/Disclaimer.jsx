@@ -19,7 +19,7 @@ export default function Disclaimer() {
           <span aria-hidden="true">·</span>
           <a href="/faq" className="hover:text-gray-400 transition-colors">{t('disclaimer.faqLink')}</a>
           <span aria-hidden="true">·</span>
-          <a href="mailto:contact@pronix.sn" className="hover:text-gray-400 transition-colors">{t('disclaimer.contactLink')}</a>
+          <a href="mailto:support@fpronix.com" className="hover:text-gray-400 transition-colors">{t('disclaimer.contactLink')}</a>
         </div>
       </div>
     </footer>

@@ -69,7 +69,7 @@ export default function CGU() {
       <Section title={t('cgu.sections.s11.title')}>
         <p>
           {t('cgu.sections.s11.body')}
-          <a href="mailto:contact@pronix.sn" className="text-primary-400 underline ml-1">contact@pronix.sn</a>
+          <a href="mailto:support@fpronix.com" className="text-primary-400 underline ml-1">support@fpronix.com</a>
         </p>
       </Section>
     </div>

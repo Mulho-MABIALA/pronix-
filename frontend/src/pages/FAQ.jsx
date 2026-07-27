@@ -41,7 +41,7 @@ export default function FAQ() {
         <h1 className="font-display font-bold text-2xl text-gray-50">{t('faq.title')}</h1>
         <p className="text-sm text-gray-500 mt-1">
           {t('faq.noAnswer')}{' '}
-          <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">{t('faq.contactUs')}</a>
+          <a href="mailto:support@fpronix.com" className="text-primary-400 underline">{t('faq.contactUs')}</a>
         </p>
       </div>
 
@@ -64,7 +64,7 @@ export default function FAQ() {
         <p className="text-gray-300 font-medium text-sm">{t('faq.otherQuestions')}</p>
         <p className="text-gray-500 text-sm">{t('faq.respondWithin24h')}</p>
         <a
-          href="mailto:contact@pronix.sn"
+          href="mailto:support@fpronix.com"
           className="btn-primary mt-2 inline-flex"
         >
           {t('faq.sendEmail')}

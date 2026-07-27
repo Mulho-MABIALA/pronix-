@@ -16,7 +16,7 @@ export default function PolitiqueConfidentialite() {
 
       <Section title={t('privacy.sections.s1.title')}>
         <p>
-          {t('privacy.sections.s1.body')} <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
+          {t('privacy.sections.s1.body')} <a href="mailto:support@fpronix.com" className="text-primary-400 underline">support@fpronix.com</a>
         </p>
       </Section>
 
@@ -68,7 +68,7 @@ export default function PolitiqueConfidentialite() {
         </ul>
         <p>
           {t('privacy.sections.s7.contactPrefix')}{' '}
-          <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>.
+          <a href="mailto:support@fpronix.com" className="text-primary-400 underline">support@fpronix.com</a>.
           {' '}{t('privacy.sections.s7.responseTime')}
         </p>
       </Section>
@@ -93,7 +93,7 @@ export default function PolitiqueConfidentialite() {
 
       <Section title={t('privacy.sections.s11.title')}>
         <p>
-          {t('privacy.sections.s11.body')} <a href="mailto:contact@pronix.sn" className="text-primary-400 underline">contact@pronix.sn</a>
+          {t('privacy.sections.s11.body')} <a href="mailto:support@fpronix.com" className="text-primary-400 underline">support@fpronix.com</a>
         </p>
       </Section>
     </div>

@@ -5,7 +5,7 @@ function configureWebPush() {
   const pub = process.env.VAPID_PUBLIC_KEY;
   const priv = process.env.VAPID_PRIVATE_KEY;
   if (pub && priv) {
-    webpush.setVapidDetails('mailto:admin@statistiquefoot.sn', pub, priv);
+    webpush.setVapidDetails('mailto:support@fpronix.com', pub, priv);
     return true;
   }
   return false;

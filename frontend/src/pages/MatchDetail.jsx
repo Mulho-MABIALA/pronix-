@@ -607,7 +607,7 @@ export default function MatchDetail() {
     ['FINISHED', 'LIVE'].includes(match.status) ? `${match.homeScore}–${match.awayScore}` : 'vs'
   } ${match.awayTeam}\n${match.competition?.name || ''} — ${
     match.status === 'LIVE' ? `🔴 ${t('matchDetail.liveNow').toUpperCase()}` : match.status === 'FINISHED' ? t('matchDetail.finished') : format(new Date(match.scheduledAt), 'HH:mm dd MMM')
-  }\n\nhttps://statistiquefoot.sn/matchs/${id}`;
+  }\n\nhttps://fpronix.com/matchs/${id}`;
 
   return (
     <div className="max-w-2xl mx-auto animate-fade-in">

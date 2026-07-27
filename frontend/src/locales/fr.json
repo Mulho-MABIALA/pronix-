@@ -395,7 +395,7 @@
     "loginTitle": "Bienvenue sur fpronix",
     "loginSubtitle": "Connectez-vous pour accéder à vos pronostics",
     "registerTitle": "Créer un compte",
-    "registerSubtitle": "Rejoignez des milliers de parieurs",
+    "registerSubtitle": "Rejoignez des milliers de pronostiqueurs",
     "loginCta": "Se connecter",
     "registerCta": "Créer mon compte",
     "googleLogin": "Continuer avec Google",
@@ -870,20 +870,20 @@
   },
   "bets": {
     "title": "Suivi de mes pronostics",
-    "add": "Ajouter un pari",
+    "add": "Ajouter un pronostic",
     "roi": "ROI",
     "winRate": "Taux de réussite",
-    "noEntries": "Aucun pari enregistré",
-    "noEntriesDesc": "Commence à suivre tes paris pour analyser tes performances.",
+    "noEntries": "Aucun pronostic enregistré",
+    "noEntriesDesc": "Commence à suivre tes pronostics pour analyser tes performances.",
     "metaTitle": "Suivi de mes pronostics — fpronix",
     "metaDesc": "Suivez vos pronostics sportifs et analysez votre ROI.",
     "subtitle": "Suis tes pronostics et calcule ton ROI",
-    "newBet": "Nouveau pari",
-    "staked": "Parié",
-    "addFirstBet": "Ajouter mon premier pari",
-    "addedSuccess": "Pari ajouté !",
+    "newBet": "Nouveau pronostic",
+    "staked": "Misé",
+    "addFirstBet": "Ajouter mon premier pronostic",
+    "addedSuccess": "Pronostic ajouté !",
     "addError": "Erreur lors de l'ajout",
-    "deletedSuccess": "Pari supprimé",
+    "deletedSuccess": "Pronostic supprimé",
     "homeTeam": "Équipe dom.",
     "awayTeam": "Équipe ext.",
     "prediction": "Pronostic",
@@ -935,11 +935,11 @@
     }
   },
   "coachPanel": {
-    "bettorScore": "score parieur",
+    "bettorScore": "score pronostiqueur",
     "analyzingHistory": "Analyse de votre historique en cours…",
     "title": "Coach Personnel IA",
     "premiumLocked": "Débloque des conseils personnalisés basés sur l'analyse IA de tes pronostics avec l'abonnement Premium.",
-    "analysisOfLastBets": "Analyse de vos {{count}} derniers paris",
+    "analysisOfLastBets": "Analyse de vos {{count}} derniers pronostics",
     "avgOdds": "Cote moy.",
     "strength": "Point fort",
     "toAvoid": "À éviter",
@@ -1300,11 +1300,11 @@
       "technical": {
         "siteNotLoading": {
           "q": "Le site ne charge pas correctement, que faire ?",
-          "a": "Essayez de vider le cache de votre navigateur (Ctrl+Shift+R ou Cmd+Shift+R). Si le problème persiste, contactez-nous à contact@pronix.sn en décrivant le problème et votre navigateur."
+          "a": "Essayez de vider le cache de votre navigateur (Ctrl+Shift+R ou Cmd+Shift+R). Si le problème persiste, contactez-nous à support@fpronix.com en décrivant le problème et votre navigateur."
         },
         "paymentFailed": {
           "q": "Mon paiement a échoué mais j'ai été débité, que faire ?",
-          "a": "Contactez-nous immédiatement à contact@pronix.sn avec votre référence de transaction. Nous vérifierons le paiement et activerons votre abonnement manuellement si nécessaire."
+          "a": "Contactez-nous immédiatement à support@fpronix.com avec votre référence de transaction. Nous vérifierons le paiement et activerons votre abonnement manuellement si nécessaire."
         }
       }
     }

@@ -60,7 +60,7 @@ async function runAgentAnalyse() {
     messages: [
       {
         role: 'user',
-        content: `Tu es l'analyste de Statistique Foot SN. Voici les données de performance des tipsters cette semaine :
+        content: `Tu es l'analyste de fpronix. Voici les données de performance des tipsters cette semaine :
 
 ${dataStr}
 

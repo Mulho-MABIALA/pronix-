@@ -44,7 +44,12 @@ npx prisma migrate deploy
 # un dossier à part puis on bascule en un seul "mv" quasi instantané.
 echo "[5/6] Build du frontend (atomique)..."
 cd "${FRONTEND_DIR}"
-npm ci
+# --include=dev est indispensable ici : si NODE_ENV=production est déjà
+# exporté dans le shell (ex. après un `source backend/.env`), un simple
+# `npm ci` saute silencieusement les devDependencies — dont Vite lui-même
+# — et le build échoue avec "vite: not found" sans toucher au dist actuel
+# (donc sans casser le site, mais sans déployer non plus le frontend).
+npm ci --include=dev
 rm -rf dist_new
 npm run build -- --outDir dist_new
 rm -rf dist_old

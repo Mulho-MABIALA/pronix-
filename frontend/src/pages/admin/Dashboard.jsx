@@ -109,8 +109,8 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
         <p className="text-[30px] font-display font-bold text-white leading-none tracking-tight tabular-nums">
           {value ?? '–'}
         </p>
-        <p className="text-[12px] text-gray-400 font-medium mt-1.5">{label}</p>
-        {sub && <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>}
+        <p className="text-[12px] text-gray-300 font-medium mt-1.5">{label}</p>
+        {sub && <p className="text-[11px] text-gray-300 mt-0.5">{sub}</p>}
       </div>
     </div>
   );
@@ -131,7 +131,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
       </div>
       <div>
         <p className="text-[17px] font-display font-bold text-white leading-none tabular-nums">{value ?? '–'}</p>
-        <p className="text-[11px] text-gray-400 mt-0.5">{label}</p>
+        <p className="text-[11px] text-gray-300 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -143,7 +143,7 @@ function RevenueChart({ data }) {
   if (!data?.length) return (
     <div className="rounded-2xl border border-white/[0.11] p-5 flex items-center justify-center h-64"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
-      <p className="text-sm text-gray-400">Aucune donnée</p>
+      <p className="text-sm text-gray-300">Aucune donnée</p>
     </div>
   );
 
@@ -228,7 +228,7 @@ function RevenueChart({ data }) {
       {/* month labels */}
       <div className="flex justify-between mt-2 px-1">
         {data.map((d, i) => (
-          <span key={i} className="text-xs text-gray-400 capitalize font-medium text-center">{d.month}</span>
+          <span key={i} className="text-xs text-gray-300 capitalize font-medium text-center">{d.month}</span>
         ))}
       </div>
     </div>
@@ -285,11 +285,11 @@ function ConversionCard({ data, kpis }) {
         <div className="flex-1 space-y-3">
           {[
             { label: 'Premium', count: premium, color: '#34d399', bg: 'bg-emerald-500/15 text-emerald-400', bar: 'bg-emerald-500' },
-            { label: 'Gratuit',  count: free,    color: '#6b7280', bg: 'bg-gray-500/15 text-gray-400',    bar: 'bg-gray-600' },
+            { label: 'Gratuit',  count: free,    color: '#6b7280', bg: 'bg-gray-500/15 text-gray-300',    bar: 'bg-gray-600' },
           ].map(({ label, count, bg, bar }) => (
             <div key={label}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-gray-400 font-medium">{label}</span>
+                <span className="text-[11px] text-gray-300 font-medium">{label}</span>
                 <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${bg}`}>{count}</span>
               </div>
               <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
@@ -299,7 +299,7 @@ function ConversionCard({ data, kpis }) {
             </div>
           ))}
           <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
-            <span className="text-[11px] text-gray-400">Total inscrits</span>
+            <span className="text-[11px] text-gray-300">Total inscrits</span>
             <span className="text-[12px] font-bold text-gray-200">{fmt(total)}</span>
           </div>
         </div>
@@ -343,7 +343,7 @@ function TopTipsters({ data }) {
             <div key={tip.id}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors group">
               <span className="w-5 text-center text-sm shrink-0">
-                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-400">{i + 1}</span>}
+                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-300">{i + 1}</span>}
               </span>
               {tip.avatar ? (
                 <img src={tip.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -356,7 +356,7 @@ function TopTipsters({ data }) {
                 <p className="text-[13px] font-semibold text-gray-200 truncate group-hover:text-white transition-colors">
                   {tip.displayName}
                 </p>
-                <p className="text-xs text-gray-400">{fmt(tip.totalTips)} picks</p>
+                <p className="text-xs text-gray-300">{fmt(tip.totalTips)} picks</p>
               </div>
               <div className="text-right shrink-0">
                 <p className={`text-[13px] font-bold tabular-nums ${rateColor}`}>{rate.toFixed(1)}%</p>
@@ -420,7 +420,7 @@ function RecentUsers({ data }) {
                 </div>
                 <p className="text-[11px] text-gray-300 truncate">{u.email}</p>
               </div>
-              <p className="text-xs text-gray-400 shrink-0 font-medium">
+              <p className="text-xs text-gray-300 shrink-0 font-medium">
                 {format(new Date(u.createdAt), 'dd MMM', { locale: fr })}
               </p>
             </div>
@@ -498,7 +498,7 @@ function QuickActions() {
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center">
-          <Sparkles size={13} className="text-gray-400" />
+          <Sparkles size={13} className="text-gray-300" />
         </div>
         <p className="text-sm font-semibold text-white">Actions rapides</p>
       </div>
@@ -557,7 +557,7 @@ function NavShortcuts() {
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}>
               <Icon size={16} />
             </div>
-            <span className="text-[10px] font-medium text-gray-400 group-hover:text-white transition-colors leading-tight">{label}</span>
+            <span className="text-[11px] font-medium text-gray-300 group-hover:text-white transition-colors leading-tight">{label}</span>
           </Link>
         ))}
       </div>
@@ -590,21 +590,21 @@ export default function AdminDashboard() {
         <div className="flex items-center gap-4">
           <img src="/logo-circle.png" alt="fpronix" className="w-14 h-14 rounded-full shrink-0 drop-shadow-lg" />
           <div>
-            <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-widest mb-1 flex items-center gap-1.5">
+            <p className="text-[11px] text-gray-300 font-semibold uppercase tracking-widest mb-1 flex items-center gap-1.5">
               <LiveDot />
               {format(now, "EEEE d MMMM yyyy", { locale: fr })}
             </p>
             <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
               {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
             </h1>
-            <p className="text-sm text-gray-400 mt-0.5">Vue en temps réel de fpronix.</p>
+            <p className="text-sm text-gray-300 mt-0.5">Vue en temps réel de fpronix.</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {dataUpdatedAt > 0 && (
             <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/[0.11]">
-              <Clock size={12} className="text-gray-400" />
+              <Clock size={12} className="text-gray-300" />
               <span className="text-[11px] text-gray-300 font-medium">
                 {format(new Date(dataUpdatedAt), 'HH:mm')}
               </span>

@@ -499,6 +499,26 @@
     "editPassword": "Edit",
     "logoutBtn": "Log out",
     "avatarUploadError": "Error uploading the photo. Please try again.",
+    "tickets": {
+      "title": "My tickets",
+      "newTicket": "New ticket",
+      "cancel": "Cancel",
+      "subjectPlaceholder": "Subject of your request",
+      "messagePlaceholder": "Describe your issue or question…",
+      "submit": "Send ticket",
+      "noTickets": "No tickets yet.",
+      "createdToast": "Ticket sent! Our team will reply within 24h.",
+      "createError": "Error sending the ticket. Try again.",
+      "replyPlaceholder": "Reply…",
+      "send": "Send",
+      "replyError": "Error sending the reply.",
+      "status": {
+        "OPEN": "Open",
+        "IN_PROGRESS": "In progress",
+        "RESOLVED": "Resolved",
+        "CLOSED": "Closed"
+      }
+    },
     "contact": {
       "title": "Contact & support",
       "desc": "A question, an issue? Our team replies directly."
@@ -1005,7 +1025,17 @@
     "quickQuestions": {
       "tipster": "What's a tipster?",
       "premium": "How does the Premium subscription work?"
-    }
+    },
+    "talkToHuman": "Talk to a human",
+    "ticketSubjectPlaceholder": "Subject of your request",
+    "ticketMessagePlaceholder": "Describe your issue in detail…",
+    "cancel": "Cancel",
+    "sendTicket": "Send ticket",
+    "loginToContact": "Log in to contact our team.",
+    "loginCta": "Log in",
+    "backToChat": "Back to chat",
+    "ticketCreated": "Ticket created! Our team will reply within 24h. You can track its status in your profile.",
+    "ticketError": "Error creating the ticket. Try again."
   },
   "toolsCarousel": {
     "title": "fpronix Tools",

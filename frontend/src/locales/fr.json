@@ -503,6 +503,26 @@
       "title": "Contact & support",
       "desc": "Une question, un problème ? Notre équipe te répond directement."
     },
+    "tickets": {
+      "title": "Mes tickets",
+      "newTicket": "Nouveau ticket",
+      "cancel": "Annuler",
+      "subjectPlaceholder": "Sujet de ta demande",
+      "messagePlaceholder": "Décris ton problème ou ta question…",
+      "submit": "Envoyer le ticket",
+      "noTickets": "Aucun ticket pour le moment.",
+      "createdToast": "Ticket envoyé ! Notre équipe te répondra sous 24h.",
+      "createError": "Erreur lors de l'envoi du ticket. Réessaie.",
+      "replyPlaceholder": "Répondre…",
+      "send": "Envoyer",
+      "replyError": "Erreur lors de l'envoi de la réponse.",
+      "status": {
+        "OPEN": "Ouvert",
+        "IN_PROGRESS": "En cours",
+        "RESOLVED": "Résolu",
+        "CLOSED": "Fermé"
+      }
+    },
     "referral": {
       "title": "Parrainage",
       "desc": "Partage ton lien : dès qu'un ami s'abonne à un plan payant grâce à toi, tu reçois 7 jours Premium offerts.",
@@ -1005,7 +1025,17 @@
     "quickQuestions": {
       "tipster": "C'est quoi un tipster ?",
       "premium": "Comment fonctionne l'abonnement Premium ?"
-    }
+    },
+    "talkToHuman": "Parler à un humain",
+    "ticketSubjectPlaceholder": "Sujet de ta demande",
+    "ticketMessagePlaceholder": "Décris ton problème en détail…",
+    "cancel": "Annuler",
+    "sendTicket": "Envoyer le ticket",
+    "loginToContact": "Connecte-toi pour contacter notre équipe.",
+    "loginCta": "Se connecter",
+    "backToChat": "Retour au chat",
+    "ticketCreated": "Ticket créé ! Notre équipe te répondra sous 24h. Tu peux suivre son statut dans ton profil.",
+    "ticketError": "Erreur lors de la création du ticket. Réessaie."
   },
   "toolsCarousel": {
     "title": "Outils fpronix",

@@ -238,6 +238,189 @@ function ContactSection() {
   );
 }
 
+/* ─── Section "Mes tickets" (support humain) ────────────────────────────────── */
+const TICKET_STATUS_STYLE = {
+  OPEN:        'bg-blue-500/15 text-blue-400',
+  IN_PROGRESS: 'bg-amber-500/15 text-amber-400',
+  RESOLVED:    'bg-emerald-500/15 text-emerald-400',
+  CLOSED:      'bg-gray-500/15 text-gray-300',
+};
+
+function TicketStatusBadge({ status }) {
+  const { t } = useTranslation();
+  return (
+    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 ${TICKET_STATUS_STYLE[status] || TICKET_STATUS_STYLE.OPEN}`}>
+      {t(`profile.tickets.status.${status}`)}
+    </span>
+  );
+}
+
+function TicketCard({ ticket, onReply }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
+  const [open, setOpen] = useState(false);
+  const [reply, setReply] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const send = async () => {
+    if (!reply.trim() || sending) return;
+    setSending(true);
+    await onReply(ticket.id, reply.trim());
+    setReply('');
+    setSending(false);
+  };
+
+  return (
+    <div className="rounded-xl border border-white/[0.08] overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>
+      <button
+        onClick={() => setOpen((o) => !o)}
+        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-white/[0.03] transition-colors"
+      >
+        <div className="min-w-0">
+          <p className="text-sm font-medium text-gray-100 truncate">{ticket.subject}</p>
+          <p className="text-[11px] text-gray-300 mt-0.5">
+            {format(new Date(ticket.createdAt), 'dd MMM yyyy', { locale: dateLocale })}
+          </p>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <TicketStatusBadge status={ticket.status} />
+          <ChevronRight size={14} className={`text-gray-400 transition-transform ${open ? 'rotate-90' : ''}`} />
+        </div>
+      </button>
+
+      {open && (
+        <div className="border-t border-white/[0.06] px-3 py-3 space-y-2">
+          <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+            {ticket.messages.map((msg) => (
+              <div key={msg.id} className={`flex ${msg.isAdmin ? '' : 'justify-end'}`}>
+                <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
+                  msg.isAdmin ? 'bg-surface-700 text-gray-200' : 'bg-primary-500/15 text-gray-100'
+                }`}>
+                  <p>{msg.content}</p>
+                  <p className="text-[10px] text-gray-400 mt-1">
+                    {format(new Date(msg.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {ticket.status !== 'CLOSED' && (
+            <div className="flex gap-2 pt-1">
+              <input
+                value={reply}
+                onChange={(e) => setReply(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
+                placeholder={t('profile.tickets.replyPlaceholder')}
+                className="flex-1 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500"
+              />
+              <button
+                onClick={send}
+                disabled={!reply.trim() || sending}
+                className="px-3 rounded-xl bg-primary-500 text-white text-xs font-semibold disabled:opacity-40 hover:bg-primary-400 transition-colors shrink-0"
+              >
+                {t('profile.tickets.send')}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SupportTicketsSection() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const qc = useQueryClient();
+  const [showNew, setShowNew] = useState(false);
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+  const [creating, setCreating] = useState(false);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['my-support-tickets'],
+    queryFn: () => api.get('/support/tickets/mine').then((r) => r.data),
+  });
+  const tickets = data?.data || [];
+
+  const createTicket = async () => {
+    if (subject.trim().length < 3 || message.trim().length < 10 || creating) return;
+    setCreating(true);
+    try {
+      await api.post('/support/tickets', { subject: subject.trim(), message: message.trim() });
+      setSubject('');
+      setMessage('');
+      setShowNew(false);
+      toast(t('profile.tickets.createdToast'), 'success');
+      qc.invalidateQueries({ queryKey: ['my-support-tickets'] });
+    } catch {
+      toast(t('profile.tickets.createError'), 'error');
+    } finally {
+      setCreating(false);
+    }
+  };
+
+  const reply = async (id, content) => {
+    try {
+      await api.post(`/support/tickets/${id}/reply`, { content });
+      qc.invalidateQueries({ queryKey: ['my-support-tickets'] });
+    } catch {
+      toast(t('profile.tickets.replyError'), 'error');
+    }
+  };
+
+  return (
+    <Section
+      title={t('profile.tickets.title')}
+      icon={MessageCircle}
+      action={
+        <button
+          onClick={() => setShowNew((s) => !s)}
+          className="text-[12px] font-semibold text-primary-400 hover:text-primary-300 transition-colors"
+        >
+          {showNew ? t('profile.tickets.cancel') : t('profile.tickets.newTicket')}
+        </button>
+      }
+    >
+      {showNew && (
+        <div className="space-y-2 bg-surface-700/30 border border-white/[0.06] rounded-xl p-3">
+          <input
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder={t('profile.tickets.subjectPlaceholder')}
+            className="w-full bg-surface-700/60 border border-white/[0.07] rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500"
+          />
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={t('profile.tickets.messagePlaceholder')}
+            rows={3}
+            className="w-full bg-surface-700/60 border border-white/[0.07] rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500 resize-none"
+          />
+          <button
+            onClick={createTicket}
+            disabled={subject.trim().length < 3 || message.trim().length < 10 || creating}
+            className="w-full py-2 rounded-xl text-sm font-semibold text-white bg-primary-500 hover:bg-primary-400 disabled:opacity-40 transition-colors"
+          >
+            {t('profile.tickets.submit')}
+          </button>
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="h-16 bg-surface-700/40 rounded-xl animate-pulse" />
+      ) : tickets.length === 0 ? (
+        !showNew && <p className="text-xs text-gray-300">{t('profile.tickets.noTickets')}</p>
+      ) : (
+        <div className="space-y-2">
+          {tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onReply={reply} />)}
+        </div>
+      )}
+    </Section>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════════════
    Page principale
 ══════════════════════════════════════════════════════════════════════════════ */
@@ -646,6 +829,9 @@ export default function Profile() {
 
       {/* ── Contact / support ─────────────────────────────────────────────────── */}
       <ContactSection />
+
+      {/* ── Mes tickets support ──────────────────────────────────────────────── */}
+      <SupportTicketsSection />
 
       {/* ── Parrainage ────────────────────────────────────────────────────────── */}
       <ReferralSection />

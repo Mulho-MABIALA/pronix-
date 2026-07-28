@@ -3,6 +3,7 @@ const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { calculatePredictionsForDate } = require('../services/predictionService');
 const { syncMatchesForDate } = require('../cron/syncMatches');
+const { notifyUser } = require('./pushController');
 
 // ─── Tableau de bord ──────────────────────────────────────────────────────────
 async function getDashboard(req, res, next) {
@@ -957,10 +958,19 @@ async function replyToSupportTicket(req, res, next) {
     const { ticketId } = req.params;
     const { content } = z.object({ content: z.string().min(1).max(2000) }).parse(req.body);
 
-    const [msg] = await prisma.$transaction([
+    const [msg, ticket] = await prisma.$transaction([
       prisma.supportMessage.create({ data: { ticketId, isAdmin: true, content } }),
       prisma.supportTicket.update({ where: { id: ticketId }, data: { status: 'IN_PROGRESS', updatedAt: new Date() } }),
     ]);
+
+    // Prévenir l'utilisateur par push — best-effort, ne bloque jamais la réponse admin
+    if (ticket.userId) {
+      notifyUser(ticket.userId, {
+        title: 'Réponse à votre ticket support',
+        body: content.length > 100 ? `${content.slice(0, 100)}…` : content,
+        url: '/profil',
+      }).catch(() => {});
+    }
 
     res.json({ success: true, data: msg });
   } catch (err) { next(err); }

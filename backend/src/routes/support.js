@@ -61,4 +61,30 @@ router.get('/tickets/mine', authenticate, async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// POST /api/support/tickets/:id/reply — l'utilisateur répond sur SON ticket
+router.post('/tickets/:id/reply', authenticate, async (req, res, next) => {
+  try {
+    const { content } = z.object({ content: z.string().min(1).max(2000) }).parse(req.body);
+
+    const ticket = await prisma.supportTicket.findUnique({ where: { id: req.params.id } });
+    if (!ticket || ticket.userId !== req.user.id) {
+      return res.status(404).json({ success: false, message: 'Ticket introuvable.' });
+    }
+
+    // Une réponse de l'utilisateur sur un ticket résolu/fermé le rouvre
+    // automatiquement pour qu'il redescende dans la file de l'admin.
+    const reopen = ['RESOLVED', 'CLOSED'].includes(ticket.status);
+
+    const [msg] = await prisma.$transaction([
+      prisma.supportMessage.create({ data: { ticketId: ticket.id, isAdmin: false, content } }),
+      prisma.supportTicket.update({
+        where: { id: ticket.id },
+        data: reopen ? { status: 'OPEN', updatedAt: new Date() } : { updatedAt: new Date() },
+      }),
+    ]);
+
+    res.json({ success: true, data: msg });
+  } catch (err) { next(err); }
+});
+
 module.exports = router;

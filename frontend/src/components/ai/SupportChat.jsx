@@ -1,7 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { MessageCircle, X, Send, Bot, Loader2, ChevronDown } from 'lucide-react';
+import { MessageCircle, X, Send, Bot, Loader2, ChevronDown, UserRound } from 'lucide-react';
 import api from '../../services/api';
+import { useAuth } from '../../context/AuthContext';
 
 const QUICK_QUESTION_KEYS = ['tipster', 'premium'];
 
@@ -27,12 +29,17 @@ function Message({ msg }) {
 
 export default function SupportChat() {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
     { role: 'assistant', content: t('supportChat.greeting') }
   ]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showTicketForm, setShowTicketForm] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState('');
+  const [ticketMessage, setTicketMessage] = useState('');
+  const [ticketSending, setTicketSending] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -66,6 +73,29 @@ export default function SupportChat() {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
+    }
+  };
+
+  const openTicketForm = () => {
+    setShowTicketForm(true);
+    // Pré-remplit le sujet avec le dernier message envoyé, si présent
+    const lastUserMsg = [...messages].reverse().find((m) => m.role === 'user');
+    if (lastUserMsg && !ticketSubject) setTicketSubject(lastUserMsg.content.slice(0, 100));
+  };
+
+  const sendTicket = async () => {
+    if (!ticketSubject.trim() || ticketMessage.trim().length < 10 || ticketSending) return;
+    setTicketSending(true);
+    try {
+      await api.post('/support/tickets', { subject: ticketSubject.trim(), message: ticketMessage.trim() });
+      setMessages((prev) => [...prev, { role: 'assistant', content: t('supportChat.ticketCreated') }]);
+      setShowTicketForm(false);
+      setTicketSubject('');
+      setTicketMessage('');
+    } catch {
+      setMessages((prev) => [...prev, { role: 'assistant', content: t('supportChat.ticketError') }]);
+    } finally {
+      setTicketSending(false);
     }
   };
 
@@ -142,25 +172,90 @@ export default function SupportChat() {
             <div ref={bottomRef} />
           </div>
 
-          {/* Input */}
-          <div className="px-3 pb-3 pt-2 border-t border-white/[0.06] shrink-0">
-            <div className="flex items-center gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={handleKey}
-                placeholder={t('supportChat.inputPlaceholder')}
-                disabled={loading}
-                className="flex-1 bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 disabled:opacity-50"
-              />
-              <button
-                onClick={() => sendMessage()}
-                disabled={!input.trim() || loading}
-                className="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center disabled:opacity-40 hover:bg-primary-400 transition-colors shrink-0"
-              >
-                <Send size={14} className="text-white" />
-              </button>
-            </div>
+          {/* Escalade vers un humain / Input */}
+          <div className="border-t border-white/[0.06] shrink-0">
+            {showTicketForm ? (
+              <div className="px-3 py-3 space-y-2">
+                {user ? (
+                  <>
+                    <input
+                      value={ticketSubject}
+                      onChange={(e) => setTicketSubject(e.target.value)}
+                      placeholder={t('supportChat.ticketSubjectPlaceholder')}
+                      className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500"
+                    />
+                    <textarea
+                      value={ticketMessage}
+                      onChange={(e) => setTicketMessage(e.target.value)}
+                      placeholder={t('supportChat.ticketMessagePlaceholder')}
+                      rows={3}
+                      className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 resize-none"
+                    />
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setShowTicketForm(false)}
+                        className="flex-1 py-2 rounded-xl text-xs font-semibold text-gray-300 bg-surface-700 hover:bg-surface-600 transition-colors"
+                      >
+                        {t('supportChat.cancel')}
+                      </button>
+                      <button
+                        onClick={sendTicket}
+                        disabled={!ticketSubject.trim() || ticketMessage.trim().length < 10 || ticketSending}
+                        className="flex-1 py-2 rounded-xl text-xs font-semibold text-white bg-primary-500 hover:bg-primary-400 disabled:opacity-40 transition-colors flex items-center justify-center gap-1.5"
+                      >
+                        {ticketSending ? <Loader2 size={13} className="animate-spin" /> : t('supportChat.sendTicket')}
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex items-center justify-between gap-2 bg-surface-700 rounded-xl px-3 py-2.5">
+                    <p className="text-xs text-gray-300">{t('supportChat.loginToContact')}</p>
+                    <Link
+                      to="/connexion"
+                      onClick={() => setOpen(false)}
+                      className="text-xs font-semibold text-primary-400 hover:text-primary-300 shrink-0"
+                    >
+                      {t('supportChat.loginCta')}
+                    </Link>
+                  </div>
+                )}
+                <button
+                  onClick={() => setShowTicketForm(false)}
+                  className="w-full text-[11px] text-gray-400 hover:text-gray-300 transition-colors"
+                >
+                  {t('supportChat.backToChat')}
+                </button>
+              </div>
+            ) : (
+              <>
+                <button
+                  onClick={openTicketForm}
+                  className="w-full flex items-center justify-center gap-1.5 text-[11px] text-gray-400 hover:text-primary-400 pt-2 pb-1 transition-colors"
+                >
+                  <UserRound size={12} />
+                  {t('supportChat.talkToHuman')}
+                </button>
+                <div className="px-3 pb-3 pt-1">
+                  <div className="flex items-center gap-2">
+                    <input
+                      value={input}
+                      onChange={(e) => setInput(e.target.value)}
+                      onKeyDown={handleKey}
+                      placeholder={t('supportChat.inputPlaceholder')}
+                      disabled={loading}
+                      className="flex-1 bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 disabled:opacity-50"
+                    />
+                    <button
+                      onClick={() => sendMessage()}
+                      disabled={!input.trim() || loading}
+                      className="w-9 h-9 rounded-xl bg-primary-500 flex items-center justify-center disabled:opacity-40 hover:bg-primary-400 transition-colors shrink-0"
+                    >
+                      <Send size={14} className="text-white" />
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
       )}

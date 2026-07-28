@@ -52,8 +52,13 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
   const isFree     = plan.code === 'FREE';
   const isLifetime = plan.code === 'LIFETIME';
   const style      = PLAN_STYLE[plan.code] || PLAN_STYLE.FREE;
-  const price      = isLifetime ? plan.priceMonthly : billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+  const price      = isLifetime
+    ? plan.priceMonthly
+    : billingCycle === 'YEARLY'  ? plan.priceYearly
+    : billingCycle === 'WEEKLY'  ? plan.priceWeekly
+    : plan.priceMonthly;
   const monthly    = !isLifetime && billingCycle === 'YEARLY' ? (plan.priceYearly / 12).toFixed(2) : null;
+  const unitLabel  = billingCycle === 'YEARLY' ? 'an' : billingCycle === 'WEEKLY' ? 'semaine' : 'mois';
 
   return (
     <div className={`bento-card flex flex-col gap-5 relative ${style.ring}`}>
@@ -77,7 +82,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
               {new Intl.NumberFormat('fr-FR').format(price)}
             </span>
             <span className="text-gray-500 pb-1 text-sm">
-              {' '}FCFA{isLifetime ? ' · paiement unique' : `/${billingCycle === 'YEARLY' ? 'an' : 'mois'}`}
+              {' '}FCFA{isLifetime ? ' · paiement unique' : `/${unitLabel}`}
             </span>
           </div>
         )}
@@ -210,6 +215,7 @@ export default function Subscription() {
       {/* Cycle de facturation */}
       <div className="flex items-center justify-center gap-2">
         {[
+          { value: 'WEEKLY',  label: t('subscription.billing.weekly') },
           { value: 'MONTHLY', label: t('subscription.billing.monthly') },
           { value: 'YEARLY',  label: t('subscription.billing.yearly'), badge: t('subscription.billing.yearlyBadge') },
         ].map(({ value, label, badge }) => (

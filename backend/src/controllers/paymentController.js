@@ -12,9 +12,27 @@ const { notifyUser } = require('./pushController');
 const { grantReferralReward } = require('./referralController');
 const { grantPartnerCommission } = require('./partnerController');
 
+// ─── Helper : prix du plan selon le cycle de facturation (hebdo/mensuel/annuel) ─
+// LIFETIME est un paiement unique, indépendant du cycle sélectionné dans l'UI —
+// sans ce garde-fou, un utilisateur pourrait sélectionner "Hebdomadaire" puis
+// acheter le plan Lifetime au prix hebdo (voire 0 FCFA tant que priceWeekly
+// n'est pas configuré pour ce plan).
+function getPlanPrice(plan, billingCycle) {
+  if (plan.code === 'LIFETIME') return plan.priceMonthly;
+  if (billingCycle === 'WEEKLY') return plan.priceWeekly;
+  if (billingCycle === 'YEARLY') return plan.priceYearly;
+  return plan.priceMonthly;
+}
+
+// ─── Helper : libellé du cycle de facturation (pour descriptions paiement) ────
+function billingLabel(billingCycle, lowercase = false) {
+  const label = billingCycle === 'WEEKLY' ? 'Hebdomadaire' : billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel';
+  return lowercase ? label.toLowerCase() : label;
+}
+
 // ─── Helper : active/renouvelle l'abonnement après paiement validé ───────────
 async function activateSubscription(userId, planId, billingCycle, paymentId) {
-  const durationDays = billingCycle === 'YEARLY' ? 365 : 30;
+  const durationDays = billingCycle === 'WEEKLY' ? 7 : billingCycle === 'YEARLY' ? 365 : 30;
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + durationDays);
 
@@ -33,7 +51,7 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
   // Push de confirmation (fire & forget)
   notifyUser(userId, {
     title: '🎉 Bienvenue Premium !',
-    body:  `Votre abonnement ${billingCycle === 'YEARLY' ? 'annuel' : 'mensuel'} est maintenant actif. Profitez de tous les avantages !`,
+    body:  `Votre abonnement ${billingLabel(billingCycle, true)} est maintenant actif. Profitez de tous les avantages !`,
     url:   '/profil',
     tag:   'subscription-confirmed',
   }).catch(() => {});
@@ -82,14 +100,14 @@ async function initiateWavePayment(req, res, next) {
   try {
     const schema = z.object({
       planId: z.string().uuid(),
-      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
     });
     const { planId, billingCycle } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
-    const amount = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+    const amount = getPlanPrice(plan, billingCycle);
     const clientReference = uuidv4();
 
     const payment = await prisma.payment.create({
@@ -160,14 +178,14 @@ async function initiateCinetpayPayment(req, res, next) {
   try {
     const schema = z.object({
       planId: z.string().uuid(),
-      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
     });
     const { planId, billingCycle } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
-    const amount = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+    const amount = getPlanPrice(plan, billingCycle);
     const transactionId = `CP-${Date.now()}-${req.user.id.slice(0, 8)}`;
 
     const payment = await prisma.payment.create({
@@ -185,7 +203,7 @@ async function initiateCinetpayPayment(req, res, next) {
     const result = await cinetpayService.initTransaction({
       amount,
       transactionId,
-      description: `Abonnement ${plan.displayName} — ${billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel'}`,
+      description: `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
       customerName: req.user.profile?.displayName || req.user.username,
       customerEmail: req.user.email,
     });
@@ -301,14 +319,14 @@ async function initiateFedapayPayment(req, res, next) {
   try {
     const schema = z.object({
       planId:       z.string().uuid(),
-      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
     });
     const { planId, billingCycle } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
-    const amount    = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+    const amount    = getPlanPrice(plan, billingCycle);
     const reference = `FP-${Date.now()}-${req.user.id.slice(0, 8)}`;
 
     const payment = await prisma.payment.create({
@@ -329,7 +347,7 @@ async function initiateFedapayPayment(req, res, next) {
 
     const { transactionId, paymentUrl } = await fedapayService.createTransaction({
       amount,
-      description:       `Abonnement ${plan.displayName} — ${billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel'}`,
+      description:       `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
       customerEmail:     req.user.email,
       customerFirstname: firstname,
       customerLastname:  rest.join(' ') || 'StatFoot',
@@ -384,14 +402,14 @@ async function initiateGeniuspayPayment(req, res, next) {
   try {
     const schema = z.object({
       planId:       z.string().uuid(),
-      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
     });
     const { planId, billingCycle } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
-    const amount = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+    const amount = getPlanPrice(plan, billingCycle);
 
     // Créer le paiement en BDD d'abord (pour avoir l'ID)
     const payment = await prisma.payment.create({
@@ -415,7 +433,7 @@ async function initiateGeniuspayPayment(req, res, next) {
       ? geniuspayService.mockCheckout({ amount, description: `Abonnement ${plan.displayName}`, successUrl, metadata: { paymentId: payment.id, planId, billingCycle, userId: req.user.id } })
       : await geniuspayService.createCheckout({
           amount,
-          description: `Abonnement fpronix ${plan.displayName} — ${billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel'}`,
+          description: `Abonnement fpronix ${plan.displayName} — ${billingLabel(billingCycle)}`,
           successUrl,
           errorUrl,
           metadata: { paymentId: payment.id, planId, billingCycle, userId: req.user.id },
@@ -523,14 +541,14 @@ async function initiatePaydunyaPayment(req, res, next) {
   try {
     const schema = z.object({
       planId:       z.string().uuid(),
-      billingCycle: z.enum(['MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
     });
     const { planId, billingCycle } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
-    const amount = billingCycle === 'YEARLY' ? plan.priceYearly : plan.priceMonthly;
+    const amount = getPlanPrice(plan, billingCycle);
 
     const payment = await prisma.payment.create({
       data: {
@@ -553,7 +571,7 @@ async function initiatePaydunyaPayment(req, res, next) {
       ? paydunyaService.mockCheckout({ customData: { paymentId: payment.id, planId, billingCycle, userId: req.user.id } })
       : await paydunyaService.createInvoice({
           amount,
-          description: `Abonnement fpronix ${plan.displayName} — ${billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel'}`,
+          description: `Abonnement fpronix ${plan.displayName} — ${billingLabel(billingCycle)}`,
           returnUrl,
           cancelUrl,
           callbackUrl,

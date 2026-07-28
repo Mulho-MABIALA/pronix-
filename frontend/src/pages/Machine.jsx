@@ -92,6 +92,7 @@ const MARKET_GROUPS = [
   { id: 'dnb',          emoji: '🛡️', markets: ['dnb1', 'dnb2'] },
   { id: 'overunder',    emoji: '⚽', markets: ['over05', 'over15', 'over25', 'over35', 'over45', 'under15', 'under25', 'under35', 'under45'] },
   { id: 'btts',         emoji: '🥅', markets: ['btts', 'nobtts'] },
+  { id: 'mitemps',      emoji: '⏱️', markets: ['ht1', 'htX', 'ht2', 'htover15', 'htunder15'] },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -125,6 +126,10 @@ function getProb(pred, market) {
   const dnb1    = Math.round((h / sum) * 100); // Draw No Bet domicile
   const dnb2    = Math.round((a / sum) * 100); // Draw No Bet extérieur
 
+  // Marchés mi-temps — utilisent les champs calculés côté backend (Poisson),
+  // avec repli approximatif pour les matchs anciens sans ces champs.
+  const htOver15 = pred.htOver15 ?? Math.max(5, Math.round(o25 * 0.7));
+
   const probMap = {
     '1':       h,
     'X':       d,
@@ -145,6 +150,11 @@ function getProb(pred, market) {
     'under45': under45,
     'btts':    bt,
     'nobtts':  nobtts,
+    'ht1':       pred.htHome  ?? Math.round(h * 0.62),
+    'htX':       pred.htDraw  ?? Math.min(70, d + 15),
+    'ht2':       pred.htAway  ?? Math.round(a * 0.55),
+    'htover15':  htOver15,
+    'htunder15': pred.htUnder15 ?? (100 - htOver15),
   };
 
   const prob = probMap[market];

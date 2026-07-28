@@ -101,7 +101,7 @@ async function main() {
       ],
     },
     {
-      code: 'PREMIUM', displayName: 'Premium', priceMonthly: 5150, priceYearly: 49000, sortOrder: 1,
+      code: 'PREMIUM', displayName: 'Premium', priceWeekly: 1800, priceMonthly: 5150, priceYearly: 49000, sortOrder: 1,
       features: [
         'Tout du plan Gratuit',
         'Historique des confrontations directes',

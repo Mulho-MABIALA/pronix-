@@ -204,6 +204,71 @@ function generateFallbackPrediction() {
   };
 }
 
+// ── Marchés 1ère mi-temps (HT) — dérivés du modèle Poisson plein temps ────────
+// En football professionnel, la 1ère mi-temps compte statistiquement environ
+// 44% des buts totaux d'un match (2ème mi-temps plus prolifique : fatigue
+// défensive, changements tactiques, enjeux qui se précisent). On applique ce
+// ratio aux buts attendus (lambda) du plein temps — retrouvés par recherche
+// dichotomique à partir de la probabilité "Over 2.5" déjà calculée — pour
+// obtenir des marchés mi-temps cohérents avec le modèle déjà utilisé pour les
+// scénarios de score (Poisson). Fonctionne pour les 3 sources de pronostics
+// (stats, IA, fallback neutre) puisqu'elles exposent toutes home/draw/away/over25.
+const HT_GOAL_SHARE = 0.44;
+
+// Retrouve le lambda total (buts attendus, plein temps) le plus cohérent avec
+// une probabilité "Over 2.5" donnée, par recherche dichotomique sur Poisson.
+function impliedTotalLambda(over25Pct) {
+  const target = Math.max(0.02, Math.min(0.98, (over25Pct ?? 50) / 100));
+  let lo = 0.3, hi = 6;
+  for (let i = 0; i < 30; i++) {
+    const mid = (lo + hi) / 2;
+    const pOver = 1 - poisson(mid, 0) - poisson(mid, 1) - poisson(mid, 2);
+    if (pOver > target) hi = mid; else lo = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+function deriveHalfTimeMarkets(pred) {
+  const home = pred.home ?? 33, draw = pred.draw ?? 34, away = pred.away ?? 33;
+  const lambdaTotal = impliedTotalLambda(pred.over25);
+
+  // Répartit le lambda total entre les 2 équipes selon leurs chances de victoire
+  const lambdaHome = lambdaTotal * ((home + draw / 2) / 100);
+  const lambdaAway = lambdaTotal * ((away + draw / 2) / 100);
+
+  const lH = Math.max(0.15, lambdaHome * HT_GOAL_SHARE);
+  const lA = Math.max(0.15, lambdaAway * HT_GOAL_SHARE);
+
+  let htHomeP = 0, htDrawP = 0, htAwayP = 0;
+  const htScorelines = [];
+  for (let h = 0; h <= 4; h++) {
+    for (let a = 0; a <= 4; a++) {
+      const p = poisson(lH, h) * poisson(lA, a);
+      if (h > a) htHomeP += p;
+      else if (h === a) htDrawP += p;
+      else htAwayP += p;
+      htScorelines.push({ score: `${h}-${a}`, prob: Math.round(p * 100), homeGoals: h, awayGoals: a });
+    }
+  }
+
+  const htTotalP = htHomeP + htDrawP + htAwayP || 1;
+  const htHome = Math.round((htHomeP / htTotalP) * 100);
+  const htDraw = Math.round((htDrawP / htTotalP) * 100);
+  const htAway = Math.max(0, 100 - htHome - htDraw);
+
+  const lambdaTotalHT = lH + lA;
+  const htOver15 = Math.max(2, Math.min(90, Math.round((1 - poisson(lambdaTotalHT, 0) - poisson(lambdaTotalHT, 1)) * 100)));
+
+  const htTopScorelines = htScorelines.sort((a, b) => b.prob - a.prob).slice(0, 3);
+
+  return {
+    htHome, htDraw, htAway,
+    htOver15, htUnder15: 100 - htOver15,
+    htBestScore: htTopScorelines[0]?.score ?? '0-0',
+    htScorelines: htTopScorelines,
+  };
+}
+
 async function calculateAndSavePredictions(matchId) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
@@ -254,6 +319,11 @@ async function calculateAndSavePredictions(matchId) {
     predictions = generateFallbackPrediction();
   }
 
+  // 4️⃣ Marchés mi-temps — dérivés du résultat final, quelle que soit la source
+  if (predictions && predictions.home != null) {
+    predictions = { ...predictions, ...deriveHalfTimeMarkets(predictions) };
+  }
+
   await prisma.match.update({ where: { id: matchId }, data: { predictions } });
   return predictions;
 }
@@ -282,4 +352,4 @@ async function calculatePredictionsForDate(dateStr) {
   return matches.length;
 }
 
-module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate };
+module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets };

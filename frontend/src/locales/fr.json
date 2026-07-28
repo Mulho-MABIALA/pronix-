@@ -346,6 +346,7 @@
       "successRate": "Taux de réussite moyen"
     },
     "billing": {
+      "weekly": "Hebdomadaire",
       "monthly": "Mensuel",
       "yearly": "Annuel",
       "yearlyBadge": "-20%",
@@ -829,6 +830,17 @@
         "markets": {
           "btts": { "label": "BTTS Oui — Les 2 équipes marquent", "desc": "Les deux équipes marquent au moins 1 but chacune (ex. 1-1, 2-1, 1-2, 2-2). Le score exact n'importe pas, seulement que les 2 équipes trouvent le filet." },
           "nobtts": { "label": "BTTS Non — Au moins une équipe ne marque pas", "desc": "Au moins une des deux équipes termine la rencontre sans marquer. Gagné si score 1-0, 0-2, 2-0, ou 0-0. Recommandé quand une équipe a une défense très solide." }
+        }
+      },
+      "mitemps": {
+        "label": "1ère mi-temps",
+        "subtitle": "Résultat et buts sur les 45 premières minutes uniquement.",
+        "markets": {
+          "ht1": { "label": "MT 1 — Domicile mène à la mi-temps", "desc": "L'équipe à domicile est devant au score à la fin de la 1ère mi-temps. Le résultat final du match n'a pas d'importance pour ce marché." },
+          "htX": { "label": "MT X — Égalité à la mi-temps", "desc": "Les deux équipes sont à égalité au score à la fin de la 1ère mi-temps (0-0, 1-1, etc.). Marché plus fréquent qu'un nul en fin de match." },
+          "ht2": { "label": "MT 2 — Extérieur mène à la mi-temps", "desc": "L'équipe visiteuse est devant au score à la fin de la 1ère mi-temps." },
+          "htover15": { "label": "MT +1.5 buts — Au moins 2 buts à la pause", "desc": "Au moins 2 buts sont marqués avant la mi-temps. Moins fréquent que sur le match complet, car la 1ère mi-temps est en moyenne moins prolifique." },
+          "htunder15": { "label": "MT -1.5 but — Maximum 1 but à la pause", "desc": "0 ou 1 seul but marqué avant la mi-temps. Le marché mi-temps le plus fréquent statistiquement." }
         }
       }
     }

@@ -346,6 +346,7 @@
       "successRate": "Average success rate"
     },
     "billing": {
+      "weekly": "Weekly",
       "monthly": "Monthly",
       "yearly": "Yearly",
       "yearlyBadge": "-20%",
@@ -829,6 +830,17 @@
         "markets": {
           "btts": { "label": "BTTS Yes — Both teams score", "desc": "Both teams score at least 1 goal each (e.g. 1-1, 2-1, 1-2, 2-2). The exact score doesn't matter, only that both teams find the net." },
           "nobtts": { "label": "BTTS No — At least one team fails to score", "desc": "At least one of the two teams finishes the match without scoring. Won if score is 1-0, 0-2, 2-0, or 0-0. Recommended when a team has a very solid defence." }
+        }
+      },
+      "mitemps": {
+        "label": "1st half",
+        "subtitle": "Result and goals over the first 45 minutes only.",
+        "markets": {
+          "ht1": { "label": "HT 1 — Home leads at half-time", "desc": "The home team is ahead on the scoreboard at the end of the 1st half. The final result of the match doesn't matter for this market." },
+          "htX": { "label": "HT X — Level at half-time", "desc": "Both teams are level on the scoreboard at the end of the 1st half (0-0, 1-1, etc.). More frequent than a full-time draw." },
+          "ht2": { "label": "HT 2 — Away leads at half-time", "desc": "The visiting team is ahead on the scoreboard at the end of the 1st half." },
+          "htover15": { "label": "HT Over 1.5 — At least 2 goals at the break", "desc": "At least 2 goals are scored before half-time. Less common than over the full match, since the 1st half is on average less prolific." },
+          "htunder15": { "label": "HT Under 1.5 — Maximum 1 goal at the break", "desc": "0 or 1 goal scored before half-time. Statistically the most common half-time market." }
         }
       }
     }

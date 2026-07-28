@@ -24,6 +24,7 @@ enum SubStatus {
 }
 
 enum BillingCycle {
+  WEEKLY
   MONTHLY
   YEARLY
 }
@@ -249,6 +250,7 @@ model Plan {
   id           String   @id @default(uuid())
   code         String   @unique // FREE, PREMIUM, PRO
   displayName  String
+  priceWeekly  Int      @default(0) // en FCFA — 0 tant que non configuré (plan existant)
   priceMonthly Int      // en FCFA (0 pour FREE)
   priceYearly  Int      // en FCFA
   features     Json     // tableau de chaînes décrivant les fonctionnalités

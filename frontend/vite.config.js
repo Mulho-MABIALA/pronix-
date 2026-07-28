@@ -50,6 +50,12 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Le nouveau service worker prend le contrôle immédiatement (sans
+        // attendre la fermeture de tous les onglets) et purge les anciens
+        // caches — évite l'écran noir après un déploiement quand un onglet
+        // reste ouvert avec l'ancienne version du site.
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         // Script personnalisé pour les notifications push
         importScripts: ['push-handler.js'],
         // Précacher tous les assets statiques

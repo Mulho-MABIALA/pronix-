@@ -7,6 +7,7 @@ const { startAgentsCron } = require('./runAgents');
 const { syncOdds } = require('../services/oddsService');
 const { broadcastNotification } = require('../controllers/pushController');
 const { generateDailyTips } = require('../services/aiTipsterService');
+const { refreshRates } = require('../services/currencyService');
 
 function startAllCronJobs() {
   startSyncMatchesCron();
@@ -67,6 +68,13 @@ function startAllCronJobs() {
     }
   });
   console.log('[Cron] Digest matinal planifié à 7h30');
+
+  // ── Taux de change FCFA → devises (affichage indicatif) — 1×/jour ─────────
+  refreshRates().catch((e) => console.error('[Currency] Sync initiale échouée:', e.message));
+  cron.schedule('0 5 * * *', () => {
+    refreshRates().catch((e) => console.error('[Currency] Sync cron échouée:', e.message));
+  });
+  console.log('[Cron] Taux de change — sync planifiée à 05h00 quotidien');
 
   console.log('[Cron] Tous les jobs planifiés démarrés');
 }

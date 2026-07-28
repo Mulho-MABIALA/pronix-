@@ -1,15 +1,18 @@
 import { Check } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useCurrency } from '../../hooks/useCurrency';
 
 export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billingCycle = 'MONTHLY' }) {
   const { t } = useTranslation();
+  const { formatConverted } = useCurrency();
   const isFree = plan.code === 'FREE';
   const isPremium = plan.code === 'PREMIUM';
   const isYearly = billingCycle === 'YEARLY';
   const displayPrice = isYearly ? plan.priceYearly : plan.priceMonthly;
   const monthlyEquiv = isYearly ? Math.round(plan.priceYearly / 12) : null;
   const fmt = (n) => new Intl.NumberFormat('fr-FR').format(n);
+  const convertedPrice = !isFree ? formatConverted(displayPrice) : null;
 
   return (
     <motion.div
@@ -43,6 +46,9 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
             </>
           )}
         </div>
+        {convertedPrice && (
+          <p className="text-xs text-gray-400 mt-1">≈ {convertedPrice}</p>
+        )}
       </div>
 
       {/* Fonctionnalités */}

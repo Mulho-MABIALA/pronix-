@@ -14,6 +14,7 @@ import TeamLogo from '../components/ui/TeamLogo';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
 import { estimateTipsterROI } from '../utils/mockOdds';
 import { useAnalytics } from '../hooks/useAnalytics';
+import { useCurrency } from '../hooks/useCurrency';
 
 // ─── Mini SVG ROI Line Chart ───────────────────────────────────────────────────
 function ROIChart({ data }) {
@@ -208,6 +209,7 @@ export default function TipsterProfile() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const { track } = useAnalytics();
+  const { formatConverted } = useCurrency();
 
   // Track profile view
   useState(() => { track('tipster_view', userId); }, [userId]);
@@ -443,10 +445,15 @@ export default function TipsterProfile() {
           <div className="flex items-center gap-2">
             <Crown size={16} className="text-primary-400" />
             <p className="font-semibold text-gray-100">{plan.name}</p>
-            <span className="ml-auto text-lg font-display font-bold text-primary-400">
-              {plan.price.toLocaleString('fr-FR')} FCFA
-              <span className="text-xs text-gray-300 font-normal"> {t('tipsterProfile.perMonth')}</span>
-            </span>
+            <div className="ml-auto text-right">
+              <span className="text-lg font-display font-bold text-primary-400">
+                {plan.price.toLocaleString('fr-FR')} FCFA
+                <span className="text-xs text-gray-300 font-normal"> {t('tipsterProfile.perMonth')}</span>
+              </span>
+              {formatConverted(plan.price) && (
+                <p className="text-xs text-gray-400">≈ {formatConverted(plan.price)}</p>
+              )}
+            </div>
           </div>
           {plan.description && (
             <p className="text-xs text-gray-400">{plan.description}</p>

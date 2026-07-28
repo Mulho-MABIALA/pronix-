@@ -18,32 +18,69 @@ function FootballLogo() {
   );
 }
 
-/** Switcher FR / EN compact */
+/** Switcher de langue — FR / EN / ES / PT */
+const LANGS = [
+  { code: 'fr', label: 'FR', name: 'Français' },
+  { code: 'en', label: 'EN', name: 'English' },
+  { code: 'es', label: 'ES', name: 'Español' },
+  { code: 'pt', label: 'PT', name: 'Português' },
+];
+
 function LangSwitcher() {
   const { t, i18n } = useTranslation();
-  const lang = i18n.language?.startsWith('en') ? 'en' : 'fr';
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
 
-  const toggle = () => i18n.changeLanguage(lang === 'fr' ? 'en' : 'fr');
+  const current = LANGS.find((l) => i18n.language?.startsWith(l.code)) || LANGS[0];
+
+  useEffect(() => {
+    function handleClick(e) {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const select = (code) => {
+    i18n.changeLanguage(code);
+    setOpen(false);
+  };
 
   return (
-    <button
-      onClick={toggle}
-      className="flex items-center gap-0 rounded-lg border border-white/[0.08] overflow-hidden text-[11px] font-bold"
-      aria-label={t('header.langSwitcherLabel')}
-    >
-      {['fr', 'en'].map((l) => (
-        <span
-          key={l}
-          className={`px-2 py-1.5 transition-colors ${
-            lang === l
-              ? 'bg-primary-500/20 text-primary-400'
-              : 'text-gray-300 hover:text-gray-200'
-          }`}
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/[0.08] text-[11px] font-bold transition-colors ${
+          open ? 'text-primary-400 bg-primary-500/10' : 'text-gray-300 hover:text-gray-200'
+        }`}
+        aria-label={t('header.langSwitcherLabel')}
+      >
+        {current.label}
+        <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div
+          className="absolute top-full right-0 mt-1.5 rounded-xl border border-white/[0.08] shadow-card-hover z-50 py-1.5 overflow-hidden"
+          style={{ background: 'var(--color-card)', width: 160 }}
         >
-          {l.toUpperCase()}
-        </span>
-      ))}
-    </button>
+          {LANGS.map(({ code, label, name }) => (
+            <button
+              key={code}
+              onClick={() => select(code)}
+              className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors ${
+                current.code === code
+                  ? 'text-primary-400 bg-primary-500/10'
+                  : 'text-gray-200 hover:bg-white/[0.05]'
+              }`}
+            >
+              <span className="font-bold w-6">{label}</span>
+              <span className="text-gray-300">{name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

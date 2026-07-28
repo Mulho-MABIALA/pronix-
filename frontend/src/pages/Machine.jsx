@@ -713,7 +713,7 @@ export default function Machine() {
                           const cc = CONF_COLORS[c.conf];
                           return (
                             <button key={c.match.id} onClick={() => togglePin(c.match.id)}
-                              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-colors ${
+                              className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-colors ${
                                 pinned
                                   ? 'bg-select-500/10 border-select-500/25'
                                   : 'border-white/[0.05] hover:border-white/[0.10]'
@@ -725,23 +725,24 @@ export default function Machine() {
                                 {pinned && <Check size={9} className="text-white" strokeWidth={3} />}
                               </div>
 
-                              {/* Logos équipes (superposés) */}
-                              <div className="flex items-center shrink-0 -space-x-1.5">
-                                <TeamLogo logo={c.match.homeTeamLogo} teamId={c.match.homeTeamId} name={c.match.homeTeam} size={18} />
-                                <TeamLogo logo={c.match.awayTeamLogo} teamId={c.match.awayTeamId} name={c.match.awayTeam} size={18} />
-                              </div>
-
-                              {/* Infos match */}
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-1">
+                              {/* Infos match — chaque équipe sur sa propre ligne, logo à côté de son nom */}
+                              <div className="flex-1 min-w-0 space-y-1">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <TeamLogo logo={c.match.homeTeamLogo} teamId={c.match.homeTeamId} name={c.match.homeTeam} size={16} />
                                   <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
-                                    {c.match.homeTeam} vs {c.match.awayTeam}
+                                    {c.match.homeTeam}
                                   </p>
                                   {c.match.predictions?.aiGenerated && (
                                     <span className="shrink-0 text-[8px] font-bold text-violet-400 bg-violet-500/10 px-1 rounded">IA</span>
                                   )}
                                 </div>
-                                <p className="text-[10px] text-gray-600 mt-0.5">
+                                <div className="flex items-center gap-1.5 min-w-0">
+                                  <TeamLogo logo={c.match.awayTeamLogo} teamId={c.match.awayTeamId} name={c.match.awayTeam} size={16} />
+                                  <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
+                                    {c.match.awayTeam}
+                                  </p>
+                                </div>
+                                <p className="text-[10px] text-gray-600">
                                   {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
                                 </p>
                               </div>

@@ -1417,7 +1417,9 @@
     "h2hTitle": "Head-to-head",
     "noH2h": "No head-to-head match recorded in database.",
     "hint": "Pick two teams to start the comparison.",
-    "noTeamsFound": "No team found"
+    "noTeamsFound": "No team found",
+    "nextOpponentLabel": "Next opponent",
+    "useSuggestion": "Pick"
   },
   "statsLigues": {
     "title": "League stats",

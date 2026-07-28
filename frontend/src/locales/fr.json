@@ -1417,7 +1417,9 @@
     "h2hTitle": "Confrontations directes",
     "noH2h": "Aucune confrontation directe enregistrée en base.",
     "hint": "Choisis deux équipes pour lancer la comparaison.",
-    "noTeamsFound": "Aucune équipe trouvée"
+    "noTeamsFound": "Aucune équipe trouvée",
+    "nextOpponentLabel": "Prochain adversaire",
+    "useSuggestion": "Choisir"
   },
   "statsLigues": {
     "title": "Stats par ligue",

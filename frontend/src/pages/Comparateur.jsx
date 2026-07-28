@@ -117,6 +117,24 @@ export default function Comparateur() {
 
   usePageMeta(t('comparator.metaTitle'), t('comparator.metaDesc'));
 
+  // Suggestion auto de l'adversaire du prochain match — dès qu'une seule équipe est choisie
+  const singlePicked = team1 && !team2 ? team1 : (!team1 && team2 ? team2 : null);
+  const emptySlot = team1 && !team2 ? 'team2' : (!team1 && team2 ? 'team1' : null);
+
+  const { data: nextOppData } = useQuery({
+    queryKey: ['next-opponent', singlePicked?.name],
+    queryFn: () => api.get('/matches/next-opponent', { params: { teamName: singlePicked.name } }).then((r) => r.data),
+    enabled: !!singlePicked,
+    staleTime: 5 * 60 * 1000,
+  });
+  const suggestion = nextOppData?.data;
+
+  const applySuggestion = () => {
+    if (!suggestion || !emptySlot) return;
+    if (emptySlot === 'team2') setTeam2(suggestion.opponent);
+    else setTeam1(suggestion.opponent);
+  };
+
   const { data, isLoading } = useQuery({
     queryKey: ['team-compare', team1?.id, team2?.id],
     queryFn: () => api.get('/matches/compare-teams', {
@@ -151,6 +169,21 @@ export default function Comparateur() {
         <div className="pt-2.5"><ArrowLeftRight size={16} className="text-gray-400 shrink-0" /></div>
         <TeamPicker label={t('comparator.pickTeam2')} team={team2} onPick={setTeam2} onClear={() => setTeam2(null)} />
       </div>
+
+      {suggestion && emptySlot && (
+        <button
+          onClick={applySuggestion}
+          className="w-full flex items-center gap-2.5 p-3 rounded-2xl border border-primary-500/25 hover:bg-primary-500/[0.08] transition-colors text-left"
+          style={{ background: 'rgba(34,197,94,0.06)' }}
+        >
+          <TeamLogo logo={suggestion.opponent.logo} teamId={suggestion.opponent.id} name={suggestion.opponent.name} size={22} />
+          <div className="flex-1 min-w-0">
+            <p className="text-[11px] text-gray-400">{t('comparator.nextOpponentLabel')}</p>
+            <p className="text-sm font-semibold text-gray-100 truncate">{suggestion.opponent.name}</p>
+          </div>
+          <span className="text-[11px] text-primary-400 font-semibold shrink-0">{t('comparator.useSuggestion')}</span>
+        </button>
+      )}
 
       {team1 && team2 && isLoading && (
         <SkeletonCard className="h-56" />

@@ -219,6 +219,34 @@ async function getMatchContext(req, res, next) {
   }
 }
 
+// ─── Prochain adversaire d'une équipe (pour suggestion auto dans le comparateur) ─
+async function getNextOpponent(req, res, next) {
+  try {
+    const schema = z.object({ teamName: z.string() });
+    const { teamName } = schema.parse(req.query);
+
+    const match = await prisma.match.findFirst({
+      where: {
+        OR: [{ homeTeam: teamName }, { awayTeam: teamName }],
+        status: 'SCHEDULED',
+        scheduledAt: { gte: new Date() },
+      },
+      orderBy: { scheduledAt: 'asc' },
+    });
+
+    if (!match) return res.json({ success: true, data: null });
+
+    const isHome = match.homeTeam === teamName;
+    const opponent = {
+      id:   isHome ? match.awayTeamId    : match.homeTeamId,
+      name: isHome ? match.awayTeam      : match.homeTeam,
+      logo: isHome ? match.awayTeamLogo  : match.homeTeamLogo,
+    };
+
+    res.json({ success: true, data: { opponent, matchId: match.id, scheduledAt: match.scheduledAt } });
+  } catch (err) { next(err); }
+}
+
 // ─── Comparateur de deux équipes (forme + H2H, depuis nos matchs en base) ─────
 async function getTeamCompare(req, res, next) {
   try {
@@ -753,4 +781,4 @@ async function getMatchEvents(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare };
+module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent };

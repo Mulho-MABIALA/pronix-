@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow, isPast, startOfDay } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import {
-  TrendingUp, Search, Bot, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy,
+  TrendingUp, Search, Bot, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy, SlidersHorizontal,
 } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -254,7 +254,10 @@ export default function Pronostics() {
   const [leagueIds,    setLeagueIds]    = useState([]);
   const [search,       setSearch]       = useState('');
   const [tabOffset,    setTabOffset]    = useState(0); // décalage fenêtre onglets
+  const [filtersOpen,  setFiltersOpen]  = useState(false);
   const chipsRef = useRef(null);
+
+  const activeFilterCount = (activeMarket !== 'all' ? 1 : 0) + (leagueIds.length > 0 ? 1 : 0) + (search ? 1 : 0);
 
   function toggleLeague(id) {
     setLeagueIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
@@ -412,7 +415,25 @@ export default function Pronostics() {
         </button>
       </div>
 
-      {/* Filtres marché + recherche */}
+      {/* Toggle filtres avancés — replié par défaut pour aller droit aux picks */}
+      <div>
+        <button
+          onClick={() => setFiltersOpen((v) => !v)}
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-white/[0.08] text-[13px] font-semibold text-gray-300 hover:text-gray-200 hover:border-white/20 transition-colors"
+        >
+          <SlidersHorizontal size={14} />
+          {t('pronostics.filtersToggle')}
+          {activeFilterCount > 0 && (
+            <span className="w-4 h-4 rounded-full bg-select-500/20 text-select-400 text-[10px] font-bold flex items-center justify-center">
+              {activeFilterCount}
+            </span>
+          )}
+          <ChevronRight size={13} className={`transition-transform ${filtersOpen ? 'rotate-90' : ''}`} />
+        </button>
+      </div>
+
+      {/* Filtres marché + recherche — repliables */}
+      {filtersOpen && (
       <div className="space-y-2">
 
         {/* Chips marchés */}
@@ -486,6 +507,7 @@ export default function Pronostics() {
           )}
         </div>
       </div>
+      )}
 
       {/* Bilans — visible uniquement pour les jours passés */}
       {isPastDay && (() => {

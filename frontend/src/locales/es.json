@@ -198,6 +198,7 @@
       "goals": "Número de goles",
       "doubleChance": "Doble oportunidad"
     },
+    "filtersToggle": "Filtros",
     "allLeagues": "Todas las ligas",
     "prevDays": "Días anteriores",
     "nextDays": "Días siguientes",
@@ -454,6 +455,8 @@
   "onboarding": {
     "title": "Personaliza tu feed",
     "subtitle": "Selecciona las competiciones que te interesan",
+    "exampleTitle": "Un ejemplo real",
+    "exampleDesc": "Aquí tienes un pronóstico real generado hoy por nuestro algoritmo — tendrás decenas como este cada día.",
     "start": "Empezar",
     "skip": "Saltar este paso",
     "leagues": {

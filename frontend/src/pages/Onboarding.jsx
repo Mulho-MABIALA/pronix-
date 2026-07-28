@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { Zap } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
@@ -38,6 +41,21 @@ export default function Onboarding() {
   const [language, setLanguage] = useState(SUPPORTED_LANGS.includes(detectedLang) ? detectedLang : 'fr');
   const [currency, setCurrency] = useState(detectedCurrency || 'FCFA');
 
+  // Exemple concret : un vrai pronostic généré aujourd'hui, pour montrer tout
+  // de suite ce que fpronix produit (au lieu de juste demander de choisir des ligues).
+  const today = format(new Date(), 'yyyy-MM-dd');
+  const { data: exampleData, isLoading: exampleLoading } = useQuery({
+    queryKey: ['onboarding-example', today],
+    queryFn: () => api.get(`/matches?date=${today}&limit=50`).then((r) => r.data),
+  });
+  const examplePicks = useMemo(() => {
+    const all = exampleData?.data || [];
+    return all
+      .filter((m) => m.predictions?.bestPick)
+      .sort((a, b) => (b.predictions.bestPick.prob || 0) - (a.predictions.bestPick.prob || 0))
+      .slice(0, 3);
+  }, [exampleData]);
+
   const toggle = (id) => {
     setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id]);
   };
@@ -62,6 +80,47 @@ export default function Onboarding() {
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('onboarding.title')}</h1>
           <p className="text-gray-400 mt-2 text-sm">{t('onboarding.subtitle')}</p>
         </div>
+
+        {/* Exemple concret — ce que fpronix génère vraiment */}
+        {(exampleLoading || examplePicks.length > 0) && (
+          <div className="bento-card p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Zap size={15} className="text-orange-400 shrink-0" />
+              <p className="text-sm font-bold text-gray-100">{t('onboarding.exampleTitle')}</p>
+            </div>
+            <p className="text-xs text-gray-400 -mt-1">{t('onboarding.exampleDesc')}</p>
+            {exampleLoading ? (
+              <div className="space-y-2">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="h-11 rounded-lg bg-white/[0.04] animate-pulse" />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {examplePicks.map((m) => {
+                  const pick = m.predictions.bestPick;
+                  const pickLabel = t(`pronostics.pickShort.${pick.type}`, { defaultValue: pick.label });
+                  return (
+                    <div
+                      key={m.id}
+                      className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-gray-200 truncate">
+                          {m.homeTeam} – {m.awayTeam}
+                        </p>
+                        <p className="text-[11px] text-gray-400 truncate">
+                          {pick.market ? `${pick.market} · ` : ''}{pickLabel}
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-primary-400 shrink-0">{pick.prob}%</span>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3">
           {LEAGUE_IDS.map((id) => (

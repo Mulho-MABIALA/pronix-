@@ -64,7 +64,7 @@ export default function Register() {
         <div className="text-center">
           <img src="/logo-circle.png" alt="fpronix" className="w-16 h-16 mx-auto rounded-full" />
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.registerTitle')}</h1>
-          <p className="text-gray-500 text-sm mt-1">{t('auth.freeNoCommit')}</p>
+          <p className="text-gray-300 text-sm mt-1">{t('auth.freeNoCommit')}</p>
         </div>
 
         {refCode && (
@@ -86,7 +86,7 @@ export default function Register() {
             <input id="username" type="text" autoComplete="username" required className="input"
               value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
               placeholder="MonPseudo" pattern="^[a-zA-Z0-9_]+$" />
-            <p className="text-xs text-gray-500 mt-1">{t('auth.usernameHint')}</p>
+            <p className="text-xs text-gray-300 mt-1">{t('auth.usernameHint')}</p>
           </div>
 
           <div>
@@ -118,7 +118,7 @@ export default function Register() {
         {/* Séparateur */}
         <div className="relative flex items-center gap-3">
           <div className="flex-grow border-t border-surface-600" />
-          <span className="text-xs text-gray-500 shrink-0">{t('common.or')}</span>
+          <span className="text-xs text-gray-300 shrink-0">{t('common.or')}</span>
           <div className="flex-grow border-t border-surface-600" />
         </div>
 
@@ -135,7 +135,7 @@ export default function Register() {
           />
         </div>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-300">
           {t('auth.hasAccount')}{' '}
           <Link to="/connexion" className="text-primary-400 hover:underline font-medium">{t('auth.loginLink')}</Link>
         </p>

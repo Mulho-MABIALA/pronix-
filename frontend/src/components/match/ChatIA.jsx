@@ -83,7 +83,7 @@ export default function ChatIA({ matchId, matchLabel }) {
           </span>
         </div>
         {quota && !quota.unlimited && (
-          <span className="text-[11px] text-gray-500">
+          <span className="text-[11px] text-gray-300">
             {t('chatIA.questionsToday', { used: quota.used, limit: quota.limit })}
           </span>
         )}
@@ -130,7 +130,7 @@ export default function ChatIA({ matchId, matchLabel }) {
       {/* Suggestions (première fois) */}
       {messages.length === 0 && !loading && (
         <div className="space-y-2">
-          <p className="text-xs text-gray-500">{t('chatIA.suggestedQuestions')}</p>
+          <p className="text-xs text-gray-300">{t('chatIA.suggestedQuestions')}</p>
           <div className="flex flex-wrap gap-2">
             {SUGGESTION_KEYS.map((k) => (
               <button
@@ -160,7 +160,7 @@ export default function ChatIA({ matchId, matchLabel }) {
       {/* Zone de saisie */}
       {quotaExhausted ? (
         <div className="text-center py-3 space-y-2">
-          <p className="text-xs text-gray-500">{t('chatIA.freeQuestionsUsed')}</p>
+          <p className="text-xs text-gray-300">{t('chatIA.freeQuestionsUsed')}</p>
           <Link to="/abonnement" className="btn-primary inline-flex px-5 py-2 text-xs">
             {t('chatIA.premiumUnlimited')}
           </Link>

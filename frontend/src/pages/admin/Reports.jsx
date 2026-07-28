@@ -32,7 +32,7 @@ export default function AdminReports() {
     <div className="space-y-5 max-w-4xl">
       <div>
         <h1 className="font-display font-bold text-2xl text-gray-50">Signalements</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{data?.pagination?.total ?? 0} signalement(s) au total</p>
+        <p className="text-sm text-gray-300 mt-0.5">{data?.pagination?.total ?? 0} signalement(s) au total</p>
       </div>
 
       {/* Filtres statut */}
@@ -63,7 +63,7 @@ export default function AdminReports() {
         <div className="bg-surface-800 border border-surface-700 rounded-2xl py-16 text-center">
           <ShieldCheck size={36} className="mx-auto text-primary-500/50 mb-3" />
           <p className="text-gray-400 font-medium">Aucun signalement</p>
-          <p className="text-xs text-gray-600 mt-1">Pour ce filtre</p>
+          <p className="text-xs text-gray-400 mt-1">Pour ce filtre</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -80,8 +80,8 @@ export default function AdminReports() {
                         Signalé par <span className="text-primary-400">@{report.reporter?.username}</span>
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500">Raison : {report.reason}</p>
-                    <p className="text-xs text-gray-600 mt-0.5">
+                    <p className="text-xs text-gray-300">Raison : {report.reason}</p>
+                    <p className="text-xs text-gray-400 mt-0.5">
                       {format(new Date(report.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}
                     </p>
                   </div>
@@ -99,11 +99,11 @@ export default function AdminReports() {
                     <p className="text-sm text-gray-300">
                       {report.tip.match?.homeTeam} vs {report.tip.match?.awayTeam}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">
+                    <p className="text-xs text-gray-300 mt-0.5">
                       Prédiction : <span className="text-gray-300 font-medium">{report.tip.prediction}</span>
                     </p>
                     {report.tip.analysis && (
-                      <p className="text-xs text-gray-500 italic mt-1.5 border-t border-surface-600 pt-1.5">
+                      <p className="text-xs text-gray-300 italic mt-1.5 border-t border-surface-600 pt-1.5">
                         "{report.tip.analysis}"
                       </p>
                     )}

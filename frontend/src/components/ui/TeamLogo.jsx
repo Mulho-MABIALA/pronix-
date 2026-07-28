@@ -23,7 +23,7 @@ export default function TeamLogo({ logo, teamId, name, size = 20, className = ''
 
   return (
     <div
-      className={`rounded-full bg-surface-600 flex items-center justify-center text-gray-500 font-bold shrink-0 ${className}`}
+      className={`rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-bold shrink-0 ${className}`}
       style={{ width: size, height: size, fontSize: size * 0.45 }}
     >
       {name?.charAt(0).toUpperCase() || '?'}

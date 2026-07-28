@@ -43,7 +43,7 @@ export default function BlogPost() {
   if (isError || !post) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="bento-card text-center py-12 text-gray-500">
+        <div className="bento-card text-center py-12 text-gray-300">
           {t('blog.articleNotFound')}{' '}
           <Link to="/blog" className="text-primary-400 hover:underline">{t('blog.backToBlog')}</Link>
         </div>
@@ -56,7 +56,7 @@ export default function BlogPost() {
       {/* Navigation retour */}
       <Link
         to="/blog"
-        className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-300 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-gray-300 hover:text-gray-200 transition-colors"
       >
         <ChevronLeft size={16} />
         {t('blog.title')}
@@ -72,7 +72,7 @@ export default function BlogPost() {
       )}
 
       {/* Meta */}
-      <div className="flex flex-wrap gap-3 text-xs text-gray-500">
+      <div className="flex flex-wrap gap-3 text-xs text-gray-300">
         {post.category && (
           <span className="text-primary-400 font-medium capitalize">{t(`blog.categories.${post.category}`, { defaultValue: post.category })}</span>
         )}

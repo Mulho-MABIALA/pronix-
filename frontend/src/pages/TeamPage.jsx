@@ -18,7 +18,7 @@ function FixtureRow({ fixture }) {
   const date = f?.date ? format(new Date(f.date), 'dd MMM', { locale: dateLocale }) : '–';
   return (
     <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-800 border border-surface-700">
-      <span className="text-xs text-gray-500 w-12 shrink-0">{date}</span>
+      <span className="text-xs text-gray-300 w-12 shrink-0">{date}</span>
       <span className="text-xs text-gray-300 flex-1 truncate">{teams?.home?.name} - {teams?.away?.name}</span>
       {finished ? (
         <span className="text-xs font-bold text-gray-100 tabular-nums">{g?.home} – {g?.away}</span>
@@ -74,7 +74,7 @@ export default function TeamPage() {
   if (!team) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="bento-card text-center py-12 text-gray-500">
+        <div className="bento-card text-center py-12 text-gray-300">
           {t('teamPage.teamNotFound')}
         </div>
       </div>
@@ -107,7 +107,7 @@ export default function TeamPage() {
         )}
         <div>
           <h1 className="font-display font-bold text-xl text-gray-100">{team.name}</h1>
-          <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
+          <div className="flex items-center gap-2 text-xs text-gray-300 mt-0.5">
             <MapPin size={11} />
             <span>{team.country}</span>
             {team.founded && <span>· {t('teamPage.foundedIn', { year: team.founded })}</span>}
@@ -124,17 +124,17 @@ export default function TeamPage() {
           <div className="grid grid-cols-3 gap-3">
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-gray-100">{stats.fixtures?.played?.total ?? '–'}</p>
-              <p className="text-xs text-gray-500 mt-1">{t('teamPage.matchesPlayed')}</p>
+              <p className="text-xs text-gray-300 mt-1">{t('teamPage.matchesPlayed')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-primary-400">{winPct != null ? `${winPct}%` : '–'}</p>
-              <p className="text-xs text-gray-500 mt-1">{t('teamPage.wins')}</p>
+              <p className="text-xs text-gray-300 mt-1">{t('teamPage.wins')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-gray-100">
                 {goalStats?.for?.total?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{t('teamPage.goalsScored')}</p>
+              <p className="text-xs text-gray-300 mt-1">{t('teamPage.goalsScored')}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-3">
@@ -142,13 +142,13 @@ export default function TeamPage() {
               <p className="text-xl font-display font-bold text-gray-100">
                 {goalStats?.for?.average?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{t('teamPage.avgGoalsPerMatch')}</p>
+              <p className="text-xs text-gray-300 mt-1">{t('teamPage.avgGoalsPerMatch')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-xl font-display font-bold text-gray-100">
                 {goalStats?.against?.total?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-500 mt-1">{t('teamPage.goalsConceded')}</p>
+              <p className="text-xs text-gray-300 mt-1">{t('teamPage.goalsConceded')}</p>
             </div>
           </div>
         </section>
@@ -188,7 +188,7 @@ export default function TeamPage() {
           </h2>
           {Object.entries(byPosition).map(([pos, players]) => (
             <div key={pos} className="mb-4">
-              <p className="text-xs font-medium text-gray-500 mb-2">{pos}</p>
+              <p className="text-xs font-medium text-gray-300 mb-2">{pos}</p>
               <div className="space-y-1.5">
                 {players.map((p) => (
                   <div key={p.id} className="flex items-center gap-3 px-3 py-2 rounded-xl bg-surface-800 border border-surface-700">
@@ -197,9 +197,9 @@ export default function TeamPage() {
                     )}
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-gray-100 truncate">{p.name}</p>
-                      {p.number && <p className="text-xs text-gray-500">#{p.number}</p>}
+                      {p.number && <p className="text-xs text-gray-300">#{p.number}</p>}
                     </div>
-                    <span className="text-xs text-gray-600">{p.nationality}</span>
+                    <span className="text-xs text-gray-400">{p.nationality}</span>
                   </div>
                 ))}
               </div>

@@ -103,7 +103,7 @@ function Section({ title, icon: Icon, children, action }) {
     <section className="bento-card space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {Icon && <Icon size={16} className="text-gray-500" />}
+          {Icon && <Icon size={16} className="text-gray-300" />}
           <h2 className="font-semibold text-gray-100 text-sm">{title}</h2>
         </div>
         {action}
@@ -155,11 +155,11 @@ function ReferralSection() {
   return (
     <section className="bento-card space-y-4">
       <div className="flex items-center gap-2">
-        <Gift size={16} className="text-gray-500" />
+        <Gift size={16} className="text-gray-300" />
         <h2 className="font-semibold text-gray-100 text-sm">{t('profile.referral.title')}</h2>
       </div>
 
-      <p className="text-xs text-gray-500 leading-relaxed">
+      <p className="text-xs text-gray-300 leading-relaxed">
         {t('profile.referral.desc')}
       </p>
 
@@ -185,7 +185,7 @@ function ReferralSection() {
       ) : null}
 
       {count > 0 && (
-        <p className="text-xs text-gray-500">
+        <p className="text-xs text-gray-300">
           {t('profile.referral.referredCount', { count })}
         </p>
       )}
@@ -207,7 +207,7 @@ function ContactSection() {
   const { t } = useTranslation();
   return (
     <Section title={t('profile.contact.title')} icon={HelpCircle}>
-      <p className="text-xs text-gray-500 leading-relaxed mb-1">
+      <p className="text-xs text-gray-300 leading-relaxed mb-1">
         {t('profile.contact.desc')}
       </p>
       <div className="space-y-2">
@@ -216,10 +216,10 @@ function ContactSection() {
           className="flex items-center justify-between gap-2 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2.5 hover:border-white/[0.15] transition-colors"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Mail size={15} className="text-gray-500 shrink-0" />
+            <Mail size={15} className="text-gray-300 shrink-0" />
             <span className="text-sm text-gray-300 truncate">{SUPPORT_EMAIL}</span>
           </div>
-          <ChevronRight size={14} className="text-gray-600 shrink-0" />
+          <ChevronRight size={14} className="text-gray-400 shrink-0" />
         </a>
         <a
           href={SUPPORT_WHATSAPP_LINK}
@@ -353,7 +353,7 @@ export default function Profile() {
               className="hidden"
               onChange={handleAvatarChange}
             />
-            <p className="text-[10px] text-gray-600 text-center mt-1.5">{t('profile.changePhoto')}</p>
+            <p className="text-xs text-gray-400 text-center mt-1.5">{t('profile.changePhoto')}</p>
           </div>
 
           {/* Infos */}
@@ -368,8 +368,8 @@ export default function Profile() {
                 </span>
               )}
             </div>
-            <p className="text-gray-500 text-sm mt-0.5">@{user?.username}</p>
-            <p className="text-gray-600 text-xs mt-0.5 truncate">{user?.email}</p>
+            <p className="text-gray-300 text-sm mt-0.5">@{user?.username}</p>
+            <p className="text-gray-400 text-xs mt-0.5 truncate">{user?.email}</p>
 
             {/* Badge Google */}
             {isGoogleUser && (
@@ -430,7 +430,7 @@ export default function Profile() {
                 maxLength={300}
                 placeholder={t('profile.bioPlaceholder')}
               />
-              <p className="text-right text-[10px] text-gray-600 mt-0.5">
+              <p className="text-right text-xs text-gray-400 mt-0.5">
                 {form.bio.length}/300
               </p>
             </div>
@@ -489,7 +489,7 @@ export default function Profile() {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <PlanBadge planCode={subscription.plan?.code} />
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-gray-300">
                   {subscription.status === 'ACTIVE'
                     ? subscription.endDate
                       ? t('profile.expiresOn', { date: format(new Date(subscription.endDate), 'dd MMM yyyy', { locale: dateLocale }) })
@@ -512,7 +512,7 @@ export default function Profile() {
 
             {payments?.length > 0 && (
               <details className="group">
-                <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-300 list-none flex items-center gap-1">
+                <summary className="text-xs text-gray-300 cursor-pointer hover:text-gray-200 list-none flex items-center gap-1">
                   <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
                   {t('profile.paymentHistory', { count: payments.length })}
                 </summary>
@@ -522,7 +522,7 @@ export default function Profile() {
                       key={p.id}
                       className="flex items-center justify-between py-1.5 border-b border-surface-700/60 last:border-0"
                     >
-                      <span className="text-gray-500">
+                      <span className="text-gray-300">
                         {format(new Date(p.createdAt), 'dd/MM/yyyy', { locale: dateLocale })}
                       </span>
                       <span className="text-gray-400">{p.method}</span>
@@ -539,7 +539,7 @@ export default function Profile() {
             )}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">{t('profile.noSubscription')}</p>
+          <p className="text-gray-300 text-sm">{t('profile.noSubscription')}</p>
         )}
       </Section>
 
@@ -549,19 +549,19 @@ export default function Profile() {
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-gray-100">{stats.totalTips}</p>
-              <p className="text-[10px] text-gray-500 mt-0.5">{t('profile.picks')}</p>
+              <p className="text-xs text-gray-300 mt-0.5">{t('profile.picks')}</p>
             </div>
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-primary-400">
                 {stats.successRate?.toFixed(0)}%
               </p>
-              <p className="text-[10px] text-gray-500 mt-0.5">{t('tipsters.successRate')}</p>
+              <p className="text-xs text-gray-300 mt-0.5">{t('tipsters.successRate')}</p>
             </div>
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-gray-100">
                 {stats.totalTips > 0 ? (stats.successRate / 10).toFixed(1) : '—'}
               </p>
-              <p className="text-[10px] text-gray-500 mt-0.5">{t('profile.score')}</p>
+              <p className="text-xs text-gray-300 mt-0.5">{t('profile.score')}</p>
             </div>
           </div>
           <div className="mt-1">
@@ -577,7 +577,7 @@ export default function Profile() {
       {myTips.length > 0 && (
         <section>
           <h2 className="font-semibold text-gray-100 text-sm mb-3 flex items-center gap-2">
-            <TrendingUp size={14} className="text-gray-500" />
+            <TrendingUp size={14} className="text-gray-300" />
             {t('profile.recentPicksTitle')}
           </h2>
           <div className="space-y-2">
@@ -591,12 +591,12 @@ export default function Profile() {
                   <p className="font-medium text-gray-200 truncate">
                     {tip.match?.homeTeam} vs {tip.match?.awayTeam}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5 truncate">{tip.prediction}</p>
+                  <p className="text-xs text-gray-300 mt-0.5 truncate">{tip.prediction}</p>
                 </div>
                 <span className={`badge shrink-0 ${
                   tip.result === 'WIN'  ? 'bg-primary-500/15 text-primary-400' :
                   tip.result === 'LOSS' ? 'bg-red-500/15 text-red-400' :
-                                         'bg-surface-600 text-gray-500'
+                                         'bg-surface-600 text-gray-300'
                 }`}>
                   {tip.result === 'WIN' ? '✓ Gagné' :
                    tip.result === 'LOSS' ? '✗ Perdu' : 'Attente'}
@@ -612,10 +612,10 @@ export default function Profile() {
         <div className="space-y-2">
           <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
             <div className="flex items-center gap-2">
-              <Mail size={14} className="text-gray-500" />
+              <Mail size={14} className="text-gray-300" />
               <span className="text-sm text-gray-300">{t('profile.email')}</span>
             </div>
-            <span className="text-xs text-gray-500 truncate max-w-[180px]">{user?.email}</span>
+            <span className="text-xs text-gray-300 truncate max-w-[180px]">{user?.email}</span>
           </div>
 
           {isGoogleUser ? (

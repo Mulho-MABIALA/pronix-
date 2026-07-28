@@ -37,8 +37,8 @@ function ROIChart({ data }) {
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-1.5">
-        <TrendingUp size={13} className="text-gray-500" />
-        <p className="text-xs text-gray-500">{t('tipsterProfile.weeklyRoi')}</p>
+        <TrendingUp size={13} className="text-gray-300" />
+        <p className="text-xs text-gray-300">{t('tipsterProfile.weeklyRoi')}</p>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-20">
         {/* Zéro line */}
@@ -104,7 +104,7 @@ function TipComments({ tipId }) {
 
   return (
     <div className="pt-3 border-t border-surface-700 space-y-3">
-      {isLoading && <p className="text-xs text-gray-500">{t('tipsterProfile.loadingComments')}</p>}
+      {isLoading && <p className="text-xs text-gray-300">{t('tipsterProfile.loadingComments')}</p>}
       {comments.map((c) => (
         <div key={c.id} className="flex gap-2 text-xs">
           <div className="h-6 w-6 rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-semibold shrink-0 text-[10px]">
@@ -114,13 +114,13 @@ function TipComments({ tipId }) {
             <span className="font-medium text-gray-300">
               {c.user?.profile?.displayName || c.user?.username}
             </span>
-            <span className="text-gray-500 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}</span>
+            <span className="text-gray-300 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}</span>
             <p className="text-gray-400 mt-0.5">{c.content}</p>
           </div>
           {(user?.id === c.userId || user?.role === 'ADMIN') && (
             <button
               onClick={() => deleteMutation.mutate(c.id)}
-              className="text-gray-600 hover:text-red-400 transition-colors self-start mt-0.5"
+              className="text-gray-400 hover:text-red-400 transition-colors self-start mt-0.5"
             >
               ×
             </button>
@@ -128,7 +128,7 @@ function TipComments({ tipId }) {
         </div>
       ))}
       {!comments.length && !isLoading && (
-        <p className="text-xs text-gray-600">{t('tipsterProfile.noComments')}</p>
+        <p className="text-xs text-gray-400">{t('tipsterProfile.noComments')}</p>
       )}
       {user && (
         <div className="flex gap-2 items-center">
@@ -165,11 +165,11 @@ function TipCard({ tip }) {
           <Link to={`/matchs/${tip.matchId}`} className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-primary-300 truncate">
             <TeamLogo logo={match?.homeTeamLogo} teamId={match?.homeTeamId} name={match?.homeTeam} size={16} />
             <span className="truncate">{match?.homeTeam}</span>
-            <span className="text-gray-600 shrink-0">vs</span>
+            <span className="text-gray-400 shrink-0">vs</span>
             <TeamLogo logo={match?.awayTeamLogo} teamId={match?.awayTeamId} name={match?.awayTeam} size={16} />
             <span className="truncate">{match?.awayTeam}</span>
           </Link>
-          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5 flex-wrap">
+          <p className="text-xs text-gray-300 mt-1 flex items-center gap-1.5 flex-wrap">
             {match?.competition?.name && (
               <span className="inline-flex items-center gap-1">
                 {match.competition.logo && (
@@ -188,7 +188,7 @@ function TipCard({ tip }) {
           <ResultBadge result={tip.result} />
           <button
             onClick={() => setShowComments((v) => !v)}
-            className="flex items-center gap-1 text-xs text-gray-500 hover:text-primary-400 transition-colors"
+            className="flex items-center gap-1 text-xs text-gray-300 hover:text-primary-400 transition-colors"
             title={t('tipsterProfile.comments')}
           >
             <MessageCircle size={13} />
@@ -328,7 +328,7 @@ export default function TipsterProfile() {
   }
 
   const { user: tipster, stats, recentTips, weeklyStats: inlineWeekly } = data?.data || {};
-  if (!tipster) return <div className="text-center py-20 text-gray-500">{t('tipsterProfile.notFound')}</div>;
+  if (!tipster) return <div className="text-center py-20 text-gray-300">{t('tipsterProfile.notFound')}</div>;
 
   const displayName = tipster.profile?.displayName || tipster.username;
   const isOwn = isOwnProfile;
@@ -344,7 +344,7 @@ export default function TipsterProfile() {
           <Avatar user={tipster} name={displayName} size={64} className="text-2xl" />
           <div className="flex-1 min-w-0">
             <h1 className="font-display font-bold text-xl text-gray-100">{displayName}</h1>
-            <p className="text-gray-500 text-sm">@{tipster.username}</p>
+            <p className="text-gray-300 text-sm">@{tipster.username}</p>
             {tipster.profile?.bio && (
               <p className="text-gray-400 text-sm mt-2">{tipster.profile.bio}</p>
             )}
@@ -352,7 +352,7 @@ export default function TipsterProfile() {
               {(stats?.badges || []).map((b) => <TipsterBadge key={b} badgeCode={b} />)}
             </div>
             {/* Follower count */}
-            <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+            <p className="text-xs text-gray-300 mt-2 flex items-center gap-1">
               <Users size={11} />
               {t('tipsterProfile.followersCount', { count: followerCount })}
             </p>
@@ -399,30 +399,30 @@ export default function TipsterProfile() {
         <div className="grid grid-cols-2 gap-3">
           <div className="bento-card text-center">
             <p className="text-3xl font-display font-bold text-gray-100">{stats.totalTips}</p>
-            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.picksCount')}</p>
+            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.picksCount')}</p>
           </div>
           <div className="bento-card">
             <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="lg" />
-            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.globalSuccessRate')}</p>
+            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.globalSuccessRate')}</p>
           </div>
           <div className="bento-card text-center">
             <p className="text-2xl font-display font-bold text-gray-100">
               {stats.globalRank ? `#${stats.globalRank}` : '–'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.globalRank')}</p>
+            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.globalRank')}</p>
           </div>
           <div className="bento-card text-center">
             <p className="text-2xl font-display font-bold text-gray-100">
               {stats.monthlyRank ? `#${stats.monthlyRank}` : '–'}
             </p>
-            <p className="text-xs text-gray-500 mt-1">{t('tipsterProfile.monthlyRank')}</p>
+            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.monthlyRank')}</p>
           </div>
           {roi != null && (
             <div className="bento-card text-center col-span-2">
               <p className={`text-2xl font-display font-bold ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}>
                 {roi >= 0 ? '+' : ''}{roi}%
               </p>
-              <p className="text-xs text-gray-500 mt-1" title={t('tipsterProfile.estimatedRoiTooltip')}>
+              <p className="text-xs text-gray-300 mt-1" title={t('tipsterProfile.estimatedRoiTooltip')}>
                 {t('tipsterProfile.estimatedRoi')}
               </p>
             </div>
@@ -445,14 +445,14 @@ export default function TipsterProfile() {
             <p className="font-semibold text-gray-100">{plan.name}</p>
             <span className="ml-auto text-lg font-display font-bold text-primary-400">
               {plan.price.toLocaleString('fr-FR')} FCFA
-              <span className="text-xs text-gray-500 font-normal"> {t('tipsterProfile.perMonth')}</span>
+              <span className="text-xs text-gray-300 font-normal"> {t('tipsterProfile.perMonth')}</span>
             </span>
           </div>
           {plan.description && (
             <p className="text-xs text-gray-400">{plan.description}</p>
           )}
           {plan.subscriberCount > 0 && (
-            <p className="text-xs text-gray-500 flex items-center gap-1">
+            <p className="text-xs text-gray-300 flex items-center gap-1">
               <Users size={11} />
               {t('tipsterProfile.subscribersCount', { count: plan.subscriberCount })}
             </p>
@@ -464,7 +464,7 @@ export default function TipsterProfile() {
                 <button
                   onClick={() => unsubscribeMutation.mutate()}
                   disabled={unsubscribeMutation.isPending}
-                  className="text-xs text-gray-500 hover:text-red-400 transition-colors"
+                  className="text-xs text-gray-300 hover:text-red-400 transition-colors"
                 >
                   {unsubscribeMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : t('tipsterProfile.unsubscribe')}
                 </button>
@@ -506,11 +506,11 @@ export default function TipsterProfile() {
             <Crown size={16} className="text-primary-400" />
             <p className="font-semibold text-gray-100">{t('tipsterProfile.managePlanTitle')}</p>
           </div>
-          <p className="text-xs text-gray-500">{t('tipsterProfile.managePlanDesc')}</p>
+          <p className="text-xs text-gray-300">{t('tipsterProfile.managePlanDesc')}</p>
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">{t('tipsterProfile.planNameLabel')}</label>
+              <label className="text-xs text-gray-300 mb-1 block">{t('tipsterProfile.planNameLabel')}</label>
               <input
                 type="text"
                 value={planForm.name}
@@ -520,7 +520,7 @@ export default function TipsterProfile() {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">{t('tipsterProfile.planDescLabel')}</label>
+              <label className="text-xs text-gray-300 mb-1 block">{t('tipsterProfile.planDescLabel')}</label>
               <textarea
                 value={planForm.description}
                 onChange={(e) => setPlanForm({ ...planForm, description: e.target.value })}
@@ -530,7 +530,7 @@ export default function TipsterProfile() {
               />
             </div>
             <div>
-              <label className="text-xs text-gray-500 mb-1 block">{t('tipsterProfile.planPriceLabel')}</label>
+              <label className="text-xs text-gray-300 mb-1 block">{t('tipsterProfile.planPriceLabel')}</label>
               <input
                 type="number"
                 min={100}
@@ -545,8 +545,8 @@ export default function TipsterProfile() {
               onClick={() => setPlanForm({ ...planForm, isActive: !planForm.isActive })}
               className="flex items-center gap-2 text-xs"
             >
-              <Power size={13} className={planForm.isActive ? 'text-primary-400' : 'text-gray-600'} />
-              <span className={planForm.isActive ? 'text-primary-400' : 'text-gray-500'}>
+              <Power size={13} className={planForm.isActive ? 'text-primary-400' : 'text-gray-400'} />
+              <span className={planForm.isActive ? 'text-primary-400' : 'text-gray-300'}>
                 {planForm.isActive ? t('tipsterProfile.planActiveLabel') : t('tipsterProfile.planInactiveLabel')}
               </span>
             </button>
@@ -586,7 +586,7 @@ export default function TipsterProfile() {
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-gray-600">{t('tipsterProfile.noSubscribers')}</p>
+                <p className="text-xs text-gray-400">{t('tipsterProfile.noSubscribers')}</p>
               )}
             </div>
           )}
@@ -599,7 +599,7 @@ export default function TipsterProfile() {
         <div className="space-y-2">
           {recentTips?.map((tip) => <TipCard key={tip.id} tip={tip} />)}
           {!recentTips?.length && (
-            <p className="text-gray-500 text-sm text-center py-4">{t('tipsterProfile.noRecentPicks')}</p>
+            <p className="text-gray-300 text-sm text-center py-4">{t('tipsterProfile.noRecentPicks')}</p>
           )}
         </div>
       </section>
@@ -609,7 +609,7 @@ export default function TipsterProfile() {
         <p className="text-center">
           <button
             onClick={() => {/* modal signalement */}}
-            className="text-xs text-gray-600 hover:text-gray-400 flex items-center gap-1 mx-auto"
+            className="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1 mx-auto"
           >
             <Flag size={12} aria-hidden="true" />
             {t('tipsterProfile.reportTipster')}

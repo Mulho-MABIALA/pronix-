@@ -47,8 +47,8 @@ function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-
         )}
       </div>
       <p className="text-2xl font-bold text-white mb-0.5">{value}</p>
-      <p className="text-xs text-gray-500">{label}</p>
-      {sub && <p className="text-xs text-gray-600 mt-0.5">{sub}</p>}
+      <p className="text-xs text-gray-300">{label}</p>
+      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -140,11 +140,11 @@ export default function AdminFinances() {
             {/* En-tête */}
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-1">Détail dépense</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Détail dépense</p>
                 <h3 className="text-base font-bold text-white leading-snug">{viewExpense.description}</h3>
               </div>
               <button onClick={() => setViewExpense(null)}
-                className="p-1.5 rounded-lg text-gray-500 hover:text-white hover:bg-white/[0.08] transition-colors shrink-0">
+                className="p-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/[0.08] transition-colors shrink-0">
                 <X size={16} />
               </button>
             </div>
@@ -152,22 +152,22 @@ export default function AdminFinances() {
             {/* Champs */}
             <div className="space-y-3">
               <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
-                <span className="text-xs text-gray-500">Montant</span>
+                <span className="text-xs text-gray-300">Montant</span>
                 <span className="text-sm font-bold text-red-400">{formatAmount(viewExpense.amount)}</span>
               </div>
               <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
-                <span className="text-xs text-gray-500">Catégorie</span>
+                <span className="text-xs text-gray-300">Catégorie</span>
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${cat.color}`}>{cat.label}</span>
               </div>
               <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
-                <span className="text-xs text-gray-500">Date</span>
+                <span className="text-xs text-gray-300">Date</span>
                 <span className="text-sm text-gray-300">
                   {format(new Date(viewExpense.date), 'dd MMMM yyyy', { locale: fr })}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <span className="text-xs text-gray-500">Ajouté le</span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-300">Ajouté le</span>
+                <span className="text-xs text-gray-300">
                   {format(new Date(viewExpense.createdAt), 'dd MMM yyyy HH:mm', { locale: fr })}
                 </span>
               </div>
@@ -201,9 +201,9 @@ export default function AdminFinances() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Finances</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Revenus, dépenses et bilan</p>
+          <p className="text-sm text-gray-300 mt-0.5">Revenus, dépenses et bilan</p>
         </div>
-        <span className="text-xs text-gray-600 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
+        <span className="text-xs text-gray-400 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
           Mis à jour toutes les minutes
         </span>
       </div>
@@ -217,7 +217,7 @@ export default function AdminFinances() {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               activeTab === key
                 ? 'border-primary-500 text-primary-400'
-                : 'border-transparent text-gray-500 hover:text-gray-300'
+                : 'border-transparent text-gray-300 hover:text-gray-200'
             }`}
           >
             {label}
@@ -293,12 +293,12 @@ export default function AdminFinances() {
                     <div key={provider}>
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <CreditCard size={14} className="text-gray-500" />
+                          <CreditCard size={14} className="text-gray-300" />
                           <span className="text-sm text-gray-300">{PROVIDER_LABEL[provider]}</span>
                         </div>
                         <div className="text-right">
                           <span className="text-sm font-semibold text-white">{formatAmount(d.amount)}</span>
-                          <span className="text-xs text-gray-500 ml-2">{d.count} tx</span>
+                          <span className="text-xs text-gray-300 ml-2">{d.count} tx</span>
                         </div>
                       </div>
                       <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
@@ -308,7 +308,7 @@ export default function AdminFinances() {
                   );
                 })}
                 {byMethod.length === 0 && (
-                  <p className="text-sm text-gray-600 text-center py-4">Aucun paiement enregistré</p>
+                  <p className="text-sm text-gray-400 text-center py-4">Aucun paiement enregistré</p>
                 )}
               </div>
             </div>
@@ -341,7 +341,7 @@ export default function AdminFinances() {
               <thead>
                 <tr className="border-b border-white/[0.06]">
                   {['Utilisateur', 'Montant', 'Méthode', 'Statut', 'Date'].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
@@ -354,7 +354,7 @@ export default function AdminFinances() {
                     <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
                       <td className="px-4 py-3">
                         <p className="text-sm font-medium text-gray-200">{p.user?.username || '—'}</p>
-                        <p className="text-xs text-gray-600">{p.user?.email}</p>
+                        <p className="text-xs text-gray-400">{p.user?.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm font-semibold text-primary-400">{formatAmount(p.amount)}</span>
@@ -369,7 +369,7 @@ export default function AdminFinances() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-gray-300">
                           {format(new Date(p.createdAt), 'dd MMM yyyy HH:mm', { locale: fr })}
                         </span>
                       </td>
@@ -378,7 +378,7 @@ export default function AdminFinances() {
                 })}
                 {recentPayments.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-600">Aucune transaction</td>
+                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">Aucune transaction</td>
                   </tr>
                 )}
               </tbody>
@@ -405,7 +405,7 @@ export default function AdminFinances() {
               <h3 className="text-sm font-semibold text-gray-200">Nouvelle dépense</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5">Montant (XOF) *</label>
+                  <label className="block text-xs text-gray-300 mb-1.5">Montant (XOF) *</label>
                   <input
                     type="number"
                     min="1"
@@ -417,7 +417,7 @@ export default function AdminFinances() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5">Catégorie</label>
+                  <label className="block text-xs text-gray-300 mb-1.5">Catégorie</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData((d) => ({ ...d, category: e.target.value }))}
@@ -430,7 +430,7 @@ export default function AdminFinances() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5">Description *</label>
+                  <label className="block text-xs text-gray-300 mb-1.5">Description *</label>
                   <input
                     type="text"
                     required
@@ -441,7 +441,7 @@ export default function AdminFinances() {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1.5">Date (optionnel)</label>
+                  <label className="block text-xs text-gray-300 mb-1.5">Date (optionnel)</label>
                   <input
                     type="date"
                     value={formData.date}
@@ -476,7 +476,7 @@ export default function AdminFinances() {
                 <thead>
                   <tr className="border-b border-white/[0.06]">
                     {['Description', 'Catégorie', 'Montant', 'Date', ''].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wide">
                         {h}
                       </th>
                     ))}
@@ -499,7 +499,7 @@ export default function AdminFinances() {
                           <span className="text-sm font-semibold text-red-400">{formatAmount(exp.amount)}</span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-gray-300">
                             {format(new Date(exp.date), 'dd MMM yyyy', { locale: fr })}
                           </span>
                         </td>
@@ -507,7 +507,7 @@ export default function AdminFinances() {
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => setViewExpense(exp)}
-                              className="p-1.5 rounded-lg text-gray-600 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
                               title="Voir le détail"
                             >
                               <Eye size={14} />
@@ -516,7 +516,7 @@ export default function AdminFinances() {
                               onClick={() => {
                                 if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(exp.id);
                               }}
-                              className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
+                              className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
                               title="Supprimer"
                             >
                               <Trash2 size={14} />
@@ -528,7 +528,7 @@ export default function AdminFinances() {
                   })}
                   {expenses.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-600">
+                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">
                         Aucune dépense enregistrée — cliquez sur "Ajouter une dépense"
                       </td>
                     </tr>

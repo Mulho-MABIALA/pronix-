@@ -10,7 +10,7 @@ export default function CompetitionLogo({ logo, size = 16, className = '' }) {
   const [error, setError] = useState(false);
 
   if (!logo || error) {
-    return <Globe size={size} className={`text-gray-600 shrink-0 ${className}`} />;
+    return <Globe size={size} className={`text-gray-400 shrink-0 ${className}`} />;
   }
 
   return (

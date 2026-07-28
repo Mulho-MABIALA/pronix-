@@ -77,7 +77,7 @@ export default function AdminPronostics() {
       <div className="flex flex-wrap gap-3">
         <form onSubmit={handleSearch} className="flex gap-2 flex-1 min-w-48">
           <div className="relative flex-1">
-            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
             <input
               value={searchInput}
               onChange={e => setSearchInput(e.target.value)}
@@ -111,11 +111,11 @@ export default function AdminPronostics() {
       >
         {isLoading || isFetching ? (
           <div className="p-8 flex justify-center">
-            <RefreshCw size={20} className="animate-spin text-gray-500" />
+            <RefreshCw size={20} className="animate-spin text-gray-300" />
           </div>
         ) : tips.length === 0 ? (
           <div className="p-12 text-center">
-            <Target size={32} className="text-gray-600 mx-auto mb-3" />
+            <Target size={32} className="text-gray-400 mx-auto mb-3" />
             <p className="text-gray-400 font-medium">Aucun pronostic trouvé</p>
           </div>
         ) : (
@@ -124,7 +124,7 @@ export default function AdminPronostics() {
               <thead>
                 <tr className="border-b border-white/[0.07]">
                   {['Tipster', 'Match', 'Prono', 'Conf.', 'Résultat', 'Commentaires', 'Signalements', 'Date', 'Actions'].map(h => (
-                    <th key={h} className="text-left px-4 py-3 text-[11px] text-gray-500 font-semibold uppercase tracking-wider whitespace-nowrap">
+                    <th key={h} className="text-left px-4 py-3 text-[11px] text-gray-300 font-semibold uppercase tracking-wider whitespace-nowrap">
                       {h}
                     </th>
                   ))}
@@ -138,11 +138,11 @@ export default function AdminPronostics() {
                     <tr key={tip.id} className={`hover:bg-white/[0.02] transition-colors ${!tip.isVisible ? 'opacity-40' : ''}`}>
                       <td className="px-4 py-3">
                         <p className="text-gray-200 font-medium">{tip.user?.profile?.displayName || tip.user?.username}</p>
-                        <p className="text-[11px] text-gray-600">{tip.isAiGenerated ? '🤖 IA' : '👤 Humain'}</p>
+                        <p className="text-[11px] text-gray-400">{tip.isAiGenerated ? '🤖 IA' : '👤 Humain'}</p>
                       </td>
                       <td className="px-4 py-3 max-w-40">
                         <p className="text-gray-200 truncate">{tip.match?.homeTeam} - {tip.match?.awayTeam}</p>
-                        <p className="text-[11px] text-gray-600">{tip.match?.competition?.name}</p>
+                        <p className="text-[11px] text-gray-400">{tip.match?.competition?.name}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span className="px-2 py-0.5 rounded-md bg-white/[0.08] text-gray-300 text-xs font-bold">
@@ -156,7 +156,7 @@ export default function AdminPronostics() {
                               <Star key={i} size={10} className={i < tip.confidence ? 'text-amber-400 fill-amber-400' : 'text-gray-700'} />
                             ))}
                           </div>
-                        ) : <span className="text-gray-600">—</span>}
+                        ) : <span className="text-gray-400">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-bold ${res.color}`}>
@@ -170,11 +170,11 @@ export default function AdminPronostics() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={`flex items-center gap-1 text-[12px] ${tip._count?.reports > 0 ? 'text-red-400 font-bold' : 'text-gray-600'}`}>
+                        <span className={`flex items-center gap-1 text-[12px] ${tip._count?.reports > 0 ? 'text-red-400 font-bold' : 'text-gray-400'}`}>
                           <AlertTriangle size={12} /> {tip._count?.reports || 0}
                         </span>
                       </td>
-                      <td className="px-4 py-3 text-[11px] text-gray-600 whitespace-nowrap">
+                      <td className="px-4 py-3 text-[11px] text-gray-400 whitespace-nowrap">
                         {format(new Date(tip.createdAt), 'dd MMM yyyy', { locale: fr })}
                       </td>
                       <td className="px-4 py-3">
@@ -182,14 +182,14 @@ export default function AdminPronostics() {
                           <button
                             onClick={() => toggleVis.mutate({ id: tip.id, isVisible: !tip.isVisible })}
                             title={tip.isVisible ? 'Masquer' : 'Afficher'}
-                            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.08] text-gray-500 hover:text-gray-300 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.08] text-gray-300 hover:text-gray-200 transition-colors"
                           >
                             {tip.isVisible ? <Eye size={14} /> : <EyeOff size={14} />}
                           </button>
                           <button
                             onClick={() => setConfirm(tip.id)}
                             title="Supprimer"
-                            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/15 text-gray-500 hover:text-red-400 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/15 text-gray-300 hover:text-red-400 transition-colors"
                           >
                             <Trash2 size={14} />
                           </button>
@@ -206,7 +206,7 @@ export default function AdminPronostics() {
         {/* Pagination */}
         {pagination && pagination.pages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.07]">
-            <p className="text-[12px] text-gray-500">
+            <p className="text-[12px] text-gray-300">
               Page {pagination.page} / {pagination.pages} · {pagination.total} total
             </p>
             <div className="flex gap-1.5">

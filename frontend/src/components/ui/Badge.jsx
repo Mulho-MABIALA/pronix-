@@ -59,6 +59,6 @@ export function ResultBadge({ result }) {
     LOSS: 'bg-red-500/20 text-red-400',
     VOID: 'bg-gray-500/20 text-gray-400',
   };
-  if (!result) return <span className="badge bg-surface-600 text-gray-500">{t('badges.result.PENDING')}</span>;
+  if (!result) return <span className="badge bg-surface-600 text-gray-300">{t('badges.result.PENDING')}</span>;
   return <span className={`badge ${styles[result] || ''}`}>{t(`badges.result.${result}`)}</span>;
 }

@@ -70,25 +70,25 @@ export default function AdminNotifications() {
     <div className="max-w-3xl mx-auto space-y-6 animate-fade-in">
       <div>
         <h1 className="text-xl font-display font-bold text-white">Notifications Push</h1>
-        <p className="text-sm text-gray-500 mt-1">Envoyez des notifications à tous les abonnés</p>
+        <p className="text-sm text-gray-300 mt-1">Envoyez des notifications à tous les abonnés</p>
       </div>
 
       {/* ── Stats ─────────────────────────────────────────────────── */}
       <div className="grid grid-cols-3 gap-4">
         <div className="card-p flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase tracking-wide">
+          <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wide">
             <Users size={13} /> Total abonnés
           </div>
           <p className="text-3xl font-display font-bold text-white">{stats?.total ?? '—'}</p>
         </div>
         <div className="card-p flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase tracking-wide">
+          <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wide">
             <Smartphone size={13} /> Connectés
           </div>
           <p className="text-3xl font-display font-bold text-primary-400">{stats?.withUser ?? '—'}</p>
         </div>
         <div className="card-p flex flex-col gap-1">
-          <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold uppercase tracking-wide">
+          <div className="flex items-center gap-2 text-gray-300 text-xs font-semibold uppercase tracking-wide">
             <Bell size={13} /> Anonymes
           </div>
           <p className="text-3xl font-display font-bold text-gray-400">{stats?.anonymous ?? '—'}</p>
@@ -154,7 +154,7 @@ export default function AdminNotifications() {
         <h2 className="text-sm font-semibold text-white">Diffusion manuelle</h2>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 mb-1.5">Titre *</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-1.5">Titre *</label>
           <input
             className="input"
             placeholder="Titre de la notification"
@@ -166,7 +166,7 @@ export default function AdminNotifications() {
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 mb-1.5">Message *</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-1.5">Message *</label>
           <textarea
             className="input resize-none"
             rows={3}
@@ -176,11 +176,11 @@ export default function AdminNotifications() {
             maxLength={200}
             required
           />
-          <p className="text-[11px] text-gray-600 mt-1 text-right">{form.body.length}/200</p>
+          <p className="text-[11px] text-gray-400 mt-1 text-right">{form.body.length}/200</p>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-gray-500 mb-1.5">URL de destination</label>
+          <label className="block text-xs font-semibold text-gray-300 mb-1.5">URL de destination</label>
           <input
             className="input"
             placeholder="/pronostics"
@@ -192,7 +192,7 @@ export default function AdminNotifications() {
         {/* Aperçu */}
         {form.title && (
           <div className="p-3 rounded-xl bg-surface-800 border border-white/[0.06]">
-            <p className="text-[10px] font-bold text-gray-600 uppercase tracking-widest mb-2">Aperçu</p>
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Aperçu</p>
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary-500/20 flex items-center justify-center shrink-0">
                 <Bell size={18} className="text-primary-400" />
@@ -230,7 +230,7 @@ export default function AdminNotifications() {
         </button>
 
         {!stats?.total && (
-          <p className="text-xs text-gray-600 text-center">Aucun abonné pour l'instant</p>
+          <p className="text-xs text-gray-400 text-center">Aucun abonné pour l'instant</p>
         )}
       </form>
     </div>

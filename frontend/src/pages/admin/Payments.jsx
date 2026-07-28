@@ -32,7 +32,7 @@ export default function AdminPayments() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-gray-50">Paiements</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{pagination?.total ?? 0} transactions</p>
+          <p className="text-sm text-gray-300 mt-0.5">{pagination?.total ?? 0} transactions</p>
         </div>
         <a
           href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/payments`}
@@ -66,7 +66,7 @@ export default function AdminPayments() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-surface-700 text-xs text-gray-300 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Utilisateur</th>
                 <th className="text-left px-4 py-3.5 font-medium">Montant</th>
                 <th className="text-left px-4 py-3.5 font-medium">Méthode</th>
@@ -100,13 +100,13 @@ export default function AdminPayments() {
                           )}
                           <div>
                             <p className="text-sm font-medium text-gray-200">{p.user?.profile?.displayName || p.user?.username}</p>
-                            <p className="text-xs text-gray-500 truncate max-w-[160px]">{p.user?.email}</p>
+                            <p className="text-xs text-gray-300 truncate max-w-[160px]">{p.user?.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-4">
                         <span className="text-sm font-bold text-gray-100">{p.amount.toLocaleString('fr-FR')}</span>
-                        <span className="text-xs text-gray-500 ml-1">FCFA</span>
+                        <span className="text-xs text-gray-300 ml-1">FCFA</span>
                       </td>
                       <td className="px-4 py-4">
                         <span className="text-xs text-gray-400 bg-surface-700 px-2.5 py-1 rounded-lg capitalize">
@@ -119,7 +119,7 @@ export default function AdminPayments() {
                           {st.label}
                         </span>
                       </td>
-                      <td className="px-5 py-4 hidden lg:table-cell text-xs text-gray-500">
+                      <td className="px-5 py-4 hidden lg:table-cell text-xs text-gray-300">
                         {format(new Date(p.createdAt), 'dd MMM yyyy, HH:mm', { locale: fr })}
                       </td>
                     </tr>
@@ -132,7 +132,7 @@ export default function AdminPayments() {
 
         {pagination?.pages > 1 && (
           <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
-            <p className="text-xs text-gray-500">Page {page} / {pagination.pages} — {pagination.total} transactions</p>
+            <p className="text-xs text-gray-300">Page {page} / {pagination.pages} — {pagination.total} transactions</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
                 className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">

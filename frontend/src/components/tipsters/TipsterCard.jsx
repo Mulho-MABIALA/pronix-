@@ -28,7 +28,7 @@ export default function TipsterCard({ stats, rank }) {
       aria-label={t('tipsterCard.profileOf', { name: displayName })}
     >
       {/* Rang */}
-      <span className={`w-8 text-center font-display font-bold shrink-0 ${isPodium ? 'text-amber-400 text-lg' : 'text-gray-500 text-sm'}`}>
+      <span className={`w-8 text-center font-display font-bold shrink-0 ${isPodium ? 'text-amber-400 text-lg' : 'text-gray-300 text-sm'}`}>
         {isPodium ? ['🥇','🥈','🥉'][rank - 1] : `#${rank}`}
       </span>
 

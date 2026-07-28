@@ -34,7 +34,7 @@ const STATUS_STYLE = {
   LIVE:      'bg-live-500/15 text-live-400',
   FINISHED:  'bg-primary-500/15 text-primary-400',
   POSTPONED: 'bg-amber-500/15 text-amber-400',
-  CANCELLED: 'bg-surface-700 text-gray-600',
+  CANCELLED: 'bg-surface-700 text-gray-400',
 };
 const STATUS_LABELS = {
   SCHEDULED: 'Programmé', LIVE: 'En direct',
@@ -59,7 +59,7 @@ export default function AdminMatches() {
     <div className="space-y-5 max-w-7xl">
       <div>
         <h1 className="font-display font-bold text-2xl text-gray-50">Matchs</h1>
-        <p className="text-sm text-gray-500 mt-0.5">{pagination?.total ?? 0} matchs en base</p>
+        <p className="text-sm text-gray-300 mt-0.5">{pagination?.total ?? 0} matchs en base</p>
       </div>
 
       {/* Filtres */}
@@ -83,7 +83,7 @@ export default function AdminMatches() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-gray-500 uppercase tracking-wider">
+              <tr className="border-b border-surface-700 text-xs text-gray-300 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Match</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden md:table-cell">Compétition</th>
                 <th className="text-center px-4 py-3.5 font-medium">Score</th>
@@ -109,13 +109,13 @@ export default function AdminMatches() {
                       <div className="flex items-center gap-1.5 text-sm font-medium text-gray-200 max-w-[240px]">
                         <TeamLogo logo={m.homeTeamLogo} name={m.homeTeam} />
                         <span className="truncate">{m.homeTeam}</span>
-                        <span className="text-gray-600 shrink-0">vs</span>
+                        <span className="text-gray-400 shrink-0">vs</span>
                         <TeamLogo logo={m.awayTeamLogo} name={m.awayTeam} />
                         <span className="truncate">{m.awayTeam}</span>
                       </div>
-                      {m.round && <p className="text-xs text-gray-600 mt-0.5">{m.round}</p>}
+                      {m.round && <p className="text-xs text-gray-400 mt-0.5">{m.round}</p>}
                     </td>
-                    <td className="px-4 py-3.5 hidden md:table-cell text-xs text-gray-500 max-w-[160px]">
+                    <td className="px-4 py-3.5 hidden md:table-cell text-xs text-gray-300 max-w-[160px]">
                       <div className="flex items-center gap-1.5">
                         <CompetitionLogo logo={m.competition?.logo} size={15} />
                         <span className="truncate">{m.competition?.name}</span>
@@ -124,7 +124,7 @@ export default function AdminMatches() {
                     <td className="px-4 py-3.5 text-center">
                       {m.homeScore !== null
                         ? <span className="text-sm font-bold text-gray-100 font-mono">{m.homeScore}–{m.awayScore}</span>
-                        : <span className="text-gray-600 text-xs">–</span>
+                        : <span className="text-gray-400 text-xs">–</span>
                       }
                     </td>
                     <td className="px-4 py-3.5">
@@ -132,10 +132,10 @@ export default function AdminMatches() {
                         {STATUS_LABELS[m.status] || m.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-center hidden lg:table-cell text-sm text-gray-500">
+                    <td className="px-4 py-3.5 text-center hidden lg:table-cell text-sm text-gray-300">
                       {m._count?.tips ?? 0}
                     </td>
-                    <td className="px-5 py-3.5 hidden lg:table-cell text-xs text-gray-500">
+                    <td className="px-5 py-3.5 hidden lg:table-cell text-xs text-gray-300">
                       {format(new Date(m.scheduledAt), 'dd MMM yyyy, HH:mm', { locale: fr })}
                     </td>
                   </tr>
@@ -147,7 +147,7 @@ export default function AdminMatches() {
 
         {pagination?.pages > 1 && (
           <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
-            <p className="text-xs text-gray-500">Page {page} / {pagination.pages}</p>
+            <p className="text-xs text-gray-300">Page {page} / {pagination.pages}</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
                 className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">

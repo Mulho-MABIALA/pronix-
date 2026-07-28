@@ -15,7 +15,7 @@ function rateColor(pct) {
 function WeeklyBars({ weeks, locale }) {
   const { t } = useTranslation();
   if (!weeks?.length) {
-    return <p className="text-xs text-gray-600">{t('transparency.noWeeklyData')}</p>;
+    return <p className="text-xs text-gray-400">{t('transparency.noWeeklyData')}</p>;
   }
 
   const maxTips = Math.max(...weeks.map((w) => w.tips), 1);
@@ -32,7 +32,7 @@ function WeeklyBars({ weeks, locale }) {
               style={{ height: `${heightPct}%`, opacity: w.tips > 0 ? 1 : 0.15 }}
               title={`${label} — ${w.successRate}% (${w.correct}/${w.tips})`}
             />
-            <span className="text-[9px] text-gray-600 mt-1 rotate-0 whitespace-nowrap">{label}</span>
+            <span className="text-[11px] text-gray-400 mt-1 rotate-0 whitespace-nowrap">{label}</span>
           </div>
         );
       })}
@@ -50,29 +50,29 @@ function BilanSection({ icon: Icon, title, desc, data, locale }) {
         <Icon size={18} className="text-primary-400" />
         <p className="font-semibold text-gray-100">{title}</p>
       </div>
-      <p className="text-xs text-gray-500">{desc}</p>
+      <p className="text-xs text-gray-300">{desc}</p>
 
       <SuccessRateBar rate={data.successRate} total={data.totalPicks} size="lg" />
 
       <div className="grid grid-cols-2 gap-3 pt-1">
         <div className="text-center">
           <p className="text-lg font-display font-bold text-gray-100">{data.correctPicks}</p>
-          <p className="text-[11px] text-gray-500">{t('transparency.correctPicks')}</p>
+          <p className="text-[11px] text-gray-300">{t('transparency.correctPicks')}</p>
         </div>
         <div className="text-center">
           <p className="text-lg font-display font-bold text-gray-100">{data.totalPicks}</p>
-          <p className="text-[11px] text-gray-500">{t('transparency.totalPicks')}</p>
+          <p className="text-[11px] text-gray-300">{t('transparency.totalPicks')}</p>
         </div>
       </div>
 
       {data.activeTipsters != null && (
-        <p className="text-xs text-gray-500 flex items-center gap-1.5">
+        <p className="text-xs text-gray-300 flex items-center gap-1.5">
           <Users size={12} />
           {t('transparency.activeTipsters', { count: data.activeTipsters })}
         </p>
       )}
       {data.periodDays && (
-        <p className="text-xs text-gray-600">{t('transparency.periodNote', { days: data.periodDays })}</p>
+        <p className="text-xs text-gray-400">{t('transparency.periodNote', { days: data.periodDays })}</p>
       )}
 
       <div className="pt-2 border-t border-white/[0.06]">
@@ -118,7 +118,7 @@ export default function Transparency() {
         </div>
       ) : isError || !stats ? (
         <div className="bento-card text-center py-10">
-          <p className="text-gray-500 text-sm">{t('transparency.loadError')}</p>
+          <p className="text-gray-300 text-sm">{t('transparency.loadError')}</p>
         </div>
       ) : (
         <>
@@ -140,11 +140,11 @@ export default function Transparency() {
           </div>
 
           <div className="bento-card flex items-start gap-3">
-            <Info size={16} className="text-gray-500 shrink-0 mt-0.5" />
+            <Info size={16} className="text-gray-300 shrink-0 mt-0.5" />
             <div className="space-y-1">
               <p className="text-xs text-gray-400 leading-relaxed">{t('transparency.methodology')}</p>
               {stats.generatedAt && (
-                <p className="text-[11px] text-gray-600">
+                <p className="text-[11px] text-gray-400">
                   {t('transparency.lastUpdated', {
                     date: format(new Date(stats.generatedAt), 'd MMM yyyy, HH:mm', { locale }),
                   })}

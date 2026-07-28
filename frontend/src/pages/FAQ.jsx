@@ -23,7 +23,7 @@ function FAQItem({ q, a }) {
         <span className={`text-sm font-medium ${open ? 'text-gray-100' : 'text-gray-300'}`}>{q}</span>
         <ChevronDown
           size={16}
-          className={`shrink-0 text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`shrink-0 text-gray-300 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
       {open && (
@@ -39,7 +39,7 @@ export default function FAQ() {
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-10">
       <div>
         <h1 className="font-display font-bold text-2xl text-gray-50">{t('faq.title')}</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-300 mt-1">
           {t('faq.noAnswer')}{' '}
           <a href="mailto:support@fpronix.com" className="text-primary-400 underline">{t('faq.contactUs')}</a>
         </p>
@@ -62,7 +62,7 @@ export default function FAQ() {
 
       <div className="card p-6 text-center space-y-2">
         <p className="text-gray-300 font-medium text-sm">{t('faq.otherQuestions')}</p>
-        <p className="text-gray-500 text-sm">{t('faq.respondWithin24h')}</p>
+        <p className="text-gray-300 text-sm">{t('faq.respondWithin24h')}</p>
         <a
           href="mailto:support@fpronix.com"
           className="btn-primary mt-2 inline-flex"

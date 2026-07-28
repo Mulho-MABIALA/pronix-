@@ -142,9 +142,9 @@ export default function Home() {
         ) : matches.length === 0 ? (
           <div className="card-p text-center py-12">
             <div className="w-12 h-12 rounded-full bg-white/[0.04] flex items-center justify-center mx-auto mb-3">
-              <Calendar size={20} className="text-gray-500" />
+              <Calendar size={20} className="text-gray-300" />
             </div>
-            <p className="text-gray-500 text-sm">{t('home.noMatchesToday')}</p>
+            <p className="text-gray-300 text-sm">{t('home.noMatchesToday')}</p>
             <Link to="/matchs" className="btn-secondary mt-4 text-sm">
               {t('home.seeOtherDays')}
             </Link>
@@ -177,7 +177,7 @@ export default function Home() {
               : tipsters.length === 0
                 ? (
                   <div className="card-p text-center py-6">
-                    <p className="text-gray-500 text-sm">{t('home.noTipsters')}</p>
+                    <p className="text-gray-300 text-sm">{t('home.noTipsters')}</p>
                   </div>
                 )
                 : tipsters.map((stat, i) => (

@@ -46,7 +46,7 @@ export default function Login() {
         <div className="text-center">
           <img src="/logo-circle.png" alt="fpronix" className="w-16 h-16 mx-auto rounded-full" />
           <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.loginTitle')}</h1>
-          <p className="text-gray-500 text-sm mt-1">{t('auth.loginSubtitle')}</p>
+          <p className="text-gray-300 text-sm mt-1">{t('auth.loginSubtitle')}</p>
         </div>
 
         <form onSubmit={handleSubmit} className="bento-card space-y-4" noValidate>
@@ -101,7 +101,7 @@ export default function Login() {
         {/* Séparateur */}
         <div className="relative flex items-center gap-3">
           <div className="flex-grow border-t border-surface-600" />
-          <span className="text-xs text-gray-500 shrink-0">{t('common.or')}</span>
+          <span className="text-xs text-gray-300 shrink-0">{t('common.or')}</span>
           <div className="flex-grow border-t border-surface-600" />
         </div>
 
@@ -118,7 +118,7 @@ export default function Login() {
           />
         </div>
 
-        <p className="text-center text-sm text-gray-500">
+        <p className="text-center text-sm text-gray-300">
           {t('auth.noAccount')}{' '}
           <Link to="/inscription" className="text-primary-400 hover:underline font-medium">
             {t('auth.registerLinkFree')}

@@ -16,7 +16,7 @@ const CONF_KEYS = ['all', 'high', 'medium', 'low'];
 const CONF_COLORS = {
   high:   'text-primary-400 bg-primary-500/10 border-primary-500/20',
   medium: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  low:    'text-gray-500 bg-surface-700/50 border-white/[0.05]',
+  low:    'text-gray-300 bg-surface-700/50 border-white/[0.05]',
 };
 
 const DATE_PRESETS = [
@@ -36,7 +36,7 @@ function MiniLogo({ logo, teamId, name }) {
   const [err, setErr] = useState(false);
   const src = logo || FOTMOB_CDN(teamId);
   if (src && !err) return <img src={src} alt="" aria-hidden="true" className="w-5 h-5 object-contain shrink-0" onError={() => setErr(true)} />;
-  return <div className="w-5 h-5 rounded-full bg-surface-600 flex items-center justify-center text-[8px] font-bold text-gray-500">{name?.[0]}</div>;
+  return <div className="w-5 h-5 rounded-full bg-surface-600 flex items-center justify-center text-[8px] font-bold text-gray-300">{name?.[0]}</div>;
 }
 
 function FilterChips({ tKey, keys, value, onChange }) {
@@ -50,7 +50,7 @@ function FilterChips({ tKey, keys, value, onChange }) {
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               value === realValue
                 ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
             }`}>
             {t(`${tKey}.${k}`)}
           </button>
@@ -67,7 +67,7 @@ function RangeField({ label, value, onChange, min, max, step, unit, offValue, of
     <div>
       <p className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center justify-between gap-2">
         <span>{label}</span>
-        <span className={`shrink-0 ${isOff ? 'text-gray-600' : 'text-primary-400'}`}>
+        <span className={`shrink-0 ${isOff ? 'text-gray-400' : 'text-primary-400'}`}>
           {isOff ? offLabel : `${value}${unit}`}
         </span>
       </p>
@@ -175,7 +175,7 @@ export default function Filtres() {
           <Filter size={18} className="text-primary-400" />
           <h1 className="section-title">{t('filtersPage.title')}</h1>
         </div>
-        <p className="text-xs text-gray-500">{t('filtersPage.subtitle')}</p>
+        <p className="text-xs text-gray-300">{t('filtersPage.subtitle')}</p>
       </div>
 
       {/* ── Filtres statistiques avancés ───────────────────────────────────────── */}
@@ -185,11 +185,11 @@ export default function Filtres() {
             <SlidersHorizontal size={15} className="text-primary-400" />
             <p className="text-sm font-bold text-gray-200">{t('filtersPage.advancedSectionTitle')}</p>
           </div>
-          <button onClick={resetAll} className="flex items-center gap-1 text-[11px] text-gray-500 hover:text-gray-300 transition-colors">
+          <button onClick={resetAll} className="flex items-center gap-1 text-[11px] text-gray-300 hover:text-gray-200 transition-colors">
             <RotateCcw size={12} /> {t('filtersPage.reset')}
           </button>
         </div>
-        <p className="text-[11px] text-gray-600 -mt-2">{t('filtersPage.advancedHint')}</p>
+        <p className="text-[11px] text-gray-400 -mt-2">{t('filtersPage.advancedHint')}</p>
 
         {/* Plage de dates */}
         <div>
@@ -201,7 +201,7 @@ export default function Filtres() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     datePreset === o.value
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                   }`}>
                   {t(`machine.datePresets.${o.labelKey}`)}
                 </button>
@@ -220,7 +220,7 @@ export default function Filtres() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     leagueIds.length === 0
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                   }`}>
                   {t('filtersPage.allLeaguesChip')}
                 </button>
@@ -229,7 +229,7 @@ export default function Filtres() {
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                       leagueIds.includes(c.id)
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                        : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                        : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                     }`}>
                     <CompetitionLogo logo={c.logo} size={14} />
                     {c.name}
@@ -250,7 +250,7 @@ export default function Filtres() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     statEvent === k
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                   }`}>
                   {t(`filtersPage.statEventOptions.${k}`)}
                 </button>
@@ -295,7 +295,7 @@ export default function Filtres() {
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                       market === realValue
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                        : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                        : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                     }`}>
                     {t(`filtersPage.marketOptions.${k}`)}
                   </button>
@@ -317,7 +317,7 @@ export default function Filtres() {
           <input type="range" min="0" max="90" step="5" value={minProb}
             onChange={(e) => setMinProb(Number(e.target.value))}
             className="w-full accent-primary-500 h-1.5 cursor-pointer" />
-          <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
             <span>0%</span><span>90%</span>
           </div>
         </div>
@@ -328,11 +328,11 @@ export default function Filtres() {
           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-semibold transition-colors ${
             valueOnly
               ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-              : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+              : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
           }`}
         >
           <span className="flex items-center gap-2">
-            <Zap size={14} className={valueOnly ? 'text-amber-400' : 'text-gray-600'} />
+            <Zap size={14} className={valueOnly ? 'text-amber-400' : 'text-gray-400'} />
             {t('filtersPage.valueOnly')}
           </span>
           <span className={`w-9 h-5 rounded-full relative transition-colors ${valueOnly ? 'bg-amber-500' : 'bg-surface-600'}`}>
@@ -343,7 +343,7 @@ export default function Filtres() {
 
       {/* Résultats */}
       <div className="px-4">
-        <p className="text-xs text-gray-500 mb-3">
+        <p className="text-xs text-gray-300 mb-3">
           {isLoading ? t('filtersPage.loading') : t('filtersPage.matchesFound', { count: filtered.length })}
         </p>
 
@@ -354,7 +354,7 @@ export default function Filtres() {
         ) : filtered.length === 0 ? (
           <div className="card-p text-center py-10">
             <p className="text-2xl mb-2">🔍</p>
-            <p className="text-gray-500 text-sm">{t('filtersPage.noMatchesFound')}</p>
+            <p className="text-gray-300 text-sm">{t('filtersPage.noMatchesFound')}</p>
             <button onClick={resetAll} className="btn-secondary mt-3 text-sm">
               {t('filtersPage.resetFilters')}
             </button>
@@ -372,7 +372,7 @@ export default function Filtres() {
                 <Link key={m.id} to={`/matchs/${m.id}`}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors">
                   <div className="w-10 shrink-0 text-center">
-                    <span className="text-[10px] text-gray-600 block">
+                    <span className="text-xs text-gray-400 block">
                       {isToday ? t('filtersPage.today') : format(new Date(m.scheduledAt), 'dd/MM')}
                     </span>
                     <span className="text-xs font-semibold text-gray-400 tabular-nums">
@@ -414,9 +414,9 @@ export default function Filtres() {
                       </div>
                     </>
                   ) : (
-                    <span className="shrink-0 text-[10px] text-gray-600">—</span>
+                    <span className="shrink-0 text-xs text-gray-400">—</span>
                   )}
-                  <ChevronRight size={14} className="text-gray-600 shrink-0" />
+                  <ChevronRight size={14} className="text-gray-400 shrink-0" />
                 </Link>
               );
             })}

@@ -10,7 +10,7 @@ export default function SuccessRateBar({ rate = 0, total = 0, size = 'md', stack
       <div className={`flex ${stacked ? 'flex-col items-end gap-0' : 'items-end justify-between'} min-w-0`}>
         <span className={`${textSize} text-gray-100 shrink-0`}>{pct}%</span>
         {total > 0 && (
-          <span className="text-[10px] text-gray-500 whitespace-nowrap shrink-0">{total} pronos</span>
+          <span className="text-xs text-gray-300 whitespace-nowrap shrink-0">{total} pronos</span>
         )}
       </div>
       <div className="h-2 w-full bg-surface-700 rounded-full overflow-hidden" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>

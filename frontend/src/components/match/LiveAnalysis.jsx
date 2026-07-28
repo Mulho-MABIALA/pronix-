@@ -18,7 +18,7 @@ export default function LiveAnalysis({ matchId }) {
 
   if (isLoading) {
     return (
-      <div className="bento-card flex items-center gap-3 text-gray-500 py-4">
+      <div className="bento-card flex items-center gap-3 text-gray-300 py-4">
         <Loader2 size={15} className="animate-spin text-live-400 shrink-0" />
         <span className="text-sm">{t('liveAnalysis.analyzing')}</span>
       </div>
@@ -73,7 +73,7 @@ export default function LiveAnalysis({ matchId }) {
 
       {/* Footer */}
       {data.generatedAt && (
-        <p className="text-[10px] text-gray-600">
+        <p className="text-xs text-gray-400">
           {t('liveAnalysis.updatedAt', { time: new Date(data.generatedAt).toLocaleTimeString(i18n.language?.startsWith('en') ? 'en-US' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }) })}
         </p>
       )}

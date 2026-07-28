@@ -21,7 +21,7 @@ function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = '
         <Icon size={16} className={color} />
       </div>
       <p className="text-lg font-bold text-white leading-tight truncate">{value}</p>
-      <p className="text-xs text-gray-500 mt-0.5">{label}</p>
+      <p className="text-xs text-gray-300 mt-0.5">{label}</p>
     </div>
   );
 }
@@ -33,7 +33,7 @@ function MiniStat({ icon: Icon, label, value, color = 'text-gray-300' }) {
       <Icon size={12} className={color} />
       <div className="leading-none">
         <p className={`text-xs font-bold ${color}`}>{value}</p>
-        <p className="text-[9px] text-gray-600 mt-0.5">{label}</p>
+        <p className="text-[11px] text-gray-400 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -55,13 +55,13 @@ function CommissionsPanel({ partnerId }) {
   });
 
   if (isLoading) {
-    return <p className="text-xs text-gray-600 px-4 py-4">Chargement…</p>;
+    return <p className="text-xs text-gray-400 px-4 py-4">Chargement…</p>;
   }
 
   const commissions = data || [];
 
   if (commissions.length === 0) {
-    return <p className="text-xs text-gray-600 px-4 py-4">Aucune commission générée pour l'instant.</p>;
+    return <p className="text-xs text-gray-400 px-4 py-4">Aucune commission générée pour l'instant.</p>;
   }
 
   return (
@@ -70,7 +70,7 @@ function CommissionsPanel({ partnerId }) {
         <thead>
           <tr className="border-b border-white/[0.06]">
             {['Filleul', 'Paiement', 'Commission', 'Statut', 'Date', ''].map((h) => (
-              <th key={h} className="px-4 py-2 text-left text-[10px] font-semibold text-gray-500 uppercase tracking-wide">{h}</th>
+              <th key={h} className="px-4 py-2 text-left text-xs font-semibold text-gray-300 uppercase tracking-wide">{h}</th>
             ))}
           </tr>
         </thead>
@@ -79,7 +79,7 @@ function CommissionsPanel({ partnerId }) {
             <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
               <td className="px-4 py-2.5">
                 <p className="text-xs font-medium text-gray-200">{c.conversion?.user?.username || '—'}</p>
-                <p className="text-[10px] text-gray-600">{c.conversion?.user?.email}</p>
+                <p className="text-xs text-gray-400">{c.conversion?.user?.email}</p>
               </td>
               <td className="px-4 py-2.5 text-xs text-gray-400">{formatAmount(c.amount)}</td>
               <td className="px-4 py-2.5 text-xs font-bold text-primary-400">{formatAmount(c.commissionAmount)}</td>
@@ -94,7 +94,7 @@ function CommissionsPanel({ partnerId }) {
                   </span>
                 )}
               </td>
-              <td className="px-4 py-2.5 text-[10px] text-gray-500">
+              <td className="px-4 py-2.5 text-xs text-gray-300">
                 {format(new Date(c.createdAt), 'dd MMM yyyy', { locale: fr })}
               </td>
               <td className="px-4 py-2.5">
@@ -186,7 +186,7 @@ export default function AdminPartners() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold text-white">Partenaires</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Influenceurs rémunérés à la commission sur les abonnements générés</p>
+          <p className="text-sm text-gray-300 mt-0.5">Influenceurs rémunérés à la commission sur les abonnements générés</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
@@ -211,7 +211,7 @@ export default function AdminPartners() {
           <h3 className="text-sm font-semibold text-gray-200">Nouveau partenaire</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Nom *</label>
+              <label className="block text-xs text-gray-300 mb-1.5">Nom *</label>
               <input
                 type="text"
                 required
@@ -222,7 +222,7 @@ export default function AdminPartners() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Code (optionnel — auto-généré sinon)</label>
+              <label className="block text-xs text-gray-300 mb-1.5">Code (optionnel — auto-généré sinon)</label>
               <input
                 type="text"
                 value={formData.code}
@@ -232,7 +232,7 @@ export default function AdminPartners() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Taux de commission (%) *</label>
+              <label className="block text-xs text-gray-300 mb-1.5">Taux de commission (%) *</label>
               <input
                 type="number"
                 min="1"
@@ -244,7 +244,7 @@ export default function AdminPartners() {
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-500 mb-1.5">Contact (WhatsApp / téléphone)</label>
+              <label className="block text-xs text-gray-300 mb-1.5">Contact (WhatsApp / téléphone)</label>
               <input
                 type="text"
                 value={formData.contact}
@@ -282,7 +282,7 @@ export default function AdminPartners() {
       <div className="space-y-3">
         {partners.length === 0 && (
           <div className="rounded-2xl border border-white/[0.06] p-8 text-center" style={{ background: 'var(--color-card)' }}>
-            <p className="text-sm text-gray-600">Aucun partenaire pour l'instant — cliquez sur "Ajouter un partenaire".</p>
+            <p className="text-sm text-gray-400">Aucun partenaire pour l'instant — cliquez sur "Ajouter un partenaire".</p>
           </div>
         )}
 
@@ -293,17 +293,17 @@ export default function AdminPartners() {
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-semibold text-white truncate">{p.name}</p>
                   {!p.active && (
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gray-500/15 text-gray-500">Désactivé</span>
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-gray-500/15 text-gray-300">Désactivé</span>
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-1 flex-wrap">
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-500 font-mono bg-white/[0.04] px-2 py-0.5 rounded-lg">
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-300 font-mono bg-white/[0.04] px-2 py-0.5 rounded-lg">
                     {p.code}
                   </span>
                   <span className="inline-flex items-center gap-1 text-xs text-purple-400">
                     <Percent size={11} /> {Math.round(p.commissionRate * 100)}%
                   </span>
-                  {p.contact && <span className="text-xs text-gray-600">{p.contact}</span>}
+                  {p.contact && <span className="text-xs text-gray-400">{p.contact}</span>}
                 </div>
               </div>
 
@@ -315,14 +315,14 @@ export default function AdminPartners() {
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => copyLink(p.code, p.id)}
-                  className="p-2 rounded-lg text-gray-500 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
+                  className="p-2 rounded-lg text-gray-300 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
                   title="Copier le lien de parrainage"
                 >
                   {copiedId === p.id ? <Check size={15} className="text-primary-400" /> : <Copy size={15} />}
                 </button>
                 <button
                   onClick={() => toggleActiveMutation.mutate({ id: p.id, active: !p.active })}
-                  className={`p-2 rounded-lg transition-colors ${p.active ? 'text-gray-500 hover:text-red-400 hover:bg-red-500/[0.1]' : 'text-gray-500 hover:text-primary-400 hover:bg-primary-500/[0.1]'}`}
+                  className={`p-2 rounded-lg transition-colors ${p.active ? 'text-gray-300 hover:text-red-400 hover:bg-red-500/[0.1]' : 'text-gray-300 hover:text-primary-400 hover:bg-primary-500/[0.1]'}`}
                   title={p.active ? 'Désactiver' : 'Réactiver'}
                 >
                   <Power size={15} />
@@ -342,7 +342,7 @@ export default function AdminPartners() {
                 )}
                 <button
                   onClick={() => setExpandedId((v) => (v === p.id ? null : p.id))}
-                  className="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-white/[0.08] transition-colors"
+                  className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/[0.08] transition-colors"
                   title="Voir les commissions"
                 >
                   {expandedId === p.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}

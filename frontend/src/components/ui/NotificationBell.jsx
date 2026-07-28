@@ -54,7 +54,7 @@ function IOSBottomSheet({ onClose }) {
           </p>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-gray-500 hover:text-gray-300 hover:bg-white/[0.06] transition-colors"
+            className="p-1.5 rounded-xl text-gray-300 hover:text-gray-200 hover:bg-white/[0.06] transition-colors"
           >
             <X size={16} />
           </button>
@@ -63,7 +63,7 @@ function IOSBottomSheet({ onClose }) {
         {/* Contenu */}
         <div className="px-5 pt-4 space-y-5">
           <p className="text-sm text-gray-400 leading-relaxed">
-            {t('notificationBell.iosIntro')} <span className="text-gray-500">(iOS 16.4+)</span>.
+            {t('notificationBell.iosIntro')} <span className="text-gray-300">(iOS 16.4+)</span>.
           </p>
 
           {/* Étapes */}
@@ -128,7 +128,7 @@ export default function NotificationBell({ size = 18 }) {
       <>
         <button
           onClick={() => setShowIOSHint(true)}
-          className="p-2 rounded-lg transition-colors text-gray-500 hover:text-gray-300 hover:bg-surface-700"
+          className="p-2 rounded-lg transition-colors text-gray-300 hover:text-gray-200 hover:bg-surface-700"
           aria-label={t('notificationBell.enableNotifications')}
           title={t('notificationBell.iosInstallFirst')}
         >

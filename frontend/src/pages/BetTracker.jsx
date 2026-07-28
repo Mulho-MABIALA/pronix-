@@ -12,14 +12,14 @@ import CoachPanel from '../components/ai/CoachPanel';
 const RESULT_STYLES = {
   WIN:  { text: 'text-primary-400', bg: 'bg-primary-500/10' },
   LOSS: { text: 'text-red-400',     bg: 'bg-red-500/10' },
-  VOID: { text: 'text-gray-500',    bg: 'bg-white/[0.04]' },
+  VOID: { text: 'text-gray-300',    bg: 'bg-white/[0.04]' },
 };
 
 function StatChip({ label, value, highlight }) {
   return (
     <div className="bento-card py-3 text-center">
       <p className={`text-xl font-display font-bold ${highlight || 'text-gray-100'}`}>{value}</p>
-      <p className="text-[10px] text-gray-500 mt-0.5">{label}</p>
+      <p className="text-xs text-gray-300 mt-0.5">{label}</p>
     </div>
   );
 }
@@ -62,38 +62,38 @@ function BetForm({ onClose, onSaved }) {
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.homeTeam')}</label>
+          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.homeTeam')}</label>
           <input value={form.teamA} onChange={set('teamA')} required placeholder="PSG" className={inputClass} />
         </div>
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.awayTeam')}</label>
+          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.awayTeam')}</label>
           <input value={form.teamB} onChange={set('teamB')} required placeholder="OM" className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.prediction')}</label>
+        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.prediction')}</label>
         <input value={form.prediction} onChange={set('prediction')} required placeholder={t('bets.predictionPlaceholder')} className={inputClass} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.odds')}</label>
+          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.odds')}</label>
           <input type="number" step="0.01" min="1" value={form.odds} onChange={set('odds')} required placeholder="1.85" className={inputClass} />
         </div>
         <div>
-          <label className="block text-[11px] text-gray-500 mb-1">{t('bets.stakeFcfa')}</label>
+          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.stakeFcfa')}</label>
           <input type="number" min="1" value={form.stake} onChange={set('stake')} required placeholder="5000" className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.dateTime')}</label>
+        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.dateTime')}</label>
         <input type="datetime-local" value={form.matchDate} onChange={set('matchDate')} required className={inputClass} />
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.resultOptional')}</label>
+        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.resultOptional')}</label>
         <select value={form.result} onChange={set('result')} className={inputClass}>
           <option value="">{t('bets.pending')}</option>
           <option value="WIN">{t('bets.results.WIN')}</option>
@@ -103,7 +103,7 @@ function BetForm({ onClose, onSaved }) {
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-500 mb-1">{t('bets.notes')}</label>
+        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.notes')}</label>
         <textarea value={form.notes} onChange={set('notes')} placeholder={t('bets.notesPlaceholder')} rows={2} className={inputClass + ' resize-none'} />
       </div>
 
@@ -131,7 +131,7 @@ function BetRow({ bet, onDelete, onResultChange }) {
           <p className="text-[13px] font-semibold text-gray-200 truncate">
             {bet.teamA} vs {bet.teamB}
           </p>
-          <p className="text-[11px] text-gray-500 truncate">
+          <p className="text-[11px] text-gray-300 truncate">
             {t('bets.rowSummary', { prediction: bet.prediction, odds: bet.odds, stake: bet.stake.toLocaleString('fr-FR') })}
           </p>
         </div>
@@ -141,11 +141,11 @@ function BetRow({ bet, onDelete, onResultChange }) {
               {t(`bets.results.${bet.result}`)}
             </span>
           ) : (
-            <span className="text-[11px] text-gray-600 flex items-center gap-1">
+            <span className="text-[11px] text-gray-400 flex items-center gap-1">
               <Clock size={11} /> {t('bets.pending')}
             </span>
           )}
-          {expanded ? <ChevronUp size={14} className="text-gray-600" /> : <ChevronDown size={14} className="text-gray-600" />}
+          {expanded ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
         </div>
       </div>
 
@@ -157,9 +157,9 @@ function BetRow({ bet, onDelete, onResultChange }) {
             </p>
           )}
           {bet.notes && (
-            <p className="text-xs text-gray-500 leading-relaxed">{bet.notes}</p>
+            <p className="text-xs text-gray-300 leading-relaxed">{bet.notes}</p>
           )}
-          <p className="text-[11px] text-gray-600">
+          <p className="text-[11px] text-gray-400">
             {format(new Date(bet.matchDate), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
           </p>
 
@@ -172,7 +172,7 @@ function BetRow({ bet, onDelete, onResultChange }) {
                 className={`text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors ${
                   bet.result === r
                     ? `${RESULT_STYLES[r].bg} ${RESULT_STYLES[r].text} border border-current`
-                    : 'text-gray-600 bg-surface-700/40 hover:text-gray-300'
+                    : 'text-gray-400 bg-surface-700/40 hover:text-gray-300'
                 }`}
               >
                 {t(`bets.results.${r}`)}
@@ -242,7 +242,7 @@ export default function BetTracker() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-display font-bold text-gray-100">{t('bets.title')}</h1>
-          <p className="text-xs text-gray-500 mt-0.5">{t('bets.subtitle')}</p>
+          <p className="text-xs text-gray-300 mt-0.5">{t('bets.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
@@ -305,7 +305,7 @@ export default function BetTracker() {
         <div className="bento-card text-center py-14 space-y-3">
           <div className="text-5xl">📊</div>
           <p className="text-gray-300 font-semibold">{t('bets.noEntries')}</p>
-          <p className="text-gray-500 text-sm">{t('bets.noEntriesDesc')}</p>
+          <p className="text-gray-300 text-sm">{t('bets.noEntriesDesc')}</p>
           <button onClick={() => setShowForm(true)} className="btn-cta inline-flex gap-2 mt-2">
             <Plus size={15} /> {t('bets.addFirstBet')}
           </button>

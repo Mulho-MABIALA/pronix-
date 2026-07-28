@@ -63,17 +63,17 @@ function TicketCard({ ticket, onReply, onStatus }) {
           )}
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">{ticket.subject}</p>
-            <p className="text-[11px] text-gray-500 mt-0.5">
+            <p className="text-[11px] text-gray-300 mt-0.5">
               {displayName} · {format(new Date(ticket.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <StatusBadge status={ticket.status} />
-          <span className="text-[11px] text-gray-500 bg-white/[0.05] px-2 py-1 rounded-lg">
+          <span className="text-[11px] text-gray-300 bg-white/[0.05] px-2 py-1 rounded-lg">
             {ticket.messages.length} msg
           </span>
-          {open ? <ChevronUp size={14} className="text-gray-500" /> : <ChevronDown size={14} className="text-gray-500" />}
+          {open ? <ChevronUp size={14} className="text-gray-300" /> : <ChevronDown size={14} className="text-gray-300" />}
         </div>
       </div>
 
@@ -82,7 +82,7 @@ function TicketCard({ ticket, onReply, onStatus }) {
         <div className="border-t border-white/[0.07] px-4 pb-4">
           {/* Changer statut */}
           <div className="flex items-center gap-2 py-3 border-b border-white/[0.05] mb-3">
-            <span className="text-[11px] text-gray-500 font-medium">Statut :</span>
+            <span className="text-[11px] text-gray-300 font-medium">Statut :</span>
             {Object.keys(STATUS_MAP).map(s => (
               <button
                 key={s}
@@ -90,7 +90,7 @@ function TicketCard({ ticket, onReply, onStatus }) {
                 className={`text-[11px] px-2 py-1 rounded-lg border transition-colors ${
                   ticket.status === s
                     ? 'border-primary-400/40 bg-primary-500/15 text-primary-400'
-                    : 'border-white/[0.08] text-gray-500 hover:text-gray-300 hover:border-white/[0.15]'
+                    : 'border-white/[0.08] text-gray-300 hover:text-gray-200 hover:border-white/[0.15]'
                 }`}
               >
                 {STATUS_MAP[s].label}
@@ -113,7 +113,7 @@ function TicketCard({ ticket, onReply, onStatus }) {
                     : 'bg-white/[0.06] text-gray-200 rounded-tl-sm'
                 }`}>
                   <p>{msg.content}</p>
-                  <p className="text-[10px] text-gray-500 mt-1">
+                  <p className="text-xs text-gray-300 mt-1">
                     {format(new Date(msg.createdAt), 'dd MMM HH:mm', { locale: fr })}
                   </p>
                 </div>
@@ -218,9 +218,9 @@ export default function AdminSupport() {
       ) : tickets.length === 0 ? (
         <div className="rounded-2xl border border-white/[0.11] p-12 text-center"
           style={{ background: 'var(--color-card)' }}>
-          <MessageSquare size={32} className="text-gray-600 mx-auto mb-3" />
+          <MessageSquare size={32} className="text-gray-400 mx-auto mb-3" />
           <p className="text-gray-400 font-medium">Aucun ticket</p>
-          <p className="text-sm text-gray-600 mt-1">Les demandes d'assistance apparaîtront ici</p>
+          <p className="text-sm text-gray-400 mt-1">Les demandes d'assistance apparaîtront ici</p>
         </div>
       ) : (
         <div className="space-y-3">

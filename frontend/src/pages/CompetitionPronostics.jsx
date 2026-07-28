@@ -45,7 +45,7 @@ export default function CompetitionPronostics() {
   if (!compsLoading && !competition) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 text-center space-y-4">
-        <p className="text-gray-500 text-sm">{t('competitionSeo.notFound')}</p>
+        <p className="text-gray-300 text-sm">{t('competitionSeo.notFound')}</p>
         <Link to="/pronostics" className="btn-secondary inline-flex">{t('competitionSeo.seeAllPronostics')}</Link>
       </div>
     );
@@ -64,7 +64,7 @@ export default function CompetitionPronostics() {
             {competition ? t('competitionSeo.pronosticsTitle', { name: competition.name }) : t('pronostics.title')}
           </h1>
           {competition?.country && (
-            <p className="text-xs text-gray-500 flex items-center gap-1">
+            <p className="text-xs text-gray-300 flex items-center gap-1">
               <Calendar size={11} />
               {format(new Date(), 'EEEE d MMMM')}
             </p>
@@ -78,7 +78,7 @@ export default function CompetitionPronostics() {
         </div>
       ) : matches.length === 0 ? (
         <div className="card-p text-center py-12">
-          <p className="text-gray-500 text-sm">{t('competitionSeo.noMatchesToday')}</p>
+          <p className="text-gray-300 text-sm">{t('competitionSeo.noMatchesToday')}</p>
         </div>
       ) : (
         <div className="card overflow-hidden divide-y divide-white/[0.04]">
@@ -95,12 +95,12 @@ export default function CompetitionPronostics() {
             <BarChart2 size={16} className="text-primary-400" />
             {t('competitionSeo.seeStandingsFor', { name: competition.name })}
           </span>
-          <ChevronRight size={16} className="text-gray-500" />
+          <ChevronRight size={16} className="text-gray-300" />
         </Link>
       )}
 
       <div className="text-center">
-        <Link to="/pronostics" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+        <Link to="/pronostics" className="text-xs text-gray-300 hover:text-gray-200 transition-colors">
           {t('competitionSeo.seeAllPronostics')}
         </Link>
       </div>

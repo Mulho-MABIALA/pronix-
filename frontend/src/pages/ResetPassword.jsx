@@ -27,7 +27,7 @@ export default function ResetPassword() {
     }
   };
 
-  if (!token) return <div className="text-center py-20 text-gray-500">{t('auth.invalidLink')}</div>;
+  if (!token) return <div className="text-center py-20 text-gray-300">{t('auth.invalidLink')}</div>;
 
   return (
     <div className="min-h-dvh bg-surface-900 flex items-center justify-center px-4">

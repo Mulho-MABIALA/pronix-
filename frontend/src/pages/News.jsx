@@ -32,7 +32,7 @@ function ArticleCard({ article }) {
         />
       ) : (
         <div className="w-20 h-20 rounded-lg bg-surface-700 shrink-0 flex items-center justify-center">
-          <Newspaper size={24} className="text-gray-600" />
+          <Newspaper size={24} className="text-gray-400" />
         </div>
       )}
 
@@ -40,18 +40,18 @@ function ArticleCard({ article }) {
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-medium text-primary-400">{article.source}</span>
           {dateLabel && (
-            <span className="text-xs text-gray-600">{dateLabel}</span>
+            <span className="text-xs text-gray-400">{dateLabel}</span>
           )}
         </div>
         <h2 className="text-sm font-semibold text-gray-100 group-hover:text-primary-300 transition-colors line-clamp-2 leading-snug">
           {article.title}
         </h2>
         {article.description && (
-          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{article.description}</p>
+          <p className="text-xs text-gray-300 mt-1 line-clamp-2">{article.description}</p>
         )}
       </div>
 
-      <ExternalLink size={13} className="text-gray-600 shrink-0 mt-0.5 group-hover:text-primary-400 transition-colors" />
+      <ExternalLink size={13} className="text-gray-400 shrink-0 mt-0.5 group-hover:text-primary-400 transition-colors" />
     </a>
   );
 }
@@ -82,13 +82,13 @@ export default function News() {
       )}
 
       {isError && (
-        <div className="bento-card text-center py-8 text-gray-500">
+        <div className="bento-card text-center py-8 text-gray-300">
           {t('news.loadError')}
         </div>
       )}
 
       {!isLoading && !isError && articles.length === 0 && (
-        <div className="bento-card text-center py-8 text-gray-500">
+        <div className="bento-card text-center py-8 text-gray-300">
           {t('news.noNews')}
         </div>
       )}

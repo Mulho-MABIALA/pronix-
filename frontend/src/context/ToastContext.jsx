@@ -44,7 +44,7 @@ function ToastItem({ toast, onDismiss }) {
       <p className="text-sm text-gray-200 flex-1 leading-snug">{toast.message}</p>
       <button
         onClick={() => onDismiss(toast.id)}
-        className="p-1 rounded-lg text-gray-600 hover:text-gray-300 hover:bg-white/[0.06] transition-colors shrink-0"
+        className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.06] transition-colors shrink-0"
         aria-label="Fermer"
       >
         <X size={13} />

@@ -36,7 +36,7 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
               <span className="text-3xl font-display font-bold text-gray-100">
                 {fmt(displayPrice)}
               </span>
-              <span className="text-gray-500 pb-1"> FCFA{isYearly ? t('planCard.perYear') : t('planCard.perMonth')}</span>
+              <span className="text-gray-300 pb-1"> FCFA{isYearly ? t('planCard.perYear') : t('planCard.perMonth')}</span>
               {monthlyEquiv && (
                 <span className="text-xs text-primary-400 pb-1 ml-1">{t('planCard.monthlyEquiv', { amount: fmt(monthlyEquiv) })}</span>
               )}

@@ -102,7 +102,7 @@ export default function SupportChat() {
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] transition-colors"
+              className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-white/[0.05] transition-colors"
             >
               <ChevronDown size={16} />
             </button>
@@ -126,7 +126,7 @@ export default function SupportChat() {
             {/* Questions rapides (affiché seulement au début) */}
             {messages.length <= 1 && (
               <div className="space-y-1.5 pt-2">
-                <p className="text-[10px] text-gray-600 uppercase tracking-wide">{t('supportChat.quickQuestionsLabel')}</p>
+                <p className="text-xs text-gray-400 uppercase tracking-wide">{t('supportChat.quickQuestionsLabel')}</p>
                 {QUICK_QUESTION_KEYS.map((k) => (
                   <button
                     key={k}

@@ -80,14 +80,14 @@ export default function PWABanner() {
           </p>
           <button
             onClick={handleDismiss}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors mt-2"
+            className="text-xs text-gray-300 hover:text-gray-200 transition-colors mt-2"
           >
             {t('common.close')}
           </button>
         </div>
         <button
           onClick={handleDismiss}
-          className="p-1 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-white/[0.05] transition-colors shrink-0"
+          className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] transition-colors shrink-0"
           aria-label={t('common.close')}
         >
           <X size={14} />
@@ -109,19 +109,19 @@ export default function PWABanner() {
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-gray-100">{t('pwa.install')}</p>
-        <p className="text-xs text-gray-500 mt-0.5 leading-snug">{t('pwa.installDesc')}</p>
+        <p className="text-xs text-gray-300 mt-0.5 leading-snug">{t('pwa.installDesc')}</p>
         <div className="flex items-center gap-2 mt-3">
           <button onClick={handleInstall} className="btn-primary text-xs px-3 py-1.5 h-auto">
             {t('pwa.installBtn')}
           </button>
-          <button onClick={handleDismiss} className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1.5">
+          <button onClick={handleDismiss} className="text-xs text-gray-300 hover:text-gray-200 transition-colors px-2 py-1.5">
             {t('pwa.dismiss')}
           </button>
         </div>
       </div>
       <button
         onClick={handleDismiss}
-        className="p-1 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-white/[0.05] transition-colors shrink-0"
+        className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] transition-colors shrink-0"
         aria-label={t('common.close')}
       >
         <X size={14} />

@@ -788,61 +788,61 @@
         "label": "Match result",
         "subtitle": "Who wins the match at the end of regular time?",
         "markets": {
-          "auto": { "label": "Best auto pick", "desc": "The algorithm automatically selects the market with the highest probability among all those available for this match." },
-          "1": { "label": "1 — Home win", "desc": "The home team wins the match at the end of regular time. Lost if draw or away win." },
-          "X": { "label": "X — Draw", "desc": "Both teams finish the match with the same number of goals. Lost if either team wins." },
-          "2": { "label": "2 — Away win", "desc": "The visiting team wins the match. Lost if draw or home win." }
+          "auto": { "label": "Best auto pick", "desc": "Automatically picks the market with the highest probability for this match." },
+          "1": { "label": "1 — Home win", "desc": "Won if the home team wins. Lost if draw or away win." },
+          "X": { "label": "X — Draw", "desc": "Won if the match ends level. Lost if either team wins." },
+          "2": { "label": "2 — Away win", "desc": "Won if the away team wins. Lost if draw or home win." }
         }
       },
       "doublechance": {
         "label": "Double chance",
         "subtitle": "You cover 2 outcomes out of 3 — safer, reduced odd.",
         "markets": {
-          "1X": { "label": "1X — Home or Draw", "desc": "Won if home win OR draw. Lost only if the away team wins. Ideal for backing a strong home team without risking the draw." },
-          "X2": { "label": "X2 — Draw or Away", "desc": "Won if draw OR away win. Lost only if the home team wins. Good choice when the away side is favourite or solid." },
-          "12": { "label": "12 — Home or Away (no draw)", "desc": "Won if either team wins. Lost only in case of a draw. Perfect when a draw seems unlikely between two attacking teams." }
+          "1X": { "label": "1X — Home or Draw", "desc": "Won if home wins or draw. Lost only if the away team wins." },
+          "X2": { "label": "X2 — Draw or Away", "desc": "Won if draw or away wins. Lost only if the home team wins." },
+          "12": { "label": "12 — Home or Away (no draw)", "desc": "Won if either team wins. Lost only in case of a draw." }
         }
       },
       "dnb": {
         "label": "Draw No Bet",
         "subtitle": "Draw No Bet — your stake is refunded if the match is a draw.",
         "markets": {
-          "dnb1": { "label": "DNB Home — Bet void if draw", "desc": "Won if home wins. Stake refunded if draw. Lost if away wins. Less risky than a simple 1 — covers against the draw." },
-          "dnb2": { "label": "DNB Away — Bet void if draw", "desc": "Won if away wins. Stake refunded if draw. Lost if home wins. Ideal for backing a visiting team without fearing the draw." }
+          "dnb1": { "label": "DNB Home — Bet void if draw", "desc": "Won if home wins. Refunded if draw. Lost if away wins." },
+          "dnb2": { "label": "DNB Away — Bet void if draw", "desc": "Won if away wins. Refunded if draw. Lost if home wins." }
         }
       },
       "overunder": {
         "label": "Total goals",
         "subtitle": "Bet on the total number of goals scored in the match.",
         "markets": {
-          "over05": { "label": "Over 0.5 goals — At least 1 goal", "desc": "Just one goal needs to be scored in the match to win. Very high probability (~97%). Low but safe odd." },
-          "over15": { "label": "Over 1.5 goals — At least 2 goals", "desc": "The match must have at least 2 goals in total. Very common in attacking matches. Solid bet on scoring teams." },
-          "over25": { "label": "Over 2.5 goals — At least 3 goals", "desc": "The match must total 3 goals or more (e.g. 2-1, 3-0, 2-2). The most popular Over/Under market on 1xbet." },
-          "over35": { "label": "Over 3.5 goals — At least 4 goals", "desc": "High-scoring match with 4 goals or more (e.g. 2-2, 3-1, 4-0). Good odd, recommended for derbies or attack-heavy matches." },
-          "over45": { "label": "Over 4.5 goals — At least 5 goals", "desc": "Very open match with 5 goals or more. High odd, recommended for matches between very attacking or defensively weak teams." },
-          "under15": { "label": "Under 1.5 goals — Maximum 1 goal", "desc": "The match ends with 0 or 1 goal. Bet on a closed, defensive match. Won if score is 0-0, 1-0 or 0-1." },
-          "under25": { "label": "Under 2.5 goals — Maximum 2 goals", "desc": "At most 2 goals in the match (0-0, 1-0, 0-1, 1-1, 2-0, 0-2). Suited to tense matches, cup games, or strong defences." },
-          "under35": { "label": "Under 3.5 goals — Maximum 3 goals", "desc": "The match has 3 goals or fewer. Good probability in balanced matches. Won if final score is 2-1, 1-1, 2-0, etc." },
-          "under45": { "label": "Under 4.5 goals — Maximum 4 goals", "desc": "The match doesn't exceed 4 goals. High probability (~80%). Lost only for very high-scoring matches (5 goals or more)." }
+          "over05": { "label": "Over 0.5 goals — At least 1 goal", "desc": "Won as soon as 1 goal is scored in the match (~97% of matches)." },
+          "over15": { "label": "Over 1.5 goals — At least 2 goals", "desc": "Won if the match has at least 2 goals in total." },
+          "over25": { "label": "Over 2.5 goals — At least 3 goals", "desc": "Won if the match has at least 3 goals in total (e.g. 2-1, 3-0)." },
+          "over35": { "label": "Over 3.5 goals — At least 4 goals", "desc": "Won if the match has at least 4 goals in total (e.g. 2-2, 3-1)." },
+          "over45": { "label": "Over 4.5 goals — At least 5 goals", "desc": "Won if the match has at least 5 goals in total." },
+          "under15": { "label": "Under 1.5 goals — Maximum 1 goal", "desc": "Won if the match has 0 or 1 goal in total." },
+          "under25": { "label": "Under 2.5 goals — Maximum 2 goals", "desc": "Won if the match has 2 goals or fewer in total." },
+          "under35": { "label": "Under 3.5 goals — Maximum 3 goals", "desc": "Won if the match has 3 goals or fewer in total." },
+          "under45": { "label": "Under 4.5 goals — Maximum 4 goals", "desc": "Won if the match has 4 goals or fewer in total." }
         }
       },
       "btts": {
         "label": "Both teams to score",
         "subtitle": "Both Teams To Score — does each team score at least once?",
         "markets": {
-          "btts": { "label": "BTTS Yes — Both teams score", "desc": "Both teams score at least 1 goal each (e.g. 1-1, 2-1, 1-2, 2-2). The exact score doesn't matter, only that both teams find the net." },
-          "nobtts": { "label": "BTTS No — At least one team fails to score", "desc": "At least one of the two teams finishes the match without scoring. Won if score is 1-0, 0-2, 2-0, or 0-0. Recommended when a team has a very solid defence." }
+          "btts": { "label": "BTTS Yes — Both teams score", "desc": "Won if both teams score at least 1 goal each." },
+          "nobtts": { "label": "BTTS No — At least one team fails to score", "desc": "Won if at least one team fails to score." }
         }
       },
       "mitemps": {
         "label": "1st half",
         "subtitle": "Result and goals over the first 45 minutes only.",
         "markets": {
-          "ht1": { "label": "HT 1 — Home leads at half-time", "desc": "The home team is ahead on the scoreboard at the end of the 1st half. The final result of the match doesn't matter for this market." },
-          "htX": { "label": "HT X — Level at half-time", "desc": "Both teams are level on the scoreboard at the end of the 1st half (0-0, 1-1, etc.). More frequent than a full-time draw." },
-          "ht2": { "label": "HT 2 — Away leads at half-time", "desc": "The visiting team is ahead on the scoreboard at the end of the 1st half." },
-          "htover15": { "label": "HT Over 1.5 — At least 2 goals at the break", "desc": "At least 2 goals are scored before half-time. Less common than over the full match, since the 1st half is on average less prolific." },
-          "htunder15": { "label": "HT Under 1.5 — Maximum 1 goal at the break", "desc": "0 or 1 goal scored before half-time. Statistically the most common half-time market." }
+          "ht1": { "label": "HT 1 — Home leads at half-time", "desc": "Won if the home team is ahead on the scoreboard at half-time." },
+          "htX": { "label": "HT X — Level at half-time", "desc": "Won if both teams are level on the scoreboard at half-time." },
+          "ht2": { "label": "HT 2 — Away leads at half-time", "desc": "Won if the away team is ahead on the scoreboard at half-time." },
+          "htover15": { "label": "HT Over 1.5 — At least 2 goals at the break", "desc": "Won if at least 2 goals are scored before half-time." },
+          "htunder15": { "label": "HT Under 1.5 — Maximum 1 goal at the break", "desc": "Won if 0 or 1 goal is scored before half-time." }
         }
       }
     }

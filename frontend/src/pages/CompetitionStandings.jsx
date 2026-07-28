@@ -41,7 +41,7 @@ export default function CompetitionStandings() {
   if (!compsLoading && !competition) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 text-center space-y-4">
-        <p className="text-gray-500 text-sm">{t('competitionSeo.notFound')}</p>
+        <p className="text-gray-300 text-sm">{t('competitionSeo.notFound')}</p>
         <Link to="/classements" className="btn-secondary inline-flex">{t('competitionSeo.seeAllStandings')}</Link>
       </div>
     );
@@ -60,7 +60,7 @@ export default function CompetitionStandings() {
             {competition ? t('competitionSeo.standingsTitle', { name: competition.name }) : t('standings.title')}
           </h1>
           {competition?.country && (
-            <p className="text-xs text-gray-500">{competition.country}</p>
+            <p className="text-xs text-gray-300">{competition.country}</p>
           )}
         </div>
       </div>
@@ -80,12 +80,12 @@ export default function CompetitionStandings() {
             <TrendingUp size={16} className="text-primary-400" />
             {t('competitionSeo.seePronosticsFor', { name: competition.name })}
           </span>
-          <ChevronRight size={16} className="text-gray-500" />
+          <ChevronRight size={16} className="text-gray-300" />
         </Link>
       )}
 
       <div className="text-center">
-        <Link to="/classements" className="text-xs text-gray-500 hover:text-gray-300 transition-colors">
+        <Link to="/classements" className="text-xs text-gray-300 hover:text-gray-200 transition-colors">
           {t('competitionSeo.seeAllStandings')}
         </Link>
       </div>

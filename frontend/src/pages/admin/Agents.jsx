@@ -63,7 +63,7 @@ function ResultBlock({ result }) {
           <p className="text-sm text-gray-300 whitespace-pre-wrap">{result.posts.facebook}</p>
         </div>
         {result.posts.meilleurMatch && (
-          <p className="text-xs text-gray-500">Match vedette : <span className="text-gray-300">{result.posts.meilleurMatch}</span></p>
+          <p className="text-xs text-gray-300">Match vedette : <span className="text-gray-300">{result.posts.meilleurMatch}</span></p>
         )}
       </div>
     );
@@ -121,10 +121,10 @@ function ResultBlock({ result }) {
         <div className="bg-surface-900 rounded-xl p-3 border border-surface-600 space-y-2">
           {r.classement?.map((t) => (
             <div key={t.rang} className="flex items-start gap-2">
-              <span className="text-xs font-bold text-gray-500 w-4 shrink-0 mt-0.5">#{t.rang}</span>
+              <span className="text-xs font-bold text-gray-300 w-4 shrink-0 mt-0.5">#{t.rang}</span>
               <div>
                 <p className="text-sm font-medium text-gray-200">{t.username} <span className="text-primary-400 font-bold">{t.weeklyRate}%</span></p>
-                <p className="text-xs text-gray-500">{t.commentaire}</p>
+                <p className="text-xs text-gray-300">{t.commentaire}</p>
               </div>
             </div>
           ))}
@@ -136,7 +136,7 @@ function ResultBlock({ result }) {
           </div>
         )}
         {r.messageComm && (
-          <p className="text-xs text-gray-500 italic">{r.messageComm}</p>
+          <p className="text-xs text-gray-300 italic">{r.messageComm}</p>
         )}
       </div>
     );
@@ -182,7 +182,7 @@ function AgentCard({ agent }) {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-semibold text-gray-100 text-sm">{label}</p>
-          <p className="text-xs text-gray-500 mt-0.5">{description}</p>
+          <p className="text-xs text-gray-300 mt-0.5">{description}</p>
         </div>
       </div>
 
@@ -240,7 +240,7 @@ function OrchestratorCard() {
         </div>
         <div>
           <p className="font-semibold text-gray-100 text-sm">Orchestrateur</p>
-          <p className="text-xs text-gray-500 mt-0.5">Donnez une instruction en langage naturel — l'orchestrateur choisit et coordonne les bons agents</p>
+          <p className="text-xs text-gray-300 mt-0.5">Donnez une instruction en langage naturel — l'orchestrateur choisit et coordonne les bons agents</p>
         </div>
       </div>
 
@@ -278,7 +278,7 @@ function OrchestratorCard() {
               <p className="text-sm text-gray-300 whitespace-pre-wrap">{result.synthese}</p>
             </div>
           )}
-          <p className="text-xs text-gray-600">{result.tours} tour(s) d'orchestration</p>
+          <p className="text-xs text-gray-400">{result.tours} tour(s) d'orchestration</p>
         </div>
       )}
     </div>
@@ -303,7 +303,7 @@ function PushBroadcastCard() {
         </div>
         <div>
           <p className="font-semibold text-gray-100 text-sm">Envoyer une notification push</p>
-          <p className="text-xs text-gray-500 mt-0.5">Diffuse une notification à tous les abonnés aux notifications</p>
+          <p className="text-xs text-gray-300 mt-0.5">Diffuse une notification à tous les abonnés aux notifications</p>
         </div>
       </div>
 
@@ -367,7 +367,7 @@ export default function AdminAgents() {
     <div className="space-y-6 max-w-5xl">
       <div>
         <h1 className="font-display font-bold text-2xl text-gray-50">Agents IA</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Lancez manuellement les agents ou utilisez l'orchestrateur en langage naturel</p>
+        <p className="text-sm text-gray-300 mt-0.5">Lancez manuellement les agents ou utilisez l'orchestrateur en langage naturel</p>
       </div>
 
       <div className="bg-surface-800/50 border border-surface-700 rounded-2xl p-4 text-sm text-gray-400 space-y-1">

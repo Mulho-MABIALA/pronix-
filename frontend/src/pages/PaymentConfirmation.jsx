@@ -69,7 +69,7 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
         <div className="text-center space-y-4">
           <Loader size={40} className="text-primary-400 animate-spin mx-auto" />
           <p className="text-gray-400 font-medium">{t('paymentConfirm.verifying')}</p>
-          <p className="text-gray-600 text-sm">{t('paymentConfirm.mayTakeSeconds')}</p>
+          <p className="text-gray-400 text-sm">{t('paymentConfirm.mayTakeSeconds')}</p>
         </div>
       </div>
     );
@@ -124,7 +124,7 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
           {isTipsterFlow ? t('paymentConfirm.tipsterConfirmedDesc') : t('paymentConfirm.confirmedDesc')}
         </p>
         {mock === '1' && (
-          <p className="text-xs text-gray-600">{t('paymentConfirm.simulationRef', { ref })}</p>
+          <p className="text-xs text-gray-400">{t('paymentConfirm.simulationRef', { ref })}</p>
         )}
         <div className="flex flex-col gap-2 pt-4">
           {isTipsterFlow && tipsterId ? (

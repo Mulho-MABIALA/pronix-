@@ -27,7 +27,7 @@ export default function Tipsters() {
           <Trophy size={22} className="text-primary-400" />
           <h1 className="font-display font-bold text-2xl text-gray-100">{t('tipsters.leaderboardTitle')}</h1>
         </div>
-        <p className="text-gray-500 text-sm mt-1">
+        <p className="text-gray-300 text-sm mt-1">
           {t('tipsters.leaderboardDesc')}
         </p>
         <p className="disclaimer mt-2">
@@ -63,7 +63,7 @@ export default function Tipsters() {
             <div className="bento-card text-center py-12">
               <p className="text-4xl mb-3" aria-hidden="true">🏆</p>
               <p className="text-gray-400">{t('tipsters.noTipsters')}</p>
-              <p className="text-gray-500 text-sm mt-1">{t('tipsters.noTipstersDesc')}</p>
+              <p className="text-gray-300 text-sm mt-1">{t('tipsters.noTipstersDesc')}</p>
             </div>
           )
           : tipsters.map((stats, i) => (

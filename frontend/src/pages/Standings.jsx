@@ -44,19 +44,19 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
           <>
             <CompetitionLogo logo={selected.logo} size={20} />
             <span className="flex-1 truncate text-gray-100">{selected.name}</span>
-            <span className="text-xs text-gray-500 shrink-0">{selected.country}</span>
+            <span className="text-xs text-gray-300 shrink-0">{selected.country}</span>
           </>
         ) : (
-          <span className="flex-1 text-gray-500">{t('standings.choosePlaceholder')}</span>
+          <span className="flex-1 text-gray-300">{t('standings.choosePlaceholder')}</span>
         )}
-        <ChevronDown size={16} className={`text-gray-500 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown size={16} className={`text-gray-300 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
 
       {open && (
         <div className="absolute z-30 mt-2 w-full bg-surface-800 border border-surface-600 rounded-xl shadow-2xl overflow-hidden">
           {/* Recherche */}
           <div className="flex items-center gap-2 px-3 py-2.5 border-b border-surface-700">
-            <Search size={14} className="text-gray-500 shrink-0" />
+            <Search size={14} className="text-gray-300 shrink-0" />
             <input
               autoFocus
               value={search}
@@ -65,7 +65,7 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
               className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-600 outline-none"
             />
             {search && (
-              <button onClick={() => setSearch('')} className="text-gray-500 hover:text-gray-300">
+              <button onClick={() => setSearch('')} className="text-gray-300 hover:text-gray-200">
                 <X size={14} />
               </button>
             )}
@@ -74,7 +74,7 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
           {/* Liste */}
           <div className="max-h-72 overflow-y-auto">
             {filtered.length === 0 && (
-              <p className="px-4 py-6 text-center text-sm text-gray-500">{t('standings.noCompetitionFound')}</p>
+              <p className="px-4 py-6 text-center text-sm text-gray-300">{t('standings.noCompetitionFound')}</p>
             )}
             {filtered.map((c) => (
               <button
@@ -87,7 +87,7 @@ function CompetitionPicker({ competitions, selectedId, onSelect }) {
               >
                 <CompetitionLogo logo={c.logo} size={20} />
                 <span className="flex-1 truncate text-sm text-gray-200">{c.name}</span>
-                <span className="text-[11px] text-gray-500 shrink-0">{c.country}</span>
+                <span className="text-[11px] text-gray-300 shrink-0">{c.country}</span>
               </button>
             ))}
           </div>
@@ -108,7 +108,7 @@ export function StandingsTable({ standings, competitionName }) {
 
   if (standings.length === 0) {
     return (
-      <div className="bento-card text-center py-8 text-gray-500 text-sm">
+      <div className="bento-card text-center py-8 text-gray-300 text-sm">
         {t('standings.noMatchesFor', { name: competitionName })}
       </div>
     );
@@ -118,7 +118,7 @@ export function StandingsTable({ standings, competitionName }) {
     <div className="bento-card overflow-x-auto">
       <table className="w-full text-sm min-w-[420px]">
         <thead>
-          <tr className="text-xs text-gray-500 border-b border-surface-700">
+          <tr className="text-xs text-gray-300 border-b border-surface-700">
             <th className="text-left py-2 pl-2 w-8">#</th>
             <th className="text-left py-2">{t('standings.team')}</th>
             <th className="text-center py-2 w-8">{t('standings.played')}</th>
@@ -137,7 +137,7 @@ export function StandingsTable({ standings, competitionName }) {
                 idx < 4 ? 'border-l-2 border-l-primary-500' : ''
               }`}
             >
-              <td className="py-2.5 pl-2 text-gray-500 text-xs">{idx + 1}</td>
+              <td className="py-2.5 pl-2 text-gray-300 text-xs">{idx + 1}</td>
               <td className="py-2.5">
                 <div className="flex items-center gap-2">
                   {team.logo && (
@@ -150,7 +150,7 @@ export function StandingsTable({ standings, competitionName }) {
               <td className="text-center py-2.5 text-primary-400">{team.W}</td>
               <td className="text-center py-2.5 text-gray-400">{team.D}</td>
               <td className="text-center py-2.5 text-red-400">{team.L}</td>
-              <td className={`text-center py-2.5 text-xs ${team.GD > 0 ? 'text-primary-400' : team.GD < 0 ? 'text-red-400' : 'text-gray-500'}`}>
+              <td className={`text-center py-2.5 text-xs ${team.GD > 0 ? 'text-primary-400' : team.GD < 0 ? 'text-red-400' : 'text-gray-300'}`}>
                 {team.GD > 0 ? '+' : ''}{team.GD}
               </td>
               <td className="text-center py-2.5 font-bold text-gray-100">{team.Pts}</td>
@@ -158,7 +158,7 @@ export function StandingsTable({ standings, competitionName }) {
           ))}
         </tbody>
       </table>
-      <p className="text-xs text-gray-600 mt-3 px-2">
+      <p className="text-xs text-gray-400 mt-3 px-2">
         {t('standings.calcDisclaimer')}
       </p>
     </div>
@@ -213,7 +213,7 @@ export default function Standings() {
             )}
             <h2 className="font-semibold text-gray-200">{competition.name}</h2>
             {competition.season && (
-              <span className="text-xs text-gray-500">{competition.season}</span>
+              <span className="text-xs text-gray-300">{competition.season}</span>
             )}
           </div>
           <StandingsTable standings={standings} competitionName={competition.name} />
@@ -222,13 +222,13 @@ export default function Standings() {
 
       {!isLoading && !selectedCompId && competitions.length > 0 && (
         <>
-          <div className="bento-card text-center py-8 text-gray-500 text-sm">
+          <div className="bento-card text-center py-8 text-gray-300 text-sm">
             {t('standings.selectPrompt')}
           </div>
 
           {/* Liens directs — pages dédiées par compétition (SEO + accès rapide) */}
           <div className="space-y-2">
-            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-1">
+            <p className="text-xs font-semibold text-gray-300 uppercase tracking-wide px-1">
               {t('standings.popularLeagues')}
             </p>
             <div className="flex flex-wrap gap-1.5">

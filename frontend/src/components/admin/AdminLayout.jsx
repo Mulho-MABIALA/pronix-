@@ -255,10 +255,10 @@ export default function AdminLayout() {
             <span className="text-[11px] text-gray-400 font-medium">
               fp<span className="text-primary-400">ronix</span> Admin Console
             </span>
-            <span className="text-[11px] text-gray-500">·</span>
-            <span className="text-[11px] text-gray-500">v1.0</span>
+            <span className="text-[11px] text-gray-300">·</span>
+            <span className="text-[11px] text-gray-300">v1.0</span>
           </div>
-          <p className="text-[11px] text-gray-500">
+          <p className="text-[11px] text-gray-300">
             {t('adminLayout.copyright', { year: new Date().getFullYear() })}
           </p>
         </footer>

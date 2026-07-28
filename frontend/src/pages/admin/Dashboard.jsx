@@ -110,7 +110,7 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
           {value ?? '–'}
         </p>
         <p className="text-[12px] text-gray-400 font-medium mt-1.5">{label}</p>
-        {sub && <p className="text-[11px] text-gray-600 mt-0.5">{sub}</p>}
+        {sub && <p className="text-[11px] text-gray-400 mt-0.5">{sub}</p>}
       </div>
     </div>
   );
@@ -143,7 +143,7 @@ function RevenueChart({ data }) {
   if (!data?.length) return (
     <div className="rounded-2xl border border-white/[0.11] p-5 flex items-center justify-center h-64"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
-      <p className="text-sm text-gray-600">Aucune donnée</p>
+      <p className="text-sm text-gray-400">Aucune donnée</p>
     </div>
   );
 
@@ -183,7 +183,7 @@ function RevenueChart({ data }) {
       <div className="flex items-start justify-between mb-1">
         <div>
           <p className="text-sm font-semibold text-white">Revenus mensuels</p>
-          <p className="text-[11px] text-gray-500 mt-0.5">6 derniers mois</p>
+          <p className="text-[11px] text-gray-300 mt-0.5">6 derniers mois</p>
         </div>
         <div className="text-right">
           <p className="text-lg font-display font-bold text-white tabular-nums">{fmt(total)} FCFA</p>
@@ -228,7 +228,7 @@ function RevenueChart({ data }) {
       {/* month labels */}
       <div className="flex justify-between mt-2 px-1">
         {data.map((d, i) => (
-          <span key={i} className="text-[10px] text-gray-600 capitalize font-medium text-center">{d.month}</span>
+          <span key={i} className="text-xs text-gray-400 capitalize font-medium text-center">{d.month}</span>
         ))}
       </div>
     </div>
@@ -255,7 +255,7 @@ function ConversionCard({ data, kpis }) {
       <div className="flex items-center justify-between mb-5">
         <div>
           <p className="text-sm font-semibold text-white">Conversion</p>
-          <p className="text-[11px] text-gray-500 mt-0.5">Plans actifs</p>
+          <p className="text-[11px] text-gray-300 mt-0.5">Plans actifs</p>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
           <Percent size={11} className="text-emerald-400" />
@@ -277,7 +277,7 @@ function ConversionCard({ data, kpis }) {
           </svg>
           <div className="absolute inset-0 flex items-center justify-center flex-col">
             <p className="text-[15px] font-display font-bold text-white leading-none">{convPct}%</p>
-            <p className="text-[9px] text-gray-500 mt-0.5">premium</p>
+            <p className="text-[11px] text-gray-300 mt-0.5">premium</p>
           </div>
         </div>
 
@@ -299,7 +299,7 @@ function ConversionCard({ data, kpis }) {
             </div>
           ))}
           <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
-            <span className="text-[11px] text-gray-600">Total inscrits</span>
+            <span className="text-[11px] text-gray-400">Total inscrits</span>
             <span className="text-[12px] font-bold text-gray-200">{fmt(total)}</span>
           </div>
         </div>
@@ -343,7 +343,7 @@ function TopTipsters({ data }) {
             <div key={tip.id}
               className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors group">
               <span className="w-5 text-center text-sm shrink-0">
-                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-600">{i + 1}</span>}
+                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-400">{i + 1}</span>}
               </span>
               {tip.avatar ? (
                 <img src={tip.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -356,7 +356,7 @@ function TopTipsters({ data }) {
                 <p className="text-[13px] font-semibold text-gray-200 truncate group-hover:text-white transition-colors">
                   {tip.displayName}
                 </p>
-                <p className="text-[10px] text-gray-600">{fmt(tip.totalTips)} picks</p>
+                <p className="text-xs text-gray-400">{fmt(tip.totalTips)} picks</p>
               </div>
               <div className="text-right shrink-0">
                 <p className={`text-[13px] font-bold tabular-nums ${rateColor}`}>{rate.toFixed(1)}%</p>
@@ -418,9 +418,9 @@ function RecentUsers({ data }) {
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-gray-500 truncate">{u.email}</p>
+                <p className="text-[11px] text-gray-300 truncate">{u.email}</p>
               </div>
-              <p className="text-[10px] text-gray-600 shrink-0 font-medium">
+              <p className="text-xs text-gray-400 shrink-0 font-medium">
                 {format(new Date(u.createdAt), 'dd MMM', { locale: fr })}
               </p>
             </div>

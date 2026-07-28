@@ -33,7 +33,7 @@ function PostCard({ post }) {
         />
       ) : (
         <div className="w-24 h-24 rounded-lg bg-surface-700 shrink-0 flex items-center justify-center">
-          <BookOpen size={24} className="text-gray-600" />
+          <BookOpen size={24} className="text-gray-400" />
         </div>
       )}
 
@@ -42,15 +42,15 @@ function PostCard({ post }) {
           {post.category && (
             <span className="text-xs font-medium text-primary-400 capitalize">{t(`blog.categories.${post.category}`, { defaultValue: post.category })}</span>
           )}
-          {date && <span className="text-xs text-gray-600">{date}</span>}
+          {date && <span className="text-xs text-gray-400">{date}</span>}
         </div>
         <h2 className="text-sm font-semibold text-gray-100 group-hover:text-primary-300 transition-colors line-clamp-2 leading-snug">
           {post.title}
         </h2>
         {post.excerpt && (
-          <p className="text-xs text-gray-500 mt-1 line-clamp-2">{post.excerpt}</p>
+          <p className="text-xs text-gray-300 mt-1 line-clamp-2">{post.excerpt}</p>
         )}
-        <div className="flex items-center gap-3 mt-2 text-xs text-gray-600">
+        <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
           {author && <span>{t('blog.byAuthor', { author })}</span>}
           <span className="flex items-center gap-1">
             <Eye size={10} />
@@ -118,13 +118,13 @@ export default function BlogList() {
       )}
 
       {isError && (
-        <div className="bento-card text-center py-8 text-gray-500">
+        <div className="bento-card text-center py-8 text-gray-300">
           {t('blog.loadError')}
         </div>
       )}
 
       {!isLoading && posts.length === 0 && (
-        <div className="bento-card text-center py-8 text-gray-500">
+        <div className="bento-card text-center py-8 text-gray-300">
           {t('blog.noArticles')}
         </div>
       )}
@@ -143,7 +143,7 @@ export default function BlogList() {
           >
             ← {t('blog.previous')}
           </button>
-          <span className="text-xs text-gray-500">{page} / {pagination.pages}</span>
+          <span className="text-xs text-gray-300">{page} / {pagination.pages}</span>
           <button
             disabled={page >= pagination.pages}
             onClick={() => setPage((p) => p + 1)}

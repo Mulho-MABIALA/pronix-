@@ -55,7 +55,7 @@ export default function AdminCommentaires() {
       {/* Recherche */}
       <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
         <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300" />
           <input
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
@@ -75,11 +75,11 @@ export default function AdminCommentaires() {
       >
         {isLoading || isFetching ? (
           <div className="p-8 flex justify-center">
-            <RefreshCw size={20} className="animate-spin text-gray-500" />
+            <RefreshCw size={20} className="animate-spin text-gray-300" />
           </div>
         ) : comments.length === 0 ? (
           <div className="p-12 text-center">
-            <MessageSquare size={32} className="text-gray-600 mx-auto mb-3" />
+            <MessageSquare size={32} className="text-gray-400 mx-auto mb-3" />
             <p className="text-gray-400 font-medium">Aucun commentaire trouvé</p>
           </div>
         ) : (
@@ -101,14 +101,14 @@ export default function AdminCommentaires() {
                     <p className="text-sm font-semibold text-white">
                       {comment.user?.profile?.displayName || comment.user?.username}
                     </p>
-                    <span className="text-[11px] text-gray-600">
+                    <span className="text-[11px] text-gray-400">
                       {format(new Date(comment.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}
                     </span>
                   </div>
                   <p className="text-sm text-gray-300 leading-relaxed">{comment.content}</p>
                   {comment.tip && (
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="text-[11px] text-gray-600">Sur le tip :</span>
+                      <span className="text-[11px] text-gray-400">Sur le tip :</span>
                       <Link
                         to={`/tipsters/${comment.tip.userId}`}
                         className="inline-flex items-center gap-1 text-[11px] text-primary-400 hover:text-primary-300 transition-colors"
@@ -116,7 +116,7 @@ export default function AdminCommentaires() {
                         {comment.tip.match?.homeTeam} vs {comment.tip.match?.awayTeam}
                         <ExternalLink size={10} />
                       </Link>
-                      <span className="text-[11px] text-gray-600">
+                      <span className="text-[11px] text-gray-400">
                         par {comment.tip.user?.profile?.displayName || comment.tip.user?.username}
                       </span>
                     </div>
@@ -126,7 +126,7 @@ export default function AdminCommentaires() {
                 {/* Actions */}
                 <button
                   onClick={() => setConfirm(comment.id)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/15 text-gray-500 hover:text-red-400 transition-all shrink-0"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/15 text-gray-300 hover:text-red-400 transition-all shrink-0"
                 >
                   <Trash2 size={15} />
                 </button>
@@ -138,7 +138,7 @@ export default function AdminCommentaires() {
         {/* Pagination */}
         {pagination && pagination.pages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-white/[0.07]">
-            <p className="text-[12px] text-gray-500">
+            <p className="text-[12px] text-gray-300">
               Page {pagination.page} / {pagination.pages} · {pagination.total} total
             </p>
             <div className="flex gap-1.5">

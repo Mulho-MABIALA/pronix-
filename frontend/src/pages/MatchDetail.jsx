@@ -45,12 +45,12 @@ function ScorelineSection({ match }) {
                 <div className="flex-1 h-1.5 bg-surface-600 rounded-full overflow-hidden">
                   <div className={`h-full ${barColor} rounded-full`} style={{ width: `${(prob / max) * 100}%` }} />
                 </div>
-                <span className="text-[11px] text-gray-500 w-7 text-right shrink-0">{prob}%</span>
+                <span className="text-[11px] text-gray-300 w-7 text-right shrink-0">{prob}%</span>
               </div>
             );
           })}
         </div>
-        <p className="text-[10px] text-gray-600">{t('matchDetail.poissonDisclaimer')}</p>
+        <p className="text-xs text-gray-400">{t('matchDetail.poissonDisclaimer')}</p>
       </div>
     </section>
   );
@@ -67,22 +67,22 @@ function ProbabilitySection({ match }) {
       <div className="bento-card p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('matchDetail.probabilities1x2')}</h2>
-          <span className="text-[10px] text-gray-600 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
+          <span className="text-xs text-gray-400 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
         </div>
 
         {/* Gros chiffres */}
         <div className="grid grid-cols-3 text-center gap-2">
           <div>
             <p className="text-4xl font-display font-bold text-primary-400">{home}%</p>
-            <p className="text-xs text-gray-500 mt-1.5">{t('matchDetail.home1Label')}</p>
+            <p className="text-xs text-gray-300 mt-1.5">{t('matchDetail.home1Label')}</p>
           </div>
           <div>
             <p className="text-4xl font-display font-bold text-gray-400">{draw}%</p>
-            <p className="text-xs text-gray-500 mt-1.5">{t('matchDetail.drawXLabel')}</p>
+            <p className="text-xs text-gray-300 mt-1.5">{t('matchDetail.drawXLabel')}</p>
           </div>
           <div>
             <p className="text-4xl font-display font-bold text-primary-400/70">{away}%</p>
-            <p className="text-xs text-gray-500 mt-1.5">{t('matchDetail.away2Label')}</p>
+            <p className="text-xs text-gray-300 mt-1.5">{t('matchDetail.away2Label')}</p>
           </div>
         </div>
 
@@ -95,7 +95,7 @@ function ProbabilitySection({ match }) {
 
         {/* Score prédit */}
         <div className="flex items-center justify-center gap-3 border-t border-surface-700 pt-3">
-          <span className="text-xs text-gray-500">{t('matchDetail.predictedScore')}</span>
+          <span className="text-xs text-gray-300">{t('matchDetail.predictedScore')}</span>
           <span className="font-display font-bold text-xl text-gray-200 tabular-nums">
             {predictedHome} — {predictedAway}
           </span>
@@ -150,7 +150,7 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
           {data.reasoning?.length > 0 && (
             <ul className="space-y-1">
               {data.reasoning.map((r, i) => (
-                <li key={i} className="text-[11px] text-gray-500 flex items-start gap-1.5">
+                <li key={i} className="text-[11px] text-gray-300 flex items-start gap-1.5">
                   <span className="text-amber-400 shrink-0">•</span> {r}
                 </li>
               ))}
@@ -211,7 +211,7 @@ function OddsAndValueSection({ match, realOdds }) {
 
       <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border bg-primary-500/5 border-primary-500/15">
         <div className="min-w-0">
-          <p className="text-xs text-gray-500">{t('matchDetail.recommendedPick')}</p>
+          <p className="text-xs text-gray-300">{t('matchDetail.recommendedPick')}</p>
           <p className="text-sm font-semibold text-gray-100 mt-0.5 truncate">
             {t(`matchDetail.pickMarketLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.market || pred.bestPick.label })}
           </p>
@@ -220,13 +220,13 @@ function OddsAndValueSection({ match, realOdds }) {
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wider mb-2">
+        <p className="text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-2">
           {isReal ? t('matchDetail.oddsComparatorReal') : t('matchDetail.oddsComparatorSimulated')}
         </p>
         <div className="space-y-1.5">
           {panel.map((b, i) => (
             <div key={b.bookmaker} className="flex items-center justify-between text-sm">
-              <span className={i === 0 ? 'font-semibold text-gray-200' : 'text-gray-500'}>{b.bookmaker}</span>
+              <span className={i === 0 ? 'font-semibold text-gray-200' : 'text-gray-300'}>{b.bookmaker}</span>
               <OddsChip odd={b.odd} size="md" muted={i !== 0} isReal={isReal} />
             </div>
           ))}
@@ -275,7 +275,7 @@ function TeamLogoLarge({ logo, teamId, name }) {
     </>
   ) : (
     <>
-      <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-surface-700 flex items-center justify-center text-xl font-bold text-gray-500">
+      <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-surface-700 flex items-center justify-center text-xl font-bold text-gray-300">
         {name?.charAt(0).toUpperCase()}
       </div>
       <p className="font-semibold text-gray-100 text-sm leading-tight">{name}</p>
@@ -310,7 +310,7 @@ function FormBadge({ result }) {
 function FormRow({ label, matches }) {
   const { t } = useTranslation();
   if (!matches || matches.length === 0) {
-    return <p className="text-gray-600 text-xs">{t('matchDetail.noRecentMatches')}</p>;
+    return <p className="text-gray-400 text-xs">{t('matchDetail.noRecentMatches')}</p>;
   }
   return (
     <div className="space-y-1">
@@ -322,7 +322,7 @@ function FormRow({ label, matches }) {
       </div>
       <div className="space-y-1">
         {matches.map((m) => (
-          <div key={m.id} className="flex items-center justify-between text-xs text-gray-500">
+          <div key={m.id} className="flex items-center justify-between text-xs text-gray-300">
             <span className="truncate max-w-[160px]">{m.homeTeam} — {m.awayTeam}</span>
             <span className="shrink-0 ml-2 font-mono">{m.homeScore}–{m.awayScore}</span>
           </div>
@@ -335,7 +335,7 @@ function FormRow({ label, matches }) {
 function H2HSection({ h2h, homeTeam, awayTeam }) {
   const { t } = useTranslation();
   if (!h2h || h2h.length === 0) {
-    return <p className="text-gray-600 text-xs">{t('matchDetail.noH2H')}</p>;
+    return <p className="text-gray-400 text-xs">{t('matchDetail.noH2H')}</p>;
   }
 
   let homeWins = 0, awayWins = 0, draws = 0;
@@ -350,15 +350,15 @@ function H2HSection({ h2h, homeTeam, awayTeam }) {
       <div className="flex items-center justify-between text-xs">
         <div className="text-center">
           <p className="font-bold text-2xl text-primary-400">{homeWins}</p>
-          <p className="text-gray-500 truncate max-w-[80px]">{homeTeam}</p>
+          <p className="text-gray-300 truncate max-w-[80px]">{homeTeam}</p>
         </div>
         <div className="text-center">
           <p className="font-bold text-2xl text-gray-400">{draws}</p>
-          <p className="text-gray-500">{t('matchDetail.draws')}</p>
+          <p className="text-gray-300">{t('matchDetail.draws')}</p>
         </div>
         <div className="text-center">
           <p className="font-bold text-2xl text-primary-400">{awayWins}</p>
-          <p className="text-gray-500 truncate max-w-[80px]">{awayTeam}</p>
+          <p className="text-gray-300 truncate max-w-[80px]">{awayTeam}</p>
         </div>
       </div>
       <div className="space-y-1.5">
@@ -392,7 +392,7 @@ function StatBar({ stat }) {
         <span className="min-w-[42px] text-center text-sm font-bold px-2 py-0.5 rounded-md bg-primary-500/20 text-primary-400">
           {homeDisplay}
         </span>
-        <span className="flex-1 text-xs text-gray-500 text-center px-3">{stat.label}</span>
+        <span className="flex-1 text-xs text-gray-300 text-center px-3">{stat.label}</span>
         <span className="min-w-[42px] text-center text-sm font-bold text-gray-300">
           {awayDisplay}
         </span>
@@ -415,7 +415,7 @@ function Tab({ label, active, onClick }) {
       className={`px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
         active
           ? 'border-primary-400 text-primary-400'
-          : 'border-transparent text-gray-500 hover:text-gray-300'
+          : 'border-transparent text-gray-300 hover:text-gray-200'
       }`}
     >
       {label}
@@ -432,7 +432,7 @@ function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
     <div className="space-y-2 pt-1">
       <div className="flex items-center justify-between">
         <p className="text-xs font-medium text-gray-400">{t('matchDetail.reportReasonLabel')}</p>
-        <button onClick={onCancel} className="text-gray-600 hover:text-gray-400">
+        <button onClick={onCancel} className="text-gray-400 hover:text-gray-300">
           <X size={13} />
         </button>
       </div>
@@ -445,7 +445,7 @@ function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
             className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
               selected === k
                 ? 'border-red-500/50 bg-red-500/10 text-red-400'
-                : 'border-surface-600 text-gray-500 hover:border-surface-500'
+                : 'border-surface-600 text-gray-300 hover:border-surface-500'
             }`}
           >
             {t(`matchDetail.reportReasons.${k}`)}
@@ -650,7 +650,7 @@ export default function MatchDetail() {
                   return (
                     <p className="font-display font-bold text-4xl">
                       <span className={scoreColor(homeWins)}>{match.homeScore}</span>
-                      <span className="text-gray-600"> — </span>
+                      <span className="text-gray-400"> — </span>
                       <span className={scoreColor(awayWins)}>{match.awayScore}</span>
                     </p>
                   );
@@ -669,7 +669,7 @@ export default function MatchDetail() {
                 <p className="font-display font-bold text-2xl text-gray-100">
                   {format(new Date(match.scheduledAt), 'HH:mm')}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-300 mt-1">
                   {format(new Date(match.scheduledAt), 'dd MMM yyyy', { locale: dateLocale })}
                 </p>
               </>
@@ -734,7 +734,7 @@ export default function MatchDetail() {
               </div>
             ) : !statsData?.data ? (
               <div className="card-p text-center py-10">
-                <p className="text-gray-600 text-sm">{t('matchDetail.statsNotAvailable')}</p>
+                <p className="text-gray-400 text-sm">{t('matchDetail.statsNotAvailable')}</p>
               </div>
             ) : (
               <div className="card p-4 space-y-4">
@@ -760,9 +760,9 @@ export default function MatchDetail() {
             {/* Données premium */}
             {!isPremium && (
               <section className="card border-dashed border-surface-600 p-6 text-center">
-                <Lock size={22} className="mx-auto text-gray-500 mb-2" aria-hidden="true" />
+                <Lock size={22} className="mx-auto text-gray-300 mb-2" aria-hidden="true" />
                 <p className="text-gray-400 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
-                <p className="text-gray-500 text-xs mt-1">
+                <p className="text-gray-300 text-xs mt-1">
                   {t('matchDetail.premiumDataDesc')}
                 </p>
                 <Link to="/abonnement" className="btn-primary mt-4 text-sm">
@@ -782,11 +782,11 @@ export default function MatchDetail() {
                     </div>
                     <div>
                       <p className="text-sm font-semibold text-gray-100">{t('matchDetail.aiAnalysis')}</p>
-                      <p className="text-xs text-gray-500">{t('matchDetail.aiAnalysisDesc')}</p>
+                      <p className="text-xs text-gray-300">{t('matchDetail.aiAnalysisDesc')}</p>
                     </div>
                   </div>
                   {aiMeta && (
-                    <span className="text-[10px] text-gray-600 shrink-0">{t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
+                    <span className="text-xs text-gray-400 shrink-0">{t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
                   )}
                 </div>
 
@@ -810,7 +810,7 @@ export default function MatchDetail() {
                         <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
                         <p className="text-xs font-semibold text-violet-400">{t('matchDetail.analysisReady')}</p>
                         {aiMeta && (
-                          <span className="text-[10px] text-gray-600 ml-auto">{t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
+                          <span className="text-xs text-gray-400 ml-auto">{t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
                         )}
                       </div>
                       {analysis && (
@@ -830,7 +830,7 @@ export default function MatchDetail() {
               <section className="card p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-gray-100">{t('matchDetail.publishPromptTitle')}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">{t('matchDetail.publishPromptDesc')}</p>
+                  <p className="text-xs text-gray-300 mt-0.5">{t('matchDetail.publishPromptDesc')}</p>
                 </div>
                 <Link to="/connexion" className="btn-primary text-sm px-4 py-2 shrink-0">
                   {t('matchDetail.loginBtn')}
@@ -865,7 +865,7 @@ export default function MatchDetail() {
                         <option key={k} value={k}>{t(`matchDetail.predictions.${k}`)}</option>
                       ))}
                     </select>
-                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
+                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
                   </div>
                 </div>
 
@@ -902,7 +902,7 @@ export default function MatchDetail() {
                     maxLength={500}
                     placeholder={t('matchDetail.analysisPlaceholder')}
                   />
-                  <p className="text-xs text-gray-600 mt-1 text-right">{analysis.length}/500</p>
+                  <p className="text-xs text-gray-400 mt-1 text-right">{analysis.length}/500</p>
                 </div>
 
                 <button
@@ -968,7 +968,7 @@ export default function MatchDetail() {
                       {user && tip.userId !== user.id && (
                         <div className="pt-2">
                           {reportedTips.has(tip.id) ? (
-                            <p className="text-xs text-gray-600">{t('matchDetail.reportSent')}</p>
+                            <p className="text-xs text-gray-400">{t('matchDetail.reportSent')}</p>
                           ) : reportingTipId === tip.id ? (
                             <ReportForm
                               tipId={tip.id}
@@ -979,7 +979,7 @@ export default function MatchDetail() {
                           ) : (
                             <button
                               onClick={() => setReportingTipId(tip.id)}
-                              className="flex items-center gap-1 text-xs text-gray-600 hover:text-red-400 transition-colors"
+                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-400 transition-colors"
                             >
                               <Flag size={11} />
                               {t('matchDetail.reportBtn')}
@@ -992,7 +992,7 @@ export default function MatchDetail() {
                 })}
                 {tips.length === 0 && (
                   <div className="card-p text-center py-8">
-                    <p className="text-gray-500 text-sm">{t('matchDetail.noTipsYet')}</p>
+                    <p className="text-gray-300 text-sm">{t('matchDetail.noTipsYet')}</p>
                   </div>
                 )}
               </div>
@@ -1011,7 +1011,7 @@ export default function MatchDetail() {
               </div>
             ) : eventsData.data?.length === 0 ? (
               <div className="card-p text-center py-10">
-                <p className="text-gray-500 text-sm">{t('matchDetail.noEventsYet')}</p>
+                <p className="text-gray-300 text-sm">{t('matchDetail.noEventsYet')}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -1032,7 +1032,7 @@ export default function MatchDetail() {
                     ? <Square size={12} className={evt.detail?.includes('Yellow') ? 'text-yellow-400' : 'text-red-500'} fill="currentColor" />
                     : isSub
                     ? <ArrowLeftRight size={13} className="text-gray-400" />
-                    : <CircleDot size={13} className="text-gray-500" />;
+                    : <CircleDot size={13} className="text-gray-300" />;
 
                   return (
                     <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-800 border border-surface-700 ${isHome ? '' : 'flex-row-reverse text-right'}`}>
@@ -1043,13 +1043,13 @@ export default function MatchDetail() {
                       <div className={`flex-1 min-w-0 ${isHome ? '' : 'text-right'}`}>
                         <p className="text-sm font-medium text-gray-100 truncate">{evt.player}</p>
                         {isSub && evt.assist && (
-                          <p className="text-xs text-gray-500 truncate">↙ {evt.assist}</p>
+                          <p className="text-xs text-gray-300 truncate">↙ {evt.assist}</p>
                         )}
                         {isGoal && evt.assist && (
-                          <p className="text-xs text-gray-500 truncate">{t('matchDetail.assistLabel', { assist: evt.assist })}</p>
+                          <p className="text-xs text-gray-300 truncate">{t('matchDetail.assistLabel', { assist: evt.assist })}</p>
                         )}
                         {evt.detail && !isSub && (
-                          <p className="text-xs text-gray-600">{evt.detail}</p>
+                          <p className="text-xs text-gray-400">{evt.detail}</p>
                         )}
                       </div>
                       <span className={`text-xs shrink-0 ${isHome ? 'text-primary-400' : 'text-gray-400'}`}>
@@ -1073,7 +1073,7 @@ export default function MatchDetail() {
               </div>
             ) : !contextData?.data ? (
               <div className="card-p text-center py-8">
-                <p className="text-gray-600 text-sm">{t('matchDetail.formDataNotAvailable')}</p>
+                <p className="text-gray-400 text-sm">{t('matchDetail.formDataNotAvailable')}</p>
               </div>
             ) : (
               <div className="space-y-5">

@@ -37,7 +37,7 @@ function LangSwitcher() {
           className={`px-2 py-1.5 transition-colors ${
             lang === l
               ? 'bg-primary-500/20 text-primary-400'
-              : 'text-gray-500 hover:text-gray-300'
+              : 'text-gray-300 hover:text-gray-200'
           }`}
         >
           {l.toUpperCase()}
@@ -98,7 +98,7 @@ function OutilsDropdown() {
           <div className="grid grid-cols-2 gap-x-3">
             {SECTIONS.map((section, si) => (
               <div key={section.label} className={si >= 2 ? 'mt-2' : ''}>
-                <p className="px-2 pt-1 pb-1.5 text-[10px] font-bold text-gray-600 uppercase tracking-widest">
+                <p className="px-2 pt-1 pb-1.5 text-xs font-bold text-gray-400 uppercase tracking-widest">
                   {section.label}
                 </p>
                 {section.items.map(({ to, label, Icon, desc, color }) => (
@@ -109,7 +109,7 @@ function OutilsDropdown() {
                     </div>
                     <div className="min-w-0">
                       <p className="text-[12px] font-semibold text-gray-200 truncate">{label}</p>
-                      <p className="text-[10px] text-gray-500 truncate">{desc}</p>
+                      <p className="text-xs text-gray-300 truncate">{desc}</p>
                     </div>
                   </Link>
                 ))}
@@ -211,7 +211,7 @@ export default function Header() {
                 <User size={17} />
               </Link>
               <button onClick={logout}
-                className="hidden md:inline-flex p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-white/[0.05] transition-colors"
+                className="hidden md:inline-flex p-2 rounded-lg text-gray-300 hover:text-red-400 hover:bg-white/[0.05] transition-colors"
                 aria-label={t('nav.logout')}>
                 <LogOut size={17} />
               </button>

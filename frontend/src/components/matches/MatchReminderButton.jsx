@@ -64,7 +64,7 @@ export default function MatchReminderButton({ matchId, scheduledAt, size = 16 })
       className={`p-1.5 rounded-lg transition-colors ${
         hasReminder
           ? 'text-amber-400 hover:text-amber-300 hover:bg-amber-500/10'
-          : 'text-gray-600 hover:text-gray-400 hover:bg-white/[0.06]'
+          : 'text-gray-400 hover:text-gray-300 hover:bg-white/[0.06]'
       }`}
       aria-label={hasReminder ? t('matches.removeReminder') : t('matches.activateReminder')}
       title={hasReminder ? t('matches.reminderActiveTooltip') : t('matches.reminderTooltip')}

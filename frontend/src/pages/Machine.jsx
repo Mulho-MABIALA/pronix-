@@ -87,7 +87,7 @@ const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
 const CONF_COLORS = {
   high:   { text: 'text-primary-400', bg: 'bg-primary-500/10 border-primary-500/20', dot: 'bg-primary-400' },
   medium: { text: 'text-amber-400',   bg: 'bg-amber-500/10 border-amber-500/20',     dot: 'bg-amber-400' },
-  low:    { text: 'text-gray-500',    bg: 'bg-surface-700/50 border-white/[0.05]',   dot: 'bg-gray-500' },
+  low:    { text: 'text-gray-300',    bg: 'bg-surface-700/50 border-white/[0.05]',   dot: 'bg-gray-500' },
 };
 function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
@@ -390,7 +390,7 @@ export default function Machine() {
           <Zap size={18} className="text-primary-400" />
           <h1 className="section-title">{t('machine.titleShort')}</h1>
         </div>
-        <p className="text-xs text-gray-500">{t('machine.subtitleShort')}</p>
+        <p className="text-xs text-gray-300">{t('machine.subtitleShort')}</p>
       </div>
 
       {/* Onglets Générateur / Historique */}
@@ -432,7 +432,7 @@ export default function Machine() {
                 className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl border transition-all ${
                   activeTemplate === tpl.id
                     ? tpl.color
-                    : 'border-white/[0.07] text-gray-500 hover:border-white/[0.15] hover:text-gray-300'
+                    : 'border-white/[0.07] text-gray-300 hover:border-white/[0.15] hover:text-gray-200'
                 }`}>
                 <span className="text-lg leading-none">{tpl.emoji}</span>
                 <span className="text-xs font-bold">{t(`machine.templates.${tpl.labelKey}`)}</span>
@@ -442,7 +442,7 @@ export default function Machine() {
           </div>
           {activeTemplate && (
             <button onClick={() => setActiveTemplate(null)}
-              className="mt-1.5 text-[10px] text-gray-600 hover:text-gray-400 transition-colors">
+              className="mt-1.5 text-xs text-gray-400 hover:text-gray-300 transition-colors">
               {t('machine.customizeManually')}
             </button>
           )}
@@ -459,7 +459,7 @@ export default function Machine() {
           <input type="range" min="2" max="45" step="1" value={nbPicks}
             onChange={(e) => setNbPicks(Number(e.target.value))}
             className="w-full accent-primary-500 h-1.5 cursor-pointer" />
-          <div className="flex justify-between text-[10px] text-gray-600 mt-1">
+          <div className="flex justify-between text-xs text-gray-400 mt-1">
             <span>2</span><span>45</span>
           </div>
         </div>
@@ -481,7 +481,7 @@ export default function Machine() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     marketGroup === g.id
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                   }`}>
                   {g.emoji} {t(`machine.marketGroups.${g.id}.label`)}
                 </button>
@@ -492,7 +492,7 @@ export default function Machine() {
           {/* Niveau 2 : marchés de la catégorie avec description */}
           {MARKET_GROUPS.filter((g) => g.id === marketGroup).map((g) => (
             <div key={g.id} className="space-y-1.5">
-              <p className="text-[10px] text-gray-600 leading-snug">{t(`machine.marketGroups.${g.id}.subtitle`)}</p>
+              <p className="text-xs text-gray-400 leading-snug">{t(`machine.marketGroups.${g.id}.subtitle`)}</p>
               <div className="grid grid-cols-1 gap-1.5">
                 {g.markets.map((mVal) => (
                   <button key={mVal}
@@ -505,7 +505,7 @@ export default function Machine() {
                     <span className={`block text-xs font-semibold mb-0.5 ${market === mVal ? 'text-select-400' : 'text-gray-300'}`}>
                       {t(`machine.marketGroups.${g.id}.markets.${mVal}.label`)}
                     </span>
-                    <span className="block text-[10px] text-gray-500 leading-snug">{t(`machine.marketGroups.${g.id}.markets.${mVal}.desc`)}</span>
+                    <span className="block text-xs text-gray-300 leading-snug">{t(`machine.marketGroups.${g.id}.markets.${mVal}.desc`)}</span>
                   </button>
                 ))}
               </div>
@@ -526,7 +526,7 @@ export default function Machine() {
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
                   minConf === o.value
                     ? o.active
-                    : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                    : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                 }`}>
                 {o.label}
               </button>
@@ -544,7 +544,7 @@ export default function Machine() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     dateOpt === o.value
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                   }`}>
                   {t(`machine.datePresets.${o.labelKey}`)}
                 </button>
@@ -557,12 +557,12 @@ export default function Machine() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
-              <Trophy size={11} className="text-gray-500" />
+              <Trophy size={11} className="text-gray-300" />
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.championship')}</p>
             </div>
             {leagues.length > 0 && (
               <button onClick={() => { setLeagues([]); setTicket(null); }}
-                className="text-[10px] text-gray-600 hover:text-primary-400 transition-colors">
+                className="text-xs text-gray-400 hover:text-primary-400 transition-colors">
                 {t('machine.showAll')}
               </button>
             )}
@@ -574,7 +574,7 @@ export default function Machine() {
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                   leagues.length === 0
                     ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                    : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                    : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                 }`}>
                 {t('machine.allLeagues')}
               </button>
@@ -595,7 +595,7 @@ export default function Machine() {
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                        : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                        : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
                     }`}>
                     <CompetitionLogo logo={c.logo} size={14} />
                     {c.name}
@@ -609,9 +609,9 @@ export default function Machine() {
         {/* ── Filtre amicaux ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between py-1">
           <div className="flex items-center gap-2">
-            <Bot size={12} className="text-gray-500" />
+            <Bot size={12} className="text-gray-300" />
             <span className="text-xs text-gray-400">{t('machine.excludeFriendly')}</span>
-            <span className="text-[10px] text-gray-600">{t('machine.excludeFriendlyHint')}</span>
+            <span className="text-xs text-gray-400">{t('machine.excludeFriendlyHint')}</span>
           </div>
           <button
             onClick={() => { setExcludeFriendly((v) => !v); setTicket(null); }}
@@ -627,7 +627,7 @@ export default function Machine() {
             onClick={() => setShowMatchPicker((p) => !p)}
             className="w-full flex items-center justify-between py-2 group">
             <div className="flex items-center gap-1.5">
-              <ListFilter size={11} className="text-gray-500" />
+              <ListFilter size={11} className="text-gray-300" />
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider group-hover:text-gray-300 transition-colors">
                 {t('machine.pickSpecificMatches')}
               </p>
@@ -637,7 +637,7 @@ export default function Machine() {
                 </span>
               )}
             </div>
-            <div className="text-gray-600 group-hover:text-gray-400 transition-colors">
+            <div className="text-gray-400 group-hover:text-gray-300 transition-colors">
               {showMatchPicker ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
             </div>
           </button>
@@ -645,26 +645,26 @@ export default function Machine() {
           {showMatchPicker && (
             <div className="mt-1 space-y-2">
               {isLoading ? (
-                <p className="text-[10px] text-gray-600 py-2 text-center">{t('machine.loadingMatches')}</p>
+                <p className="text-xs text-gray-400 py-2 text-center">{t('machine.loadingMatches')}</p>
               ) : availableCandidates.length === 0 ? (
-                <p className="text-[10px] text-gray-600 py-2 text-center">
+                <p className="text-xs text-gray-400 py-2 text-center">
                   {t('machine.noMatchesFilters')}
                 </p>
               ) : (
                 <>
                   {/* Recherche par équipe */}
                   <div className="relative">
-                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-600" />
+                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       type="text"
                       value={matchSearch}
                       onChange={(e) => setMatchSearch(e.target.value)}
                       placeholder={t('machine.searchTeamPlaceholder')}
-                      className="w-full bg-surface-800/60 border border-white/[0.06] rounded-lg pl-8 pr-8 py-1.5 text-xs text-gray-200 placeholder:text-gray-600 outline-none focus:border-select-500/40"
+                      className="w-full bg-surface-800/60 border border-white/[0.06] rounded-lg pl-8 pr-8 py-1.5 text-xs text-gray-200 placeholder:text-gray-400 outline-none focus:border-select-500/40"
                     />
                     {matchSearch && (
                       <button onClick={() => setMatchSearch('')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-300">
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300">
                         <X size={13} />
                       </button>
                     )}
@@ -673,16 +673,16 @@ export default function Machine() {
                   {/* Barre actions rapides */}
                   <div className="flex items-center gap-2">
                     <button onClick={selectAllCandidates}
-                      className="text-[10px] text-gray-500 hover:text-gray-300 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
+                      className="text-xs text-gray-300 hover:text-gray-200 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
                       {t('machine.checkAll', { count: availableCandidates.length })}
                     </button>
                     {pinnedMatchIds.size > 0 && (
                       <button onClick={clearPinnedMatches}
-                        className="text-[10px] text-gray-500 hover:text-gray-300 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
+                        className="text-xs text-gray-300 hover:text-gray-200 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
                         {t('machine.uncheckAll')}
                       </button>
                     )}
-                    <span className="ml-auto text-[10px] text-gray-600">
+                    <span className="ml-auto text-xs text-gray-400">
                       {pinnedMatchIds.size > 0
                         ? t('machine.selectedCount', { count: pinnedMatchIds.size })
                         : t('machine.algoChooses')}
@@ -700,7 +700,7 @@ export default function Machine() {
 
                     if (visible.length === 0) {
                       return (
-                        <p className="text-[10px] text-gray-600 py-3 text-center">
+                        <p className="text-xs text-gray-400 py-3 text-center">
                           {t('machine.noMatchesSearch')}
                         </p>
                       );
@@ -742,7 +742,7 @@ export default function Machine() {
                                     {c.match.awayTeam}
                                   </p>
                                 </div>
-                                <p className="text-[10px] text-gray-600">
+                                <p className="text-xs text-gray-400">
                                   {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
                                 </p>
                               </div>
@@ -758,7 +758,7 @@ export default function Machine() {
                     );
                   })()}
 
-                  <p className="text-[10px] text-gray-600">
+                  <p className="text-xs text-gray-400">
                     {pinnedMatchIds.size > 0
                       ? t('machine.manualSelectionNote')
                       : t('machine.noSelectionNote')}
@@ -772,7 +772,7 @@ export default function Machine() {
         {/* Compteur de matchs disponibles */}
         <div className="flex items-center justify-center gap-2 py-1">
           {isLoading ? (
-            <span className="text-[10px] text-gray-600">{t('machine.searchingMatches')}</span>
+            <span className="text-xs text-gray-400">{t('machine.searchingMatches')}</span>
           ) : (
             <>
               <span className={`text-[11px] font-semibold ${
@@ -785,7 +785,7 @@ export default function Machine() {
                 {t('machine.matchesAvailable', { count: availableCandidates.length })}
               </span>
               <span className="text-gray-700">·</span>
-              <span className="text-[10px] text-gray-600">
+              <span className="text-xs text-gray-400">
                 {pinnedMatchIds.size > 0
                   ? t('machine.selectedManually', { count: pinnedMatchIds.size })
                   : t('machine.bestRetained', { count: Math.min(nbPicks, availableCandidates.length) })}
@@ -820,7 +820,7 @@ export default function Machine() {
               {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
             </button>
             {user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && (
-              <p className="text-center text-[10px] text-gray-500 mt-1.5">
+              <p className="text-center text-xs text-gray-300 mt-1.5">
                 {t('machine.ticketsToday', { used: quotaQ.data.used, limit: quotaQ.data.limit })}
               </p>
             )}
@@ -842,7 +842,7 @@ export default function Machine() {
             </p>
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={generateTicket}
-                className="p-1.5 rounded-lg border border-white/[0.06] text-gray-500 hover:text-gray-300 transition-colors">
+                className="p-1.5 rounded-lg border border-white/[0.06] text-gray-300 hover:text-gray-200 transition-colors">
                 <RefreshCw size={13} />
               </button>
               <button onClick={handleSaveTicket} disabled={saveTicketMutation.isPending}
@@ -872,7 +872,7 @@ export default function Machine() {
             <div className="card p-3 flex items-center gap-3">
               {/* Cote totale */}
               <div className="shrink-0 text-center">
-                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">{t('machine.totalOdd')}</p>
+                <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">{t('machine.totalOdd')}</p>
                 <p className="text-lg font-black text-amber-400">×{totalOdds}</p>
               </div>
 
@@ -881,7 +881,7 @@ export default function Machine() {
               {/* Input mise */}
               <div className="flex-1 flex items-center gap-2">
                 <div className="flex-1">
-                  <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">{t('machine.yourStake')}</p>
+                  <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">{t('machine.yourStake')}</p>
                   <div className="flex items-center gap-1">
                     <input
                       type="number"
@@ -891,7 +891,7 @@ export default function Machine() {
                       onChange={(e) => setMise(e.target.value)}
                       className="w-full bg-transparent text-sm font-semibold text-gray-200 outline-none placeholder:text-gray-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="text-[10px] text-gray-600 shrink-0">FCFA</span>
+                    <span className="text-xs text-gray-400 shrink-0">FCFA</span>
                   </div>
                 </div>
               </div>
@@ -900,11 +900,11 @@ export default function Machine() {
 
               {/* Gain potentiel */}
               <div className="shrink-0 text-center">
-                <p className="text-[9px] text-gray-600 uppercase tracking-wider mb-0.5">{t('machine.stake.potentialGain')}</p>
+                <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">{t('machine.stake.potentialGain')}</p>
                 {mise && Number(mise) > 0 ? (
                   <p className="text-base font-black text-primary-400">
                     {Math.round(Number(mise) * Number(totalOdds)).toLocaleString('fr-FR')}
-                    <span className="text-[9px] font-normal text-gray-600 ml-0.5">FCFA</span>
+                    <span className="text-[11px] font-normal text-gray-400 ml-0.5">FCFA</span>
                   </p>
                 ) : (
                   <p className="text-sm font-bold text-gray-700">—</p>
@@ -916,8 +916,8 @@ export default function Machine() {
           {ticket.length === 0 ? (
             <div className="card-p text-center py-8">
               <p className="text-2xl mb-2">🎯</p>
-              <p className="text-gray-500 text-sm">{t('machine.noSelectionMatch')}</p>
-              <p className="text-gray-600 text-xs mt-1">{t('machine.tryLowerConfidence')}</p>
+              <p className="text-gray-300 text-sm">{t('machine.noSelectionMatch')}</p>
+              <p className="text-gray-400 text-xs mt-1">{t('machine.tryLowerConfidence')}</p>
             </div>
           ) : (
             <div className="card overflow-hidden divide-y divide-white/[0.04]">
@@ -925,7 +925,7 @@ export default function Machine() {
                 const c = CONF_COLORS[row.conf];
                 return (
                   <div key={row.match.id} className="flex items-center gap-3 px-4 py-3">
-                    <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-600">{idx + 1}</span>
+                    <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-400">{idx + 1}</span>
                     <div className="flex-1 min-w-0 space-y-1">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={row.match.homeTeamLogo} teamId={row.match.homeTeamId} name={row.match.homeTeam} size={16} />
@@ -940,7 +940,7 @@ export default function Machine() {
                         <TeamLogo logo={row.match.awayTeamLogo} teamId={row.match.awayTeamId} name={row.match.awayTeam} size={16} />
                         <p className="text-sm font-medium text-gray-200 truncate">{row.match.awayTeam}</p>
                       </div>
-                      <p className="text-[10px] text-gray-600">
+                      <p className="text-xs text-gray-400">
                         {row.match.competition?.name} · {format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}
                       </p>
                     </div>
@@ -958,7 +958,7 @@ export default function Machine() {
             </div>
           )}
 
-          <p className="text-[10px] text-gray-600 text-center">{ODDS_DISCLAIMER}</p>
+          <p className="text-xs text-gray-400 text-center">{ODDS_DISCLAIMER}</p>
         </div>
       )}
       </>

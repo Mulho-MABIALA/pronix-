@@ -29,7 +29,7 @@ export function TeamLogo({ logo, teamId, name, size = 20 }) {
     );
   }
   return (
-    <div className="rounded-full bg-surface-600 flex items-center justify-center text-gray-500 font-bold shrink-0"
+    <div className="rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-bold shrink-0"
       style={{ width: size, height: size, fontSize: size * 0.45 }}>
       {name?.charAt(0).toUpperCase() || '?'}
     </div>
@@ -37,7 +37,7 @@ export function TeamLogo({ logo, teamId, name, size = 20 }) {
 }
 
 // Couleur de confiance
-const CONF_COLOR = { high: 'text-primary-400', medium: 'text-amber-400', low: 'text-gray-500' };
+const CONF_COLOR = { high: 'text-primary-400', medium: 'text-amber-400', low: 'text-gray-300' };
 const CONF_BG    = { high: 'bg-primary-500/10', medium: 'bg-amber-500/10', low: 'bg-white/[0.04]' };
 
 export default function MatchCard({ match }) {
@@ -56,7 +56,7 @@ export default function MatchCard({ match }) {
   const scoreColor = (isWinner) => {
     if (isLive) return 'text-live-400';
     if (isDraw) return 'text-amber-400';
-    return isWinner ? 'text-primary-400' : 'text-gray-500';
+    return isWinner ? 'text-primary-400' : 'text-gray-300';
   };
 
   const shareText = `⚽ ${match.homeTeam} vs ${match.awayTeam}${
@@ -86,7 +86,7 @@ export default function MatchCard({ match }) {
             </span>
           </div>
         ) : isFinished ? (
-          <span className="text-[10px] text-gray-600 font-semibold">FT</span>
+          <span className="text-xs text-gray-400 font-semibold">FT</span>
         ) : (
           <span className="text-xs font-semibold text-gray-400 tabular-nums">
             {format(new Date(match.scheduledAt), 'HH:mm')}
@@ -139,14 +139,14 @@ export default function MatchCard({ match }) {
             <span className={`block text-sm font-bold tabular-nums ${CONF_COLOR[pred.confidence]}`}>
               {pred.bestPick.prob}%
             </span>
-            <span className="block text-[9px] text-gray-500 leading-tight whitespace-nowrap mt-0.5 font-semibold uppercase tracking-wide">
+            <span className="block text-[11px] text-gray-300 leading-tight whitespace-nowrap mt-0.5 font-semibold uppercase tracking-wide">
               {pred.bestPick.type === 'over25' ? 'O2.5' :
                pred.bestPick.type === 'over15' ? 'O1.5' :
                pred.bestPick.type === 'btts'   ? 'BTTS' :
                pred.bestPick.type}
             </span>
             <span
-              className={`mt-1 flex items-center justify-center gap-0.5 font-mono font-semibold tabular-nums text-[10px] ${value ? 'text-amber-400' : 'text-gray-500'}`}
+              className={`mt-1 flex items-center justify-center gap-0.5 font-mono font-semibold tabular-nums text-xs ${value ? 'text-amber-400' : 'text-gray-300'}`}
               title={t('matchCard.simulatedOdd')}
             >
               {value && <Zap size={9} className="shrink-0" aria-hidden="true" />}

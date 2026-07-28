@@ -8,7 +8,7 @@ export default function CGU() {
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
       <div>
         <h1 className="font-display font-bold text-2xl text-gray-50">{t('cgu.title')}</h1>
-        <p className="text-sm text-gray-500 mt-1">{t('cgu.lastUpdated')}</p>
+        <p className="text-sm text-gray-300 mt-1">{t('cgu.lastUpdated')}</p>
       </div>
 
       <Section title={t('cgu.sections.s1.title')}>

@@ -32,8 +32,8 @@ function DateLabel({ dateStr }) {
   const d = new Date(dateStr + 'T00:00:00');
   return (
     <div className="flex items-center gap-2 px-4 py-2">
-      <Calendar size={12} className="text-gray-600 shrink-0" />
-      <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+      <Calendar size={12} className="text-gray-400 shrink-0" />
+      <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
         {format(d, 'EEEE dd MMMM yyyy', { locale: fr })}
       </span>
     </div>
@@ -129,7 +129,7 @@ export default function CoupeDuMonde2026() {
 
           <p className="text-gray-400 text-sm md:text-base mb-6 max-w-md mx-auto">
             48 équipes · 3 pays hôtes · 104 matchs<br />
-            <span className="text-gray-500 text-xs">USA · Canada · Mexique · 11 juin – 19 juillet 2026</span>
+            <span className="text-gray-300 text-xs">USA · Canada · Mexique · 11 juin – 19 juillet 2026</span>
           </p>
 
           {/* Live badge */}
@@ -141,7 +141,7 @@ export default function CoupeDuMonde2026() {
           )}
 
           {/* Pays hôtes */}
-          <div className="flex items-center justify-center gap-4 mt-6 text-xs text-gray-600">
+          <div className="flex items-center justify-center gap-4 mt-6 text-xs text-gray-400">
             <span>🇺🇸 États-Unis</span>
             <span>·</span>
             <span>🇨🇦 Canada</span>
@@ -161,7 +161,7 @@ export default function CoupeDuMonde2026() {
           <div key={item.label} className="bento-card p-3 text-center">
             <span className="text-xl block mb-1">{item.icon}</span>
             <p className="font-display font-bold text-xl text-white">{item.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{item.label}</p>
+            <p className="text-xs text-gray-300 mt-0.5">{item.label}</p>
           </div>
         ))}
       </div>
@@ -173,7 +173,7 @@ export default function CoupeDuMonde2026() {
             <Flame size={14} className="text-primary-400" />
             Matchs
           </h2>
-          <Link to="/matchs" className="text-xs text-gray-600 hover:text-gray-400 flex items-center gap-1 transition-colors">
+          <Link to="/matchs" className="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1 transition-colors">
             Tous les matchs <ChevronRight size={12} />
           </Link>
         </div>
@@ -186,7 +186,7 @@ export default function CoupeDuMonde2026() {
           <div className="card p-10 text-center">
             <Globe size={36} className="mx-auto text-gray-700 mb-4" />
             <p className="text-gray-400 font-medium">Les matchs ne sont pas encore disponibles</p>
-            <p className="text-gray-600 text-sm mt-2">
+            <p className="text-gray-400 text-sm mt-2">
               Le calendrier complet sera publié avant le coup d'envoi du 11 juin 2026.
             </p>
             <Link to="/matchs"
@@ -221,7 +221,7 @@ export default function CoupeDuMonde2026() {
               <p className="font-display font-bold text-lg text-primary-400">
                 Gr. {g}
               </p>
-              <p className="text-[10px] text-gray-600 mt-0.5">4 équipes</p>
+              <p className="text-xs text-gray-400 mt-0.5">4 équipes</p>
             </div>
           ))}
         </div>

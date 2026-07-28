@@ -38,7 +38,7 @@ export default function VerifyEmail() {
           <>
             <CheckCircle size={40} className="text-primary-400 mx-auto" />
             <h1 className="text-xl font-bold text-gray-100">{t('auth.emailVerified')}</h1>
-            <p className="text-gray-500 text-sm">{t('auth.emailVerifiedDesc')}</p>
+            <p className="text-gray-300 text-sm">{t('auth.emailVerifiedDesc')}</p>
             <Link to="/" className="btn-cta inline-flex mt-2">{t('auth.homeArrow')}</Link>
           </>
         )}
@@ -46,7 +46,7 @@ export default function VerifyEmail() {
           <>
             <XCircle size={40} className="text-red-400 mx-auto" />
             <h1 className="text-xl font-bold text-gray-100">{t('auth.invalidLink')}</h1>
-            <p className="text-gray-500 text-sm">{message}</p>
+            <p className="text-gray-300 text-sm">{message}</p>
             <Link to="/" className="btn-secondary inline-flex mt-2">{t('common.back')}</Link>
           </>
         )}

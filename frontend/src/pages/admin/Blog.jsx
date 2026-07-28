@@ -31,7 +31,7 @@ function PostEditor({ initial = EMPTY_POST, onSave, onCancel, isSaving }) {
     <div className="bento-card space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold text-gray-100">{initial.id ? 'Modifier l\'article' : 'Nouvel article'}</h3>
-        <button onClick={onCancel} className="text-gray-500 hover:text-gray-300"><X size={16} /></button>
+        <button onClick={onCancel} className="text-gray-300 hover:text-gray-200"><X size={16} /></button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -200,7 +200,7 @@ export default function AdminBlog() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="font-display font-bold text-2xl text-gray-50">Blog SEO</h1>
-          <p className="text-sm text-gray-500 mt-0.5">{posts.length} article{posts.length !== 1 ? 's' : ''}</p>
+          <p className="text-sm text-gray-300 mt-0.5">{posts.length} article{posts.length !== 1 ? 's' : ''}</p>
         </div>
         {!editing && (
           <button
@@ -229,7 +229,7 @@ export default function AdminBlog() {
           ))}
         </div>
       ) : posts.length === 0 ? (
-        <div className="bento-card text-center py-12 text-gray-500">
+        <div className="bento-card text-center py-12 text-gray-300">
           Aucun article. Créez votre premier article !
         </div>
       ) : (
@@ -241,7 +241,7 @@ export default function AdminBlog() {
                   <span className={`w-2 h-2 rounded-full shrink-0 ${post.published ? 'bg-green-500' : 'bg-gray-600'}`} />
                   <p className="text-sm font-medium text-gray-100 truncate">{post.title}</p>
                 </div>
-                <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-500">
+                <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-300">
                   <span className="capitalize">{post.category}</span>
                   <span>/blog/{post.slug}</span>
                   {post.publishedAt && (
@@ -253,14 +253,14 @@ export default function AdminBlog() {
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={() => updateMutation.mutate({ id: post.id, published: !post.published })}
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-surface-700 transition-colors"
                   title={post.published ? 'Dépublier' : 'Publier'}
                 >
                   {post.published ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
                 <button
                   onClick={() => setEditing(post)}
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-primary-400 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-300 hover:text-primary-400 hover:bg-surface-700 transition-colors"
                   title="Modifier"
                 >
                   <Edit2 size={14} />
@@ -269,7 +269,7 @@ export default function AdminBlog() {
                   onClick={() => {
                     if (window.confirm('Supprimer cet article ?')) deleteMutation.mutate(post.id);
                   }}
-                  className="p-1.5 rounded-lg text-gray-500 hover:text-red-400 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-surface-700 transition-colors"
                   title="Supprimer"
                 >
                   <Trash2 size={14} />

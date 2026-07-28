@@ -73,7 +73,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
 
       {/* En-tête */}
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-1">{plan.displayName}</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-gray-300 mb-1">{plan.displayName}</p>
         {isFree ? (
           <p className="text-4xl font-display font-bold text-gray-100">Gratuit</p>
         ) : (
@@ -81,7 +81,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
             <span className="text-4xl font-display font-bold text-gray-100">
               {new Intl.NumberFormat('fr-FR').format(price)}
             </span>
-            <span className="text-gray-500 pb-1 text-sm">
+            <span className="text-gray-300 pb-1 text-sm">
               {' '}FCFA{isLifetime ? ' · paiement unique' : `/${unitLabel}`}
             </span>
           </div>
@@ -112,7 +112,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
           {t('common.currentPlan')}
         </div>
       ) : isFree ? (
-        <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-gray-500 border border-white/[0.06]">
+        <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-gray-300 border border-white/[0.06]">
           {t('common.defaultPlan')}
         </div>
       ) : (
@@ -207,7 +207,7 @@ export default function Subscription() {
         {STATS.map(({ value, label }) => (
           <div key={label} className="bento-card text-center py-4">
             <p className="text-2xl font-display font-bold text-primary-400">{value}</p>
-            <p className="text-xs text-gray-500 mt-1">{label}</p>
+            <p className="text-xs text-gray-300 mt-1">{label}</p>
           </div>
         ))}
       </div>
@@ -308,7 +308,7 @@ export default function Subscription() {
         {FAQ_ITEMS.map(({ q, a }) => (
           <div key={q} className="bento-card">
             <p className="font-medium text-gray-200 text-sm">{q}</p>
-            <p className="text-gray-500 text-sm mt-1.5 leading-relaxed">{a}</p>
+            <p className="text-gray-300 text-sm mt-1.5 leading-relaxed">{a}</p>
           </div>
         ))}
       </section>

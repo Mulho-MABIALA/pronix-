@@ -65,7 +65,7 @@ function TeamLogo({ logo, teamId, name, size = 16 }) {
     );
   }
   return (
-    <div className="rounded-full bg-surface-600 flex items-center justify-center text-gray-500 font-bold shrink-0"
+    <div className="rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-bold shrink-0"
       style={{ width: size, height: size, fontSize: size * 0.45 }}>
       {name?.charAt(0).toUpperCase() || '?'}
     </div>
@@ -77,7 +77,7 @@ function TeamLogo({ logo, teamId, name, size = 16 }) {
 const CONF_COLOR = {
   high:   { color: 'text-primary-400', dot: 'bg-primary-400', bar: 'bg-primary-400' },
   medium: { color: 'text-amber-400',   dot: 'bg-amber-400',   bar: 'bg-amber-400' },
-  low:    { color: 'text-gray-500',    dot: 'bg-gray-500',    bar: 'bg-gray-600' },
+  low:    { color: 'text-gray-300',    dot: 'bg-gray-500',    bar: 'bg-gray-600' },
 };
 
 function PronoRow({ match }) {
@@ -131,9 +131,9 @@ function PronoRow({ match }) {
             {timeStr}
           </span>
         ) : isPastNoScore ? (
-          <span className="text-[10px] font-semibold text-gray-600">FT</span>
+          <span className="text-xs font-semibold text-gray-400">FT</span>
         ) : (
-          <span className={`text-[11px] font-semibold ${isFinished ? 'text-gray-600' : 'text-gray-400'}`}>
+          <span className={`text-[11px] font-semibold ${isFinished ? 'text-gray-400' : 'text-gray-400'}`}>
             {timeStr}
           </span>
         )}
@@ -152,10 +152,10 @@ function PronoRow({ match }) {
         </div>
         <div className="flex items-center gap-1.5">
           <TeamLogo logo={match.awayTeamLogo} teamId={match.awayTeamId} name={match.awayTeam} size={15} />
-          <span className="text-[13px] text-gray-500 truncate">{match.awayTeam}</span>
+          <span className="text-[13px] text-gray-300 truncate">{match.awayTeam}</span>
         </div>
         {/* Market visible sur mobile seulement */}
-        <p className="text-[10px] text-gray-600 mt-0.5 sm:hidden leading-tight">
+        <p className="text-xs text-gray-400 mt-0.5 sm:hidden leading-tight">
           {pred.bestPick.market ? `${pred.bestPick.market} · ` : ''}{pickLabel}
         </p>
       </div>
@@ -172,7 +172,7 @@ function PronoRow({ match }) {
 
       {/* Pick (desktop) */}
       <div className="shrink-0 w-28 hidden sm:block text-right">
-        <p className="text-[10px] text-gray-600 leading-tight">{pred.bestPick.market}</p>
+        <p className="text-xs text-gray-400 leading-tight">{pred.bestPick.market}</p>
         <p className="text-[12px] font-semibold text-gray-300 leading-tight">{pickLabel}</p>
       </div>
 
@@ -197,7 +197,7 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
         <span className="text-[11px] font-bold text-gray-400 uppercase tracking-widest truncate flex-1">
           {name}
         </span>
-        <span className="text-[10px] text-gray-600 shrink-0">{items.length}</span>
+        <span className="text-xs text-gray-400 shrink-0">{items.length}</span>
       </div>
 
       {/* Lignes */}
@@ -367,7 +367,7 @@ export default function Pronostics() {
           <TrendingUp size={17} className="text-primary-400" />
           <h1 className="section-title">{t('pronostics.title')}</h1>
         </div>
-        <p className="text-[11px] text-gray-500">
+        <p className="text-[11px] text-gray-300">
           {t('pronostics.subtitle')}
         </p>
       </div>
@@ -376,7 +376,7 @@ export default function Pronostics() {
       <div className="flex items-center gap-1">
         <button
           onClick={() => setTabOffset((o) => o - 1)}
-          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors"
+          className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-white/[0.05] shrink-0 transition-colors"
           title={t('pronostics.prevDays')}
         >
           <ChevronLeft size={16} />
@@ -393,8 +393,8 @@ export default function Pronostics() {
                   sel
                     ? 'bg-select-500/15 text-select-400 border-select-500/30'
                     : dayPast
-                    ? 'text-gray-600 border-white/[0.05] hover:text-gray-400 hover:border-white/10'
-                    : 'text-gray-500 border-white/[0.06] hover:text-gray-300 hover:border-white/10'
+                    ? 'text-gray-400 border-white/[0.05] hover:text-gray-300 hover:border-white/10'
+                    : 'text-gray-300 border-white/[0.06] hover:text-gray-200 hover:border-white/10'
                 }`}>
                 {formatTabDate(d)}
                 {dayPast && <span className="block text-[9px] text-gray-700 leading-none">{t('pronostics.resultsLabel')}</span>}
@@ -405,7 +405,7 @@ export default function Pronostics() {
 
         <button
           onClick={() => setTabOffset((o) => o + 1)}
-          className="p-1.5 rounded-lg text-gray-500 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors"
+          className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-white/[0.05] shrink-0 transition-colors"
           title={t('pronostics.nextDays')}
         >
           <ChevronRight size={16} />
@@ -418,7 +418,7 @@ export default function Pronostics() {
         {/* Chips marchés */}
         <div className="flex items-center gap-1">
           <button onClick={() => scrollChips(-1)}
-            className="p-1 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-white/[0.05] shrink-0 transition-colors">
+            className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors">
             <ChevronLeft size={15} />
           </button>
 
@@ -428,7 +428,7 @@ export default function Pronostics() {
                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                   activeMarket === key
                     ? 'bg-select-500/20 text-select-400 border-select-500/40'
-                    : 'text-gray-500 border-white/[0.08] hover:text-gray-300 hover:border-white/20'
+                    : 'text-gray-300 border-white/[0.08] hover:text-gray-200 hover:border-white/20'
                 }`}>
                 {key === '1X2' ? t('pronostics.marketFilters.oneXTwo') : key === 'dc' ? t('pronostics.marketFilters.doubleChance') : t(`pronostics.marketFilters.${key}`)}
               </button>
@@ -436,7 +436,7 @@ export default function Pronostics() {
           </div>
 
           <button onClick={() => scrollChips(1)}
-            className="p-1 rounded-lg text-gray-600 hover:text-gray-400 hover:bg-white/[0.05] shrink-0 transition-colors">
+            className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors">
             <ChevronRight size={15} />
           </button>
         </div>
@@ -449,7 +449,7 @@ export default function Pronostics() {
                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                   leagueIds.length === 0
                     ? 'bg-select-500/20 text-select-400 border-select-500/40'
-                    : 'text-gray-500 border-white/[0.08] hover:text-gray-300 hover:border-white/20'
+                    : 'text-gray-300 border-white/[0.08] hover:text-gray-200 hover:border-white/20'
                 }`}>
                 {t('pronostics.allLeagues')}
               </button>
@@ -458,7 +458,7 @@ export default function Pronostics() {
                   className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                     leagueIds.includes(c.id)
                       ? 'bg-select-500/20 text-select-400 border-select-500/40'
-                      : 'text-gray-500 border-white/[0.08] hover:text-gray-300 hover:border-white/20'
+                      : 'text-gray-300 border-white/[0.08] hover:text-gray-200 hover:border-white/20'
                   }`}>
                   <CompetitionLogo logo={c.logo} size={14} />
                   {c.name}
@@ -470,17 +470,17 @@ export default function Pronostics() {
 
         {/* Barre de recherche */}
         <div className="relative">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 pointer-events-none" />
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('pronostics.searchPlaceholder')}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-700/60 border border-white/[0.07] text-sm text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-white/20 transition-colors"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-700/60 border border-white/[0.07] text-sm text-gray-200 placeholder:text-gray-400 focus:outline-none focus:border-white/20 transition-colors"
           />
           {search && (
             <button onClick={() => setSearch('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-400">
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300">
               ✕
             </button>
           )}
@@ -504,7 +504,7 @@ export default function Pronostics() {
               <Icon size={16} className={color} />
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-bold text-gray-200 truncate">{label}</p>
-                <p className="text-[11px] text-gray-500">
+                <p className="text-[11px] text-gray-300">
                   {t('pronostics.correctOutOf', { correct: bilan.correct, total: bilan.total })}
                 </p>
               </div>
@@ -525,8 +525,8 @@ export default function Pronostics() {
 
       {/* Disclaimer */}
       <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-surface-700/40 border border-white/[0.04]">
-        <Info size={12} className="text-gray-600 shrink-0 mt-0.5" />
-        <p className="text-[10px] text-gray-600 leading-relaxed">
+        <Info size={12} className="text-gray-400 shrink-0 mt-0.5" />
+        <p className="text-xs text-gray-400 leading-relaxed">
           {t('pronostics.disclaimerAuto')}
         </p>
       </div>
@@ -540,7 +540,7 @@ export default function Pronostics() {
         <div className="bento-card text-center py-12">
           <p className="text-3xl mb-3">📊</p>
           <p className="text-gray-400 text-sm font-semibold">{t('pronostics.noPicks')}</p>
-          <p className="text-gray-600 text-xs mt-1">
+          <p className="text-gray-400 text-xs mt-1">
             {search
               ? t('pronostics.noResultsSearch')
               : t('pronostics.autoCalc')}
@@ -571,10 +571,10 @@ export default function Pronostics() {
           {/* En-têtes colonnes (desktop) */}
           <div className="hidden sm:flex items-center gap-2 sm:gap-3 px-3 py-1">
             <div className="w-10 shrink-0" />
-            <div className="flex-1 text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.teams')}</div>
-            <div className="w-10 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.prob')}</div>
-            <div className="w-28 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.pick')}</div>
-            <div className="w-16 text-right text-[10px] font-bold uppercase tracking-widest text-gray-600">{t('pronostics.columns.odd')}</div>
+            <div className="flex-1 text-xs font-bold uppercase tracking-widest text-gray-400">{t('pronostics.columns.teams')}</div>
+            <div className="w-10 text-right text-xs font-bold uppercase tracking-widest text-gray-400">{t('pronostics.columns.prob')}</div>
+            <div className="w-28 text-right text-xs font-bold uppercase tracking-widest text-gray-400">{t('pronostics.columns.pick')}</div>
+            <div className="w-16 text-right text-xs font-bold uppercase tracking-widest text-gray-400">{t('pronostics.columns.odd')}</div>
           </div>
 
           {/* Groupes par compétition */}
@@ -596,7 +596,7 @@ export default function Pronostics() {
               <p className="text-sm font-semibold text-gray-200 mb-1">
                 {t('pronostics.hiddenPicks', { count: filteredMatches.length - FREE_DAILY_LIMIT })}
               </p>
-              <p className="text-xs text-gray-500 mb-4">
+              <p className="text-xs text-gray-300 mb-4">
                 {t('pronostics.freeLimitDescShort', { limit: FREE_DAILY_LIMIT })}
               </p>
               <Link to="/abonnement" className="btn-primary px-6 py-2 text-sm inline-flex items-center gap-2">

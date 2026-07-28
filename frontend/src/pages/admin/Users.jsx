@@ -24,6 +24,19 @@ const PRED_LABELS = {
   OVER_2_5: '+2.5', UNDER_2_5: '-2.5', BTTS_YES: 'BTTS✓', BTTS_NO: 'BTTS✗',
 };
 
+const LANG_LABELS = { fr: 'FR', en: 'EN', es: 'ES', pt: 'PT' };
+
+function LangCurrencyBadge({ user }) {
+  const lang = LANG_LABELS[user.language] || 'FR';
+  const currency = user.currency || 'auto';
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/[0.06] text-gray-300">{lang}</span>
+      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.03] text-gray-400">{currency}</span>
+    </div>
+  );
+}
+
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function UserAvatar({ user, size = 'sm' }) {
   const dim    = size === 'lg' ? 'w-16 h-16 text-2xl' : size === 'md' ? 'w-10 h-10 text-sm' : 'w-8 h-8 text-xs';
@@ -481,6 +494,8 @@ export default function AdminUsers() {
   const [search, setSearch]         = useState('');
   const [planFilter, setPlanFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [languageFilter, setLanguageFilter] = useState('');
+  const [currencyFilter, setCurrencyFilter] = useState('');
   const [datePreset, setDatePreset] = useState(0);
   const [sortIdx, setSortIdx]       = useState(0);
   const [page, setPage]             = useState(1);
@@ -498,13 +513,15 @@ export default function AdminUsers() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-users', search, planFilter, statusFilter, datePreset, sortIdx, page],
+    queryKey: ['admin-users', search, planFilter, statusFilter, languageFilter, currencyFilter, datePreset, sortIdx, page],
     queryFn: () => api.get('/admin/users', {
       params: {
         page, limit: 20,
         ...(search && { search }),
         ...(planFilter && { plan: planFilter }),
         ...(statusFilter !== '' && { isActive: statusFilter }),
+        ...(languageFilter && { language: languageFilter }),
+        ...(currencyFilter && { currency: currencyFilter }),
         ...(createdAfter && { createdAfter }),
         orderBy: sort.orderBy,
         order: sort.order,
@@ -570,6 +587,31 @@ export default function AdminUsers() {
           <option value="false">Suspendus</option>
         </select>
 
+        {/* Langue */}
+        <select value={languageFilter} onChange={e => { setLanguageFilter(e.target.value); setPage(1); }}
+          className="input h-10 text-sm px-3 appearance-none">
+          <option value="">Toutes langues</option>
+          <option value="fr">Français</option>
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="pt">Português</option>
+        </select>
+
+        {/* Devise */}
+        <select value={currencyFilter} onChange={e => { setCurrencyFilter(e.target.value); setPage(1); }}
+          className="input h-10 text-sm px-3 appearance-none">
+          <option value="">Toutes devises</option>
+          <option value="NONE">Non défini (auto)</option>
+          <option value="FCFA">FCFA</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+          <option value="GBP">GBP</option>
+          <option value="BRL">BRL</option>
+          <option value="MXN">MXN</option>
+          <option value="CAD">CAD</option>
+          <option value="ZAR">ZAR</option>
+        </select>
+
         {/* Date preset chips */}
         <div className="flex gap-1">
           {DATE_PRESETS.map((p, i) => (
@@ -600,6 +642,7 @@ export default function AdminUsers() {
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Pronos</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Inscrit le</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Dernier login</th>
+                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Langue / Devise</th>
                 <th className="text-center px-4 py-3.5 font-semibold hidden lg:table-cell">App</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Statut</th>
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>
@@ -608,7 +651,7 @@ export default function AdminUsers() {
             <tbody className="divide-y divide-white/[0.04]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i}>{Array.from({ length: 8 }).map((_, j) => (
+                  <tr key={i}>{Array.from({ length: 9 }).map((_, j) => (
                     <td key={j} className="px-5 py-4"><div className="h-4 skeleton rounded" /></td>
                   ))}</tr>
                 ))
@@ -641,6 +684,9 @@ export default function AdminUsers() {
                       </td>
                       <td className="px-4 py-3.5 hidden xl:table-cell text-xs text-gray-400">
                         {u.lastLoginAt ? formatDistanceToNow(new Date(u.lastLoginAt), { locale: fr, addSuffix: true }) : '—'}
+                      </td>
+                      <td className="px-4 py-3.5 hidden xl:table-cell">
+                        <LangCurrencyBadge user={u} />
                       </td>
                       <td className="px-4 py-3.5 hidden lg:table-cell text-center">
                         {u.appInstalledAt ? (

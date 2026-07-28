@@ -144,10 +144,12 @@ async function getUsers(req, res, next) {
       plan:         z.string().optional(),
       isActive:     z.string().optional(),
       createdAfter: z.string().optional(),
+      language:     z.enum(['fr', 'en', 'es', 'pt']).optional(),
+      currency:     z.string().optional(),
       orderBy:      z.string().default('createdAt'),
       order:        z.enum(['asc', 'desc']).default('desc'),
     });
-    const { page, limit, search, role, plan, isActive, createdAfter, orderBy, order } = schema.parse(req.query);
+    const { page, limit, search, role, plan, isActive, createdAfter, language, currency, orderBy, order } = schema.parse(req.query);
 
     const where = {};
     if (search) {
@@ -160,6 +162,9 @@ async function getUsers(req, res, next) {
     if (plan) where.subscription = { plan: { code: plan } };
     if (isActive !== undefined) where.isActive = isActive === 'true';
     if (createdAfter) where.createdAt = { gte: new Date(createdAfter) };
+    if (language) where.language = language;
+    // "NONE" = comptes créés avant cette fonctionnalité (aucune préférence enregistrée)
+    if (currency) where.currency = currency === 'NONE' ? null : currency;
 
     const orderByClause = orderBy === 'tips'
       ? { tips: { _count: order } }

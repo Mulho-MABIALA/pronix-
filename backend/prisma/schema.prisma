@@ -90,6 +90,8 @@ model User {
   lastLoginAt   DateTime?
   appInstalledAt DateTime?
   trialEndsAt   DateTime?
+  language      String   @default("fr") // langue principale choisie à l'inscription : fr, en, es, pt
+  currency      String?  // devise préférée choisie à l'inscription (FCFA si null) : EUR, USD, GBP, BRL, MXN, CAD, ZAR
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

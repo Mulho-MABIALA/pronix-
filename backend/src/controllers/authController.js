@@ -21,6 +21,8 @@ const registerSchema = z.object({
     .min(3, 'Pseudo min. 3 caractères')
     .max(30, 'Pseudo max. 30 caractères')
     .regex(/^[a-zA-Z0-9_]+$/, 'Pseudo : lettres, chiffres et underscore uniquement'),
+  language: z.enum(['fr', 'en', 'es', 'pt']).default('fr'),
+  currency: z.enum(['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR']).nullable().optional(),
 });
 
 const loginSchema = z.object({
@@ -71,7 +73,7 @@ async function generateUniqueUsername(email) {
 // ─── Inscription ─────────────────────────────────────────────────────────────
 async function register(req, res, next) {
   try {
-    const { email, password, username } = registerSchema.parse(req.body);
+    const { email, password, username, language, currency } = registerSchema.parse(req.body);
 
     const hashedPassword = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
     const freePlan = await prisma.plan.findUnique({ where: { code: 'FREE' } });
@@ -84,6 +86,8 @@ async function register(req, res, next) {
         email,
         password: hashedPassword,
         username,
+        language,
+        currency: currency || null,
         trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
         profile: { create: {} },
         subscription: {

@@ -1,7 +1,17 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import api from '../services/api';
+import i18n from '../i18n';
 
 const AuthContext = createContext(null);
+
+// Applique la langue enregistrée sur le compte lors de la connexion sur un
+// nouvel appareil/navigateur — sans écraser un choix manuel déjà fait sur
+// CET appareil via le sélecteur de langue (localStorage 'fpronix_lang').
+function applyAccountLanguage(user) {
+  if (!user?.language) return;
+  const manualOverride = localStorage.getItem('fpronix_lang');
+  if (!manualOverride) i18n.changeLanguage(user.language);
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -14,6 +24,7 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.get('/auth/me');
       setUser(data.data);
+      applyAccountLanguage(data.data);
     } catch {
       setUser(null);
     } finally {
@@ -26,11 +37,12 @@ export function AuthProvider({ children }) {
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     setUser(data.data.user);
+    applyAccountLanguage(data.data.user);
     return data.data.user;
   };
 
-  const register = async (email, password, username) => {
-    const { data } = await api.post('/auth/register', { email, password, username });
+  const register = async (email, password, username, language, currency) => {
+    const { data } = await api.post('/auth/register', { email, password, username, language, currency });
     setUser(data.data.user);
     return data.data.user;
   };
@@ -38,6 +50,7 @@ export function AuthProvider({ children }) {
   const loginWithGoogle = async (credential) => {
     const { data } = await api.post('/auth/google', { credential });
     setUser(data.data.user);
+    applyAccountLanguage(data.data.user);
     return data.data.user;
   };
 

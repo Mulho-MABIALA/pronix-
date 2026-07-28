@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 // Devise en FCFA (XOF/XAF, même parité fixe avec l'EUR) — devise native de la plateforme.
 const NATIVE_CURRENCY = 'FCFA';
@@ -40,7 +41,16 @@ function detectCurrency(uiLang) {
  */
 export function useCurrency() {
   const { i18n } = useTranslation();
-  const currency = useMemo(() => detectCurrency(i18n.language), [i18n.language]);
+  const { user } = useAuth();
+  // Priorité à la devise choisie explicitement sur le compte (inscription/profil) :
+  // - "FCFA" = choix explicite de ne montrer aucune conversion
+  // - une devise étrangère = utilisée telle quelle
+  // - absente (comptes créés avant cette fonctionnalité) = détection auto par langue/locale
+  const currency = useMemo(() => {
+    if (user?.currency === 'FCFA') return null;
+    if (user?.currency) return user.currency;
+    return detectCurrency(i18n.language);
+  }, [user?.currency, i18n.language]);
 
   const { data } = useQuery({
     queryKey: ['currency-rates'],

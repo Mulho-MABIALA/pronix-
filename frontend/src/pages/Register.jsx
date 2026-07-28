@@ -4,16 +4,42 @@ import { GoogleLogin } from '@react-oauth/google';
 import { useTranslation } from 'react-i18next';
 import { Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCurrency } from '../hooks/useCurrency';
 import api from '../services/api';
 
+const LANGUAGE_OPTIONS = [
+  { code: 'fr', label: 'Français' },
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+  { code: 'pt', label: 'Português' },
+];
+
+const CURRENCY_OPTIONS = [
+  { code: 'FCFA', label: 'FCFA' },
+  { code: 'EUR', label: 'EUR (€)' },
+  { code: 'USD', label: 'USD ($)' },
+  { code: 'GBP', label: 'GBP (£)' },
+  { code: 'BRL', label: 'BRL (R$)' },
+  { code: 'MXN', label: 'MXN ($)' },
+  { code: 'CAD', label: 'CAD ($)' },
+  { code: 'ZAR', label: 'ZAR (R)' },
+];
+
 export default function Register() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { register, loginWithGoogle } = useAuth();
+  const { currency: detectedCurrency } = useCurrency();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const refCode = searchParams.get('ref');
   const partnerCode = searchParams.get('partner');
-  const [form, setForm] = useState({ email: '', username: '', password: '', confirm: '' });
+  const SUPPORTED_LANGS = ['fr', 'en', 'es', 'pt'];
+  const detectedLang = (i18n.language || 'fr').split('-')[0];
+  const [form, setForm] = useState({
+    email: '', username: '', password: '', confirm: '',
+    language: SUPPORTED_LANGS.includes(detectedLang) ? detectedLang : 'fr',
+    currency: detectedCurrency || 'FCFA',
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -48,7 +74,8 @@ export default function Register() {
     }
     setLoading(true);
     try {
-      await register(form.email, form.password, form.username);
+      await register(form.email, form.password, form.username, form.language, form.currency || null);
+      i18n.changeLanguage(form.language);
       registerReferralIfAny();
       navigate('/onboarding');
     } catch (err) {
@@ -109,6 +136,28 @@ export default function Register() {
               value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })}
               placeholder="••••••••" />
           </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label htmlFor="reg-language" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.languagePreference')}</label>
+              <select id="reg-language" className="input" value={form.language}
+                onChange={(e) => setForm({ ...form, language: e.target.value })}>
+                {LANGUAGE_OPTIONS.map(({ code, label }) => (
+                  <option key={code} value={code}>{label}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="reg-currency" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.currencyPreference')}</label>
+              <select id="reg-currency" className="input" value={form.currency}
+                onChange={(e) => setForm({ ...form, currency: e.target.value })}>
+                {CURRENCY_OPTIONS.map(({ code, label }) => (
+                  <option key={code || 'FCFA'} value={code}>{label}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <p className="text-xs text-gray-300 -mt-2">{t('auth.currencyPreferenceHint')}</p>
 
           <button type="submit" disabled={loading} className="btn-primary w-full">
             {loading ? '…' : t('auth.registerCta')}

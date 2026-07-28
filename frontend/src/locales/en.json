@@ -86,6 +86,16 @@
       "title": "Recently viewed",
       "noDate": "Date coming"
     },
+    "aiHub": {
+      "title": "Your AI tools",
+      "generatorTitle": "AI ticket generator",
+      "generatorDesc": "Build an optimized betting ticket in 30 seconds based on your risk profile.",
+      "generatorCta": "Generate a ticket",
+      "coachTitle": "Personal AI Coach",
+      "coachDesc": "AI advice based on your own picks and ROI.",
+      "coachCta": "See my coach",
+      "premiumBadge": "Premium"
+    },
     "topPicks": "Top picks",
     "aiPowered": "AI",
     "noMatchesToday": "No matches scheduled today",

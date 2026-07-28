@@ -86,6 +86,16 @@
       "title": "Vus récemment",
       "noDate": "Date à venir"
     },
+    "aiHub": {
+      "title": "Tes outils IA",
+      "generatorTitle": "Générateur de ticket IA",
+      "generatorDesc": "Crée un ticket optimisé en 30 secondes selon ton profil de risque.",
+      "generatorCta": "Générer un ticket",
+      "coachTitle": "Coach Personnel IA",
+      "coachDesc": "Des conseils IA basés sur tes propres pronostics et ton ROI.",
+      "coachCta": "Consulter mon coach",
+      "premiumBadge": "Premium"
+    },
     "topPicks": "Meilleurs picks",
     "aiPowered": "IA",
     "noMatchesToday": "Aucun match programmé aujourd'hui",

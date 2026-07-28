@@ -86,6 +86,16 @@
       "title": "Vistos recentemente",
       "noDate": "Data a confirmar"
     },
+    "aiHub": {
+      "title": "Suas ferramentas de IA",
+      "generatorTitle": "Gerador de bilhete IA",
+      "generatorDesc": "Crie um bilhete otimizado em 30 segundos de acordo com seu perfil de risco.",
+      "generatorCta": "Gerar um bilhete",
+      "coachTitle": "Coach Pessoal IA",
+      "coachDesc": "Conselhos de IA baseados nos seus próprios palpites e no seu ROI.",
+      "coachCta": "Ver meu coach",
+      "premiumBadge": "Premium"
+    },
     "topPicks": "Melhores picks",
     "aiPowered": "IA",
     "noMatchesToday": "Nenhuma partida programada hoje",

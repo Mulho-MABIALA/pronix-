@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search } from 'lucide-react';
+import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search, Zap, Brain } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -147,6 +147,60 @@ export default function Home() {
         </button>
       ) : (
         <ToolsCarousel />
+      )}
+
+      {/* ── Tes outils IA (utilisateurs connectés) ─────────────────── */}
+      {user && (
+        <section>
+          <h2 className="section-title flex items-center gap-2 mb-3">
+            <span className="w-1 h-4 rounded-full bg-orange-400 shrink-0" />
+            <span className="truncate">{t('home.aiHub.title')}</span>
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <Link
+              to="/outils/machine"
+              className="group relative overflow-hidden rounded-2xl border border-white/[0.08] p-5 transition-colors hover:border-orange-500/30"
+              style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.10) 0%, rgba(23,24,25,0.5) 65%)' }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center mb-3">
+                <Zap size={18} className="text-orange-400" />
+              </div>
+              <h3 className="font-display font-bold text-base text-gray-100 mb-1">
+                {t('home.aiHub.generatorTitle')}
+              </h3>
+              <p className="text-sm text-gray-400 leading-relaxed mb-3">
+                {t('home.aiHub.generatorDesc')}
+              </p>
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-orange-400 group-hover:gap-1.5 transition-all">
+                {t('home.aiHub.generatorCta')} <ChevronRight size={14} />
+              </span>
+            </Link>
+
+            <Link
+              to="/mes-paris"
+              className="group relative overflow-hidden rounded-2xl border border-white/[0.08] p-5 transition-colors hover:border-pink-500/30"
+              style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.10) 0%, rgba(23,24,25,0.5) 65%)' }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-pink-500/15 border border-pink-500/25 flex items-center justify-center mb-3">
+                <Brain size={18} className="text-pink-400" />
+              </div>
+              <h3 className="font-display font-bold text-base text-gray-100 mb-1 flex items-center gap-2">
+                {t('home.aiHub.coachTitle')}
+                {!isPremium && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400 border border-orange-500/25 shrink-0">
+                    {t('home.aiHub.premiumBadge')}
+                  </span>
+                )}
+              </h3>
+              <p className="text-sm text-gray-400 leading-relaxed mb-3">
+                {t('home.aiHub.coachDesc')}
+              </p>
+              <span className="inline-flex items-center gap-1 text-sm font-semibold text-pink-400 group-hover:gap-1.5 transition-all">
+                {t('home.aiHub.coachCta')} <ChevronRight size={14} />
+              </span>
+            </Link>
+          </div>
+        </section>
       )}
 
       {/* ── Vus récemment ────────────────────────────────────────── */}

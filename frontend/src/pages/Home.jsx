@@ -6,19 +6,51 @@ import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search } from 'lucide-r
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
-import MatchCard from '../components/matches/MatchCard';
+import MatchCard, { TeamLogo } from '../components/matches/MatchCard';
 import ToolsCarousel from '../components/home/ToolsCarousel';
 import HeroBackground from '../components/home/HeroBackground';
 import TipsterCard from '../components/tipsters/TipsterCard';
 import SearchBar from '../components/ui/SearchBar';
 import { SkeletonMatchCard, SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { getRecentlyViewed } from '../utils/recentlyViewed';
+
+// ── Vus récemment — historique client (localStorage) ────────────────────────
+function RecentlyViewedRow({ m }) {
+  const { t } = useTranslation();
+  const hasScore = ['LIVE', 'FINISHED'].includes(m.status);
+  return (
+    <Link
+      to={`/matchs/${m.id}`}
+      className="shrink-0 w-44 rounded-2xl border border-white/[0.08] p-3 space-y-2 hover:border-white/[0.14] transition-colors"
+      style={{ background: 'rgba(255,255,255,0.03)' }}
+    >
+      <p className="text-[11px] text-gray-400 truncate">{m.competitionName}</p>
+      <div className="flex items-center gap-1.5 min-w-0">
+        <TeamLogo logo={m.homeTeamLogo} teamId={m.homeTeamId} name={m.homeTeam} size={16} />
+        <p className="text-xs text-gray-200 truncate flex-1">{m.homeTeam}</p>
+        {hasScore && <span className="text-xs font-bold text-gray-100 tabular-nums">{m.homeScore}</span>}
+      </div>
+      <div className="flex items-center gap-1.5 min-w-0">
+        <TeamLogo logo={m.awayTeamLogo} teamId={m.awayTeamId} name={m.awayTeam} size={16} />
+        <p className="text-xs text-gray-200 truncate flex-1">{m.awayTeam}</p>
+        {hasScore && <span className="text-xs font-bold text-gray-100 tabular-nums">{m.awayScore}</span>}
+      </div>
+      {!hasScore && (
+        <p className="text-[11px] text-gray-400">
+          {m.scheduledAt ? format(new Date(m.scheduledAt), 'dd MMM HH:mm') : t('home.recentlyViewed.noDate')}
+        </p>
+      )}
+    </Link>
+  );
+}
 
 export default function Home() {
   const { t } = useTranslation();
   usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
   const { user, isPremium } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
+  const [recentMatches] = useState(() => getRecentlyViewed());
   const today = format(new Date(), 'yyyy-MM-dd');
 
   const { data: matchesData, isLoading: matchesLoading } = useQuery({
@@ -115,6 +147,19 @@ export default function Home() {
         </button>
       ) : (
         <ToolsCarousel />
+      )}
+
+      {/* ── Vus récemment ────────────────────────────────────────── */}
+      {recentMatches.length > 0 && (
+        <section>
+          <h2 className="section-title flex items-center gap-2 mb-3">
+            <span className="w-1 h-4 rounded-full bg-select-400 shrink-0" />
+            <span className="truncate">{t('home.recentlyViewed.title')}</span>
+          </h2>
+          <div className="flex gap-3 overflow-x-auto overscroll-contain pb-1 -mx-4 px-4 scrollbar-hide">
+            {recentMatches.map((m) => <RecentlyViewedRow key={m.id} m={m} />)}
+          </div>
+        </section>
       )}
 
       {/* ── Matchs du jour ───────────────────────────────────────── */}

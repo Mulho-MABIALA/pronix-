@@ -38,6 +38,7 @@ import CoupeDuMonde2026 from './pages/CoupeDuMonde2026';
 import VerifyEmail from './pages/VerifyEmail';
 import BetTracker from './pages/BetTracker';
 import TeamPage from './pages/TeamPage';
+import Comparateur from './pages/Comparateur';
 import BlogList from './pages/BlogList';
 import BlogPost from './pages/BlogPost';
 
@@ -123,6 +124,7 @@ export default function App() {
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
                 <Route path="/equipes/:id" element={<TeamPage />} />
+                <Route path="/comparateur" element={<Comparateur />} />
                 <Route path="/blog" element={<BlogList />} />
                 <Route path="/blog/:slug" element={<BlogPost />} />
                 <Route path="*" element={<NotFound />} />

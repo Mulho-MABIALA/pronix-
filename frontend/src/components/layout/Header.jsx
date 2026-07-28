@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain, ArrowLeftRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 
@@ -68,6 +68,7 @@ function OutilsDropdown() {
         { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,     desc: t('tools.filtersDesc'),      color: 'text-blue-400 bg-blue-500/10' },
         { to: '/outils/machine',      label: t('tools.generator'),    Icon: Zap,        desc: t('tools.generatorDesc'),    color: 'text-amber-400 bg-amber-500/10' },
         { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2,  desc: t('tools.statsLeaguesDesc'), color: 'text-purple-400 bg-purple-500/10' },
+        { to: '/comparateur',         label: t('tools.comparator'),   Icon: ArrowLeftRight, desc: t('tools.comparatorDesc'), color: 'text-fuchsia-400 bg-fuchsia-500/10' },
       ],
     },
     {

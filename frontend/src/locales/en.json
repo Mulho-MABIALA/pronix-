@@ -25,7 +25,9 @@
     "pronostics": "Tips",
     "pronosticsDesc": "Today's picks by confidence",
     "statsLeagues": "League stats",
-    "statsLeaguesDesc": "Goals, BTTS, O2.5 by competition"
+    "statsLeaguesDesc": "Goals, BTTS, O2.5 by competition",
+    "comparator": "Team comparator",
+    "comparatorDesc": "Compare 2 teams side by side: form, goals, head-to-head"
   },
   "common": {
     "loading": "Loading...",
@@ -80,6 +82,10 @@
     },
     "liveMatches": "Live matches",
     "todayMatches": "Today's matches",
+    "recentlyViewed": {
+      "title": "Recently viewed",
+      "noDate": "Date coming"
+    },
     "topPicks": "Top picks",
     "aiPowered": "AI",
     "noMatchesToday": "No matches scheduled today",
@@ -1048,6 +1054,12 @@
         "title": "2026 World Cup",
         "description": "Schedule, groups, and predictions dedicated to the USA-Canada-Mexico World Cup.",
         "cta": "Discover"
+      },
+      "comparateur": {
+        "badge": "New",
+        "title": "Team comparator",
+        "description": "Put two teams face to face: recent form, goals, head-to-head record.",
+        "cta": "Compare"
       }
     }
   },
@@ -1384,7 +1396,28 @@
     "goalsConceded": "Goals conceded",
     "upcomingMatches": "Upcoming matches",
     "lastResults": "Last results",
-    "squadCount": "Squad ({{count}} players)"
+    "squadCount": "Squad ({{count}} players)",
+    "compareCta": "Compare"
+  },
+  "comparator": {
+    "metaTitle": "Team comparator",
+    "metaDesc": "Compare two football teams side by side: recent form, goals scored/conceded and head-to-head record.",
+    "title": "Team comparator",
+    "subtitle": "Put two teams face to face: form, goals and head-to-head record.",
+    "pickTeam1": "Pick the 1st team",
+    "pickTeam2": "Pick the 2nd team",
+    "formTitle": "Form (matches in database)",
+    "played": "Matches played",
+    "wins": "Wins",
+    "draws": "Draws",
+    "losses": "Losses",
+    "avgGoalsFor": "Goals scored / match",
+    "avgGoalsAgainst": "Goals conceded / match",
+    "recentForm": "Recent form",
+    "h2hTitle": "Head-to-head",
+    "noH2h": "No head-to-head match recorded in database.",
+    "hint": "Pick two teams to start the comparison.",
+    "noTeamsFound": "No team found"
   },
   "statsLigues": {
     "title": "League stats",

@@ -17,6 +17,7 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
+import { addRecentlyViewed } from '../utils/recentlyViewed';
 import { StandingsTable } from './Standings';
 
 // ── Scénarios de score probable ──────────────────────────────────────────────
@@ -528,6 +529,11 @@ export default function MatchDetail() {
 
   const match = data?.data;
   const tips  = tipsData?.data || [];
+
+  // Historique de consultation — enregistré côté client dès que le match est chargé
+  useEffect(() => {
+    if (match) addRecentlyViewed(match);
+  }, [match?.id]);
 
   const isFinishedOrLive = match && ['FINISHED', 'LIVE'].includes(match.status);
 

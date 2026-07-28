@@ -25,7 +25,9 @@
     "pronostics": "Pronostics",
     "pronosticsDesc": "Picks du jour par confiance",
     "statsLeagues": "Stats ligues",
-    "statsLeaguesDesc": "Buts, BTTS, O2.5 par compétition"
+    "statsLeaguesDesc": "Buts, BTTS, O2.5 par compétition",
+    "comparator": "Comparateur d'équipes",
+    "comparatorDesc": "Compare 2 équipes côte à côte : forme, buts, confrontations"
   },
   "common": {
     "loading": "Chargement...",
@@ -80,6 +82,10 @@
     },
     "liveMatches": "Matchs en direct",
     "todayMatches": "Matchs du jour",
+    "recentlyViewed": {
+      "title": "Vus récemment",
+      "noDate": "Date à venir"
+    },
     "topPicks": "Meilleurs picks",
     "aiPowered": "IA",
     "noMatchesToday": "Aucun match programmé aujourd'hui",
@@ -1048,6 +1054,12 @@
         "title": "Coupe du Monde 2026",
         "description": "Calendrier, groupes et pronostics dédiés au Mondial USA-Canada-Mexique.",
         "cta": "Découvrir"
+      },
+      "comparateur": {
+        "badge": "Nouveau",
+        "title": "Comparateur d'équipes",
+        "description": "Mets deux équipes face à face : forme récente, buts, confrontations directes.",
+        "cta": "Comparer"
       }
     }
   },
@@ -1384,7 +1396,28 @@
     "goalsConceded": "Buts encaissés",
     "upcomingMatches": "Prochains matchs",
     "lastResults": "Derniers résultats",
-    "squadCount": "Effectif ({{count}} joueurs)"
+    "squadCount": "Effectif ({{count}} joueurs)",
+    "compareCta": "Comparer"
+  },
+  "comparator": {
+    "metaTitle": "Comparateur d'équipes",
+    "metaDesc": "Compare deux équipes de football côte à côte : forme récente, buts marqués/encaissés et confrontations directes.",
+    "title": "Comparateur d'équipes",
+    "subtitle": "Mets deux équipes face à face : forme, buts et confrontations directes.",
+    "pickTeam1": "Choisir la 1ère équipe",
+    "pickTeam2": "Choisir la 2ème équipe",
+    "formTitle": "Forme (matchs en base)",
+    "played": "Matchs joués",
+    "wins": "Victoires",
+    "draws": "Nuls",
+    "losses": "Défaites",
+    "avgGoalsFor": "Buts marqués / match",
+    "avgGoalsAgainst": "Buts encaissés / match",
+    "recentForm": "Forme récente",
+    "h2hTitle": "Confrontations directes",
+    "noH2h": "Aucune confrontation directe enregistrée en base.",
+    "hint": "Choisis deux équipes pour lancer la comparaison.",
+    "noTeamsFound": "Aucune équipe trouvée"
   },
   "statsLigues": {
     "title": "Stats par ligue",

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain, ShieldCheck } from 'lucide-react';
+import { Home, Calendar, TrendingUp, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain, ShieldCheck, ArrowLeftRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -27,6 +27,7 @@ function ExplorerDrawer({ open, onClose }) {
       items: [
         { to: '/outils/filtres',      label: t('tools.filters'),      Icon: Filter,   desc: t('tools.filtersDesc'),      color: 'text-blue-400 bg-blue-500/10' },
         { to: '/outils/stats-ligues', label: t('tools.statsLeagues'), Icon: BarChart2, desc: t('tools.statsLeaguesDesc'), color: 'text-purple-400 bg-purple-500/10' },
+        { to: '/comparateur',         label: t('tools.comparator'),   Icon: ArrowLeftRight, desc: t('tools.comparatorDesc'), color: 'text-fuchsia-400 bg-fuchsia-500/10' },
       ],
     },
     {

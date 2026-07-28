@@ -219,6 +219,107 @@ async function getMatchContext(req, res, next) {
   }
 }
 
+// ─── Comparateur de deux équipes (forme + H2H, depuis nos matchs en base) ─────
+async function getTeamCompare(req, res, next) {
+  try {
+    const schema = z.object({
+      team1Id:   z.string(),
+      team1Name: z.string(),
+      team2Id:   z.string(),
+      team2Name: z.string(),
+    });
+    const { team1Id, team1Name, team2Id, team2Name } = schema.parse(req.query);
+
+    const formFilter = (teamName) => ({
+      OR: [{ homeTeam: teamName }, { awayTeam: teamName }],
+      status: 'FINISHED',
+    });
+
+    const getResult = (m, teamName) => {
+      if (m.homeScore === null || m.awayScore === null) return null;
+      const scored   = m.homeTeam === teamName ? m.homeScore : m.awayScore;
+      const conceded = m.homeTeam === teamName ? m.awayScore : m.homeScore;
+      if (scored > conceded) return 'W';
+      if (scored < conceded) return 'L';
+      return 'D';
+    };
+
+    const [form1, form2, h2h] = await Promise.all([
+      prisma.match.findMany({
+        where: formFilter(team1Name),
+        orderBy: { scheduledAt: 'desc' },
+        take: 10,
+      }),
+      prisma.match.findMany({
+        where: formFilter(team2Name),
+        orderBy: { scheduledAt: 'desc' },
+        take: 10,
+      }),
+      prisma.match.findMany({
+        where: {
+          OR: [
+            { homeTeam: team1Name, awayTeam: team2Name },
+            { homeTeam: team2Name, awayTeam: team1Name },
+          ],
+          status: 'FINISHED',
+        },
+        orderBy: { scheduledAt: 'desc' },
+        take: 5,
+        include: { competition: { select: { name: true } } },
+      }),
+    ]);
+
+    const summarize = (matches, teamName) => {
+      let wins = 0, draws = 0, losses = 0, goalsFor = 0, goalsAgainst = 0;
+      const form = [];
+      for (const m of matches) {
+        const r = getResult(m, teamName);
+        if (!r) continue;
+        if (r === 'W') wins++; else if (r === 'D') draws++; else losses++;
+        goalsFor     += m.homeTeam === teamName ? m.homeScore : m.awayScore;
+        goalsAgainst += m.homeTeam === teamName ? m.awayScore : m.homeScore;
+        if (form.length < 5) form.push(r);
+      }
+      const played = wins + draws + losses;
+      return {
+        played, wins, draws, losses,
+        goalsFor, goalsAgainst,
+        avgGoalsFor:     played ? +(goalsFor / played).toFixed(2)     : 0,
+        avgGoalsAgainst: played ? +(goalsAgainst / played).toFixed(2) : 0,
+        form,
+      };
+    };
+
+    let team1Wins = 0, h2hDraws = 0, team2Wins = 0;
+    const h2hMatches = h2h.map((m) => {
+      const isTeam1Home = m.homeTeam === team1Name;
+      const t1Goals = isTeam1Home ? m.homeScore : m.awayScore;
+      const t2Goals = isTeam1Home ? m.awayScore : m.homeScore;
+      if (t1Goals != null && t2Goals != null) {
+        if (t1Goals > t2Goals) team1Wins++;
+        else if (t1Goals === t2Goals) h2hDraws++;
+        else team2Wins++;
+      }
+      return {
+        id: m.id,
+        scheduledAt: m.scheduledAt,
+        homeTeam: m.homeTeam, awayTeam: m.awayTeam,
+        homeScore: m.homeScore, awayScore: m.awayScore,
+        competition: m.competition?.name,
+      };
+    });
+
+    res.json({
+      success: true,
+      data: {
+        team1: { id: team1Id, name: team1Name, stats: summarize(form1, team1Name) },
+        team2: { id: team2Id, name: team2Name, stats: summarize(form2, team2Name) },
+        h2h: { matches: h2hMatches, team1Wins, draws: h2hDraws, team2Wins },
+      },
+    });
+  } catch (err) { next(err); }
+}
+
 // ─── Classement calculé depuis nos matchs en base ─────────────────────────────
 async function getStandings(req, res, next) {
   try {
@@ -652,4 +753,4 @@ async function getMatchEvents(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches };
+module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare };

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { Users, Calendar, MapPin, ChevronLeft } from 'lucide-react';
+import { Users, Calendar, MapPin, ChevronLeft, ArrowLeftRight } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
@@ -105,14 +105,21 @@ export default function TeamPage() {
         {team.logo && (
           <img src={team.logo} alt={team.name} className="w-12 h-12 object-contain" />
         )}
-        <div>
-          <h1 className="font-display font-bold text-xl text-gray-100">{team.name}</h1>
+        <div className="flex-1 min-w-0">
+          <h1 className="font-display font-bold text-xl text-gray-100 truncate">{team.name}</h1>
           <div className="flex items-center gap-2 text-xs text-gray-300 mt-0.5">
             <MapPin size={11} />
             <span>{team.country}</span>
             {team.founded && <span>· {t('teamPage.foundedIn', { year: team.founded })}</span>}
           </div>
         </div>
+        <Link
+          to={`/comparateur?team1Id=${id}&team1Name=${encodeURIComponent(team.name)}&team1Logo=${encodeURIComponent(team.logo || '')}`}
+          className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] text-xs font-semibold text-gray-200 hover:border-white/[0.14] transition-colors"
+        >
+          <ArrowLeftRight size={13} />
+          {t('teamPage.compareCta')}
+        </Link>
       </div>
 
       {/* Stats saison */}

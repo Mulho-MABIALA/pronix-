@@ -38,13 +38,25 @@ router.post('/me/onboarding', async (req, res, next) => {
     const schema = z.object({
       favoriteTeams: z.array(z.string()).max(10).default([]),
       favoriteLeagues: z.array(z.string()).max(10).default([]),
+      // Langue principale + devise préférée choisies à l'onboarding (ciblage mondial)
+      language: z.enum(['fr', 'en', 'es', 'pt']).optional(),
+      currency: z.enum(['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR']).optional(),
     });
-    const { favoriteTeams, favoriteLeagues } = schema.parse(req.body);
+    const { favoriteTeams, favoriteLeagues, language, currency } = schema.parse(req.body);
 
-    const profile = await prisma.profile.update({
-      where: { userId: req.user.id },
-      data: { favoriteTeams, favoriteLeagues, onboardingDone: true },
-    });
+    const [profile] = await prisma.$transaction([
+      prisma.profile.update({
+        where: { userId: req.user.id },
+        data: { favoriteTeams, favoriteLeagues, onboardingDone: true },
+      }),
+      prisma.user.update({
+        where: { id: req.user.id },
+        data: {
+          ...(language && { language }),
+          ...(currency && { currency }),
+        },
+      }),
+    ]);
     res.json({ success: true, data: profile });
   } catch (err) {
     next(err);

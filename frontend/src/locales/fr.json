@@ -711,6 +711,8 @@
     "fixedCount": "{{count}} fixé(s)",
     "loadingMatches": "Chargement des matchs…",
     "noMatchesFilters": "Aucun match disponible avec ces filtres",
+    "searchTeamPlaceholder": "Rechercher une équipe…",
+    "noMatchesSearch": "Aucun match ne correspond à cette recherche",
     "checkAll": "Tout cocher ({{count}})",
     "uncheckAll": "Tout décocher",
     "selectedCount": "{{count}} sélectionné(s)",

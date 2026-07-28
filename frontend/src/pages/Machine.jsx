@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles, Search, X } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { TeamLogo } from '../components/matches/MatchCard';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 import TicketHistory from '../components/machine/TicketHistory';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
@@ -70,19 +71,6 @@ const DATE_PRESETS = [
   { value: 'week',     labelKey: 'week',      days: 7  },
   { value: '2weeks',   labelKey: 'twoWeeks',  days: 14 },
   { value: 'month',    labelKey: 'month',     days: 30 },
-];
-
-const LEAGUES_OPTIONS = [
-  { value: 'all',    label: null },
-  { value: '47',     label: 'Premier League' },
-  { value: '53',     label: 'Ligue 1' },
-  { value: '54',     label: 'Bundesliga' },
-  { value: '55',     label: 'Serie A' },
-  { value: '87',     label: 'La Liga' },
-  { value: '42',     label: 'Champions League' },
-  { value: '73',     label: 'Europa League' },
-  { value: '289',    label: 'CAN' },
-  { value: '526',    label: 'CAF Champions League' },
 ];
 
 // ─── Marchés inspirés 1xbet — labels/descriptions dans machine.marketGroups.* (i18n) ──
@@ -183,6 +171,7 @@ export default function Machine() {
   const [leagues, setLeagues]         = useState([]);
   const [pinnedMatchIds, setPinnedMatchIds] = useState(new Set());
   const [showMatchPicker, setShowMatchPicker] = useState(false);
+  const [matchSearch, setMatchSearch] = useState('');
   const [ticket, setTicket]           = useState(null);
   const [copied, setCopied]           = useState(false);
   const [sharing, setSharing]         = useState(false);
@@ -227,6 +216,14 @@ export default function Machine() {
     queryFn:  () => api.get(`/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=500`).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
+
+  // Championnats affichés — liste complète (avec logos) au lieu d'une sélection figée
+  const competitionsQ = useQuery({
+    queryKey: ['machine-competitions'],
+    queryFn: () => api.get('/matches/competitions').then((r) => r.data),
+    staleTime: Infinity,
+  });
+  const competitions = competitionsQ.data?.data || [];
 
   const isLoading = rangeQ.isLoading;
 
@@ -572,31 +569,36 @@ export default function Machine() {
           </div>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
-              {LEAGUES_OPTIONS.map((l) => {
-                const isActive = l.value === 'all'
-                  ? leagues.length === 0
-                  : leagues.includes(l.value);
+              <button
+                onClick={() => { setLeagues([]); setPinnedMatchIds(new Set()); setTicket(null); }}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
+                  leagues.length === 0
+                    ? 'bg-select-500/15 text-select-400 border-select-500/30'
+                    : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
+                }`}>
+                {t('machine.allLeagues')}
+              </button>
+              {competitions.map((c) => {
+                const value = String(c.externalId);
+                const isActive = leagues.includes(value);
                 return (
-                  <button key={l.value}
+                  <button key={c.id}
                     onClick={() => {
-                      if (l.value === 'all') {
-                        setLeagues([]);
-                      } else {
-                        setLeagues((prev) =>
-                          prev.includes(l.value)
-                            ? prev.filter((x) => x !== l.value)
-                            : [...prev, l.value]
-                        );
-                      }
+                      setLeagues((prev) =>
+                        prev.includes(value)
+                          ? prev.filter((x) => x !== value)
+                          : [...prev, value]
+                      );
                       setPinnedMatchIds(new Set());
                       setTicket(null);
                     }}
-                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
+                    className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
                         : 'text-gray-500 border-white/[0.06] hover:text-gray-300'
                     }`}>
-                    {l.label === null ? t('machine.allLeagues') : l.label}
+                    <CompetitionLogo logo={c.logo} size={14} />
+                    {c.name}
                   </button>
                 );
               })}
@@ -650,6 +652,24 @@ export default function Machine() {
                 </p>
               ) : (
                 <>
+                  {/* Recherche par équipe */}
+                  <div className="relative">
+                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-600" />
+                    <input
+                      type="text"
+                      value={matchSearch}
+                      onChange={(e) => setMatchSearch(e.target.value)}
+                      placeholder={t('machine.searchTeamPlaceholder')}
+                      className="w-full bg-surface-800/60 border border-white/[0.06] rounded-lg pl-8 pr-8 py-1.5 text-xs text-gray-200 placeholder:text-gray-600 outline-none focus:border-select-500/40"
+                    />
+                    {matchSearch && (
+                      <button onClick={() => setMatchSearch('')}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-600 hover:text-gray-300">
+                        <X size={13} />
+                      </button>
+                    )}
+                  </div>
+
                   {/* Barre actions rapides */}
                   <div className="flex items-center gap-2">
                     <button onClick={selectAllCandidates}
@@ -669,48 +689,73 @@ export default function Machine() {
                     </span>
                   </div>
 
-                  {/* Liste des matchs scrollable */}
-                  <div className="max-h-60 overflow-y-auto space-y-1 pr-0.5">
-                    {availableCandidates.map((c) => {
-                      const pinned = pinnedMatchIds.has(c.match.id);
-                      const cc = CONF_COLORS[c.conf];
+                  {/* Liste des matchs scrollable — filtrée par la recherche */}
+                  {(() => {
+                    const q = matchSearch.trim().toLowerCase();
+                    const visible = q
+                      ? availableCandidates.filter((c) =>
+                          c.match.homeTeam.toLowerCase().includes(q) ||
+                          c.match.awayTeam.toLowerCase().includes(q))
+                      : availableCandidates;
+
+                    if (visible.length === 0) {
                       return (
-                        <button key={c.match.id} onClick={() => togglePin(c.match.id)}
-                          className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-colors ${
-                            pinned
-                              ? 'bg-select-500/10 border-select-500/25'
-                              : 'border-white/[0.05] hover:border-white/[0.10]'
-                          }`}>
-                          {/* Checkbox */}
-                          <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-                            pinned ? 'bg-select-500 border-select-500' : 'border-white/[0.2]'
-                          }`}>
-                            {pinned && <Check size={9} className="text-white" strokeWidth={3} />}
-                          </div>
-
-                          {/* Infos match */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1">
-                              <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
-                                {c.match.homeTeam} vs {c.match.awayTeam}
-                              </p>
-                              {c.match.predictions?.aiGenerated && (
-                                <span className="shrink-0 text-[8px] font-bold text-violet-400 bg-violet-500/10 px-1 rounded">IA</span>
-                              )}
-                            </div>
-                            <p className="text-[10px] text-gray-600 mt-0.5">
-                              {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
-                            </p>
-                          </div>
-
-                          {/* Probabilité + confiance */}
-                          <div className={`shrink-0 text-center px-2 py-0.5 rounded border text-[10px] font-bold ${cc.bg} ${cc.text}`}>
-                            {c.pick.prob}%
-                          </div>
-                        </button>
+                        <p className="text-[10px] text-gray-600 py-3 text-center">
+                          {t('machine.noMatchesSearch')}
+                        </p>
                       );
-                    })}
-                  </div>
+                    }
+
+                    return (
+                      <div className="max-h-60 overflow-y-auto space-y-1 pr-0.5">
+                        {visible.map((c) => {
+                          const pinned = pinnedMatchIds.has(c.match.id);
+                          const cc = CONF_COLORS[c.conf];
+                          return (
+                            <button key={c.match.id} onClick={() => togglePin(c.match.id)}
+                              className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg border text-left transition-colors ${
+                                pinned
+                                  ? 'bg-select-500/10 border-select-500/25'
+                                  : 'border-white/[0.05] hover:border-white/[0.10]'
+                              }`}>
+                              {/* Checkbox */}
+                              <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
+                                pinned ? 'bg-select-500 border-select-500' : 'border-white/[0.2]'
+                              }`}>
+                                {pinned && <Check size={9} className="text-white" strokeWidth={3} />}
+                              </div>
+
+                              {/* Logos équipes (superposés) */}
+                              <div className="flex items-center shrink-0 -space-x-1.5">
+                                <TeamLogo logo={c.match.homeTeamLogo} teamId={c.match.homeTeamId} name={c.match.homeTeam} size={18} />
+                                <TeamLogo logo={c.match.awayTeamLogo} teamId={c.match.awayTeamId} name={c.match.awayTeam} size={18} />
+                              </div>
+
+                              {/* Infos match */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-1">
+                                  <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
+                                    {c.match.homeTeam} vs {c.match.awayTeam}
+                                  </p>
+                                  {c.match.predictions?.aiGenerated && (
+                                    <span className="shrink-0 text-[8px] font-bold text-violet-400 bg-violet-500/10 px-1 rounded">IA</span>
+                                  )}
+                                </div>
+                                <p className="text-[10px] text-gray-600 mt-0.5">
+                                  {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
+                                </p>
+                              </div>
+
+                              {/* Probabilité + confiance */}
+                              <div className={`shrink-0 text-center px-2 py-0.5 rounded border text-[10px] font-bold ${cc.bg} ${cc.text}`}>
+                                {c.pick.prob}%
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    );
+                  })()}
 
                   <p className="text-[10px] text-gray-600">
                     {pinnedMatchIds.size > 0

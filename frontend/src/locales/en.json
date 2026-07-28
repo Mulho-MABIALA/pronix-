@@ -711,6 +711,8 @@
     "fixedCount": "{{count}} fixed",
     "loadingMatches": "Loading matches…",
     "noMatchesFilters": "No matches available with these filters",
+    "searchTeamPlaceholder": "Search for a team…",
+    "noMatchesSearch": "No match found for this search",
     "checkAll": "Check all ({{count}})",
     "uncheckAll": "Uncheck all",
     "selectedCount": "{{count}} selected",

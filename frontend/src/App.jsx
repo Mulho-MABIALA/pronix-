@@ -88,12 +88,38 @@ function AdminGuard({ children }) {
   return children;
 }
 
+// ─── Écran de démarrage — évite le flash "invité" au lancement de l'app ──────
+// Les tokens vivent dans des cookies httpOnly : on ne sait donc pas si la
+// personne est connectée tant que /auth/me n'a pas répondu. Sans ce garde,
+// les pages publiques (Home, Header, BottomNav...) affichent d'abord la
+// version "non connecté" avant de basculer sur la version connectée dès que
+// la réponse arrive — d'où le flash observé à chaque relance de la PWA.
+function AppGate({ children }) {
+  const { loading } = useAuth();
+  if (loading) {
+    return (
+      <div
+        className="fixed inset-0 flex items-center justify-center"
+        style={{ background: 'var(--color-bg)' }}
+      >
+        <img
+          src="/logo-circle.png"
+          alt=""
+          className="w-16 h-16 rounded-full animate-pulse"
+        />
+      </div>
+    );
+  }
+  return children;
+}
+
 export default function App() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
+          <AppGate>
           <ToastProvider>
           <BrowserRouter>
             <Routes>
@@ -159,6 +185,7 @@ export default function App() {
             </Routes>
           </BrowserRouter>
           </ToastProvider>
+          </AppGate>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

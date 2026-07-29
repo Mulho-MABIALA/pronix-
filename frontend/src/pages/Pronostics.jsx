@@ -578,9 +578,11 @@ export default function Pronostics() {
             <div className="bento-card overflow-hidden p-0">
               <div className="flex items-center gap-2 px-3 py-2 bg-amber-500/10 border-b border-amber-500/20">
                 <Zap size={11} className="text-amber-400 shrink-0" />
-                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest flex-1">
+                <span className="text-[11px] font-bold text-amber-400 uppercase tracking-widest flex items-center gap-1">
                   {t('pronostics.valueBetsToday')}
+                  <InfoTooltip text={t('oddsChip.valueBetTooltip')} size={11} align="left" wide />
                 </span>
+                <span className="flex-1" />
                 <span className="text-[10px] text-amber-500 shrink-0">{valueBets.length}</span>
               </div>
               {valueBets.map((m) => (

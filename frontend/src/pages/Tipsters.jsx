@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import TipsterCard from '../components/tipsters/TipsterCard';
 import { SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
+import InfoTooltip from '../components/ui/InfoTooltip';
 
 export default function Tipsters() {
   const { t } = useTranslation();
@@ -27,8 +28,9 @@ export default function Tipsters() {
           <Trophy size={22} className="text-primary-400" />
           <h1 className="font-display font-bold text-2xl text-gray-100">{t('tipsters.leaderboardTitle')}</h1>
         </div>
-        <p className="text-gray-300 text-sm mt-1">
+        <p className="text-gray-300 text-sm mt-1 flex items-center gap-1">
           {t('tipsters.leaderboardDesc')}
+          <InfoTooltip text={t('tipsterCard.roiTooltip')} size={11} align="left" />
         </p>
         <p className="disclaimer mt-2">
           {t('tipsters.disclaimer')}

@@ -1,7 +1,6 @@
 import { Zap } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { formatOdd, formatEdge } from '../../utils/mockOdds';
-import InfoTooltip from './InfoTooltip';
 
 /**
  * Cote (simulée) affichée sous forme de petit chip — ex: "2.10".
@@ -30,10 +29,10 @@ export function ValueBetBadge({ edge, size = 'sm', showEdge = false, className =
     <span
       className={`badge bg-amber-500/15 text-amber-400 border border-amber-500/25
         ${size === 'md' ? 'text-xs px-2.5 py-1' : ''} ${className}`}
+      title={t('oddsChip.valueBetTooltip')}
     >
       <Zap size={10} className="shrink-0" />
       Value{showEdge && edge != null ? ` ${formatEdge(edge)}` : ''}
-      <InfoTooltip text={t('oddsChip.valueBetTooltip')} size={9} align="right" className="-mr-0.5" />
     </span>
   );
 }

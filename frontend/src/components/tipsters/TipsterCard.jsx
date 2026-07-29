@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { TipsterBadge } from '../ui/Badge';
 import SuccessRateBar from '../ui/SuccessRateBar';
 import Avatar from '../ui/Avatar';
+import InfoTooltip from '../ui/InfoTooltip';
 import { estimateTipsterROI } from '../../utils/mockOdds';
 
 const PODIUM_RING = {
@@ -56,11 +57,9 @@ export default function TipsterCard({ stats, rank }) {
       <div className="shrink-0 w-16 sm:w-24 space-y-1">
         <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="sm" stacked />
         {roi != null && (
-          <p
-            className={`text-[10px] text-right font-semibold tabular-nums ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}
-            title={t('tipsterCard.roiTooltip')}
-          >
+          <p className={`text-[10px] text-right font-semibold tabular-nums flex items-center justify-end gap-0.5 ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}>
             ROI {roi >= 0 ? '+' : ''}{roi}%
+            <InfoTooltip text={t('tipsterCard.roiTooltip')} size={9} align="right" />
           </p>
         )}
       </div>

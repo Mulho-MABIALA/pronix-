@@ -12,6 +12,7 @@ import SuccessRateBar from '../components/ui/SuccessRateBar';
 import Avatar from '../components/ui/Avatar';
 import TeamLogo from '../components/ui/TeamLogo';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
+import InfoTooltip from '../components/ui/InfoTooltip';
 import { estimateTipsterROI } from '../utils/mockOdds';
 import { useAnalytics } from '../hooks/useAnalytics';
 import { useCurrency } from '../hooks/useCurrency';
@@ -424,8 +425,9 @@ export default function TipsterProfile() {
               <p className={`text-2xl font-display font-bold ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}>
                 {roi >= 0 ? '+' : ''}{roi}%
               </p>
-              <p className="text-xs text-gray-300 mt-1" title={t('tipsterProfile.estimatedRoiTooltip')}>
+              <p className="text-xs text-gray-300 mt-1 flex items-center justify-center gap-1">
                 {t('tipsterProfile.estimatedRoi')}
+                <InfoTooltip text={t('tipsterProfile.estimatedRoiTooltip')} size={10} />
               </p>
             </div>
           )}

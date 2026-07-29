@@ -199,6 +199,7 @@
       "doubleChance": "Double chance"
     },
     "filtersToggle": "Filtres",
+    "marketGlossary": "1X2 : victoire domicile (1), nul (X) ou victoire extérieure (2).\nBTTS : les deux équipes marquent.\nDouble chance : combine deux issues (ex. 1X = domicile ou nul).\nValue : la cote proposée est jugée meilleure que la probabilité réelle estimée.",
     "allLeagues": "Toutes les ligues",
     "prevDays": "Jours précédents",
     "nextDays": "Jours suivants",

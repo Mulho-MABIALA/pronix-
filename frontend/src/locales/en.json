@@ -199,6 +199,7 @@
       "doubleChance": "Double chance"
     },
     "filtersToggle": "Filters",
+    "marketGlossary": "1X2: home win (1), draw (X) or away win (2).\nBTTS: both teams score.\nDouble chance: combines two outcomes (e.g. 1X = home or draw).\nValue: the odds offered are judged better than the estimated real probability.",
     "allLeagues": "All leagues",
     "prevDays": "Previous days",
     "nextDays": "Next days",

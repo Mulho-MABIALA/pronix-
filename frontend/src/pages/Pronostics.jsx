@@ -12,6 +12,7 @@ import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import InfoTooltip from '../components/ui/InfoTooltip';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { useAuth } from '../context/AuthContext';
@@ -438,6 +439,7 @@ export default function Pronostics() {
 
         {/* Chips marchés */}
         <div className="flex items-center gap-1">
+          <InfoTooltip text={t('pronostics.marketGlossary')} size={13} align="left" wide className="shrink-0" />
           <button onClick={() => scrollChips(-1)}
             className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] shrink-0 transition-colors">
             <ChevronLeft size={15} />

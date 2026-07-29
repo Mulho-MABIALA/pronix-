@@ -199,6 +199,7 @@
       "doubleChance": "Doble oportunidad"
     },
     "filtersToggle": "Filtros",
+    "marketGlossary": "1X2: victoria local (1), empate (X) o victoria visitante (2).\nBTTS: ambos equipos marcan.\nDoble oportunidad: combina dos resultados (ej. 1X = local o empate).\nValue: la cuota ofrecida se considera mejor que la probabilidad real estimada.",
     "allLeagues": "Todas las ligas",
     "prevDays": "Días anteriores",
     "nextDays": "Días siguientes",

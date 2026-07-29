@@ -199,6 +199,7 @@
       "doubleChance": "Dupla chance"
     },
     "filtersToggle": "Filtros",
+    "marketGlossary": "1X2: vitória do mandante (1), empate (X) ou vitória do visitante (2).\nBTTS: os dois times marcam.\nDupla chance: combina dois resultados (ex. 1X = mandante ou empate).\nValue: a cota oferecida é considerada melhor que a probabilidade real estimada.",
     "allLeagues": "Todas as ligas",
     "prevDays": "Dias anteriores",
     "nextDays": "Próximos dias",

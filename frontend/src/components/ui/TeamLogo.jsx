@@ -14,6 +14,10 @@ export default function TeamLogo({ logo, teamId, name, size = 20, className = ''
         src={src}
         alt=""
         aria-hidden="true"
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
         style={{ width: size, height: size }}
         className={`object-contain shrink-0 ${className}`}
         onError={() => setErr(true)}

@@ -18,8 +18,12 @@ const ROW_2 = [
   'photo-1512719994953-eabf50895df7',
 ];
 
+// Les cartes s'affichent au plus grand en 224x144px (md:w-56 h-36) — demander
+// une image à w=600 en téléchargeait 3 fois plus large que nécessaire même en
+// comptant un écran retina (~600 Kio à elles 14, repéré par un audit PageSpeed).
+// w=420 couvre confortablement le @2x du plus grand affichage sans flou.
 function imgUrl(id) {
-  return `https://images.unsplash.com/${id}?fm=jpg&q=60&w=600&auto=format&fit=crop`;
+  return `https://images.unsplash.com/${id}?fm=jpg&q=60&w=420&auto=format&fit=crop`;
 }
 
 function Row({ ids, direction = 'left', className = '' }) {

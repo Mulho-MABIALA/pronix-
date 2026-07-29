@@ -179,19 +179,36 @@ export default function TicketHistory() {
               {ticket.entries.map((e, idx) => {
                 const ls = LEG_STYLES[e.legResult] || LEG_PENDING_STYLE;
                 const LegIcon = ls.Icon || Clock;
+                const m = e.match;
+                const hasScore = m.status === 'FINISHED' && m.homeScore != null && m.awayScore != null;
+                const homeWins = hasScore && m.homeScore > m.awayScore;
+                const awayWins = hasScore && m.awayScore > m.homeScore;
+                const isDraw   = hasScore && m.homeScore === m.awayScore;
+                // Même code couleur que MatchCard : vert pour le vainqueur, ambre si nul.
+                const scoreColor = (isWinner) => (isDraw ? 'text-amber-400' : isWinner ? 'text-primary-400' : 'text-gray-400');
                 return (
                   <div key={e.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
                     <span className="w-4 shrink-0 text-center text-[11px] font-bold text-gray-400">{idx + 1}</span>
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <TeamLogo logo={e.match.homeTeamLogo} name={e.match.homeTeam} size={15} />
-                        <p className="text-xs font-medium text-gray-200 truncate">{e.match.homeTeam}</p>
+                        <TeamLogo logo={m.homeTeamLogo} name={m.homeTeam} size={15} />
+                        <p className="text-xs font-medium text-gray-200 truncate">{m.homeTeam}</p>
                       </div>
                       <div className="flex items-center gap-1.5 min-w-0">
-                        <TeamLogo logo={e.match.awayTeamLogo} name={e.match.awayTeam} size={15} />
-                        <p className="text-xs font-medium text-gray-200 truncate">{e.match.awayTeam}</p>
+                        <TeamLogo logo={m.awayTeamLogo} name={m.awayTeam} size={15} />
+                        <p className="text-xs font-medium text-gray-200 truncate">{m.awayTeam}</p>
                       </div>
                     </div>
+                    {hasScore && (
+                      <div className="shrink-0 text-right w-4 space-y-0.5">
+                        <span className={`block text-xs font-display font-bold tabular-nums leading-none ${scoreColor(homeWins)}`}>
+                          {m.homeScore}
+                        </span>
+                        <span className={`block text-xs font-display font-bold tabular-nums leading-none ${scoreColor(awayWins)}`}>
+                          {m.awayScore}
+                        </span>
+                      </div>
+                    )}
                     <div className={`shrink-0 text-center px-2 py-1 rounded-lg border ${ls.bg}`}>
                       <span className={`block text-[11px] font-bold ${ls.color}`}>
                         {t(`machine.pickLabels.${e.prediction}`, { defaultValue: e.prediction })}

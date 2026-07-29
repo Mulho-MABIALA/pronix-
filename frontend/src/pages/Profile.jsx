@@ -846,8 +846,9 @@ export default function Profile() {
         {t('profile.logoutBtn')}
       </button>
 
-      {/* ── Mentions légales / liens de bas de page ─────────────────────────────── */}
-      <Disclaimer />
+      {/* ── Mentions légales / liens de bas de page (mobile uniquement — le
+           bandeau global couvre déjà le PC) ─────────────────────────────────── */}
+      <Disclaimer variant="inline" />
     </div>
   );
 }

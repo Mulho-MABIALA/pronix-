@@ -15,6 +15,7 @@ import { useToast } from '../context/ToastContext';
 import { PlanBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
+import Disclaimer from '../components/layout/Disclaimer';
 
 /* ─── Compress & crop image to square base64 JPEG ─────────────────────────── */
 function resizeToSquareBase64(file, size = 400) {
@@ -844,6 +845,9 @@ export default function Profile() {
         <LogOut size={15} />
         {t('profile.logoutBtn')}
       </button>
+
+      {/* ── Mentions légales / liens de bas de page ─────────────────────────────── */}
+      <Disclaimer />
     </div>
   );
 }

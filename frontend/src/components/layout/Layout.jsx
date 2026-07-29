@@ -1,7 +1,6 @@
 import { Outlet } from 'react-router-dom';
 import Header from './Header';
 import BottomNav from './BottomNav';
-import Disclaimer from './Disclaimer';
 import PWABanner from '../ui/PWABanner';
 import EmailVerifyBanner from '../ui/EmailVerifyBanner';
 import TrialBanner from '../ui/TrialBanner';
@@ -20,7 +19,6 @@ export default function Layout() {
       <main className="flex-1 pb-28 md:pb-0">
         <Outlet />
       </main>
-      <Disclaimer />
       <BottomNav />
       <PWABanner />
       <SupportChat />

@@ -22,8 +22,11 @@ const ROW_2 = [
 // une image à w=600 en téléchargeait 3 fois plus large que nécessaire même en
 // comptant un écran retina (~600 Kio à elles 14, repéré par un audit PageSpeed).
 // w=420 couvre confortablement le @2x du plus grand affichage sans flou.
+// fm=webp (au lieu de jpg) : même rendu visuel, ~25-35% de moins par photo —
+// un nouvel audit PageSpeed a chiffré ~89 Kio d'économie supplémentaire sur
+// ce format seul, en plus du redimensionnement déjà fait.
 function imgUrl(id) {
-  return `https://images.unsplash.com/${id}?fm=jpg&q=60&w=420&auto=format&fit=crop`;
+  return `https://images.unsplash.com/${id}?fm=webp&q=60&w=420&auto=format&fit=crop`;
 }
 
 function Row({ ids, direction = 'left', className = '' }) {

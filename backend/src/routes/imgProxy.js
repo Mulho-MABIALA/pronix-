@@ -58,7 +58,7 @@ router.get('/', async (req, res, next) => {
     const cached = resizeCache.get(cacheKey);
     if (cached) {
       res.set('Content-Type', cached.contentType);
-      res.set('Cache-Control', 'public, max-age=604800, immutable');
+      res.set('Cache-Control', 'public, max-age=5184000, immutable');
       res.set('X-Img-Cache', 'HIT');
       return res.send(cached.buffer);
     }

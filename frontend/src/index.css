@@ -46,7 +46,12 @@
   .card {
     background-color: var(--color-card);
     border: 1px solid var(--color-border);
-    @apply rounded-xl transition-all duration-200;
+    @apply rounded-xl;
+    /* transition ciblée (au lieu de transition-all) : un audit PageSpeed a
+       repéré 13 propriétés (border-radius de chaque coin, largeurs...) suivies
+       pour rien puisque seules border-color et box-shadow changent réellement
+       au survol — ça allège le travail du thread principal pendant l'animation. */
+    transition: border-color 200ms, box-shadow 200ms;
     box-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.4);
   }
 

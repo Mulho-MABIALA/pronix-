@@ -1096,12 +1096,6 @@
         "description": "Les tableaux de toutes les ligues, calculés en direct à partir des résultats synchronisés.",
         "cta": "Voir"
       },
-      "cdm2026": {
-        "badge": "Événement",
-        "title": "Coupe du Monde 2026",
-        "description": "Calendrier, groupes et pronostics dédiés au Mondial USA-Canada-Mexique.",
-        "cta": "Découvrir"
-      },
       "comparateur": {
         "badge": "Nouveau",
         "title": "Comparateur d'équipes",

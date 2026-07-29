@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   ChevronLeft, ChevronRight, SlidersHorizontal, Zap, TrendingUp, BarChart2,
-  ClipboardList, Trophy, Globe, ArrowLeftRight,
+  ClipboardList, Trophy, ArrowLeftRight,
 } from 'lucide-react';
 
 const TOOLS = [
@@ -43,12 +43,6 @@ const TOOLS = [
     to: '/classements',
     icon: Trophy,
     gradient: 'linear-gradient(135deg, #1a1406 0%, #33280b 55%, #eab308 130%)',
-  },
-  {
-    id: 'cdm2026',
-    to: '/coupe-du-monde-2026',
-    icon: Globe,
-    gradient: 'linear-gradient(135deg, #0a0f20 0%, #141f3d 55%, #6366f1 130%)',
   },
   {
     id: 'comparateur',

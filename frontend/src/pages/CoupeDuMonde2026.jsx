@@ -60,6 +60,18 @@ export default function CoupeDuMonde2026() {
     return { start: '2026-06-11', end: '2026-07-19' };
   });
 
+  // Le message affiché (hero + état vide) dépend de la date du jour par
+  // rapport au tournoi — avant, ce fut affiché "pas encore disponible avant
+  // le coup d'envoi" même APRÈS la fin du Mondial (bug détecté le 29/07/2026,
+  // 10 jours après la finale). On calcule la vraie phase pour ne plus jamais
+  // montrer un message d'avant-tournoi une fois l'événement terminé.
+  const now = new Date();
+  const wcPhase = now < new Date(`${dateRange.start}T00:00:00`)
+    ? 'upcoming'
+    : now > new Date(`${dateRange.end}T23:59:59`)
+      ? 'finished'
+      : 'live';
+
   // Récupérer les compétitions pour trouver l'ID du Mondial
   const { data: competitionsData } = useQuery({
     queryKey: ['competitions'],
@@ -120,6 +132,7 @@ export default function CoupeDuMonde2026() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary-500/30 bg-primary-500/10 text-primary-400 text-xs font-semibold mb-5">
             <Globe size={12} className="shrink-0" />
             FIFA World Cup™
+            {wcPhase === 'finished' && <span className="text-gray-400">· Terminée</span>}
           </div>
 
           <h1 className="font-display font-bold text-3xl md:text-5xl text-white mb-3 leading-tight tracking-tight">
@@ -185,10 +198,21 @@ export default function CoupeDuMonde2026() {
         ) : matches.length === 0 ? (
           <div className="card p-10 text-center">
             <Globe size={36} className="mx-auto text-gray-700 mb-4" />
-            <p className="text-gray-400 font-medium">Les matchs ne sont pas encore disponibles</p>
-            <p className="text-gray-400 text-sm mt-2">
-              Le calendrier complet sera publié avant le coup d'envoi du 11 juin 2026.
-            </p>
+            {wcPhase === 'finished' ? (
+              <>
+                <p className="text-gray-400 font-medium">La Coupe du Monde 2026 est terminée</p>
+                <p className="text-gray-400 text-sm mt-2">
+                  Retrouve les résultats et statistiques dans l'historique des matchs.
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-gray-400 font-medium">Les matchs ne sont pas encore disponibles</p>
+                <p className="text-gray-400 text-sm mt-2">
+                  Le calendrier complet sera publié avant le coup d'envoi du 11 juin 2026.
+                </p>
+              </>
+            )}
             <Link to="/matchs"
               className="inline-flex items-center gap-2 mt-5 px-4 py-2 rounded-xl bg-primary-500/10 border border-primary-500/25 text-primary-400 text-sm hover:bg-primary-500/20 transition-colors">
               Voir tous les matchs disponibles

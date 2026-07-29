@@ -20,10 +20,10 @@ function FootballLogo() {
 
 /** Switcher de langue — FR / EN / ES / PT */
 const LANGS = [
-  { code: 'fr', label: 'FR', name: 'Français' },
-  { code: 'en', label: 'EN', name: 'English' },
-  { code: 'es', label: 'ES', name: 'Español' },
-  { code: 'pt', label: 'PT', name: 'Português' },
+  { code: 'fr', label: 'FR', name: 'Français', flag: '🇫🇷' },
+  { code: 'en', label: 'EN', name: 'English', flag: '🇬🇧' },
+  { code: 'es', label: 'ES', name: 'Español', flag: '🇪🇸' },
+  { code: 'pt', label: 'PT', name: 'Português', flag: '🇵🇹' },
 ];
 
 function LangSwitcher() {
@@ -55,6 +55,7 @@ function LangSwitcher() {
         }`}
         aria-label={t('header.langSwitcherLabel')}
       >
+        <span aria-hidden="true">{current.flag}</span>
         {current.label}
         <ChevronDown size={11} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
@@ -64,7 +65,7 @@ function LangSwitcher() {
           className="absolute top-full right-0 mt-1.5 rounded-xl border border-white/[0.08] shadow-card-hover z-50 py-1.5 overflow-hidden"
           style={{ background: 'var(--color-card)', width: 160 }}
         >
-          {LANGS.map(({ code, label, name }) => (
+          {LANGS.map(({ code, label, name, flag }) => (
             <button
               key={code}
               onClick={() => select(code)}
@@ -74,6 +75,7 @@ function LangSwitcher() {
                   : 'text-gray-200 hover:bg-white/[0.05]'
               }`}
             >
+              <span aria-hidden="true">{flag}</span>
               <span className="font-bold w-6">{label}</span>
               <span className="text-gray-300">{name}</span>
             </button>

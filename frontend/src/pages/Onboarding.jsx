@@ -11,10 +11,10 @@ import { useCurrency } from '../hooks/useCurrency';
 const LEAGUE_IDS = ['61', '140', '39', '135', '78', '2', '892', '529'];
 
 const LANGUAGE_OPTIONS = [
-  { code: 'fr', label: 'Français' },
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-  { code: 'pt', label: 'Português' },
+  { code: 'fr', label: '🇫🇷 Français' },
+  { code: 'en', label: '🇬🇧 English' },
+  { code: 'es', label: '🇪🇸 Español' },
+  { code: 'pt', label: '🇵🇹 Português' },
 ];
 
 const CURRENCY_OPTIONS = [

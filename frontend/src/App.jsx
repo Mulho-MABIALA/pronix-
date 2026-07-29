@@ -1,3 +1,4 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -6,58 +7,65 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 
 import Layout from './components/layout/Layout';
-import AdminLayout from './components/admin/AdminLayout';
-
+// Home reste en import statique : c'est la page d'atterrissage la plus
+// fréquente (visiteurs non connectés compris), pas besoin d'un aller-retour
+// réseau supplémentaire juste pour elle. Tout le reste est chargé à la
+// demande (React.lazy) — un audit PageSpeed a chiffré 559 Ko de JS inutilisé
+// sur le bundle principal, en grande partie des pages jamais visitées par la
+// plupart des utilisateurs (back-office admin en tête).
 import Home from './pages/Home';
-import Matches from './pages/Matches';
-import MatchDetail from './pages/MatchDetail';
-import Tipsters from './pages/Tipsters';
-import TipsterProfile from './pages/TipsterProfile';
-import Subscription from './pages/Subscription';
-import Profile from './pages/Profile';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import Onboarding from './pages/Onboarding';
-import PaymentConfirmation from './pages/PaymentConfirmation';
-import News from './pages/News';
-import Standings from './pages/Standings';
-import Pronostics from './pages/Pronostics';
-import Filtres from './pages/Filtres';
-import Machine from './pages/Machine';
-import StatsLigues from './pages/StatsLigues';
-import NotFound from './pages/NotFound';
-import CGU from './pages/CGU';
-import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
-import FAQ from './pages/FAQ';
-import Transparency from './pages/Transparency';
-import CompetitionStandings from './pages/CompetitionStandings';
-import CompetitionPronostics from './pages/CompetitionPronostics';
-import CoupeDuMonde2026 from './pages/CoupeDuMonde2026';
-import VerifyEmail from './pages/VerifyEmail';
-import BetTracker from './pages/BetTracker';
-import TeamPage from './pages/TeamPage';
-import Comparateur from './pages/Comparateur';
-import BlogList from './pages/BlogList';
-import BlogPost from './pages/BlogPost';
 
-// Admin pages
-import AdminDashboard from './pages/admin/Dashboard';
-import AdminUsers from './pages/admin/Users';
-import AdminReports from './pages/admin/Reports';
-import AdminTipsters from './pages/admin/Tipsters';
-import AdminCompetitions from './pages/admin/Competitions';
-import AdminPayments from './pages/admin/Payments';
-import AdminMatches from './pages/admin/AdminMatches';
-import AdminAgents from './pages/admin/Agents';
-import AdminFinances from './pages/admin/Finances';
-import AdminNotifications from './pages/admin/Notifications';
-import AdminSupport from './pages/admin/Support';
-import AdminPronostics from './pages/admin/AdminPronostics';
-import AdminCommentaires from './pages/admin/AdminCommentaires';
-import AdminBlog from './pages/admin/Blog';
-import AdminPartners from './pages/admin/Partners';
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+
+const Matches = lazy(() => import('./pages/Matches'));
+const MatchDetail = lazy(() => import('./pages/MatchDetail'));
+const Tipsters = lazy(() => import('./pages/Tipsters'));
+const TipsterProfile = lazy(() => import('./pages/TipsterProfile'));
+const Subscription = lazy(() => import('./pages/Subscription'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const Onboarding = lazy(() => import('./pages/Onboarding'));
+const PaymentConfirmation = lazy(() => import('./pages/PaymentConfirmation'));
+const News = lazy(() => import('./pages/News'));
+const Standings = lazy(() => import('./pages/Standings'));
+const Pronostics = lazy(() => import('./pages/Pronostics'));
+const Filtres = lazy(() => import('./pages/Filtres'));
+const Machine = lazy(() => import('./pages/Machine'));
+const StatsLigues = lazy(() => import('./pages/StatsLigues'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const CGU = lazy(() => import('./pages/CGU'));
+const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'));
+const FAQ = lazy(() => import('./pages/FAQ'));
+const Transparency = lazy(() => import('./pages/Transparency'));
+const CompetitionStandings = lazy(() => import('./pages/CompetitionStandings'));
+const CompetitionPronostics = lazy(() => import('./pages/CompetitionPronostics'));
+const CoupeDuMonde2026 = lazy(() => import('./pages/CoupeDuMonde2026'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const BetTracker = lazy(() => import('./pages/BetTracker'));
+const TeamPage = lazy(() => import('./pages/TeamPage'));
+const Comparateur = lazy(() => import('./pages/Comparateur'));
+const BlogList = lazy(() => import('./pages/BlogList'));
+const BlogPost = lazy(() => import('./pages/BlogPost'));
+
+// Admin pages — jamais téléchargées par un visiteur/utilisateur normal
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+const AdminUsers = lazy(() => import('./pages/admin/Users'));
+const AdminReports = lazy(() => import('./pages/admin/Reports'));
+const AdminTipsters = lazy(() => import('./pages/admin/Tipsters'));
+const AdminCompetitions = lazy(() => import('./pages/admin/Competitions'));
+const AdminPayments = lazy(() => import('./pages/admin/Payments'));
+const AdminMatches = lazy(() => import('./pages/admin/AdminMatches'));
+const AdminAgents = lazy(() => import('./pages/admin/Agents'));
+const AdminFinances = lazy(() => import('./pages/admin/Finances'));
+const AdminNotifications = lazy(() => import('./pages/admin/Notifications'));
+const AdminSupport = lazy(() => import('./pages/admin/Support'));
+const AdminPronostics = lazy(() => import('./pages/admin/AdminPronostics'));
+const AdminCommentaires = lazy(() => import('./pages/admin/AdminCommentaires'));
+const AdminBlog = lazy(() => import('./pages/admin/Blog'));
+const AdminPartners = lazy(() => import('./pages/admin/Partners'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -113,6 +121,21 @@ function AppGate({ children }) {
   return children;
 }
 
+// Repli affiché le temps qu'un chunk de page (React.lazy) se télécharge —
+// en pratique quasi invisible sur un chunk déjà en cache ou une connexion
+// correcte, mais évite un écran blanc sur un premier chargement lent.
+function RouteFallback() {
+  return (
+    <div className="flex items-center justify-center py-24">
+      <img
+        src="/logo-circle.png"
+        alt=""
+        className="w-10 h-10 rounded-full animate-pulse"
+      />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
@@ -122,6 +145,7 @@ export default function App() {
           <AppGate>
           <ToastProvider>
           <BrowserRouter>
+            <Suspense fallback={<RouteFallback />}>
             <Routes>
               {/* Routes publiques avec layout principal */}
               <Route element={<Layout />}>
@@ -183,6 +207,7 @@ export default function App() {
               <Route path="/onboarding" element={<ProtectedRoute><Onboarding /></ProtectedRoute>} />
 
             </Routes>
+            </Suspense>
           </BrowserRouter>
           </ToastProvider>
           </AppGate>

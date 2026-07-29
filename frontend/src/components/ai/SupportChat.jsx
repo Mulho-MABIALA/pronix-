@@ -46,6 +46,13 @@ export default function SupportChat() {
     if (open) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, open]);
 
+  // Permet d'ouvrir le chat depuis n'importe où dans l'app (ex: lien "Contact" du footer)
+  useEffect(() => {
+    const openFromOutside = () => setOpen(true);
+    window.addEventListener('fpronix:open-support', openFromOutside);
+    return () => window.removeEventListener('fpronix:open-support', openFromOutside);
+  }, []);
+
   const sendMessage = async (text) => {
     const msg = (text || input).trim();
     if (!msg || loading) return;

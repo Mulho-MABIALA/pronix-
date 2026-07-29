@@ -33,6 +33,7 @@
     "node-cron": "^3.0.3",
     "nodemailer": "^6.9.14",
     "resend": "^4.0.0",
+    "sharp": "^0.35.3",
     "uuid": "^10.0.0",
     "web-push": "^3.6.7",
     "zod": "^3.23.8"
@@ -48,9 +49,15 @@
   },
   "jest": {
     "testEnvironment": "node",
-    "testMatch": ["**/tests/**/*.test.js"],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
     "coverageDirectory": "coverage",
-    "collectCoverageFrom": ["src/**/*.js"],
-    "setupFiles": ["./tests/setup.js"]
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "setupFiles": [
+      "./tests/setup.js"
+    ]
   }
 }

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Zap } from 'lucide-react';
 import { getOdd, isValueBet, formatOdd } from '../../utils/mockOdds';
 import MatchReminderButton from './MatchReminderButton';
+import api from '../../services/api';
 
 function WhatsAppIcon({ className }) {
   return (
@@ -17,12 +18,25 @@ function WhatsAppIcon({ className }) {
 const FOTMOB_CDN = (id) =>
   id ? `https://images.fotmob.com/image_resources/logo/teamlogo/${id}.png` : null;
 
+// Les logos media.api-sports.io pèsent 20-90 Ko en pleine résolution alors
+// qu'ils s'affichent en 26-35px dans les cartes de match (~600 Ko d'économie
+// mesurés par PageSpeed). On les fait passer par notre proxy backend qui les
+// redimensionne et les met en cache côté serveur (voir routes/imgProxy.js).
+function resizedSrc(url, size) {
+  if (!url || !url.includes('media.api-sports.io')) return url;
+  return `${api.defaults.baseURL}/img-proxy?url=${encodeURIComponent(url)}&w=${Math.round(size)}`;
+}
+
 export function TeamLogo({ logo, teamId, name, size = 20 }) {
   const [err, setErr] = useState(false);
-  const src = logo || FOTMOB_CDN(teamId);
+  const src = resizedSrc(logo, size) || FOTMOB_CDN(teamId);
   if (src && !err) {
     return (
       <img src={src} alt="" aria-hidden="true"
+        width={size}
+        height={size}
+        loading="lazy"
+        decoding="async"
         style={{ width: size, height: size }}
         className="object-contain shrink-0"
         onError={() => setErr(true)} />

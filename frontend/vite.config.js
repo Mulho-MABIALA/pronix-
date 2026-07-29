@@ -7,6 +7,11 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
+      // On enregistre le service worker nous-mêmes (voir src/index.jsx), en
+      // différé après le rendu — le script <script src="/registerSW.js">
+      // injecté automatiquement par injectRegister:'auto' est chargé de
+      // façon bloquante et retardait le premier rendu (~1,2s mesurés).
+      injectRegister: null,
       // Inclure l'icône SVG et tous les PNG dans le précache
       includeAssets: ['favicon.ico', 'icons/*.svg', 'icons/*.png', 'imgfpronix.png', 'icon-192.png', 'icon-512.png'],
       manifest: {

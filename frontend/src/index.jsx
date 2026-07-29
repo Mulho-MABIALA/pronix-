@@ -10,3 +10,12 @@ root.render(
     <App />
   </React.StrictMode>
 );
+
+// Enregistrement du service worker différé après le premier rendu — évite
+// que le script bloque l'affichage initial (voir injectRegister:null dans
+// vite.config.js).
+if ('serviceWorker' in navigator) {
+  import('virtual:pwa-register').then(({ registerSW }) => {
+    registerSW({ immediate: true });
+  });
+}

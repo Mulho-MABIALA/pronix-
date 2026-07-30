@@ -1282,6 +1282,22 @@
       }
     }
   },
+  "newsletter": {
+    "title": "Join the fpronix newsletter",
+    "subtitle": "Get our best predictions and analysis straight to your inbox, for free.",
+    "perkPicks": "The best picks of the day, hand-picked for you",
+    "perkAlerts": "Value bet alerts and deals before everyone else",
+    "perkExclusive": "Exclusive offers for newsletter subscribers",
+    "emailLabel": "Email address",
+    "subscribeBtn": "Subscribe",
+    "sending": "Subscribing…",
+    "disclaimer": "You can unsubscribe at any time. No spam, promised.",
+    "successTitle": "Subscription successful!",
+    "successDesc": "Check your inbox, your first email is coming soon.",
+    "alreadySubscribed": "You're already subscribed!",
+    "backHome": "Back to home",
+    "genericError": "An error occurred. Please try again."
+  },
   "faq": {
     "title": "Frequently asked questions",
     "noAnswer": "Can't find your answer?",
@@ -1547,6 +1563,7 @@
       "payments": "Payments",
       "finances": "Finances",
       "partners": "Partners",
+      "newsletter": "Newsletter",
       "blogSeo": "SEO Blog",
       "aiAgents": "AI Agents",
       "notifications": "Notifications"
@@ -1598,6 +1615,7 @@
     "termsLink": "Terms",
     "privacyLink": "Privacy Policy",
     "faqLink": "FAQ",
+    "newsletterLink": "Newsletter",
     "contactLink": "Contact"
   },
   "trialBanner": {

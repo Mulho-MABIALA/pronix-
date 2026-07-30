@@ -780,3 +780,19 @@ enum SupportStatus {
   RESOLVED
   CLOSED
 }
+
+// ─── NEWSLETTER ─────────────────────────────────────────────────────────────
+// Capture d'email publique (page /newsletter), independante d'un compte
+// utilisateur : n'importe qui peut s'inscrire sans creer de compte fpronix.
+model NewsletterSubscriber {
+  id          String    @id @default(uuid())
+  email       String    @unique
+  language    String    @default("fr")
+  source      String?   // page/campagne d'origine (ex: "newsletter_page", "footer")
+  isActive    Boolean   @default(true)
+  unsubscribedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([isActive])
+  @@map("newsletter_subscribers")
+}

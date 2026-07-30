@@ -40,6 +40,7 @@ const CGU = lazy(() => import('./pages/CGU'));
 const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Transparency = lazy(() => import('./pages/Transparency'));
+const Newsletter = lazy(() => import('./pages/Newsletter'));
 const CompetitionStandings = lazy(() => import('./pages/CompetitionStandings'));
 const CompetitionPronostics = lazy(() => import('./pages/CompetitionPronostics'));
 const CoupeDuMonde2026 = lazy(() => import('./pages/CoupeDuMonde2026'));
@@ -66,6 +67,7 @@ const AdminPronostics = lazy(() => import('./pages/admin/AdminPronostics'));
 const AdminCommentaires = lazy(() => import('./pages/admin/AdminCommentaires'));
 const AdminBlog = lazy(() => import('./pages/admin/Blog'));
 const AdminPartners = lazy(() => import('./pages/admin/Partners'));
+const AdminNewsletter = lazy(() => import('./pages/admin/Newsletter'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -171,6 +173,7 @@ export default function App() {
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/transparence" element={<Transparency />} />
+                <Route path="/newsletter" element={<Newsletter />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
                 <Route path="/equipes/:id" element={<TeamPage />} />
@@ -197,6 +200,7 @@ export default function App() {
                 <Route path="/admin/pronostics" element={<AdminPronostics />} />
                 <Route path="/admin/commentaires" element={<AdminCommentaires />} />
                 <Route path="/admin/partenaires" element={<AdminPartners />} />
+                <Route path="/admin/newsletter" element={<AdminNewsletter />} />
               </Route>
 
               {/* Routes auth (sans layout) */}

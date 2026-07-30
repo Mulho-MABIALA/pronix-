@@ -1282,6 +1282,22 @@
       }
     }
   },
+  "newsletter": {
+    "title": "Rejoins la newsletter fpronix",
+    "subtitle": "Reçois nos meilleurs pronostics et analyses directement par e-mail, gratuitement.",
+    "perkPicks": "Les meilleurs pronostics du jour, sélectionnés pour toi",
+    "perkAlerts": "Alertes value bets et bons plans avant tout le monde",
+    "perkExclusive": "Offres exclusives réservées aux abonnés newsletter",
+    "emailLabel": "Adresse e-mail",
+    "subscribeBtn": "M'inscrire",
+    "sending": "Inscription…",
+    "disclaimer": "Tu peux te désinscrire à tout moment. Aucun spam, promis.",
+    "successTitle": "Inscription réussie !",
+    "successDesc": "Surveille ta boîte mail, ton premier e-mail arrive bientôt.",
+    "alreadySubscribed": "Tu es déjà inscrit(e) !",
+    "backHome": "Retour à l'accueil",
+    "genericError": "Une erreur est survenue. Réessaie."
+  },
   "faq": {
     "title": "Questions fréquentes",
     "noAnswer": "Vous ne trouvez pas votre réponse ?",
@@ -1547,6 +1563,7 @@
       "payments": "Paiements",
       "finances": "Finances",
       "partners": "Partenaires",
+      "newsletter": "Newsletter",
       "blogSeo": "Blog SEO",
       "aiAgents": "Agents IA",
       "notifications": "Notifications"
@@ -1598,6 +1615,7 @@
     "termsLink": "CGU",
     "privacyLink": "Politique de confidentialité",
     "faqLink": "FAQ",
+    "newsletterLink": "Newsletter",
     "contactLink": "Contact"
   },
   "trialBanner": {

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone,
+  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone, Mail,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -33,6 +33,7 @@ const NAV_GROUPS = [
       { to: '/admin/paiements',    itemKey: 'payments',     Icon: CreditCard },
       { to: '/admin/finances',     itemKey: 'finances',     Icon: BarChart3 },
       { to: '/admin/partenaires',  itemKey: 'partners',     Icon: Megaphone },
+      { to: '/admin/newsletter',   itemKey: 'newsletter',   Icon: Mail },
     ],
   },
   {

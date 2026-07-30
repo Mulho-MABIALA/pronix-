@@ -26,6 +26,8 @@ function FooterLinks() {
         <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/faq" className={linkClass}>{t('disclaimer.faqLink')}</a>
         <span className="text-ink-4" aria-hidden="true">·</span>
+        <a href="/newsletter" className={linkClass}>{t('disclaimer.newsletterLink')}</a>
+        <span className="text-ink-4" aria-hidden="true">·</span>
         <button type="button" onClick={openSupportChat} className={linkClass}>{t('disclaimer.contactLink')}</button>
       </div>
     </>

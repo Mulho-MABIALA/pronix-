@@ -41,3 +41,13 @@ export function addRecentlyViewed(match) {
 export function clearRecentlyViewed() {
   try { localStorage.removeItem(KEY); } catch { /* noop */ }
 }
+
+// Retire un match précis de l'historique (ex : une fois qu'il est terminé).
+export function removeRecentlyViewed(id) {
+  try {
+    const list = getRecentlyViewed().filter((m) => m.id !== id);
+    localStorage.setItem(KEY, JSON.stringify(list));
+  } catch {
+    // localStorage indisponible — on ignore silencieusement
+  }
+}

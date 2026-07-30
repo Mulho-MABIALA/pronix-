@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
@@ -13,7 +13,7 @@ import TipsterCard from '../components/tipsters/TipsterCard';
 import SearchBar from '../components/ui/SearchBar';
 import { SkeletonMatchCard, SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
-import { getRecentlyViewed } from '../utils/recentlyViewed';
+import { getRecentlyViewed, removeRecentlyViewed } from '../utils/recentlyViewed';
 
 // ── Vus récemment — historique client (localStorage) ────────────────────────
 function RecentlyViewedRow({ m }) {
@@ -50,8 +50,46 @@ export default function Home() {
   usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
   const { user, isPremium } = useAuth();
   const [searchOpen, setSearchOpen] = useState(false);
-  const [recentMatches] = useState(() => getRecentlyViewed());
+  const [recentMatches, setRecentMatches] = useState(() => {
+    // Un match déjà FINISHED au moment de la consultation ne doit jamais
+    // s'afficher dans "Vus récemment" — on le filtre dès la lecture initiale
+    // et on nettoie le localStorage en conséquence.
+    const list = getRecentlyViewed();
+    const stillRelevant = list.filter((m) => m.status !== 'FINISHED');
+    if (stillRelevant.length !== list.length) {
+      list.filter((m) => m.status === 'FINISHED').forEach((m) => removeRecentlyViewed(m.id));
+    }
+    return stillRelevant;
+  });
   const today = format(new Date(), 'yyyy-MM-dd');
+
+  // Un match "vu récemment" ne doit pas non plus rester affiché une fois qu'il
+  // devient terminé APRÈS la consultation — on revérifie son statut réel côté
+  // serveur (le statut stocké est un instantané pris au moment de la vue, donc
+  // potentiellement périmé) et on retire ceux qui sont FINISHED.
+  useEffect(() => {
+    const toCheck = recentMatches.filter((m) => m.status !== 'FINISHED');
+    if (toCheck.length === 0) return;
+
+    let cancelled = false;
+    Promise.allSettled(toCheck.map((m) => api.get(`/matches/${m.id}`).then((r) => r.data?.data)))
+      .then((results) => {
+        if (cancelled) return;
+        const finishedIds = new Set();
+        results.forEach((res, i) => {
+          if (res.status === 'fulfilled' && res.value?.status === 'FINISHED') {
+            finishedIds.add(toCheck[i].id);
+          }
+        });
+        if (finishedIds.size === 0) return;
+        finishedIds.forEach((id) => removeRecentlyViewed(id));
+        setRecentMatches((prev) => prev.filter((m) => !finishedIds.has(m.id)));
+      })
+      .catch(() => {});
+
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { data: matchesData, isLoading: matchesLoading } = useQuery({
     queryKey: ['matches', today],

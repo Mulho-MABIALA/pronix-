@@ -25,10 +25,17 @@ function errorHandler(err, req, res, next) {
   // Erreurs Prisma connues
   if (err.code === 'P2002') {
     const field = err.meta?.target?.[0] || 'champ';
+    const DUPLICATE_MESSAGES = {
+      username: 'Ce pseudo est déjà utilisé. Choisis-en un autre.',
+      email: 'Cette adresse e-mail est déjà associée à un compte.',
+      googleId: 'Ce compte Google est déjà associé à un utilisateur.',
+      referralCode: 'Ce code de parrainage existe déjà.',
+      transactionId: 'Cette transaction a déjà été enregistrée.',
+    };
     return res.status(409).json({
       success: false,
       code: 'DUPLICATE_ENTRY',
-      message: `Cette valeur est déjà utilisée pour le champ : ${field}`,
+      message: DUPLICATE_MESSAGES[field] || `Cette valeur est déjà utilisée (${field}).`,
     });
   }
   if (err.code === 'P2025') {

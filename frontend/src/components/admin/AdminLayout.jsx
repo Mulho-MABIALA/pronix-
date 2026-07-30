@@ -65,7 +65,7 @@ function NavItem({ to, itemKey, Icon, end, badge, onClose, collapsed }) {
         } ${
           isActive
             ? 'bg-primary-500/15 text-primary-300'
-            : 'text-white/75 hover:text-white hover:bg-overlay/[0.06]'
+            : 'text-overlay/75 hover:text-white hover:bg-overlay/[0.06]'
         }`
       }
     >
@@ -104,13 +104,13 @@ function SidebarContent({ onClose, collapsed }) {
               <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight truncate">
                 fp<span className="text-primary-400">ronix</span>
               </p>
-              <p className="text-[9px] text-white/55 uppercase tracking-[0.15em] font-semibold truncate">{t('adminLayout.adminConsole')}</p>
+              <p className="text-[9px] text-overlay/55 uppercase tracking-[0.15em] font-semibold truncate">{t('adminLayout.adminConsole')}</p>
             </div>
           )}
         </Link>
         {onClose && (
           <button onClick={onClose}
-            className="p-1.5 rounded-lg text-white/40 hover:text-white hover:bg-overlay/[0.08] transition-colors md:hidden">
+            className="p-1.5 rounded-lg text-overlay/40 hover:text-white hover:bg-overlay/[0.08] transition-colors md:hidden">
             <X size={17} />
           </button>
         )}
@@ -121,7 +121,7 @@ function SidebarContent({ onClose, collapsed }) {
         {NAV_GROUPS.map(({ groupKey, items }) => (
           <div key={groupKey}>
             {!collapsed && (
-              <p className="px-3 mb-1.5 text-[10px] font-bold text-white/45 uppercase tracking-[0.12em]">
+              <p className="px-3 mb-1.5 text-[10px] font-bold text-overlay/45 uppercase tracking-[0.12em]">
                 {t(`adminLayout.groups.${groupKey}`)}
               </p>
             )}
@@ -139,7 +139,7 @@ function SidebarContent({ onClose, collapsed }) {
       <div className={`pb-3 pt-2 border-t border-overlay/[0.06] space-y-1 shrink-0 ${collapsed ? 'px-2' : 'px-2.5'}`}>
         <Link to="/" target="_blank"
           title={collapsed ? t('adminLayout.viewSite') : undefined}
-          className={`flex items-center gap-3 rounded-xl text-[13px] text-white/65 hover:text-white hover:bg-overlay/[0.06] transition-colors ${collapsed ? 'justify-center px-2 py-2' : 'px-3 py-2'}`}>
+          className={`flex items-center gap-3 rounded-xl text-[13px] text-overlay/65 hover:text-white hover:bg-overlay/[0.06] transition-colors ${collapsed ? 'justify-center px-2 py-2' : 'px-3 py-2'}`}>
           <ExternalLink size={14} />
           {!collapsed && t('adminLayout.viewSite')}
         </Link>
@@ -153,7 +153,7 @@ function SidebarContent({ onClose, collapsed }) {
             </div>
             <button
               onClick={() => { logout(); navigate('/connexion'); }}
-              className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
+              className="p-1.5 rounded-lg text-overlay/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
               aria-label={t('adminLayout.logout')}
               title={t('adminLayout.logout')}>
               <LogOut size={14} />
@@ -165,12 +165,12 @@ function SidebarContent({ onClose, collapsed }) {
               {user?.username?.charAt(0).toUpperCase()}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-semibold text-white/90 truncate leading-tight">{user?.username}</p>
-              <p className="text-[10px] text-white/55 truncate mt-0.5">{user?.email}</p>
+              <p className="text-[12px] font-semibold text-overlay/90 truncate leading-tight">{user?.username}</p>
+              <p className="text-[10px] text-overlay/55 truncate mt-0.5">{user?.email}</p>
             </div>
             <button
               onClick={() => { logout(); navigate('/connexion'); }}
-              className="p-1.5 rounded-lg text-white/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
+              className="p-1.5 rounded-lg text-overlay/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
               aria-label={t('adminLayout.logout')}>
               <LogOut size={14} />
             </button>
@@ -198,13 +198,13 @@ export default function AdminLayout() {
 
       {/* ── Sidebar desktop ─────────────────────────────────────────────────── */}
       <aside className={`hidden md:flex flex-col shrink-0 fixed inset-y-0 left-0 z-30 border-r border-overlay/[0.06] transition-[width] duration-200 ${collapsed ? 'w-16' : 'w-56'}`}
-        style={{ background: 'rgba(14,15,17,0.98)', backdropFilter: 'blur(20px)' }}>
+        style={{ background: 'rgb(var(--surface-900-rgb) / 0.98)', backdropFilter: 'blur(20px)' }}>
         <SidebarContent collapsed={collapsed} />
 
         {/* Bouton réduire / agrandir */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="hidden md:flex absolute top-[26px] -right-3 w-6 h-6 rounded-full items-center justify-center border border-overlay/[0.1] text-white/50 hover:text-white hover:border-white/20 transition-colors z-40"
+          className="hidden md:flex absolute top-[26px] -right-3 w-6 h-6 rounded-full items-center justify-center border border-overlay/[0.1] text-overlay/50 hover:text-white hover:border-white/20 transition-colors z-40"
           style={{ background: '#1a1b1e' }}
           aria-label={collapsed ? t('adminLayout.expandSidebar') : t('adminLayout.collapseSidebar')}
           title={collapsed ? t('adminLayout.expandSidebar') : t('adminLayout.collapseSidebar')}
@@ -218,7 +218,7 @@ export default function AdminLayout() {
         <div className="md:hidden fixed inset-0 z-40 flex">
           <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setMobileOpen(false)} aria-hidden="true" />
           <aside className="relative w-56 flex flex-col border-r border-overlay/[0.06] z-10"
-            style={{ background: 'rgba(14,15,17,0.99)' }}>
+            style={{ background: 'rgb(var(--surface-900-rgb) / 0.99)' }}>
             <SidebarContent onClose={() => setMobileOpen(false)} />
           </aside>
         </div>
@@ -229,9 +229,9 @@ export default function AdminLayout() {
 
         {/* Topbar mobile */}
         <div className="md:hidden flex items-center gap-3 px-4 h-14 border-b border-overlay/[0.06] sticky top-0 z-20"
-          style={{ background: 'rgba(14,15,17,0.95)', backdropFilter: 'blur(12px)' }}>
+          style={{ background: 'rgb(var(--surface-900-rgb) / 0.95)', backdropFilter: 'blur(12px)' }}>
           <button onClick={() => setMobileOpen(true)}
-            className="p-2 rounded-xl text-white/50 hover:text-white hover:bg-overlay/[0.08] transition-colors"
+            className="p-2 rounded-xl text-overlay/50 hover:text-white hover:bg-overlay/[0.08] transition-colors"
             aria-label={t('adminLayout.openMenu')}>
             <Menu size={19} />
           </button>

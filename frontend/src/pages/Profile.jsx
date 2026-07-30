@@ -272,7 +272,7 @@ function TicketCard({ ticket, onReply }) {
   };
 
   return (
-    <div className="rounded-xl border border-overlay/[0.08] overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>
+    <div className="rounded-xl border border-overlay/[0.08] overflow-hidden" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
       <button
         onClick={() => setOpen((o) => !o)}
         className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-overlay/[0.03] transition-colors"

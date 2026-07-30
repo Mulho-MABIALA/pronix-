@@ -197,7 +197,7 @@ export default function Header() {
   return (
     <>
     <header className="sticky top-0 z-50 border-b border-overlay/[0.05]"
-      style={{ background: 'rgba(23,24,25,0.95)', backdropFilter: 'blur(16px)', paddingTop: 'env(safe-area-inset-top)' }}>
+      style={{ background: 'rgb(var(--surface-900-rgb) / 0.95)', backdropFilter: 'blur(16px)', paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
 
         {/* Logo */}

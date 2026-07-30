@@ -32,8 +32,8 @@ function ToastItem({ toast, onDismiss }) {
     <div
       className="flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl animate-slide-up overflow-hidden relative"
       style={{
-        background: 'rgba(28,29,32,0.98)',
-        border: '1px solid rgba(255,255,255,0.09)',
+        background: 'rgb(var(--surface-900-rgb) / 0.98)',
+        border: '1px solid rgb(var(--overlay-rgb) / 0.09)',
         backdropFilter: 'blur(12px)',
       }}
     >

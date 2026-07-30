@@ -41,7 +41,7 @@ export default function InfoTooltip({ text, size = 11, align = 'center', wide = 
         <span
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
           className={`absolute z-50 bottom-full ${alignClass} mb-1.5 ${wide ? 'w-64' : 'w-52'} px-2.5 py-2 rounded-lg text-[11px] leading-snug text-ink-2 shadow-xl border border-white/10 whitespace-pre-line`}
-          style={{ background: 'rgba(20,21,22,0.98)' }}
+          style={{ background: 'rgb(var(--surface-900-rgb) / 0.98)' }}
         >
           {text}
         </span>

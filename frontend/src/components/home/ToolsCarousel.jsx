@@ -139,7 +139,7 @@ export default function ToolsCarousel() {
                   className={`inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full text-[11px] font-semibold backdrop-blur-sm ${
                     tool.accent
                       ? 'bg-accent-500/20 text-accent-400 border border-accent-500/30'
-                      : 'bg-white/10 text-white/90 border border-white/10'
+                      : 'bg-white/10 text-overlay/90 border border-white/10'
                   }`}
                 >
                   <Icon size={12} />
@@ -150,7 +150,7 @@ export default function ToolsCarousel() {
                   <h3 className="font-display font-bold text-xl text-white mb-1.5 leading-snug">
                     {t(`toolsCarousel.tools.${tool.id}.title`)}
                   </h3>
-                  <p className="text-sm text-white/70 leading-relaxed mb-4 line-clamp-2">
+                  <p className="text-sm text-overlay/70 leading-relaxed mb-4 line-clamp-2">
                     {t(`toolsCarousel.tools.${tool.id}.description`)}
                   </p>
                   <span className="inline-flex items-center gap-1.5 bg-white text-surface-900 text-sm font-semibold px-4 py-2 rounded-xl group-hover:gap-2.5 transition-all">

@@ -37,8 +37,8 @@ function IOSBottomSheet({ onClose }) {
       <div
         className="fixed bottom-0 left-0 right-0 z-[301] rounded-t-2xl animate-slide-up"
         style={{
-          background: 'rgba(24,25,28,0.99)',
-          borderTop: '1px solid rgba(255,255,255,0.08)',
+          background: 'rgb(var(--surface-900-rgb) / 0.99)',
+          borderTop: '1px solid rgb(var(--overlay-rgb) / 0.08)',
           paddingBottom: 'max(1.5rem, env(safe-area-inset-bottom))',
         }}
       >
@@ -82,7 +82,7 @@ function IOSBottomSheet({ onClose }) {
           <button
             onClick={onClose}
             className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-ink-2 transition-colors"
-            style={{ background: 'rgba(255,255,255,0.07)' }}
+            style={{ background: 'rgb(var(--overlay-rgb) / 0.07)' }}
           >
             {t('notificationBell.gotIt')}
           </button>

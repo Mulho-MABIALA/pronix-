@@ -93,7 +93,7 @@ export default function SearchBar({ onClose }) {
       >
         <div
           className="mx-4 rounded-2xl overflow-hidden shadow-2xl"
-          style={{ background: 'rgba(18,19,22,0.99)', border: '1px solid rgba(255,255,255,0.1)' }}
+          style={{ background: 'rgb(var(--surface-900-rgb) / 0.99)', border: '1px solid rgb(var(--overlay-rgb) / 0.1)' }}
         >
           {/* Input */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-overlay/[0.07]">

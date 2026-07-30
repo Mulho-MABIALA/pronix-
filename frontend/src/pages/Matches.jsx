@@ -165,7 +165,7 @@ export default function Matches() {
         <button
           onClick={() => setSearchOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-overlay/[0.08] text-left transition-colors hover:border-overlay/[0.14]"
-          style={{ background: 'rgba(255,255,255,0.03)' }}
+          style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}
         >
           <Search size={16} className="text-ink-3 shrink-0" />
           <span className="flex-1 text-sm text-ink-3">

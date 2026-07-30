@@ -23,7 +23,7 @@ function RecentlyViewedRow({ m }) {
     <Link
       to={`/matchs/${m.id}`}
       className="shrink-0 w-44 rounded-2xl border border-overlay/[0.08] p-3 space-y-2 hover:border-overlay/[0.14] transition-colors"
-      style={{ background: 'rgba(255,255,255,0.03)' }}
+      style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}
     >
       <p className="text-[11px] text-ink-4 truncate">{m.competitionName}</p>
       <div className="flex items-center gap-1.5 min-w-0">
@@ -103,7 +103,7 @@ export default function Home() {
             </div>
 
             <h1 className="font-display font-bold text-4xl md:text-6xl text-white mb-4 leading-[1.08] tracking-tight"
-              style={{ textShadow: '0 2px 24px rgba(0,0,0,0.6)' }}>
+              style={{ textShadow: '0 2px 24px rgb(var(--surface-900-rgb) / 0.6)' }}>
               {t('home.hero.title')}<br />
               <span className="bg-gradient-to-r from-primary-400 to-primary-300 bg-clip-text text-transparent">
                 {t('home.hero.titleHighlight')}
@@ -111,7 +111,7 @@ export default function Home() {
             </h1>
 
             <p className="text-ink-2 text-sm md:text-base mb-8 max-w-lg mx-auto leading-relaxed"
-              style={{ textShadow: '0 1px 12px rgba(0,0,0,0.7)' }}>
+              style={{ textShadow: '0 1px 12px rgb(var(--surface-900-rgb) / 0.7)' }}>
               {t('home.hero.description')}
             </p>
 
@@ -136,7 +136,7 @@ export default function Home() {
         <button
           onClick={() => setSearchOpen(true)}
           className="w-full flex items-center gap-3 px-4 py-3.5 rounded-2xl border border-overlay/[0.08] text-left transition-colors hover:border-overlay/[0.14]"
-          style={{ background: 'rgba(255,255,255,0.03)' }}
+          style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}
         >
           <div className="w-9 h-9 rounded-xl bg-primary-500/15 border border-primary-500/20 flex items-center justify-center shrink-0">
             <Search size={16} className="text-primary-400" />
@@ -160,7 +160,7 @@ export default function Home() {
             <Link
               to="/outils/machine"
               className="group relative overflow-hidden rounded-2xl border border-overlay/[0.08] p-5 transition-colors hover:border-orange-500/30"
-              style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.10) 0%, rgba(23,24,25,0.5) 65%)' }}
+              style={{ background: 'linear-gradient(135deg, rgba(249,115,22,0.10) 0%, rgb(var(--surface-900-rgb) / 0.5) 65%)' }}
             >
               <div className="w-10 h-10 rounded-xl bg-orange-500/15 border border-orange-500/25 flex items-center justify-center mb-3">
                 <Zap size={18} className="text-orange-400" />
@@ -179,7 +179,7 @@ export default function Home() {
             <Link
               to="/mes-paris"
               className="group relative overflow-hidden rounded-2xl border border-overlay/[0.08] p-5 transition-colors hover:border-pink-500/30"
-              style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.10) 0%, rgba(23,24,25,0.5) 65%)' }}
+              style={{ background: 'linear-gradient(135deg, rgba(236,72,153,0.10) 0%, rgb(var(--surface-900-rgb) / 0.5) 65%)' }}
             >
               <div className="w-10 h-10 rounded-xl bg-pink-500/15 border border-pink-500/25 flex items-center justify-center mb-3">
                 <Brain size={18} className="text-pink-400" />

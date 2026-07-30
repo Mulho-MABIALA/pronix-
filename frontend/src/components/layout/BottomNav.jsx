@@ -61,7 +61,7 @@ function ExplorerDrawer({ open, onClose }) {
 
       {/* Drawer */}
       <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-2xl border-t border-overlay/[0.08] animate-slide-up flex flex-col"
-        style={{ background: 'rgba(23,24,25,0.98)', backdropFilter: 'blur(20px)', maxHeight: '85vh' }}>
+        style={{ background: 'rgb(var(--surface-900-rgb) / 0.98)', backdropFilter: 'blur(20px)', maxHeight: '85vh' }}>
 
         {/* Handle — fixe, ne scrolle pas */}
         <div className="flex justify-center pt-3 pb-1 shrink-0">
@@ -188,7 +188,7 @@ export default function BottomNav() {
       <nav
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-overlay/[0.06]"
         style={{
-          background: 'rgba(23,24,25,0.97)',
+          background: 'rgb(var(--surface-900-rgb) / 0.97)',
           backdropFilter: 'blur(16px)',
           /* Étend le fond derrière l'indicateur home d'iPhone */
           paddingBottom: 'env(safe-area-inset-bottom, 0px)',

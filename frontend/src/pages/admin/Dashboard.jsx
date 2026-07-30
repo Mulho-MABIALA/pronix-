@@ -76,8 +76,8 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
       className="group relative overflow-hidden rounded-2xl border p-5 flex flex-col gap-4 h-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer"
       style={{
         background: 'var(--color-card)',
-        borderColor: 'rgba(255,255,255,0.11)',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 16px rgba(0,0,0,0.25)',
+        borderColor: 'rgb(var(--overlay-rgb) / 0.11)',
+        boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.08), 0 2px 16px rgb(var(--surface-900-rgb) / 0.25)',
       }}
     >
       {/* corner glow */}
@@ -124,7 +124,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
   return (
     <div
       className="flex items-center gap-3 rounded-xl border border-overlay/[0.11] px-4 py-3.5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}
     >
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
         <Icon size={15} />
@@ -142,7 +142,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
 function RevenueChart({ data }) {
   if (!data?.length) return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5 flex items-center justify-center h-64"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <p className="text-sm text-ink-3">Aucune donnée</p>
     </div>
   );
@@ -179,7 +179,7 @@ function RevenueChart({ data }) {
 
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-start justify-between mb-1">
         <div>
           <p className="text-sm font-semibold text-white">Revenus mensuels</p>
@@ -210,7 +210,7 @@ function RevenueChart({ data }) {
         {/* grid lines */}
         {[0.25, 0.5, 0.75].map(frac => (
           <line key={frac} x1={pad} x2={W - pad} y1={H - pad - frac * (H - pad * 2)} y2={H - pad - frac * (H - pad * 2)}
-            stroke="rgba(255,255,255,0.04)" strokeWidth="1" />
+            stroke="rgb(var(--overlay-rgb) / 0.04)" strokeWidth="1" />
         ))}
         {/* area fill */}
         <path d={areaPath} fill="url(#rev-fill)" />
@@ -251,7 +251,7 @@ function ConversionCard({ data, kpis }) {
 
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
           <p className="text-sm font-semibold text-white">Conversion</p>
@@ -267,7 +267,7 @@ function ConversionCard({ data, kpis }) {
         {/* donut */}
         <div className="relative shrink-0">
           <svg width="90" height="90" viewBox="0 0 90 90">
-            <circle cx="45" cy="45" r={R} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth={stroke} />
+            <circle cx="45" cy="45" r={R} fill="none" stroke="rgb(var(--overlay-rgb) / 0.05)" strokeWidth={stroke} />
             <circle cx="45" cy="45" r={R} fill="none" stroke="#34d399" strokeWidth={stroke}
               strokeDasharray={`${premiumArc} ${circ}`}
               strokeDashoffset={circ * 0.25}
@@ -323,7 +323,7 @@ function TopTipsters({ data }) {
   if (!data?.length) return null;
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Trophy size={14} className="text-amber-400" />
@@ -379,7 +379,7 @@ function RecentUsers({ data }) {
   if (!data?.length) return null;
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <UserPlus size={14} className="text-indigo-400" />
@@ -495,7 +495,7 @@ function QuickActions() {
 
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-7 h-7 rounded-lg bg-overlay/[0.05] flex items-center justify-center">
           <Sparkles size={13} className="text-ink-3" />
@@ -545,7 +545,7 @@ const NAV_SHORTCUTS = [
 function NavShortcuts() {
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <p className="text-sm font-semibold text-white mb-4">Navigation rapide</p>
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
         {NAV_SHORTCUTS.map(({ to, label, icon: Icon, color }) => (
@@ -585,7 +585,7 @@ export default function AdminDashboard() {
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div
         className="rounded-2xl border border-overlay/[0.11] p-5 flex items-start justify-between gap-4"
-        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), 0 4px 24px rgba(0,0,0,0.3)' }}
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.09), 0 4px 24px rgb(var(--surface-900-rgb) / 0.3)' }}
       >
         <div className="flex items-center gap-4">
           <img src="/logo-circle.png" alt="fpronix" className="w-14 h-14 rounded-full shrink-0 drop-shadow-lg" />

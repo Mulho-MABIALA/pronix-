@@ -50,7 +50,7 @@ function UserAvatar({ user, size = 'sm' }) {
 function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
   return (
     <div className="rounded-xl border border-overlay/[0.09] p-4 flex items-center gap-3"
-      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}>
+      style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.06)' }}>
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color} bg-current/10`}
         style={{ background: 'rgba(var(--tw-ring-color,0,0,0),0.08)' }}>
         <Icon size={16} className={color} />
@@ -127,7 +127,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
         className="rounded-2xl border border-overlay/[0.12] w-full max-w-2xl max-h-[92vh] flex flex-col"
-        style={{ background: 'var(--color-card)', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}
+        style={{ background: 'var(--color-card)', boxShadow: '0 24px 64px rgb(var(--surface-900-rgb) / 0.6)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
@@ -191,7 +191,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           {tab === 'Infos' && (<>
 
             {/* Contact */}
-            <div className="rounded-xl border border-overlay/[0.07] p-4 space-y-2" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4 space-y-2" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
               <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider mb-3">Contact</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -214,7 +214,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             </div>
 
             {/* Abonnement */}
-            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider">Abonnement</p>
                 {plan !== 'FREE' && (
@@ -242,7 +242,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             </div>
 
             {/* Note admin */}
-            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
               <div className="flex items-center justify-between mb-2">
                 <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider flex items-center gap-1.5">
                   <StickyNote size={12} /> Note admin (privée)
@@ -274,7 +274,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
 
             {/* Code parrainage */}
             {user.referralCode && (
-              <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                 <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5"><Gift size={12} /> Parrainage</p>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-ink-2 font-mono">{user.referralCode}</span>
@@ -286,7 +286,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             )}
 
             {/* Envoyer email */}
-            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
               <button onClick={() => setEmailOpen(!emailOpen)}
                 className="w-full flex items-center justify-between text-[11px] text-ink-3 font-semibold uppercase tracking-wider">
                 <span className="flex items-center gap-1.5"><Send size={12} /> Envoyer un email</span>
@@ -317,7 +317,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               ) : tipsData.data?.length === 0 ? (
                 <div className="text-center py-8 text-ink-3"><Target size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun pronostic</p></div>
               ) : tipsData.data.map(tip => (
-                <div key={tip.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div key={tip.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{tip.match?.homeTeam} — {tip.match?.awayTeam}</p>
                     <p className="text-[11px] text-ink-4">{tip.match?.competition?.name} · {tip.match?.matchDate && format(new Date(tip.match.matchDate), 'dd MMM yyyy', { locale: fr })}</p>
@@ -342,7 +342,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               ) : paymentsData.data?.length === 0 ? (
                 <div className="text-center py-8 text-ink-3"><CreditCard size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun paiement</p></div>
               ) : paymentsData.data.map(p => (
-                <div key={p.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div key={p.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <div className="flex-1">
                     <p className="text-sm text-white font-medium">{p.plan?.name || 'Plan inconnu'}</p>
                     <p className="text-[11px] text-ink-4">{format(new Date(p.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</p>
@@ -366,7 +366,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               ) : referralsData.data?.length === 0 ? (
                 <div className="text-center py-8 text-ink-3"><Users size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun filleul</p></div>
               ) : referralsData.data.map(r => (
-                <div key={r.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div key={r.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <UserAvatar user={r.referee} size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium">{r.referee.profile?.displayName || r.referee.username}</p>
@@ -632,7 +632,7 @@ export default function AdminUsers() {
 
       {/* Tableau */}
       <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden"
-        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>

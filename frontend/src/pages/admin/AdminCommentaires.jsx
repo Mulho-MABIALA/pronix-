@@ -71,7 +71,7 @@ export default function AdminCommentaires() {
       {/* Table */}
       <div
         className="rounded-2xl border border-overlay/[0.11] overflow-hidden"
-        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.06)' }}
       >
         {isLoading || isFetching ? (
           <div className="p-8 flex justify-center">

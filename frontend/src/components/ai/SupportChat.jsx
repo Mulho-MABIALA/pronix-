@@ -123,7 +123,7 @@ export default function SupportChat() {
       {/* Fenêtre de chat */}
       {open && (
         <div className="fixed bottom-24 right-4 md:bottom-6 z-50 w-80 md:w-96 rounded-2xl border border-overlay/[0.08] shadow-2xl flex flex-col overflow-hidden"
-          style={{ background: 'rgba(23,24,25,0.98)', backdropFilter: 'blur(20px)', maxHeight: '70vh' }}>
+          style={{ background: 'rgb(var(--surface-900-rgb) / 0.98)', backdropFilter: 'blur(20px)', maxHeight: '70vh' }}>
 
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 border-b border-overlay/[0.06] shrink-0">

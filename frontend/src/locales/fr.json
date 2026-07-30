@@ -406,6 +406,7 @@
     "username": "Nom d'utilisateur",
     "usernameLabel": "Pseudo",
     "usernameHint": "Lettres, chiffres et _ uniquement",
+    "passwordHint": "Min. 8 caractères, avec 1 majuscule et 1 chiffre",
     "languagePreference": "Langue principale",
     "currencyPreference": "Devise préférée",
     "currencyPreferenceHint": "Utilisée uniquement pour l'affichage indicatif — le paiement se fait toujours en FCFA.",

@@ -406,6 +406,7 @@
     "username": "Nombre de usuario",
     "usernameLabel": "Apodo",
     "usernameHint": "Solo letras, números y _",
+    "passwordHint": "Mín. 8 caracteres, con 1 mayúscula y 1 número",
     "languagePreference": "Idioma principal",
     "currencyPreference": "Divisa preferida",
     "currencyPreferenceHint": "Solo para visualización indicativa — el pago siempre se realiza en FCFA.",

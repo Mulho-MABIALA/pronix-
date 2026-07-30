@@ -6,6 +6,19 @@ import { Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
 
+// Extrait le message le plus utile d'une erreur API : priorité au premier
+// message de validation par champ (ex: "Le mot de passe doit contenir une
+// majuscule") plutôt qu'au message générique "Données invalides".
+function extractErrorMessage(err, fallback) {
+  const fieldErrors = err.response?.data?.errors;
+  if (fieldErrors) {
+    const firstField = Object.keys(fieldErrors)[0];
+    const firstMsg = firstField && fieldErrors[firstField]?.[0];
+    if (firstMsg) return firstMsg;
+  }
+  return err.response?.data?.message || fallback;
+}
+
 export default function Register() {
   const { t } = useTranslation();
   const { register, loginWithGoogle } = useAuth();
@@ -33,7 +46,7 @@ export default function Register() {
       if (isNewAccount) registerReferralIfAny();
       navigate(isNewAccount ? '/onboarding' : '/');
     } catch (err) {
-      setError(err.response?.data?.message || t('errors.serverError'));
+      setError(extractErrorMessage(err, t('errors.serverError')));
     } finally {
       setLoading(false);
     }
@@ -52,7 +65,7 @@ export default function Register() {
       registerReferralIfAny();
       navigate('/onboarding');
     } catch (err) {
-      setError(err.response?.data?.message || t('errors.serverError'));
+      setError(extractErrorMessage(err, t('errors.serverError')));
     } finally {
       setLoading(false);
     }
@@ -100,7 +113,10 @@ export default function Register() {
             <label htmlFor="reg-password" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.password')}</label>
             <input id="reg-password" type="password" autoComplete="new-password" required className="input"
               value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })}
-              placeholder="Min. 8 car., 1 majuscule, 1 chiffre" minLength={8} />
+              placeholder="••••••••" minLength={8}
+              pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
+              title={t('auth.passwordHint')} />
+            <p className="text-xs text-ink-3 mt-1">{t('auth.passwordHint')}</p>
           </div>
 
           <div>

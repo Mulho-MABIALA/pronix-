@@ -786,6 +786,8 @@
     "tabGenerator": "Générateur",
     "tabHistory": "Historique",
     "save": "Enregistrer",
+    "saved": "Enregistré",
+    "regenerate": "Régénérer",
     "ticketSaved": "Ticket enregistré",
     "ticketSaveError": "Impossible d'enregistrer le ticket. Réessayez.",
     "ticketDeleteError": "Impossible de supprimer le ticket. Réessayez.",

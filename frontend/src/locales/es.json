@@ -786,6 +786,8 @@
     "tabGenerator": "Generador",
     "tabHistory": "Historial",
     "save": "Guardar",
+    "saved": "Guardado",
+    "regenerate": "Regenerar",
     "ticketSaved": "Ticket guardado",
     "ticketSaveError": "No se pudo guardar el ticket. Inténtalo de nuevo.",
     "ticketDeleteError": "No se pudo eliminar el ticket. Inténtalo de nuevo.",

@@ -54,10 +54,14 @@ app.use(cors({
 app.use(cookieParser());
 app.use(morgan(env.NODE_ENV === 'development' ? 'dev' : 'combined'));
 
-// Rate limiting global (100 req/15min par IP)
+// Rate limiting global (600 req/15min par IP, ~40/min).
+// Une SPA React Query (polling matchs/live, cloche notifs, quota ticket, etc.)
+// consomme facilement plusieurs dizaines de requêtes par minute rien qu'en
+// restant ouverte — l'ancienne limite de 100/15min (~6,7/min) se déclenchait
+// donc en usage normal, pas seulement en cas d'abus (cf. générateur de tickets).
 app.use(rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
   message: { success: false, code: 'RATE_LIMITED', message: 'Trop de requêtes. Réessayez dans quelques minutes.' },

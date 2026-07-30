@@ -178,6 +178,12 @@ export default function Machine() {
   const [mise, setMise]               = useState('');
   const [activeTemplate, setActiveTemplate] = useState(null);
   const [excludeFriendly, setExcludeFriendly] = useState(true);
+  // Empêche qu'un même ticket soit enregistré plusieurs fois en historique :
+  // repasse à false dès qu'un nouveau ticket est (re)généré.
+  const [ticketSaved, setTicketSaved] = useState(false);
+  // État visuel du petit bouton icône "régénérer" (générateTicket est async :
+  // consomme le quota côté serveur avant de reconstruire le ticket).
+  const [regenerating, setRegenerating] = useState(false);
 
   // Appliquer un template — configure tous les filtres d'un coup
   function applyTemplate(tpl) {
@@ -313,6 +319,21 @@ export default function Machine() {
       candidates = candidates.filter((c) => pinnedMatchIds.has(c.match.id));
     }
     setTicket(candidates.slice(0, nbPicks));
+    setTicketSaved(false); // un ticket (re)généré n'a pas encore été enregistré
+  }
+
+  // Wrapper du petit bouton icône "régénérer" — generateTicket() est async
+  // (appel réseau de consommation de quota) mais n'avait aucun retour visuel
+  // propre : le bouton semblait "ne rien faire" pendant l'attente ou en cas
+  // d'erreur/quota épuisé.
+  async function handleRegenerate() {
+    if (regenerating) return;
+    setRegenerating(true);
+    try {
+      await generateTicket();
+    } finally {
+      setRegenerating(false);
+    }
   }
 
   async function shareTicket() {
@@ -368,6 +389,7 @@ export default function Machine() {
     },
     onSuccess: () => {
       toast(t('machine.ticketSaved'), 'success');
+      setTicketSaved(true);
       queryClient.invalidateQueries({ queryKey: ['ticket-history'] });
     },
     onError: (err) => {
@@ -378,6 +400,11 @@ export default function Machine() {
   function handleSaveTicket() {
     if (!ticket || ticket.length === 0) return;
     if (!user) { navigate('/connexion'); return; }
+    // Garde contre le double-clic / double-appel : une fois la sauvegarde en
+    // cours ou déjà réussie pour CE ticket, on ignore les appels suivants
+    // (sinon un second clic avant le re-render pouvait créer un doublon
+    // dans l'historique).
+    if (saveTicketMutation.isPending || ticketSaved) return;
     saveTicketMutation.mutate();
   }
 
@@ -841,16 +868,17 @@ export default function Machine() {
               {t('machine.selectionsGenerated', { count: ticket.length })}
             </p>
             <div className="flex items-center gap-2 flex-wrap">
-              <button onClick={generateTicket}
-                className="p-1.5 rounded-lg border border-white/[0.06] text-gray-300 hover:text-gray-200 transition-colors">
-                <RefreshCw size={13} />
+              <button onClick={handleRegenerate} disabled={regenerating}
+                aria-label={t('machine.regenerate')} title={t('machine.regenerate')}
+                className="p-1.5 rounded-lg border border-white/[0.06] text-gray-300 hover:text-gray-200 transition-colors disabled:opacity-50">
+                <RefreshCw size={13} className={regenerating ? 'animate-spin' : ''} />
               </button>
-              <button onClick={handleSaveTicket} disabled={saveTicketMutation.isPending}
+              <button onClick={handleSaveTicket} disabled={saveTicketMutation.isPending || ticketSaved}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-primary-500/25 bg-primary-500/15 text-xs font-bold text-primary-400 hover:bg-primary-500/25 transition-colors disabled:opacity-50">
                 {saveTicketMutation.isPending
                   ? <RefreshCw size={12} className="animate-spin" />
-                  : <Save size={12} />}
-                {t('machine.save')}
+                  : ticketSaved ? <Check size={12} /> : <Save size={12} />}
+                {ticketSaved ? t('machine.saved') : t('machine.save')}
               </button>
               <button onClick={copyTicket}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors">

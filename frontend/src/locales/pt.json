@@ -786,6 +786,8 @@
     "tabGenerator": "Gerador",
     "tabHistory": "Histórico",
     "save": "Salvar",
+    "saved": "Salvo",
+    "regenerate": "Regenerar",
     "ticketSaved": "Bilhete salvo",
     "ticketSaveError": "Não foi possível salvar o bilhete. Tente novamente.",
     "ticketDeleteError": "Não foi possível excluir o bilhete. Tente novamente.",

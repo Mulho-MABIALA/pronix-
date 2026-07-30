@@ -365,7 +365,16 @@ async function deleteUser(req, res, next) {
     if (err.code === 'P2025') {
       return next(new AppError('Utilisateur introuvable', 404, 'NOT_FOUND'));
     }
-    if (err.code === 'P2003' || err.code === 'P2014') {
+    // Selon la version du query engine Prisma, une violation RESTRICT lors
+    // d'un delete remonte parfois comme PrismaClientKnownRequestError (P2003/
+    // P2014, avec err.code exploitable), et parfois comme
+    // PrismaClientUnknownRequestError (le code Postgres brut "23001" est
+    // seulement dans err.message, err.code est absent). On couvre les deux.
+    const msg = (err.message || '').toLowerCase();
+    const isRestrictViolation =
+      err.code === 'P2003' || err.code === 'P2014' ||
+      msg.includes('23001') || msg.includes('foreign key constraint') || msg.includes('violates restrict');
+    if (isRestrictViolation) {
       return next(new AppError(
         "Suppression impossible : ce compte a des paiements, parrainages ou signalements enregistrés (historique conservé). Suspends le compte à la place.",
         409,

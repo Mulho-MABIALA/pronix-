@@ -280,7 +280,7 @@ async function getUserTips(req, res, next) {
       prisma.tip.findMany({
         where: { userId },
         include: {
-          match: { select: { homeTeam: true, awayTeam: true, matchDate: true, competition: { select: { name: true } } } },
+          match: { select: { homeTeam: true, awayTeam: true, scheduledAt: true, competition: { select: { name: true } } } },
           _count: { select: { comments: true } },
         },
         orderBy: { createdAt: 'desc' },
@@ -303,7 +303,7 @@ async function getUserPayments(req, res, next) {
       prisma.payment.count({ where: { userId } }),
       prisma.payment.findMany({
         where: { userId },
-        include: { plan: { select: { name: true, code: true } } },
+        include: { subscription: { select: { plan: { select: { name: true, code: true } } } } },
         orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,

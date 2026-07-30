@@ -320,7 +320,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                 <div key={tip.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-ink-1 font-medium truncate">{tip.match?.homeTeam} — {tip.match?.awayTeam}</p>
-                    <p className="text-[11px] text-ink-4">{tip.match?.competition?.name} · {tip.match?.matchDate && format(new Date(tip.match.matchDate), 'dd MMM yyyy', { locale: fr })}</p>
+                    <p className="text-[11px] text-ink-4">{tip.match?.competition?.name} · {tip.match?.scheduledAt && format(new Date(tip.match.scheduledAt), 'dd MMM yyyy', { locale: fr })}</p>
                   </div>
                   <span className="text-xs font-bold px-2 py-1 rounded-md bg-overlay/[0.07] text-ink-3">{PRED_LABELS[tip.prediction] || tip.prediction}</span>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
@@ -344,7 +344,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               ) : paymentsData.data.map(p => (
                 <div key={p.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <div className="flex-1">
-                    <p className="text-sm text-ink-1 font-medium">{p.plan?.name || 'Plan inconnu'}</p>
+                    <p className="text-sm text-ink-1 font-medium">{p.subscription?.plan?.name || 'Plan inconnu'}</p>
                     <p className="text-[11px] text-ink-4">{format(new Date(p.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</p>
                   </div>
                   <p className="text-sm font-bold text-ink-1">{p.amount}€</p>

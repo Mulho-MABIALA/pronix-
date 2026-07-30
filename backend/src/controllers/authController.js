@@ -9,6 +9,21 @@ const { AppError } = require('../middleware/errorHandler');
 const { sendWelcomeEmail, sendPasswordResetEmail, sendEmailVerification } = require('../services/emailService');
 const { REFRESH_COOKIE, setAuthCookies, clearAuthCookies } = require('../config/cookies');
 
+// Inscrit automatiquement tout nouveau compte à la newsletter (source "signup").
+// Non bloquant : une erreur ici ne doit jamais faire échouer l'inscription.
+async function autoSubscribeToNewsletter(user, source = 'signup') {
+  try {
+    const email = user.email.toLowerCase();
+    await prisma.newsletterSubscriber.upsert({
+      where: { email },
+      update: {}, // déjà présent (ex: désinscrit) → on ne réactive pas de force
+      create: { email, language: user.language || 'fr', source, isActive: true },
+    });
+  } catch (err) {
+    console.error('[Newsletter] auto-subscribe échoué (non bloquant):', err.message || err);
+  }
+}
+
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 // ─── Schémas de validation ──────────────────────────────────────────────────
@@ -101,6 +116,7 @@ async function register(req, res, next) {
     });
 
     sendWelcomeEmail(user).catch(console.error);
+    autoSubscribeToNewsletter(user, 'signup');
 
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
@@ -337,6 +353,7 @@ async function googleAuth(req, res, next) {
       });
 
       sendWelcomeEmail(user).catch(console.error);
+      autoSubscribeToNewsletter(user, 'signup_google');
     }
 
     const accessToken = generateAccessToken(user.id);

@@ -1,9 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { sendEmail } = require('../services/emailService');
 const env = require('../config/env');
-
-const prisma = new PrismaClient();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -32,10 +32,16 @@ const registerSchema = z.object({
   password: z.string().min(8, 'Mot de passe min. 8 caractères')
     .regex(/[A-Z]/, 'Le mot de passe doit contenir une majuscule')
     .regex(/[0-9]/, 'Le mot de passe doit contenir un chiffre'),
+  // Le pseudo n'est jamais utilisé comme URL/slug/identifiant technique (tout
+  // passe par user.id) — donc pas de raison de le restreindre à [a-zA-Z0-9_].
+  // On autorise lettres (accents compris), chiffres, espaces, apostrophes et
+  // tirets, en évitant juste les espaces en double et les valeurs vides.
   username: z.string()
+    .trim()
     .min(3, 'Pseudo min. 3 caractères')
     .max(30, 'Pseudo max. 30 caractères')
-    .regex(/^[a-zA-Z0-9_]+$/, 'Pseudo : lettres, chiffres et underscore uniquement'),
+    .regex(/^[\p{L}\p{N} '_-]+$/u, 'Pseudo : lettres, chiffres, espaces, apostrophes et tirets uniquement')
+    .refine((v) => !/\s{2,}/.test(v), { message: 'Pseudo : un seul espace consécutif autorisé' }),
   language: z.enum(['fr', 'en', 'es', 'pt']).default('fr'),
   currency: z.enum(['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR']).nullable().optional(),
 });

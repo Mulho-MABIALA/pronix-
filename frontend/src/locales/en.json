@@ -405,7 +405,7 @@
     "password": "Password",
     "username": "Username",
     "usernameLabel": "Username",
-    "usernameHint": "Letters, numbers and _ only",
+    "usernameHint": "3 to 30 characters, anything goes (letters, numbers, spaces, accents...)",
     "passwordHint": "Min. 8 characters, with 1 uppercase letter and 1 number",
     "languagePreference": "Main language",
     "currencyPreference": "Preferred currency",

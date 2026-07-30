@@ -98,7 +98,7 @@ export default function Register() {
             <label htmlFor="username" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.usernameLabel')}</label>
             <input id="username" type="text" autoComplete="username" required className="input"
               value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
-              placeholder="MonPseudo" pattern="^[a-zA-Z0-9_]+$" />
+              placeholder="MonPseudo" minLength={3} maxLength={30} />
             <p className="text-xs text-ink-3 mt-1">{t('auth.usernameHint')}</p>
           </div>
 

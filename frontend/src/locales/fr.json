@@ -405,7 +405,7 @@
     "password": "Mot de passe",
     "username": "Nom d'utilisateur",
     "usernameLabel": "Pseudo",
-    "usernameHint": "Lettres, chiffres et _ uniquement",
+    "usernameHint": "3 à 30 caractères, libre (lettres, chiffres, espaces, accents...)",
     "passwordHint": "Min. 8 caractères, avec 1 majuscule et 1 chiffre",
     "languagePreference": "Langue principale",
     "currencyPreference": "Devise préférée",

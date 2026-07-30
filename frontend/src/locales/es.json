@@ -405,7 +405,7 @@
     "password": "Contraseña",
     "username": "Nombre de usuario",
     "usernameLabel": "Apodo",
-    "usernameHint": "Solo letras, números y _",
+    "usernameHint": "De 3 a 30 caracteres, libre (letras, números, espacios, acentos...)",
     "passwordHint": "Mín. 8 caracteres, con 1 mayúscula y 1 número",
     "languagePreference": "Idioma principal",
     "currencyPreference": "Divisa preferida",

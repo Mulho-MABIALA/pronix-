@@ -796,3 +796,20 @@ model NewsletterSubscriber {
   @@index([isActive])
   @@map("newsletter_subscribers")
 }
+
+// Historique des campagnes envoyées depuis /admin/newsletter (bouton "Envoyer un email").
+model NewsletterCampaign {
+  id              String   @id @default(uuid())
+  subject         String
+  message         String   @db.Text
+  recipientCount  Int      @default(0)
+  sentCount       Int      @default(0)
+  failedCount     Int      @default(0)
+  status          String   @default("sending") // sending | sent
+  sentByEmail     String?
+  createdAt       DateTime @default(now())
+  finishedAt      DateTime?
+
+  @@index([createdAt])
+  @@map("newsletter_campaigns")
+}

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus, Send, X } from 'lucide-react';
+import { Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus, Send, X, History, Clock, XCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -17,7 +17,7 @@ function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = '
   );
 }
 
-function ComposeModal({ activeCount, onClose }) {
+function ComposeModal({ activeCount, onClose, onSent }) {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
 
@@ -25,6 +25,7 @@ function ComposeModal({ activeCount, onClose }) {
     mutationFn: () => api.post('/newsletter/admin/broadcast', { subject, message }),
     onSuccess: (res) => {
       alert(res?.data?.message || 'Envoi lancé.');
+      onSent?.();
       onClose();
     },
     onError: (e) => alert(e?.response?.data?.message || "Erreur lors de l'envoi"),
@@ -85,11 +86,82 @@ function ComposeModal({ activeCount, onClose }) {
   );
 }
 
+function CampaignsHistory() {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-newsletter-campaigns', page],
+    queryFn: () =>
+      api.get('/newsletter/admin/campaigns', { params: { page, limit: 20 } }).then((r) => r.data),
+  });
+
+  const campaigns = data?.data || [];
+  const pagination = data?.pagination || {};
+
+  if (isLoading) {
+    return <p className="text-sm text-ink-4 px-4 py-6 text-center">Chargement…</p>;
+  }
+
+  if (campaigns.length === 0) {
+    return (
+      <div className="rounded-2xl border border-overlay/[0.06] p-6 text-center" style={{ background: 'var(--color-card)' }}>
+        <p className="text-sm text-ink-4">Aucun email envoyé pour l'instant.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {campaigns.map((c) => (
+        <div key={c.id} className="rounded-2xl border border-overlay/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
+          <div className="flex items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-ink-1 truncate">{c.subject}</p>
+              <p className="text-xs text-ink-4 mt-1 line-clamp-2 whitespace-pre-line">{c.message}</p>
+            </div>
+            <span
+              className={`shrink-0 flex items-center gap-1 text-[11px] font-semibold px-2 py-1 rounded-full ${
+                c.status === 'sent'
+                  ? 'bg-primary-500/10 text-primary-400'
+                  : 'bg-amber-500/10 text-amber-400'
+              }`}
+            >
+              {c.status === 'sent' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
+              {c.status === 'sent' ? 'Envoyé' : 'En cours'}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 mt-3 text-xs text-ink-3">
+            <span className="flex items-center gap-1"><Users size={12} /> {c.recipientCount} destinataire(s)</span>
+            <span className="flex items-center gap-1 text-primary-400"><CheckCircle2 size={12} /> {c.sentCount} envoyé(s)</span>
+            {c.failedCount > 0 && (
+              <span className="flex items-center gap-1 text-danger-400"><XCircle size={12} /> {c.failedCount} échec(s)</span>
+            )}
+            <span className="ml-auto">{format(new Date(c.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</span>
+          </div>
+        </div>
+      ))}
+
+      {pagination.pages > 1 && (
+        <div className="flex items-center justify-center gap-2 text-sm pt-2">
+          <button disabled={page <= 1} onClick={() => setPage((p) => p - 1)} className="btn-secondary px-3 py-1.5 disabled:opacity-40">
+            ←
+          </button>
+          <span className="text-ink-3">{page} / {pagination.pages}</span>
+          <button disabled={page >= pagination.pages} onClick={() => setPage((p) => p + 1)} className="btn-secondary px-3 py-1.5 disabled:opacity-40">
+            →
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminNewsletter() {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [composeOpen, setComposeOpen] = useState(false);
+  const [tab, setTab] = useState('subscribers'); // subscribers | history
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-newsletter', search, page],
@@ -155,6 +227,29 @@ export default function AdminNewsletter() {
         <StatCard icon={CheckCircle2} label="Total (page)" value={pagination.total ?? 0} color="text-primary-400" />
       </div>
 
+      <div className="flex items-center gap-1 p-1 rounded-xl w-fit" style={{ background: 'var(--color-card)' }}>
+        <button
+          onClick={() => setTab('subscribers')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            tab === 'subscribers' ? 'bg-primary-500/10 text-primary-400' : 'text-ink-3 hover:text-ink-1'
+          }`}
+        >
+          <Users size={14} /> Abonnés
+        </button>
+        <button
+          onClick={() => setTab('history')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            tab === 'history' ? 'bg-primary-500/10 text-primary-400' : 'text-ink-3 hover:text-ink-1'
+          }`}
+        >
+          <History size={14} /> Historique des emails
+        </button>
+      </div>
+
+      {tab === 'history' ? (
+        <CampaignsHistory />
+      ) : (
+      <>
       <div className="relative">
         <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-4" />
         <input
@@ -225,9 +320,15 @@ export default function AdminNewsletter() {
           </button>
         </div>
       )}
+      </>
+      )}
 
       {composeOpen && (
-        <ComposeModal activeCount={activeCount} onClose={() => setComposeOpen(false)} />
+        <ComposeModal
+          activeCount={activeCount}
+          onClose={() => setComposeOpen(false)}
+          onSent={() => qc.invalidateQueries({ queryKey: ['admin-newsletter-campaigns'] })}
+        />
       )}
     </div>
   );

@@ -227,15 +227,28 @@ async function broadcastEmail(req, res, next) {
       return res.json({ success: true, message: 'Aucun abonné actif', sent: 0 });
     }
 
+    const campaign = await prisma.newsletterCampaign.create({
+      data: {
+        subject,
+        message,
+        recipientCount: subscribers.length,
+        status: 'sending',
+        sentByEmail: req.user?.email || null,
+      },
+    });
+
     // Réponse immédiate — l'envoi réel se poursuit en arrière-plan pour ne pas
     // bloquer la requête HTTP (peut prendre plusieurs secondes/minutes selon le volume).
     res.json({
       success: true,
       message: `Envoi en cours à ${subscribers.length} abonné(s)…`,
       sent: subscribers.length,
+      campaignId: campaign.id,
     });
 
     (async () => {
+      let sentCount = 0;
+      let failedCount = 0;
       for (const sub of subscribers) {
         try {
           await sendEmail({
@@ -243,14 +256,47 @@ async function broadcastEmail(req, res, next) {
             subject,
             html: buildBroadcastHtml({ subject, message, email: sub.email }),
           });
+          sentCount++;
         } catch (err) {
+          failedCount++;
           console.error(`[Newsletter] échec envoi à ${sub.email}:`, err.message || err);
         }
         // Espacement pour respecter les limites de débit de l'API Resend.
         await new Promise((resolve) => setTimeout(resolve, 550));
       }
-      console.log(`[Newsletter] Diffusion terminée (${subscribers.length} destinataire(s)).`);
+      await prisma.newsletterCampaign.update({
+        where: { id: campaign.id },
+        data: { sentCount, failedCount, status: 'sent', finishedAt: new Date() },
+      }).catch(() => {});
+      console.log(`[Newsletter] Diffusion terminée (${sentCount}/${subscribers.length} envoyés).`);
     })();
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ── Admin: historique des campagnes envoyées ──────────────────────────────────
+async function getAdminCampaigns(req, res, next) {
+  try {
+    const { page = '1', limit = '20' } = req.query;
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const take = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const skip = (pageNum - 1) * take;
+
+    const [campaigns, total] = await Promise.all([
+      prisma.newsletterCampaign.findMany({
+        orderBy: { createdAt: 'desc' },
+        skip,
+        take,
+      }),
+      prisma.newsletterCampaign.count(),
+    ]);
+
+    res.json({
+      success: true,
+      data: campaigns,
+      pagination: { page: pageNum, limit: take, total, pages: Math.ceil(total / take) },
+    });
   } catch (err) {
     next(err);
   }
@@ -277,5 +323,6 @@ module.exports = {
   exportSubscribers,
   importExistingUsers,
   broadcastEmail,
+  getAdminCampaigns,
   deleteSubscriber,
 };

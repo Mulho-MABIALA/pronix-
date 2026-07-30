@@ -122,6 +122,11 @@ export default function Onboarding() {
           </div>
         )}
 
+        <div>
+          <p className="text-sm font-semibold text-ink-1">{t('onboarding.leaguesLabel')}</p>
+          <p className="text-xs text-ink-4 mt-0.5 mb-3">{t('onboarding.leaguesHint')}</p>
+        </div>
+
         <div className="grid grid-cols-2 gap-3">
           {LEAGUE_IDS.map((id) => (
             <button
@@ -136,6 +141,8 @@ export default function Onboarding() {
             </button>
           ))}
         </div>
+
+        <p className="text-sm font-semibold text-ink-1 -mb-1">{t('onboarding.preferencesLabel')}</p>
 
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -158,7 +165,7 @@ export default function Onboarding() {
         <p className="text-xs text-ink-3 -mt-2">{t('auth.currencyPreferenceHint')}</p>
 
         <button onClick={handleFinish} disabled={loading} className="btn-primary w-full">
-          {loading ? t('profile.saving') : selected.length > 0 ? t('onboarding.start') : t('onboarding.skip')}
+          {loading ? t('profile.saving') : t('onboarding.start')}
         </button>
       </div>
     </div>

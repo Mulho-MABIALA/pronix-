@@ -459,8 +459,11 @@
     "subtitle": "Select the competitions you're interested in",
     "exampleTitle": "A real example",
     "exampleDesc": "Here's a real prediction generated today by our algorithm — you'll get dozens like this every day.",
-    "start": "Get started",
-    "skip": "Skip this step",
+    "start": "Continue",
+    "skip": "Continue",
+    "leaguesLabel": "Your favorite leagues (optional)",
+    "leaguesHint": "We'll highlight them in your lists. You can also pick none and change this later in your profile.",
+    "preferencesLabel": "Language & currency",
     "leagues": {
       "61": "Ligue 1 (France)",
       "140": "La Liga (Spain)",

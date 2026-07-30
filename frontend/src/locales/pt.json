@@ -459,8 +459,11 @@
     "subtitle": "Selecione as competições que te interessam",
     "exampleTitle": "Um exemplo real",
     "exampleDesc": "Aqui está um palpite real gerado hoje pelo nosso algoritmo — você terá dezenas como este todos os dias.",
-    "start": "Começar",
-    "skip": "Pular esta etapa",
+    "start": "Continuar",
+    "skip": "Continuar",
+    "leaguesLabel": "Suas ligas favoritas (opcional)",
+    "leaguesHint": "Vamos destacá-las nas suas listas. Você também pode não escolher nenhuma e mudar isso depois no seu perfil.",
+    "preferencesLabel": "Idioma e moeda",
     "leagues": {
       "61": "Ligue 1 (França)",
       "140": "La Liga (Espanha)",

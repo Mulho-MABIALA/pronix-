@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus } from 'lucide-react';
+import { Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus, Send, X } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -17,10 +17,79 @@ function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = '
   );
 }
 
+function ComposeModal({ activeCount, onClose }) {
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
+
+  const sendMutation = useMutation({
+    mutationFn: () => api.post('/newsletter/admin/broadcast', { subject, message }),
+    onSuccess: (res) => {
+      alert(res?.data?.message || 'Envoi lancé.');
+      onClose();
+    },
+    onError: (e) => alert(e?.response?.data?.message || "Erreur lors de l'envoi"),
+  });
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
+      <div
+        className="w-full max-w-lg rounded-2xl border border-overlay/[0.08] p-5 space-y-4"
+        style={{ background: 'var(--color-card)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between">
+          <h2 className="font-display font-bold text-lg text-ink-1">Envoyer un email</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-overlay/[0.06] text-ink-3">
+            <X size={18} />
+          </button>
+        </div>
+        <p className="text-xs text-ink-4">
+          Cet email sera envoyé à <span className="text-ink-2 font-semibold">{activeCount}</span> abonné(s) actif(s).
+        </p>
+        <div>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">Sujet</label>
+          <input
+            className="input"
+            value={subject}
+            onChange={(e) => setSubject(e.target.value)}
+            placeholder="Ex : Les meilleurs pronostics de la semaine"
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">Message</label>
+          <textarea
+            className="input min-h-[160px] resize-y"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Écris ton message ici. Chaque ligne devient un paragraphe."
+          />
+        </div>
+        <div className="flex gap-2 pt-1">
+          <button
+            onClick={() => {
+              if (!subject.trim() || !message.trim()) {
+                alert('Sujet et message sont requis.');
+                return;
+              }
+              if (confirm(`Envoyer cet email à ${activeCount} abonné(s) ?`)) sendMutation.mutate();
+            }}
+            disabled={sendMutation.isPending}
+            className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            <Send size={14} /> {sendMutation.isPending ? 'Envoi…' : 'Envoyer'}
+          </button>
+          <button onClick={onClose} className="btn-secondary flex-1">Annuler</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminNewsletter() {
   const qc = useQueryClient();
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
+  const [composeOpen, setComposeOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-newsletter', search, page],
@@ -57,6 +126,13 @@ export default function AdminNewsletter() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="font-display font-bold text-xl text-ink-1">Newsletter</h1>
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => setComposeOpen(true)}
+            disabled={activeCount === 0}
+            className="btn-primary flex items-center gap-2 text-sm disabled:opacity-50"
+          >
+            <Send size={14} /> Envoyer un email
+          </button>
           <button
             onClick={() => {
               if (confirm("Importer tous les emails des utilisateurs déjà inscrits sur fpronix dans la newsletter ?")) {
@@ -148,6 +224,10 @@ export default function AdminNewsletter() {
             →
           </button>
         </div>
+      )}
+
+      {composeOpen && (
+        <ComposeModal activeCount={activeCount} onClose={() => setComposeOpen(false)} />
       )}
     </div>
   );

@@ -185,6 +185,77 @@ async function importExistingUsers(req, res, next) {
   }
 }
 
+// ── Admin: envoyer un email à tous les abonnés actifs ────────────────────────
+// Répond immédiatement avec le nombre de destinataires, puis envoie en arrière-
+// plan avec un léger espacement entre chaque envoi (limite de débit Resend).
+function buildBroadcastHtml({ subject, message, email }) {
+  const appUrl = env.FRONTEND_URL || 'https://fpronix.com';
+  const unsubscribeUrl = `${appUrl}/newsletter/desinscription?email=${encodeURIComponent(email)}`;
+  const paragraphs = message
+    .split('\n')
+    .filter((line) => line.trim() !== '')
+    .map((line) => `<p style="margin: 0 0 14px;">${line}</p>`)
+    .join('');
+
+  return `
+    <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #111;">
+      <h2 style="color: #16a34a; margin-bottom: 16px;">${subject}</h2>
+      ${paragraphs}
+      <p style="margin-top: 24px;"><a href="${appUrl}" style="color: #16a34a; font-weight: bold;">Voir fpronix</a></p>
+      <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+      <p style="font-size: 12px; color: #888;">
+        Tu reçois cet e-mail car tu es inscrit(e) à la newsletter fpronix.
+        <a href="${unsubscribeUrl}" style="color: #888;">Se désinscrire</a>
+      </p>
+    </div>
+  `;
+}
+
+async function broadcastEmail(req, res, next) {
+  try {
+    const { subject, message } = req.body || {};
+    if (!subject || !message || typeof subject !== 'string' || typeof message !== 'string') {
+      throw new AppError('Sujet et message sont requis', 400, 'MISSING_FIELDS');
+    }
+
+    const subscribers = await prisma.newsletterSubscriber.findMany({
+      where: { isActive: true },
+      select: { email: true },
+    });
+
+    if (subscribers.length === 0) {
+      return res.json({ success: true, message: 'Aucun abonné actif', sent: 0 });
+    }
+
+    // Réponse immédiate — l'envoi réel se poursuit en arrière-plan pour ne pas
+    // bloquer la requête HTTP (peut prendre plusieurs secondes/minutes selon le volume).
+    res.json({
+      success: true,
+      message: `Envoi en cours à ${subscribers.length} abonné(s)…`,
+      sent: subscribers.length,
+    });
+
+    (async () => {
+      for (const sub of subscribers) {
+        try {
+          await sendEmail({
+            to: sub.email,
+            subject,
+            html: buildBroadcastHtml({ subject, message, email: sub.email }),
+          });
+        } catch (err) {
+          console.error(`[Newsletter] échec envoi à ${sub.email}:`, err.message || err);
+        }
+        // Espacement pour respecter les limites de débit de l'API Resend.
+        await new Promise((resolve) => setTimeout(resolve, 550));
+      }
+      console.log(`[Newsletter] Diffusion terminée (${subscribers.length} destinataire(s)).`);
+    })();
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ── Admin: suppression d'un abonné ────────────────────────────────────────────
 async function deleteSubscriber(req, res, next) {
   try {
@@ -205,5 +276,6 @@ module.exports = {
   getAdminSubscribers,
   exportSubscribers,
   importExistingUsers,
+  broadcastEmail,
   deleteSubscriber,
 };

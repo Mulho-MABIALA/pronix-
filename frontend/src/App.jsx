@@ -41,6 +41,7 @@ const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentia
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Transparency = lazy(() => import('./pages/Transparency'));
 const Newsletter = lazy(() => import('./pages/Newsletter'));
+const NewsletterUnsubscribe = lazy(() => import('./pages/NewsletterUnsubscribe'));
 const CompetitionStandings = lazy(() => import('./pages/CompetitionStandings'));
 const CompetitionPronostics = lazy(() => import('./pages/CompetitionPronostics'));
 const CoupeDuMonde2026 = lazy(() => import('./pages/CoupeDuMonde2026'));
@@ -174,6 +175,7 @@ export default function App() {
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/transparence" element={<Transparency />} />
                 <Route path="/newsletter" element={<Newsletter />} />
+                <Route path="/newsletter/desinscription" element={<NewsletterUnsubscribe />} />
                 <Route path="/verify-email" element={<VerifyEmail />} />
                 <Route path="/mes-paris" element={<ProtectedRoute><BetTracker /></ProtectedRoute>} />
                 <Route path="/equipes/:id" element={<TeamPage />} />

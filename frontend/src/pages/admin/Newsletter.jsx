@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Mail, Download, Trash2, Search, Users, CheckCircle2 } from 'lucide-react';
+import { Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -35,6 +35,15 @@ export default function AdminNewsletter() {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-newsletter'] }),
   });
 
+  const importMutation = useMutation({
+    mutationFn: () => api.post('/newsletter/admin/import-users'),
+    onSuccess: (res) => {
+      qc.invalidateQueries({ queryKey: ['admin-newsletter'] });
+      alert(res?.data?.message || 'Import terminé.');
+    },
+    onError: (e) => alert(e?.response?.data?.message || "Erreur lors de l'import"),
+  });
+
   const subscribers = data?.data || [];
   const pagination = data?.pagination || {};
   const activeCount = data?.activeCount ?? 0;
@@ -47,9 +56,22 @@ export default function AdminNewsletter() {
     <div className="space-y-6">
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="font-display font-bold text-xl text-ink-1">Newsletter</h1>
-        <button onClick={handleExport} className="btn-secondary flex items-center gap-2 text-sm">
-          <Download size={14} /> Exporter CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              if (confirm("Importer tous les emails des utilisateurs déjà inscrits sur fpronix dans la newsletter ?")) {
+                importMutation.mutate();
+              }
+            }}
+            disabled={importMutation.isPending}
+            className="btn-secondary flex items-center gap-2 text-sm disabled:opacity-50"
+          >
+            <UserPlus size={14} /> {importMutation.isPending ? 'Import…' : 'Importer les utilisateurs'}
+          </button>
+          <button onClick={handleExport} className="btn-secondary flex items-center gap-2 text-sm">
+            <Download size={14} /> Exporter CSV
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-3">

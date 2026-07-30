@@ -147,6 +147,46 @@ async function exportSubscribers(req, res, next) {
   }
 }
 
+// ── Admin: importer les emails des utilisateurs déjà inscrits sur fpronix ───
+// (comptes créés via /inscription, Google, etc.) comme abonnés newsletter.
+// Idempotent : les emails déjà présents dans NewsletterSubscriber sont ignorés.
+async function importExistingUsers(req, res, next) {
+  try {
+    const users = await prisma.user.findMany({
+      select: { email: true, language: true },
+    });
+
+    const existingEmails = new Set(
+      (await prisma.newsletterSubscriber.findMany({ select: { email: true } })).map((s) => s.email)
+    );
+
+    const toCreate = users
+      .filter((u) => u.email && !existingEmails.has(u.email.toLowerCase()))
+      .map((u) => ({
+        email: u.email.toLowerCase(),
+        language: u.language || 'fr',
+        source: 'existing_user',
+        isActive: true,
+      }));
+
+    if (toCreate.length > 0) {
+      await prisma.newsletterSubscriber.createMany({
+        data: toCreate,
+        skipDuplicates: true,
+      });
+    }
+
+    res.json({
+      success: true,
+      message: `${toCreate.length} utilisateur(s) importé(s) dans la newsletter.`,
+      imported: toCreate.length,
+      alreadyPresent: users.length - toCreate.length,
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // ── Admin: suppression d'un abonné ────────────────────────────────────────────
 async function deleteSubscriber(req, res, next) {
   try {
@@ -166,5 +206,6 @@ module.exports = {
   unsubscribe,
   getAdminSubscribers,
   exportSubscribers,
+  importExistingUsers,
   deleteSubscriber,
 };

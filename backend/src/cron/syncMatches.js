@@ -17,6 +17,17 @@ const PRED_LABELS = {
   BTTS_NO:   "Au moins une équipe ne marque pas",
 };
 
+// Icône de notification composée des deux logos (domicile + extérieur) —
+// une notif push n'a qu'un seul slot "icon", donc on les fusionne côté
+// serveur (voir routes/imgProxy.js) au lieu de ne montrer que le logo
+// domicile comme avant.
+function matchIconUrl(homeLogo, awayLogo) {
+  if (!homeLogo) return '/logo192.png';
+  const params = new URLSearchParams({ home: homeLogo });
+  if (awayLogo) params.set('away', awayLogo);
+  return `/api/img-proxy/match-icon?${params.toString()}`;
+}
+
 function evaluateTip(prediction, homeScore, awayScore) {
   if (homeScore === null || awayScore === null) return null;
   const total = homeScore + awayScore;
@@ -32,7 +43,7 @@ function evaluateTip(prediction, homeScore, awayScore) {
   }
 }
 
-async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScore, homeTeamLogo) {
+async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScore, homeTeamLogo, awayTeamLogo) {
   try {
     const tips = await prisma.tip.findMany({
       where: { matchId, isVisible: true, userId: { not: null } },
@@ -41,6 +52,7 @@ async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScor
     if (tips.length === 0) return;
 
     const scoreStr = `${homeScore}-${awayScore}`;
+    const icon = matchIconUrl(homeTeamLogo, awayTeamLogo);
     for (const tip of tips) {
       const won = evaluateTip(tip.prediction, homeScore, awayScore);
       if (won === null) continue;
@@ -49,7 +61,7 @@ async function notifyTipResults(matchId, homeTeam, awayTeam, homeScore, awayScor
         body:  `${homeTeam} ${scoreStr} ${awayTeam} — ${PRED_LABELS[tip.prediction] || tip.prediction}`,
         url:   `/matchs/${matchId}`,
         tag:   `tipresult-${tip.id}`,
-        icon:  homeTeamLogo || '/logo192.png',
+        icon,
       });
     }
   } catch (err) {
@@ -178,8 +190,41 @@ async function syncMatchesForDate(dateStr) {
   }
 }
 
+// Fenêtre de veille avant coup d'envoi — l'API (plan gratuit, 100 req/jour)
+// ne peut pas se permettre un polling permanent toutes les 2-3 min. Avant ce
+// correctif, syncLiveMatches ne tournait que toutes les 30 min en continu :
+// un match pouvait passer LIVE dans l'API jusqu'à 30 min avant qu'on ne le
+// détecte, d'où des notifs "le match commence" reçues alors que le match en
+// était déjà à la 20e, voire la 50e minute (bug remonté par un utilisateur).
+// Solution : on interroge notre propre base (gratuit) à chaque tick pour
+// savoir si ça vaut le coup d'appeler l'API — un match déjà LIVE chez nous,
+// ou prévu dans la fenêtre de coup d'envoi. Si rien à surveiller, on
+// n'appelle pas l'API du tout : sur une journée sans match dans l'immédiat,
+// ça peut même consommer MOINS de quota qu'avant, tout en étant bien plus
+// réactif pendant les créneaux où ça compte.
+const KICKOFF_WINDOW_BEFORE_MS = 10 * 60 * 1000; // matchs prévus dans les 10 prochaines minutes
+const KICKOFF_WINDOW_AFTER_MS = 20 * 60 * 1000;  // ou dont le coup d'envoi programmé date de < 20 min (retard possible)
+
+async function hasMatchesWorthPolling() {
+  const now = new Date();
+  const [liveCount, upcomingCount] = await Promise.all([
+    prisma.match.count({ where: { status: 'LIVE' } }),
+    prisma.match.count({
+      where: {
+        status: 'SCHEDULED',
+        scheduledAt: {
+          gte: new Date(now.getTime() - KICKOFF_WINDOW_AFTER_MS),
+          lte: new Date(now.getTime() + KICKOFF_WINDOW_BEFORE_MS),
+        },
+      },
+    }),
+  ]);
+  return liveCount > 0 || upcomingCount > 0;
+}
+
 async function syncLiveMatches() {
   try {
+    if (!(await hasMatchesWorthPolling())) return;
     const liveRaw = await footballApi.getLiveMatches();
     if (!Array.isArray(liveRaw) || liveRaw.length === 0) return;
 
@@ -211,7 +256,7 @@ async function syncLiveMatches() {
           body:  'Le match vient de commencer — suivez-le en direct !',
           url:   `/matchs/${match.id}`,
           tag:   `live-${match.id}`,
-          icon:  match.homeTeamLogo || '/logo192.png',
+          icon:  matchIconUrl(match.homeTeamLogo, match.awayTeamLogo),
         }).catch(() => {});
       }
 
@@ -226,11 +271,11 @@ async function syncLiveMatches() {
           body:  'Match terminé — voir les stats et résultats des pronos.',
           url:   `/matchs/${match.id}`,
           tag:   `result-${match.id}`,
-          icon:  match.homeTeamLogo || '/logo192.png',
+          icon:  matchIconUrl(match.homeTeamLogo, match.awayTeamLogo),
         }).catch(() => {});
 
         // Notification individuelle par tipster
-        notifyTipResults(match.id, match.homeTeam, match.awayTeam, hs, as, match.homeTeamLogo).catch(() => {});
+        notifyTipResults(match.id, match.homeTeam, match.awayTeam, hs, as, match.homeTeamLogo, match.awayTeamLogo).catch(() => {});
 
         // Résumé post-match automatique (article de blog IA)
         generateMatchSummary(match.id).catch(() => {});
@@ -280,7 +325,10 @@ function startSyncMatchesCron() {
     await cleanupStaleMatches();
   });
 
-  cron.schedule('*/30 * * * *', syncLiveMatches);
+  // Toutes les 2 min : le coût réel (l'appel API) ne se déclenche que si
+  // hasMatchesWorthPolling() répond oui — voir le commentaire au-dessus de
+  // cette fonction pour le raisonnement quota.
+  cron.schedule('*/2 * * * *', syncLiveMatches);
 
   console.log('[Cron] Synchronisation des matchs démarrée');
 

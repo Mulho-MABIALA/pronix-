@@ -89,13 +89,108 @@ router.get('/', async (req, res, next) => {
     resizeCache.set(cacheKey, { buffer: outBuffer, contentType });
 
     res.set('Content-Type', contentType);
-    res.set('Cache-Control', 'public, max-age=604800, immutable'); // 7 jours
+    res.set('Cache-Control', 'public, max-age=5184000, immutable'); // 60 jours
     res.set('X-Img-Cache', 'MISS');
     res.send(outBuffer);
   } catch (err) {
     if (err.response) {
       // L'hôte distant a répondu avec une erreur (404, etc.) — ne pas planter, juste 404
       return res.status(404).json({ success: false, code: 'NOT_FOUND', message: 'Image introuvable' });
+    }
+    next(err);
+  }
+});
+
+// GET /api/img-proxy/match-icon?home=<url>&away=<url>
+// Compose les deux logos d'équipe côte à côte en une seule image PNG — les
+// notifications push (Web Push / Notification API) n'ont qu'un seul slot
+// "icon", impossible d'afficher les deux logos côte à côte autrement qu'en
+// les fusionnant nous-mêmes en amont. "away" est optionnel : sans lui, on
+// renvoie simplement le logo domicile seul (comportement de repli).
+function parseAllowedLogoUrl(raw) {
+  if (!raw || typeof raw !== 'string') return null;
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    return null;
+  }
+  if (parsed.protocol !== 'https:' || !ALLOWED_HOSTS.has(parsed.hostname)) return null;
+  return parsed;
+}
+
+const ICON_LOGO_SIZE = 60;
+const ICON_GAP = 8;
+
+async function fetchLogoSquare(url) {
+  const upstream = await axios.get(url.toString(), {
+    responseType: 'arraybuffer',
+    timeout: 8000,
+    maxContentLength: 5 * 1024 * 1024,
+  });
+  return sharp(Buffer.from(upstream.data))
+    .resize({
+      width: ICON_LOGO_SIZE,
+      height: ICON_LOGO_SIZE,
+      fit: 'contain',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
+}
+
+router.get('/match-icon', async (req, res, next) => {
+  try {
+    const homeUrl = parseAllowedLogoUrl(req.query.home);
+    const awayUrl = parseAllowedLogoUrl(req.query.away);
+    if (!homeUrl) {
+      throw new AppError('Logo domicile invalide ou manquant', 400, 'BAD_REQUEST');
+    }
+
+    const cacheKey = `icon|${homeUrl.toString()}|${awayUrl ? awayUrl.toString() : ''}`;
+    const cached = resizeCache.get(cacheKey);
+    if (cached) {
+      res.set('Content-Type', cached.contentType);
+      res.set('Cache-Control', 'public, max-age=5184000, immutable');
+      res.set('X-Img-Cache', 'HIT');
+      return res.send(cached.buffer);
+    }
+
+    const homeBuf = await fetchLogoSquare(homeUrl);
+    const awayBuf = awayUrl ? await fetchLogoSquare(awayUrl) : null;
+
+    let outBuffer;
+    if (awayBuf) {
+      outBuffer = await sharp({
+        create: {
+          width: ICON_LOGO_SIZE * 2 + ICON_GAP,
+          height: ICON_LOGO_SIZE,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+      })
+        .composite([
+          { input: homeBuf, left: 0, top: 0 },
+          { input: awayBuf, left: ICON_LOGO_SIZE + ICON_GAP, top: 0 },
+        ])
+        .png({ compressionLevel: 9 })
+        .toBuffer();
+    } else {
+      outBuffer = homeBuf;
+    }
+
+    if (resizeCache.size >= RESIZE_CACHE_MAX_ENTRIES) {
+      resizeCache.delete(resizeCache.keys().next().value);
+    }
+    resizeCache.set(cacheKey, { buffer: outBuffer, contentType: 'image/png' });
+
+    res.set('Content-Type', 'image/png');
+    res.set('Cache-Control', 'public, max-age=5184000, immutable');
+    res.set('X-Img-Cache', 'MISS');
+    res.send(outBuffer);
+  } catch (err) {
+    if (err.response) {
+      return res.status(404).json({ success: false, code: 'NOT_FOUND', message: 'Logo introuvable' });
     }
     next(err);
   }

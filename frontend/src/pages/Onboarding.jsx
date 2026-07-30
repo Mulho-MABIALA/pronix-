@@ -7,6 +7,7 @@ import { Zap } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 
 const LEAGUE_IDS = ['61', '140', '39', '135', '78', '2', '892', '529'];
 
@@ -55,6 +56,18 @@ export default function Onboarding() {
       .sort((a, b) => (b.predictions.bestPick.prob || 0) - (a.predictions.bestPick.prob || 0))
       .slice(0, 3);
   }, [exampleData]);
+
+  // Logos des championnats — mêmes données que sur Machine.jsx (externalId + logo API-Football)
+  const { data: competitionsData } = useQuery({
+    queryKey: ['onboarding-competitions'],
+    queryFn: () => api.get('/matches/competitions').then((r) => r.data),
+    staleTime: Infinity,
+  });
+  const leagueLogos = useMemo(() => {
+    const map = {};
+    for (const c of competitionsData?.data || []) map[String(c.externalId)] = c.logo;
+    return map;
+  }, [competitionsData]);
 
   const toggle = (id) => {
     setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id]);
@@ -133,11 +146,12 @@ export default function Onboarding() {
               key={id}
               onClick={() => toggle(id)}
               aria-pressed={selected.includes(id)}
-              className={`bento-card text-left transition-all ${
+              className={`bento-card text-left transition-all flex items-center gap-2 ${
                 selected.includes(id) ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'text-ink-3 hover:border-surface-500'
               }`}
             >
-              <span className="text-sm font-medium">{t(`onboarding.leagues.${id}`)}</span>
+              <CompetitionLogo logo={leagueLogos[id]} size={20} />
+              <span className="text-sm font-medium truncate">{t(`onboarding.leagues.${id}`)}</span>
             </button>
           ))}
         </div>

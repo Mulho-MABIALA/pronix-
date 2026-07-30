@@ -41,7 +41,7 @@ export default function CompetitionStandings() {
   if (!compsLoading && !competition) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-10 text-center space-y-4">
-        <p className="text-gray-300 text-sm">{t('competitionSeo.notFound')}</p>
+        <p className="text-ink-3 text-sm">{t('competitionSeo.notFound')}</p>
         <Link to="/classements" className="btn-secondary inline-flex">{t('competitionSeo.seeAllStandings')}</Link>
       </div>
     );
@@ -56,11 +56,11 @@ export default function CompetitionStandings() {
           <BarChart2 size={22} className="text-primary-400" />
         )}
         <div className="min-w-0">
-          <h1 className="font-display font-bold text-xl md:text-2xl text-gray-100 truncate">
+          <h1 className="font-display font-bold text-xl md:text-2xl text-ink-1 truncate">
             {competition ? t('competitionSeo.standingsTitle', { name: competition.name }) : t('standings.title')}
           </h1>
           {competition?.country && (
-            <p className="text-xs text-gray-300">{competition.country}</p>
+            <p className="text-xs text-ink-3">{competition.country}</p>
           )}
         </div>
       </div>
@@ -76,16 +76,16 @@ export default function CompetitionStandings() {
           to={`/pronostics/${slug}`}
           className="flex items-center justify-between px-4 py-3.5 rounded-2xl border border-primary-500/20 bg-primary-500/[0.04] hover:border-primary-500/40 transition-colors"
         >
-          <span className="flex items-center gap-2.5 text-sm font-medium text-gray-200">
+          <span className="flex items-center gap-2.5 text-sm font-medium text-ink-2">
             <TrendingUp size={16} className="text-primary-400" />
             {t('competitionSeo.seePronosticsFor', { name: competition.name })}
           </span>
-          <ChevronRight size={16} className="text-gray-300" />
+          <ChevronRight size={16} className="text-ink-3" />
         </Link>
       )}
 
       <div className="text-center">
-        <Link to="/classements" className="text-xs text-gray-300 hover:text-gray-200 transition-colors">
+        <Link to="/classements" className="text-xs text-ink-3 hover:text-ink-2 transition-colors">
           {t('competitionSeo.seeAllStandings')}
         </Link>
       </div>

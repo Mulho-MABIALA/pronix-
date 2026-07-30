@@ -41,7 +41,7 @@ function Row({ ids, direction = 'left', className = '' }) {
       {track.map((id, i) => (
         <div
           key={`${id}-${i}`}
-          className="w-44 h-28 md:w-56 md:h-36 rounded-xl overflow-hidden shrink-0 border border-white/[0.06]"
+          className="w-44 h-28 md:w-56 md:h-36 rounded-xl overflow-hidden shrink-0 border border-overlay/[0.06]"
         >
           <img
             src={imgUrl(id)}

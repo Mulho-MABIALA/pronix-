@@ -26,6 +26,15 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="fpronix" />
+
+  <!-- Applique le thème stocké AVANT le premier rendu (évite un flash de
+       mode sombre pour un utilisateur ayant choisi le mode clair). -->
+  <script>
+    (function () {
+      var t = localStorage.getItem('theme');
+      document.documentElement.classList.add(t === 'light' ? 'light' : 'dark');
+    })();
+  </script>
 </head>
 <body>
   <noscript>fpronix nécessite JavaScript pour fonctionner.</noscript>

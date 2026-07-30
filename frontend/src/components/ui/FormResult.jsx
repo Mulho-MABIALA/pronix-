@@ -15,7 +15,7 @@ export default function FormResult({ results = [] }) {
       {results.slice(-5).map((r, i) => (
         <span
           key={i}
-          className={`w-6 h-6 flex items-center justify-center rounded text-xs font-bold ${styles[r] || 'bg-surface-600 text-gray-400'}`}
+          className={`w-6 h-6 flex items-center justify-center rounded text-xs font-bold ${styles[r] || 'bg-surface-600 text-ink-4'}`}
           title={labels[r] || r}
           aria-label={labels[r] || r}
         >

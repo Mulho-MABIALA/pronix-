@@ -68,8 +68,8 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
       <div className="min-h-dvh flex items-center justify-center">
         <div className="text-center space-y-4">
           <Loader size={40} className="text-primary-400 animate-spin mx-auto" />
-          <p className="text-gray-400 font-medium">{t('paymentConfirm.verifying')}</p>
-          <p className="text-gray-400 text-sm">{t('paymentConfirm.mayTakeSeconds')}</p>
+          <p className="text-ink-4 font-medium">{t('paymentConfirm.verifying')}</p>
+          <p className="text-ink-4 text-sm">{t('paymentConfirm.mayTakeSeconds')}</p>
         </div>
       </div>
     );
@@ -80,8 +80,8 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
       <div className="min-h-dvh flex items-center justify-center px-4">
         <div className="bento-card max-w-sm w-full text-center space-y-4 py-10">
           <XCircle size={48} className="text-red-400 mx-auto" />
-          <h1 className="font-display font-bold text-2xl text-gray-100">{t('paymentConfirm.cancelledTitle')}</h1>
-          <p className="text-gray-400 text-sm">
+          <h1 className="font-display font-bold text-2xl text-ink-1">{t('paymentConfirm.cancelledTitle')}</h1>
+          <p className="text-ink-4 text-sm">
             {t('paymentConfirm.cancelledDesc')}
           </p>
           <div className="flex flex-col gap-2 pt-4">
@@ -100,8 +100,8 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
       <div className="min-h-dvh flex items-center justify-center px-4">
         <div className="bento-card max-w-sm w-full text-center space-y-4 py-10">
           <XCircle size={48} className="text-amber-400 mx-auto" />
-          <h1 className="font-display font-bold text-2xl text-gray-100">{t('paymentConfirm.pendingTitle')}</h1>
-          <p className="text-gray-400 text-sm">
+          <h1 className="font-display font-bold text-2xl text-ink-1">{t('paymentConfirm.pendingTitle')}</h1>
+          <p className="text-ink-4 text-sm">
             {t('paymentConfirm.pendingDesc')}
           </p>
           <div className="flex flex-col gap-2 pt-4">
@@ -117,14 +117,14 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
     <div className="min-h-dvh flex items-center justify-center px-4">
       <div className="bento-card max-w-sm w-full text-center space-y-4 py-10">
         <CheckCircle size={48} className="text-primary-400 mx-auto" aria-hidden="true" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">
+        <h1 className="font-display font-bold text-2xl text-ink-1">
           {isTipsterFlow ? t('paymentConfirm.tipsterConfirmedTitle') : t('paymentConfirm.confirmedTitle')}
         </h1>
-        <p className="text-gray-400">
+        <p className="text-ink-4">
           {isTipsterFlow ? t('paymentConfirm.tipsterConfirmedDesc') : t('paymentConfirm.confirmedDesc')}
         </p>
         {mock === '1' && (
-          <p className="text-xs text-gray-400">{t('paymentConfirm.simulationRef', { ref })}</p>
+          <p className="text-xs text-ink-4">{t('paymentConfirm.simulationRef', { ref })}</p>
         )}
         <div className="flex flex-col gap-2 pt-4">
           {isTipsterFlow && tipsterId ? (

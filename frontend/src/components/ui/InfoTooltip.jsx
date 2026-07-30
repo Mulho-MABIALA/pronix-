@@ -32,7 +32,7 @@ export default function InfoTooltip({ text, size = 11, align = 'center', wide = 
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpen((v) => !v); }}
         aria-label="Explication"
         aria-expanded={open}
-        className="inline-flex items-center justify-center text-gray-400 hover:text-gray-200 transition-colors"
+        className="inline-flex items-center justify-center text-ink-4 hover:text-ink-2 transition-colors"
         style={{ width: size + 5, height: size + 5 }}
       >
         <Info size={size} />
@@ -40,7 +40,7 @@ export default function InfoTooltip({ text, size = 11, align = 'center', wide = 
       {open && (
         <span
           onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
-          className={`absolute z-50 bottom-full ${alignClass} mb-1.5 ${wide ? 'w-64' : 'w-52'} px-2.5 py-2 rounded-lg text-[11px] leading-snug text-gray-200 shadow-xl border border-white/10 whitespace-pre-line`}
+          className={`absolute z-50 bottom-full ${alignClass} mb-1.5 ${wide ? 'w-64' : 'w-52'} px-2.5 py-2 rounded-lg text-[11px] leading-snug text-ink-2 shadow-xl border border-white/10 whitespace-pre-line`}
           style={{ background: 'rgba(20,21,22,0.98)' }}
         >
           {text}

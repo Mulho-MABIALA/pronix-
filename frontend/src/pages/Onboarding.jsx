@@ -77,8 +77,8 @@ export default function Onboarding() {
       <div className="w-full max-w-md space-y-6 animate-slide-up">
         <div className="text-center">
           <span className="text-4xl" aria-hidden="true">🎯</span>
-          <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('onboarding.title')}</h1>
-          <p className="text-gray-400 mt-2 text-sm">{t('onboarding.subtitle')}</p>
+          <h1 className="font-display font-bold text-2xl text-ink-1 mt-2">{t('onboarding.title')}</h1>
+          <p className="text-ink-4 mt-2 text-sm">{t('onboarding.subtitle')}</p>
         </div>
 
         {/* Exemple concret — ce que fpronix génère vraiment */}
@@ -86,13 +86,13 @@ export default function Onboarding() {
           <div className="bento-card p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Zap size={15} className="text-orange-400 shrink-0" />
-              <p className="text-sm font-bold text-gray-100">{t('onboarding.exampleTitle')}</p>
+              <p className="text-sm font-bold text-ink-1">{t('onboarding.exampleTitle')}</p>
             </div>
-            <p className="text-xs text-gray-400 -mt-1">{t('onboarding.exampleDesc')}</p>
+            <p className="text-xs text-ink-4 -mt-1">{t('onboarding.exampleDesc')}</p>
             {exampleLoading ? (
               <div className="space-y-2">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <div key={i} className="h-11 rounded-lg bg-white/[0.04] animate-pulse" />
+                  <div key={i} className="h-11 rounded-lg bg-overlay/[0.04] animate-pulse" />
                 ))}
               </div>
             ) : (
@@ -103,13 +103,13 @@ export default function Onboarding() {
                   return (
                     <div
                       key={m.id}
-                      className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]"
+                      className="flex items-center justify-between gap-2 px-3 py-2 rounded-lg bg-overlay/[0.03] border border-overlay/[0.06]"
                     >
                       <div className="min-w-0">
-                        <p className="text-xs font-semibold text-gray-200 truncate">
+                        <p className="text-xs font-semibold text-ink-2 truncate">
                           {m.homeTeam} – {m.awayTeam}
                         </p>
-                        <p className="text-[11px] text-gray-400 truncate">
+                        <p className="text-[11px] text-ink-4 truncate">
                           {pick.market ? `${pick.market} · ` : ''}{pickLabel}
                         </p>
                       </div>
@@ -129,7 +129,7 @@ export default function Onboarding() {
               onClick={() => toggle(id)}
               aria-pressed={selected.includes(id)}
               className={`bento-card text-left transition-all ${
-                selected.includes(id) ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'text-gray-300 hover:border-surface-500'
+                selected.includes(id) ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'text-ink-3 hover:border-surface-500'
               }`}
             >
               <span className="text-sm font-medium">{t(`onboarding.leagues.${id}`)}</span>
@@ -139,7 +139,7 @@ export default function Onboarding() {
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label htmlFor="onb-language" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.languagePreference')}</label>
+            <label htmlFor="onb-language" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.languagePreference')}</label>
             <select id="onb-language" className="input" value={language} onChange={(e) => setLanguage(e.target.value)}>
               {LANGUAGE_OPTIONS.map(({ code, label }) => (
                 <option key={code} value={code}>{label}</option>
@@ -147,7 +147,7 @@ export default function Onboarding() {
             </select>
           </div>
           <div>
-            <label htmlFor="onb-currency" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.currencyPreference')}</label>
+            <label htmlFor="onb-currency" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.currencyPreference')}</label>
             <select id="onb-currency" className="input" value={currency} onChange={(e) => setCurrency(e.target.value)}>
               {CURRENCY_OPTIONS.map(({ code, label }) => (
                 <option key={code} value={code}>{label}</option>
@@ -155,7 +155,7 @@ export default function Onboarding() {
             </select>
           </div>
         </div>
-        <p className="text-xs text-gray-300 -mt-2">{t('auth.currencyPreferenceHint')}</p>
+        <p className="text-xs text-ink-3 -mt-2">{t('auth.currencyPreferenceHint')}</p>
 
         <button onClick={handleFinish} disabled={loading} className="btn-primary w-full">
           {loading ? t('profile.saving') : selected.length > 0 ? t('onboarding.start') : t('onboarding.skip')}

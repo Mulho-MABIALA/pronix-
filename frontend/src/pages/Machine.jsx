@@ -87,7 +87,7 @@ const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
 const CONF_COLORS = {
   high:   { text: 'text-primary-400', bg: 'bg-primary-500/10 border-primary-500/20', dot: 'bg-primary-400' },
   medium: { text: 'text-amber-400',   bg: 'bg-amber-500/10 border-amber-500/20',     dot: 'bg-amber-400' },
-  low:    { text: 'text-gray-300',    bg: 'bg-surface-700/50 border-white/[0.05]',   dot: 'bg-gray-500' },
+  low:    { text: 'text-ink-3',    bg: 'bg-surface-700/50 border-overlay/[0.05]',   dot: 'bg-gray-500' },
 };
 function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
@@ -417,7 +417,7 @@ export default function Machine() {
           <Zap size={18} className="text-primary-400" />
           <h1 className="section-title">{t('machine.titleShort')}</h1>
         </div>
-        <p className="text-xs text-gray-300">{t('machine.subtitleShort')}</p>
+        <p className="text-xs text-ink-3">{t('machine.subtitleShort')}</p>
       </div>
 
       {/* Onglets Générateur / Historique */}
@@ -450,7 +450,7 @@ export default function Machine() {
 
         {/* ── Templates prédéfinis ──────────────────────────────────── */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider mb-2">
             {t('machine.quickStart')}
           </p>
           <div className="grid grid-cols-3 gap-2">
@@ -459,7 +459,7 @@ export default function Machine() {
                 className={`flex flex-col items-center gap-1 py-3 px-2 rounded-xl border transition-all ${
                   activeTemplate === tpl.id
                     ? tpl.color
-                    : 'border-white/[0.07] text-gray-300 hover:border-white/[0.15] hover:text-gray-200'
+                    : 'border-overlay/[0.07] text-ink-3 hover:border-overlay/[0.15] hover:text-ink-2'
                 }`}>
                 <span className="text-lg leading-none">{tpl.emoji}</span>
                 <span className="text-xs font-bold">{t(`machine.templates.${tpl.labelKey}`)}</span>
@@ -469,31 +469,31 @@ export default function Machine() {
           </div>
           {activeTemplate && (
             <button onClick={() => setActiveTemplate(null)}
-              className="mt-1.5 text-xs text-gray-400 hover:text-gray-300 transition-colors">
+              className="mt-1.5 text-xs text-ink-4 hover:text-ink-3 transition-colors">
               {t('machine.customizeManually')}
             </button>
           )}
         </div>
 
-        <div className="border-t border-white/[0.06]" />
+        <div className="border-t border-overlay/[0.06]" />
 
         {/* Nombre de picks */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.selectionsCount')}</p>
+            <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('machine.selectionsCount')}</p>
             <span className="text-sm font-bold text-primary-400">{nbPicks}</span>
           </div>
           <input type="range" min="2" max="45" step="1" value={nbPicks}
             onChange={(e) => setNbPicks(Number(e.target.value))}
             className="w-full accent-primary-500 h-1.5 cursor-pointer" />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-ink-4 mt-1">
             <span>2</span><span>45</span>
           </div>
         </div>
 
         {/* Marché — sélecteur 2 niveaux (catégorie → marché) */}
         <div className="space-y-2">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.market')}</p>
+          <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('machine.market')}</p>
 
           {/* Niveau 1 : catégories */}
           <div className="overflow-x-auto scrollbar-hide">
@@ -508,7 +508,7 @@ export default function Machine() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     marketGroup === g.id
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                      : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                   }`}>
                   {g.emoji} {t(`machine.marketGroups.${g.id}.label`)}
                 </button>
@@ -519,7 +519,7 @@ export default function Machine() {
           {/* Niveau 2 : marchés de la catégorie avec description */}
           {MARKET_GROUPS.filter((g) => g.id === marketGroup).map((g) => (
             <div key={g.id} className="space-y-1.5">
-              <p className="text-xs text-gray-400 leading-snug">{t(`machine.marketGroups.${g.id}.subtitle`)}</p>
+              <p className="text-xs text-ink-4 leading-snug">{t(`machine.marketGroups.${g.id}.subtitle`)}</p>
               <div className="grid grid-cols-1 gap-1.5">
                 {g.markets.map((mVal) => (
                   <button key={mVal}
@@ -527,12 +527,12 @@ export default function Machine() {
                     className={`w-full text-left px-3 py-2.5 rounded-lg border transition-colors ${
                       market === mVal
                         ? 'bg-select-500/10 border-select-500/30'
-                        : 'border-white/[0.06] hover:border-white/[0.12] hover:bg-white/[0.02]'
+                        : 'border-overlay/[0.06] hover:border-overlay/[0.12] hover:bg-overlay/[0.02]'
                     }`}>
-                    <span className={`block text-xs font-semibold mb-0.5 ${market === mVal ? 'text-select-400' : 'text-gray-300'}`}>
+                    <span className={`block text-xs font-semibold mb-0.5 ${market === mVal ? 'text-select-400' : 'text-ink-3'}`}>
                       {t(`machine.marketGroups.${g.id}.markets.${mVal}.label`)}
                     </span>
-                    <span className="block text-xs text-gray-300 leading-snug">{t(`machine.marketGroups.${g.id}.markets.${mVal}.desc`)}</span>
+                    <span className="block text-xs text-ink-3 leading-snug">{t(`machine.marketGroups.${g.id}.markets.${mVal}.desc`)}</span>
                   </button>
                 ))}
               </div>
@@ -542,18 +542,18 @@ export default function Machine() {
 
         {/* Confiance minimale */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('machine.filters.confidence')}</p>
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('machine.filters.confidence')}</p>
           <div className="flex gap-2">
             {[
               { value: 'high',   label: t('machine.confHigh'),   active: 'bg-primary-500/15 text-primary-400 border-primary-500/30' },
               { value: 'medium', label: t('machine.confMedium'), active: 'bg-amber-500/15 text-amber-400 border-amber-500/30' },
-              { value: 'low',    label: t('machine.confAll'),    active: 'bg-white/[0.08] text-gray-300 border-white/[0.20]' },
+              { value: 'low',    label: t('machine.confAll'),    active: 'bg-overlay/[0.08] text-ink-3 border-overlay/[0.20]' },
             ].map((o) => (
               <button key={o.value} onClick={() => setMinConf(o.value)}
                 className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-colors ${
                   minConf === o.value
                     ? o.active
-                    : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                    : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                 }`}>
                 {o.label}
               </button>
@@ -563,7 +563,7 @@ export default function Machine() {
 
         {/* Date / Période */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('machine.filters.dateRange')}</p>
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('machine.filters.dateRange')}</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               {DATE_PRESETS.map((o) => (
@@ -571,7 +571,7 @@ export default function Machine() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     dateOpt === o.value
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                      : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                   }`}>
                   {t(`machine.datePresets.${o.labelKey}`)}
                 </button>
@@ -584,12 +584,12 @@ export default function Machine() {
         <div>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1.5">
-              <Trophy size={11} className="text-gray-300" />
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('machine.championship')}</p>
+              <Trophy size={11} className="text-ink-3" />
+              <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('machine.championship')}</p>
             </div>
             {leagues.length > 0 && (
               <button onClick={() => { setLeagues([]); setTicket(null); }}
-                className="text-xs text-gray-400 hover:text-primary-400 transition-colors">
+                className="text-xs text-ink-4 hover:text-primary-400 transition-colors">
                 {t('machine.showAll')}
               </button>
             )}
@@ -601,7 +601,7 @@ export default function Machine() {
                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                   leagues.length === 0
                     ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                    : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                    : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                 }`}>
                 {t('machine.allLeagues')}
               </button>
@@ -622,7 +622,7 @@ export default function Machine() {
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                       isActive
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                        : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                        : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                     }`}>
                     <CompetitionLogo logo={c.logo} size={14} />
                     {c.name}
@@ -636,9 +636,9 @@ export default function Machine() {
         {/* ── Filtre amicaux ──────────────────────────────────────────── */}
         <div className="flex items-center justify-between py-1">
           <div className="flex items-center gap-2">
-            <Bot size={12} className="text-gray-300" />
-            <span className="text-xs text-gray-400">{t('machine.excludeFriendly')}</span>
-            <span className="text-xs text-gray-400">{t('machine.excludeFriendlyHint')}</span>
+            <Bot size={12} className="text-ink-3" />
+            <span className="text-xs text-ink-4">{t('machine.excludeFriendly')}</span>
+            <span className="text-xs text-ink-4">{t('machine.excludeFriendlyHint')}</span>
           </div>
           <button
             onClick={() => { setExcludeFriendly((v) => !v); setTicket(null); }}
@@ -654,8 +654,8 @@ export default function Machine() {
             onClick={() => setShowMatchPicker((p) => !p)}
             className="w-full flex items-center justify-between py-2 group">
             <div className="flex items-center gap-1.5">
-              <ListFilter size={11} className="text-gray-300" />
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider group-hover:text-gray-300 transition-colors">
+              <ListFilter size={11} className="text-ink-3" />
+              <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider group-hover:text-ink-3 transition-colors">
                 {t('machine.pickSpecificMatches')}
               </p>
               {pinnedMatchIds.size > 0 && (
@@ -664,7 +664,7 @@ export default function Machine() {
                 </span>
               )}
             </div>
-            <div className="text-gray-400 group-hover:text-gray-300 transition-colors">
+            <div className="text-ink-4 group-hover:text-ink-3 transition-colors">
               {showMatchPicker ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
             </div>
           </button>
@@ -672,26 +672,26 @@ export default function Machine() {
           {showMatchPicker && (
             <div className="mt-1 space-y-2">
               {isLoading ? (
-                <p className="text-xs text-gray-400 py-2 text-center">{t('machine.loadingMatches')}</p>
+                <p className="text-xs text-ink-4 py-2 text-center">{t('machine.loadingMatches')}</p>
               ) : availableCandidates.length === 0 ? (
-                <p className="text-xs text-gray-400 py-2 text-center">
+                <p className="text-xs text-ink-4 py-2 text-center">
                   {t('machine.noMatchesFilters')}
                 </p>
               ) : (
                 <>
                   {/* Recherche par équipe */}
                   <div className="relative">
-                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Search size={13} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-ink-4" />
                     <input
                       type="text"
                       value={matchSearch}
                       onChange={(e) => setMatchSearch(e.target.value)}
                       placeholder={t('machine.searchTeamPlaceholder')}
-                      className="w-full bg-surface-800/60 border border-white/[0.06] rounded-lg pl-8 pr-8 py-1.5 text-xs text-gray-200 placeholder:text-gray-400 outline-none focus:border-select-500/40"
+                      className="w-full bg-surface-800/60 border border-overlay/[0.06] rounded-lg pl-8 pr-8 py-1.5 text-xs text-ink-2 placeholder:text-ink-4 outline-none focus:border-select-500/40"
                     />
                     {matchSearch && (
                       <button onClick={() => setMatchSearch('')}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-300">
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-4 hover:text-ink-3">
                         <X size={13} />
                       </button>
                     )}
@@ -700,16 +700,16 @@ export default function Machine() {
                   {/* Barre actions rapides */}
                   <div className="flex items-center gap-2">
                     <button onClick={selectAllCandidates}
-                      className="text-xs text-gray-300 hover:text-gray-200 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
+                      className="text-xs text-ink-3 hover:text-ink-2 border border-overlay/[0.06] px-2 py-1 rounded-md transition-colors">
                       {t('machine.checkAll', { count: availableCandidates.length })}
                     </button>
                     {pinnedMatchIds.size > 0 && (
                       <button onClick={clearPinnedMatches}
-                        className="text-xs text-gray-300 hover:text-gray-200 border border-white/[0.06] px-2 py-1 rounded-md transition-colors">
+                        className="text-xs text-ink-3 hover:text-ink-2 border border-overlay/[0.06] px-2 py-1 rounded-md transition-colors">
                         {t('machine.uncheckAll')}
                       </button>
                     )}
-                    <span className="ml-auto text-xs text-gray-400">
+                    <span className="ml-auto text-xs text-ink-4">
                       {pinnedMatchIds.size > 0
                         ? t('machine.selectedCount', { count: pinnedMatchIds.size })
                         : t('machine.algoChooses')}
@@ -727,7 +727,7 @@ export default function Machine() {
 
                     if (visible.length === 0) {
                       return (
-                        <p className="text-xs text-gray-400 py-3 text-center">
+                        <p className="text-xs text-ink-4 py-3 text-center">
                           {t('machine.noMatchesSearch')}
                         </p>
                       );
@@ -743,11 +743,11 @@ export default function Machine() {
                               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg border text-left transition-colors ${
                                 pinned
                                   ? 'bg-select-500/10 border-select-500/25'
-                                  : 'border-white/[0.05] hover:border-white/[0.10]'
+                                  : 'border-overlay/[0.05] hover:border-overlay/[0.10]'
                               }`}>
                               {/* Checkbox */}
                               <div className={`w-4 h-4 rounded border-2 shrink-0 flex items-center justify-center transition-colors ${
-                                pinned ? 'bg-select-500 border-select-500' : 'border-white/[0.2]'
+                                pinned ? 'bg-select-500 border-select-500' : 'border-overlay/[0.2]'
                               }`}>
                                 {pinned && <Check size={9} className="text-white" strokeWidth={3} />}
                               </div>
@@ -756,7 +756,7 @@ export default function Machine() {
                               <div className="flex-1 min-w-0 space-y-1">
                                 <div className="flex items-center gap-1.5 min-w-0">
                                   <TeamLogo logo={c.match.homeTeamLogo} teamId={c.match.homeTeamId} name={c.match.homeTeam} size={16} />
-                                  <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
+                                  <p className={`text-xs font-medium truncate ${pinned ? 'text-ink-2' : 'text-ink-4'}`}>
                                     {c.match.homeTeam}
                                   </p>
                                   {c.match.predictions?.aiGenerated && (
@@ -765,11 +765,11 @@ export default function Machine() {
                                 </div>
                                 <div className="flex items-center gap-1.5 min-w-0">
                                   <TeamLogo logo={c.match.awayTeamLogo} teamId={c.match.awayTeamId} name={c.match.awayTeam} size={16} />
-                                  <p className={`text-xs font-medium truncate ${pinned ? 'text-gray-200' : 'text-gray-400'}`}>
+                                  <p className={`text-xs font-medium truncate ${pinned ? 'text-ink-2' : 'text-ink-4'}`}>
                                     {c.match.awayTeam}
                                   </p>
                                 </div>
-                                <p className="text-xs text-gray-400">
+                                <p className="text-xs text-ink-4">
                                   {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
                                 </p>
                               </div>
@@ -785,7 +785,7 @@ export default function Machine() {
                     );
                   })()}
 
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-ink-4">
                     {pinnedMatchIds.size > 0
                       ? t('machine.manualSelectionNote')
                       : t('machine.noSelectionNote')}
@@ -799,7 +799,7 @@ export default function Machine() {
         {/* Compteur de matchs disponibles */}
         <div className="flex items-center justify-center gap-2 py-1">
           {isLoading ? (
-            <span className="text-xs text-gray-400">{t('machine.searchingMatches')}</span>
+            <span className="text-xs text-ink-4">{t('machine.searchingMatches')}</span>
           ) : (
             <>
               <span className={`text-[11px] font-semibold ${
@@ -811,8 +811,8 @@ export default function Machine() {
               }`}>
                 {t('machine.matchesAvailable', { count: availableCandidates.length })}
               </span>
-              <span className="text-gray-700">·</span>
-              <span className="text-xs text-gray-400">
+              <span className="text-ink-5">·</span>
+              <span className="text-xs text-ink-4">
                 {pinnedMatchIds.size > 0
                   ? t('machine.selectedManually', { count: pinnedMatchIds.size })
                   : t('machine.bestRetained', { count: Math.min(nbPicks, availableCandidates.length) })}
@@ -847,7 +847,7 @@ export default function Machine() {
               {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
             </button>
             {user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && (
-              <p className="text-center text-xs text-gray-300 mt-1.5">
+              <p className="text-center text-xs text-ink-3 mt-1.5">
                 {t('machine.ticketsToday', { used: quotaQ.data.used, limit: quotaQ.data.limit })}
               </p>
             )}
@@ -864,13 +864,13 @@ export default function Machine() {
 
           {/* ── Barre résultat ────────────────────────────────────────── */}
           <div className="flex items-center justify-between flex-wrap gap-y-2">
-            <p className="text-sm font-semibold text-gray-200">
+            <p className="text-sm font-semibold text-ink-2">
               {t('machine.selectionsGenerated', { count: ticket.length })}
             </p>
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={handleRegenerate} disabled={regenerating}
                 aria-label={t('machine.regenerate')} title={t('machine.regenerate')}
-                className="p-1.5 rounded-lg border border-white/[0.06] text-gray-300 hover:text-gray-200 transition-colors disabled:opacity-50">
+                className="p-1.5 rounded-lg border border-overlay/[0.06] text-ink-3 hover:text-ink-2 transition-colors disabled:opacity-50">
                 <RefreshCw size={13} className={regenerating ? 'animate-spin' : ''} />
               </button>
               <button onClick={handleSaveTicket} disabled={saveTicketMutation.isPending || ticketSaved}
@@ -881,7 +881,7 @@ export default function Machine() {
                 {ticketSaved ? t('machine.saved') : t('machine.save')}
               </button>
               <button onClick={copyTicket}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-white/[0.06] text-xs font-semibold text-gray-400 hover:text-gray-200 transition-colors">
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-overlay/[0.06] text-xs font-semibold text-ink-4 hover:text-ink-2 transition-colors">
                 {copied ? <Check size={12} className="text-primary-400" /> : <Copy size={12} />}
                 {copied ? t('machine.copied') : t('machine.copy')}
               </button>
@@ -900,16 +900,16 @@ export default function Machine() {
             <div className="card p-3 flex items-center gap-3">
               {/* Cote totale */}
               <div className="shrink-0 text-center">
-                <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">{t('machine.totalOdd')}</p>
+                <p className="text-[11px] text-ink-4 uppercase tracking-wider mb-0.5">{t('machine.totalOdd')}</p>
                 <p className="text-lg font-black text-amber-400">×{totalOdds}</p>
               </div>
 
-              <div className="w-px h-10 bg-white/[0.06] shrink-0" />
+              <div className="w-px h-10 bg-overlay/[0.06] shrink-0" />
 
               {/* Input mise */}
               <div className="flex-1 flex items-center gap-2">
                 <div className="flex-1">
-                  <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">{t('machine.yourStake')}</p>
+                  <p className="text-[11px] text-ink-4 uppercase tracking-wider mb-0.5">{t('machine.yourStake')}</p>
                   <div className="flex items-center gap-1">
                     <input
                       type="number"
@@ -917,25 +917,25 @@ export default function Machine() {
                       placeholder="1 000"
                       value={mise}
                       onChange={(e) => setMise(e.target.value)}
-                      className="w-full bg-transparent text-sm font-semibold text-gray-200 outline-none placeholder:text-gray-700 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      className="w-full bg-transparent text-sm font-semibold text-ink-2 outline-none placeholder:text-ink-5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     />
-                    <span className="text-xs text-gray-400 shrink-0">FCFA</span>
+                    <span className="text-xs text-ink-4 shrink-0">FCFA</span>
                   </div>
                 </div>
               </div>
 
-              <div className="w-px h-10 bg-white/[0.06] shrink-0" />
+              <div className="w-px h-10 bg-overlay/[0.06] shrink-0" />
 
               {/* Gain potentiel */}
               <div className="shrink-0 text-center">
-                <p className="text-[11px] text-gray-400 uppercase tracking-wider mb-0.5">{t('machine.stake.potentialGain')}</p>
+                <p className="text-[11px] text-ink-4 uppercase tracking-wider mb-0.5">{t('machine.stake.potentialGain')}</p>
                 {mise && Number(mise) > 0 ? (
                   <p className="text-base font-black text-primary-400">
                     {Math.round(Number(mise) * Number(totalOdds)).toLocaleString('fr-FR')}
-                    <span className="text-[11px] font-normal text-gray-400 ml-0.5">FCFA</span>
+                    <span className="text-[11px] font-normal text-ink-4 ml-0.5">FCFA</span>
                   </p>
                 ) : (
-                  <p className="text-sm font-bold text-gray-700">—</p>
+                  <p className="text-sm font-bold text-ink-5">—</p>
                 )}
               </div>
             </div>
@@ -944,20 +944,20 @@ export default function Machine() {
           {ticket.length === 0 ? (
             <div className="card-p text-center py-8">
               <p className="text-2xl mb-2">🎯</p>
-              <p className="text-gray-300 text-sm">{t('machine.noSelectionMatch')}</p>
-              <p className="text-gray-400 text-xs mt-1">{t('machine.tryLowerConfidence')}</p>
+              <p className="text-ink-3 text-sm">{t('machine.noSelectionMatch')}</p>
+              <p className="text-ink-4 text-xs mt-1">{t('machine.tryLowerConfidence')}</p>
             </div>
           ) : (
-            <div className="card overflow-hidden divide-y divide-white/[0.04]">
+            <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
               {ticket.map((row, idx) => {
                 const c = CONF_COLORS[row.conf];
                 return (
                   <div key={row.match.id} className="flex items-center gap-3 px-4 py-3">
-                    <span className="w-5 shrink-0 text-center text-xs font-bold text-gray-400">{idx + 1}</span>
+                    <span className="w-5 shrink-0 text-center text-xs font-bold text-ink-4">{idx + 1}</span>
                     <div className="flex-1 min-w-0 space-y-1">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={row.match.homeTeamLogo} teamId={row.match.homeTeamId} name={row.match.homeTeam} size={16} />
-                        <p className="text-sm font-medium text-gray-200 truncate">{row.match.homeTeam}</p>
+                        <p className="text-sm font-medium text-ink-2 truncate">{row.match.homeTeam}</p>
                         {row.match.predictions?.aiGenerated && (
                           <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
                             <Bot size={8} />IA
@@ -966,9 +966,9 @@ export default function Machine() {
                       </div>
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={row.match.awayTeamLogo} teamId={row.match.awayTeamId} name={row.match.awayTeam} size={16} />
-                        <p className="text-sm font-medium text-gray-200 truncate">{row.match.awayTeam}</p>
+                        <p className="text-sm font-medium text-ink-2 truncate">{row.match.awayTeam}</p>
                       </div>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-ink-4">
                         {row.match.competition?.name} · {format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}
                       </p>
                     </div>
@@ -986,7 +986,7 @@ export default function Machine() {
             </div>
           )}
 
-          <p className="text-xs text-gray-400 text-center">{ODDS_DISCLAIMER}</p>
+          <p className="text-xs text-ink-4 text-center">{ODDS_DISCLAIMER}</p>
         </div>
       )}
       </>

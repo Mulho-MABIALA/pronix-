@@ -29,7 +29,7 @@ export function TipsterBadge({ badgeCode }) {
 
 export function PlanBadge({ planCode }) {
   const styles = {
-    FREE:    'bg-gray-500/20 text-gray-400',
+    FREE:    'bg-gray-500/20 text-ink-4',
     PREMIUM: 'bg-primary-500/20 text-primary-400',
   };
   return (
@@ -42,9 +42,9 @@ export function PlanBadge({ planCode }) {
 export function MatchStatusBadge({ status }) {
   const { t } = useTranslation();
   const styles = {
-    SCHEDULED: 'bg-gray-500/20 text-gray-400',
+    SCHEDULED: 'bg-gray-500/20 text-ink-4',
     LIVE:      'bg-live-500/20 text-live-400 animate-pulse',
-    FINISHED:  'bg-surface-600 text-gray-400',
+    FINISHED:  'bg-surface-600 text-ink-4',
     POSTPONED: 'bg-orange-500/20 text-orange-400',
     CANCELLED: 'bg-red-900/20 text-red-600',
   };
@@ -57,8 +57,8 @@ export function ResultBadge({ result }) {
   const styles = {
     WIN:  'bg-primary-500/20 text-primary-400',
     LOSS: 'bg-red-500/20 text-red-400',
-    VOID: 'bg-gray-500/20 text-gray-400',
+    VOID: 'bg-gray-500/20 text-ink-4',
   };
-  if (!result) return <span className="badge bg-surface-600 text-gray-300">{t('badges.result.PENDING')}</span>;
+  if (!result) return <span className="badge bg-surface-600 text-ink-3">{t('badges.result.PENDING')}</span>;
   return <span className={`badge ${styles[result] || ''}`}>{t(`badges.result.${result}`)}</span>;
 }

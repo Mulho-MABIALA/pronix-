@@ -41,10 +41,10 @@ function ToastItem({ toast, onDismiss }) {
       <div className={`absolute left-0 top-0 bottom-0 w-0.5 ${style.bar}`} />
 
       <Icon size={16} className={`${style.iconClass} shrink-0`} />
-      <p className="text-sm text-gray-200 flex-1 leading-snug">{toast.message}</p>
+      <p className="text-sm text-ink-2 flex-1 leading-snug">{toast.message}</p>
       <button
         onClick={() => onDismiss(toast.id)}
-        className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.06] transition-colors shrink-0"
+        className="p-1 rounded-lg text-ink-4 hover:text-ink-3 hover:bg-overlay/[0.06] transition-colors shrink-0"
         aria-label="Fermer"
       >
         <X size={13} />

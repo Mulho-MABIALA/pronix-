@@ -33,7 +33,7 @@ function PostCard({ post }) {
         />
       ) : (
         <div className="w-24 h-24 rounded-lg bg-surface-700 shrink-0 flex items-center justify-center">
-          <BookOpen size={24} className="text-gray-400" />
+          <BookOpen size={24} className="text-ink-4" />
         </div>
       )}
 
@@ -42,15 +42,15 @@ function PostCard({ post }) {
           {post.category && (
             <span className="text-xs font-medium text-primary-400 capitalize">{t(`blog.categories.${post.category}`, { defaultValue: post.category })}</span>
           )}
-          {date && <span className="text-xs text-gray-400">{date}</span>}
+          {date && <span className="text-xs text-ink-4">{date}</span>}
         </div>
-        <h2 className="text-sm font-semibold text-gray-100 group-hover:text-primary-300 transition-colors line-clamp-2 leading-snug">
+        <h2 className="text-sm font-semibold text-ink-1 group-hover:text-primary-300 transition-colors line-clamp-2 leading-snug">
           {post.title}
         </h2>
         {post.excerpt && (
-          <p className="text-xs text-gray-300 mt-1 line-clamp-2">{post.excerpt}</p>
+          <p className="text-xs text-ink-3 mt-1 line-clamp-2">{post.excerpt}</p>
         )}
-        <div className="flex items-center gap-3 mt-2 text-xs text-gray-400">
+        <div className="flex items-center gap-3 mt-2 text-xs text-ink-4">
           {author && <span>{t('blog.byAuthor', { author })}</span>}
           <span className="flex items-center gap-1">
             <Eye size={10} />
@@ -85,7 +85,7 @@ export default function BlogList() {
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
         <BookOpen size={22} className="text-primary-400" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">{t('blog.title')}</h1>
+        <h1 className="font-display font-bold text-2xl text-ink-1">{t('blog.title')}</h1>
       </div>
 
       {/* Filtre catégories */}
@@ -93,7 +93,7 @@ export default function BlogList() {
         <button
           onClick={() => { setCategory(''); setPage(1); }}
           className={`text-xs font-medium px-3 py-1.5 rounded-full shrink-0 transition-colors ${
-            !category ? 'bg-primary-500 text-white' : 'bg-surface-800 text-gray-400 hover:text-gray-200'
+            !category ? 'bg-primary-500 text-white' : 'bg-surface-800 text-ink-4 hover:text-ink-2'
           }`}
         >
           {t('blog.all')}
@@ -103,7 +103,7 @@ export default function BlogList() {
             key={c}
             onClick={() => { setCategory(c); setPage(1); }}
             className={`text-xs font-medium px-3 py-1.5 rounded-full shrink-0 capitalize transition-colors ${
-              category === c ? 'bg-primary-500 text-white' : 'bg-surface-800 text-gray-400 hover:text-gray-200'
+              category === c ? 'bg-primary-500 text-white' : 'bg-surface-800 text-ink-4 hover:text-ink-2'
             }`}
           >
             {t(`blog.categories.${c}`)}
@@ -118,13 +118,13 @@ export default function BlogList() {
       )}
 
       {isError && (
-        <div className="bento-card text-center py-8 text-gray-300">
+        <div className="bento-card text-center py-8 text-ink-3">
           {t('blog.loadError')}
         </div>
       )}
 
       {!isLoading && posts.length === 0 && (
-        <div className="bento-card text-center py-8 text-gray-300">
+        <div className="bento-card text-center py-8 text-ink-3">
           {t('blog.noArticles')}
         </div>
       )}
@@ -139,15 +139,15 @@ export default function BlogList() {
           <button
             disabled={page === 1}
             onClick={() => setPage((p) => p - 1)}
-            className="text-xs px-3 py-1.5 rounded-lg bg-surface-800 border border-surface-700 text-gray-400 hover:text-gray-200 disabled:opacity-40"
+            className="text-xs px-3 py-1.5 rounded-lg bg-surface-800 border border-surface-700 text-ink-4 hover:text-ink-2 disabled:opacity-40"
           >
             ← {t('blog.previous')}
           </button>
-          <span className="text-xs text-gray-300">{page} / {pagination.pages}</span>
+          <span className="text-xs text-ink-3">{page} / {pagination.pages}</span>
           <button
             disabled={page >= pagination.pages}
             onClick={() => setPage((p) => p + 1)}
-            className="text-xs px-3 py-1.5 rounded-lg bg-surface-800 border border-surface-700 text-gray-400 hover:text-gray-200 disabled:opacity-40"
+            className="text-xs px-3 py-1.5 rounded-lg bg-surface-800 border border-surface-700 text-ink-4 hover:text-ink-2 disabled:opacity-40"
           >
             {t('blog.next')} →
           </button>

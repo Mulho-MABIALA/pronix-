@@ -27,23 +27,23 @@ export default function ResetPassword() {
     }
   };
 
-  if (!token) return <div className="text-center py-20 text-gray-300">{t('auth.invalidLink')}</div>;
+  if (!token) return <div className="text-center py-20 text-ink-3">{t('auth.invalidLink')}</div>;
 
   return (
     <div className="min-h-dvh bg-surface-900 flex items-center justify-center px-4">
       <div className="w-full max-w-sm space-y-6 animate-slide-up">
         <div className="text-center">
-          <h1 className="font-display font-bold text-2xl text-gray-100">{t('auth.newPasswordTitle')}</h1>
+          <h1 className="font-display font-bold text-2xl text-ink-1">{t('auth.newPasswordTitle')}</h1>
         </div>
         <form onSubmit={handleSubmit} className="bento-card space-y-4">
           {error && <div role="alert" className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3">{error}</div>}
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.newPasswordLabel')}</label>
+            <label htmlFor="password" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.newPasswordLabel')}</label>
             <input id="password" type="password" required className="input" minLength={8}
               value={form.password} onChange={(e) => setForm({ ...form, password: e.target.value })} />
           </div>
           <div>
-            <label htmlFor="confirm" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.confirmLabel')}</label>
+            <label htmlFor="confirm" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.confirmLabel')}</label>
             <input id="confirm" type="password" required className="input"
               value={form.confirm} onChange={(e) => setForm({ ...form, confirm: e.target.value })} />
           </div>

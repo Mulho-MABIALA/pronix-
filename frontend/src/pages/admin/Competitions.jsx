@@ -22,8 +22,8 @@ export default function AdminCompetitions() {
   return (
     <div className="space-y-5 max-w-4xl">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Compétitions</h1>
-        <p className="text-sm text-gray-300 mt-0.5">
+        <h1 className="font-display font-bold text-2xl text-ink-1">Compétitions</h1>
+        <p className="text-sm text-ink-3 mt-0.5">
           {displayed} / {competitions.length} compétitions affichées
         </p>
       </div>
@@ -42,7 +42,7 @@ export default function AdminCompetitions() {
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-gray-300 uppercase tracking-wider">
+              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Compétition</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden sm:table-cell">Pays</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden md:table-cell">ID API</th>
@@ -57,14 +57,14 @@ export default function AdminCompetitions() {
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <CompetitionLogo logo={c.logo} size={28} />
-                      <span className="text-sm font-medium text-gray-200">{c.name}</span>
+                      <span className="text-sm font-medium text-ink-2">{c.name}</span>
                     </div>
                   </td>
-                  <td className="px-4 py-3.5 hidden sm:table-cell text-sm text-gray-300">{c.country}</td>
+                  <td className="px-4 py-3.5 hidden sm:table-cell text-sm text-ink-3">{c.country}</td>
                   <td className="px-4 py-3.5 hidden md:table-cell">
                     <code className="text-xs text-primary-400 bg-primary-500/10 px-2 py-0.5 rounded">{c.externalId}</code>
                   </td>
-                  <td className="px-4 py-3.5 hidden md:table-cell text-center text-sm text-gray-400">
+                  <td className="px-4 py-3.5 hidden md:table-cell text-center text-sm text-ink-4">
                     {c._count?.matches ?? 0}
                   </td>
                   <td className="px-4 py-3.5 text-center">
@@ -76,7 +76,7 @@ export default function AdminCompetitions() {
                       disabled={toggle.isPending}
                       className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border ml-auto transition-colors ${
                         c.isDisplayed
-                          ? 'border-gray-600 text-gray-400 hover:border-red-500/40 hover:text-red-400'
+                          ? 'border-gray-600 text-ink-4 hover:border-red-500/40 hover:text-red-400'
                           : 'border-primary-500/30 text-primary-400 hover:bg-primary-500/10'
                       }`}
                     >

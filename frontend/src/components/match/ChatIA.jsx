@@ -52,13 +52,13 @@ export default function ChatIA({ matchId, matchLabel }) {
       <section className="card p-4 space-y-3">
         <div className="flex items-center gap-2">
           <Bot size={15} className="text-violet-400" />
-          <h2 className="font-semibold text-gray-100 text-sm">{t('chatIA.title')}</h2>
+          <h2 className="font-semibold text-ink-1 text-sm">{t('chatIA.title')}</h2>
         </div>
         <div className="text-center py-6 space-y-3">
           <div className="w-12 h-12 rounded-full bg-violet-500/10 flex items-center justify-center mx-auto">
             <Lock size={20} className="text-violet-400" />
           </div>
-          <p className="text-sm text-gray-400">{t('chatIA.loginPrompt')}</p>
+          <p className="text-sm text-ink-4">{t('chatIA.loginPrompt')}</p>
           <Link to="/connexion" className="btn-primary inline-flex px-6 py-2 text-sm">
             {t('auth.loginCta')}
           </Link>
@@ -77,13 +77,13 @@ export default function ChatIA({ matchId, matchLabel }) {
           <div className="w-7 h-7 rounded-full bg-violet-500/15 flex items-center justify-center">
             <Bot size={14} className="text-violet-400" />
           </div>
-          <h2 className="font-semibold text-gray-100 text-sm">{t('chatIA.title')}</h2>
+          <h2 className="font-semibold text-ink-1 text-sm">{t('chatIA.title')}</h2>
           <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-400 border border-violet-500/20 font-semibold">
             {t('chatIA.beta')}
           </span>
         </div>
         {quota && !quota.unlimited && (
-          <span className="text-[11px] text-gray-300">
+          <span className="text-[11px] text-ink-3">
             {t('chatIA.questionsToday', { used: quota.used, limit: quota.limit })}
           </span>
         )}
@@ -105,7 +105,7 @@ export default function ChatIA({ matchId, matchLabel }) {
               <div className={`max-w-[85%] px-3 py-2 rounded-xl text-sm leading-relaxed ${
                 m.role === 'user'
                   ? 'bg-select-500/15 text-select-300 border border-select-500/20'
-                  : 'bg-surface-700/60 text-gray-200 border border-white/[0.06]'
+                  : 'bg-surface-700/60 text-ink-2 border border-overlay/[0.06]'
               }`}>
                 {m.text}
               </div>
@@ -116,7 +116,7 @@ export default function ChatIA({ matchId, matchLabel }) {
               <div className="w-6 h-6 rounded-full bg-violet-500/15 flex items-center justify-center shrink-0 mr-2">
                 <Bot size={11} className="text-violet-400 animate-pulse" />
               </div>
-              <div className="bg-surface-700/60 border border-white/[0.06] px-3 py-2 rounded-xl flex items-center gap-1">
+              <div className="bg-surface-700/60 border border-overlay/[0.06] px-3 py-2 rounded-xl flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: '0ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: '150ms' }} />
                 <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-bounce" style={{ animationDelay: '300ms' }} />
@@ -130,13 +130,13 @@ export default function ChatIA({ matchId, matchLabel }) {
       {/* Suggestions (première fois) */}
       {messages.length === 0 && !loading && (
         <div className="space-y-2">
-          <p className="text-xs text-gray-300">{t('chatIA.suggestedQuestions')}</p>
+          <p className="text-xs text-ink-3">{t('chatIA.suggestedQuestions')}</p>
           <div className="flex flex-wrap gap-2">
             {SUGGESTION_KEYS.map((k) => (
               <button
                 key={k}
                 onClick={() => sendMessage(t(`chatIA.suggestions.${k}`))}
-                className="text-xs px-3 py-1.5 rounded-lg bg-surface-700/50 border border-white/[0.07] text-gray-400 hover:text-gray-200 hover:border-white/15 transition-colors text-left"
+                className="text-xs px-3 py-1.5 rounded-lg bg-surface-700/50 border border-overlay/[0.07] text-ink-4 hover:text-ink-2 hover:border-white/15 transition-colors text-left"
               >
                 {t(`chatIA.suggestions.${k}`)}
               </button>
@@ -160,7 +160,7 @@ export default function ChatIA({ matchId, matchLabel }) {
       {/* Zone de saisie */}
       {quotaExhausted ? (
         <div className="text-center py-3 space-y-2">
-          <p className="text-xs text-gray-300">{t('chatIA.freeQuestionsUsed')}</p>
+          <p className="text-xs text-ink-3">{t('chatIA.freeQuestionsUsed')}</p>
           <Link to="/abonnement" className="btn-primary inline-flex px-5 py-2 text-xs">
             {t('chatIA.premiumUnlimited')}
           </Link>

@@ -97,14 +97,14 @@ export default function ToolsCarousel() {
           <button
             onClick={prev}
             aria-label={t('toolsCarousel.prev')}
-            className="w-8 h-8 rounded-full bg-surface-800 border border-white/[0.06] flex items-center justify-center text-gray-400 hover:text-white hover:bg-surface-700 transition-colors"
+            className="w-8 h-8 rounded-full bg-surface-800 border border-overlay/[0.06] flex items-center justify-center text-ink-4 hover:text-white hover:bg-surface-700 transition-colors"
           >
             <ChevronLeft size={16} />
           </button>
           <button
             onClick={next}
             aria-label={t('toolsCarousel.next')}
-            className="w-8 h-8 rounded-full bg-surface-800 border border-white/[0.06] flex items-center justify-center text-gray-400 hover:text-white hover:bg-surface-700 transition-colors"
+            className="w-8 h-8 rounded-full bg-surface-800 border border-overlay/[0.06] flex items-center justify-center text-ink-4 hover:text-white hover:bg-surface-700 transition-colors"
           >
             <ChevronRight size={16} />
           </button>
@@ -121,7 +121,7 @@ export default function ToolsCarousel() {
             <Link
               key={tool.id}
               to={tool.to}
-              className="group relative shrink-0 w-[82%] sm:w-[340px] h-[220px] rounded-2xl overflow-hidden snap-start border border-white/[0.06] transition-transform duration-200 hover:-translate-y-0.5"
+              className="group relative shrink-0 w-[82%] sm:w-[340px] h-[220px] rounded-2xl overflow-hidden snap-start border border-overlay/[0.06] transition-transform duration-200 hover:-translate-y-0.5"
               style={{ background: tool.gradient }}
             >
               {/* Voile sombre pour la lisibilité du texte */}

@@ -19,13 +19,13 @@ function FooterLinks() {
       </p>
       <div className="flex items-center justify-center gap-x-3 gap-y-1.5 text-xs flex-wrap">
         <a href="/transparence" className={linkClass}>{t('disclaimer.transparencyLink')}</a>
-        <span className="text-gray-400" aria-hidden="true">·</span>
+        <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/cgu" className={linkClass}>{t('disclaimer.termsLink')}</a>
-        <span className="text-gray-400" aria-hidden="true">·</span>
+        <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/politique-confidentialite" className={linkClass}>{t('disclaimer.privacyLink')}</a>
-        <span className="text-gray-400" aria-hidden="true">·</span>
+        <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/faq" className={linkClass}>{t('disclaimer.faqLink')}</a>
-        <span className="text-gray-400" aria-hidden="true">·</span>
+        <span className="text-ink-4" aria-hidden="true">·</span>
         <button type="button" onClick={openSupportChat} className={linkClass}>{t('disclaimer.contactLink')}</button>
       </div>
     </>

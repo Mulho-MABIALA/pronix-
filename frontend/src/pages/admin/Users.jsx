@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import api from '../../services/api';
 
 const PLAN_STYLE = {
-  FREE:     'bg-gray-500/15 text-gray-400 border border-gray-500/20',
+  FREE:     'bg-gray-500/15 text-ink-4 border border-gray-500/20',
   PREMIUM:  'bg-primary-500/15 text-primary-400 border border-primary-500/20',
   LIFETIME: 'bg-amber-500/15 text-amber-400 border border-amber-500/20',
   PRO:      'bg-amber-500/15 text-amber-400 border border-amber-500/20',
@@ -31,8 +31,8 @@ function LangCurrencyBadge({ user }) {
   const currency = user.currency || 'auto';
   return (
     <div className="flex items-center gap-1">
-      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-white/[0.06] text-gray-300">{lang}</span>
-      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-white/[0.03] text-gray-400">{currency}</span>
+      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-overlay/[0.06] text-ink-3">{lang}</span>
+      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-4">{currency}</span>
     </div>
   );
 }
@@ -49,7 +49,7 @@ function UserAvatar({ user, size = 'sm' }) {
 
 function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
   return (
-    <div className="rounded-xl border border-white/[0.09] p-4 flex items-center gap-3"
+    <div className="rounded-xl border border-overlay/[0.09] p-4 flex items-center gap-3"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}>
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color} bg-current/10`}
         style={{ background: 'rgba(var(--tw-ring-color,0,0,0),0.08)' }}>
@@ -57,7 +57,7 @@ function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
       </div>
       <div>
         <p className="text-xl font-bold text-white leading-none">{value ?? '—'}</p>
-        <p className="text-[11px] text-gray-300 mt-0.5">{label}</p>
+        <p className="text-[11px] text-ink-3 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -126,17 +126,17 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
       <div
-        className="rounded-2xl border border-white/[0.12] w-full max-w-2xl max-h-[92vh] flex flex-col"
+        className="rounded-2xl border border-overlay/[0.12] w-full max-w-2xl max-h-[92vh] flex flex-col"
         style={{ background: 'var(--color-card)', boxShadow: '0 24px 64px rgba(0,0,0,0.6)' }}
         onClick={e => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-start justify-between p-5 border-b border-white/[0.07] shrink-0">
+        <div className="flex items-start justify-between p-5 border-b border-overlay/[0.07] shrink-0">
           <div className="flex items-center gap-4">
             <UserAvatar user={user} size="lg" />
             <div>
               <h2 className="text-white font-bold text-lg leading-tight">{user.profile?.displayName || user.username}</h2>
-              <p className="text-sm text-gray-400">@{user.username}</p>
+              <p className="text-sm text-ink-4">@{user.username}</p>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${PLAN_STYLE[plan] || PLAN_STYLE.FREE}`}>{plan}</span>
                 <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
@@ -146,17 +146,17 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                   {user.isActive ? 'Actif' : 'Suspendu'}
                 </span>
                 <span className={`text-[11px] font-semibold px-2 py-0.5 rounded-md ${
-                  user.role === 'ADMIN' ? 'bg-violet-500/15 text-violet-400' : 'bg-gray-500/10 text-gray-300'
+                  user.role === 'ADMIN' ? 'bg-violet-500/15 text-violet-400' : 'bg-gray-500/10 text-ink-3'
                 }`}>
                   {user.role}
                 </span>
                 {user.lastLoginAt && (
-                  <span className="text-[11px] text-gray-400 flex items-center gap-1">
+                  <span className="text-[11px] text-ink-4 flex items-center gap-1">
                     <Clock size={10} /> {formatDistanceToNow(new Date(user.lastLoginAt), { locale: fr, addSuffix: true })}
                   </span>
                 )}
                 <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
-                  user.appInstalledAt ? 'bg-primary-500/15 text-primary-400' : 'bg-white/[0.05] text-gray-300'
+                  user.appInstalledAt ? 'bg-primary-500/15 text-primary-400' : 'bg-overlay/[0.05] text-ink-3'
                 }`}>
                   <Smartphone size={10} />
                   {user.appInstalledAt
@@ -166,17 +166,17 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/[0.08] text-gray-300 hover:text-gray-200 transition-colors shrink-0">
+          <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-overlay/[0.08] text-ink-3 hover:text-ink-2 transition-colors shrink-0">
             <X size={16} />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 px-5 pt-3 border-b border-white/[0.07] shrink-0">
+        <div className="flex gap-1 px-5 pt-3 border-b border-overlay/[0.07] shrink-0">
           {TABS.map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px ${
-                tab === t ? 'text-white border-primary-400' : 'text-gray-300 border-transparent hover:text-gray-200'
+                tab === t ? 'text-white border-primary-400' : 'text-ink-3 border-transparent hover:text-ink-2'
               }`}
             >
               {t}
@@ -191,32 +191,32 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           {tab === 'Infos' && (<>
 
             {/* Contact */}
-            <div className="rounded-xl border border-white/[0.07] p-4 space-y-2" style={{ background: 'rgba(255,255,255,0.02)' }}>
-              <p className="text-[11px] text-gray-300 font-semibold uppercase tracking-wider mb-3">Contact</p>
+            <div className="rounded-xl border border-overlay/[0.07] p-4 space-y-2" style={{ background: 'rgba(255,255,255,0.02)' }}>
+              <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider mb-3">Contact</p>
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Mail size={14} className="text-gray-300" />
-                  <span className="text-sm text-gray-200">{user.email}</span>
+                  <Mail size={14} className="text-ink-3" />
+                  <span className="text-sm text-ink-2">{user.email}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {user.emailVerified
                     ? <span className="flex items-center gap-1 text-[11px] text-emerald-400"><CheckCircle size={11} /> Vérifié</span>
                     : <span className="flex items-center gap-1 text-[11px] text-amber-400"><XCircle size={11} /> Non vérifié</span>
                   }
-                  <button onClick={() => copyText(user.email)} className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/[0.08] text-gray-400 hover:text-gray-300">
+                  <button onClick={() => copyText(user.email)} className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-overlay/[0.08] text-ink-4 hover:text-ink-3">
                     <Copy size={12} />
                   </button>
                 </div>
               </div>
-              <div className="text-[11px] text-gray-400 flex items-center gap-1 pt-1">
+              <div className="text-[11px] text-ink-4 flex items-center gap-1 pt-1">
                 <Calendar size={11} /> Inscrit le {format(new Date(user.createdAt), 'dd MMMM yyyy', { locale: fr })}
               </div>
             </div>
 
             {/* Abonnement */}
-            <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] text-gray-300 font-semibold uppercase tracking-wider">Abonnement</p>
+                <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider">Abonnement</p>
                 {plan !== 'FREE' && (
                   <button onClick={() => { if (confirm('Annuler l\'abonnement ?')) cancelSub.mutate(); }}
                     disabled={cancelSub.isPending}
@@ -227,24 +227,24 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-[11px] text-gray-400 mb-0.5">Plan</p><p className="text-sm font-semibold text-white">{plan}</p></div>
+                <div><p className="text-[11px] text-ink-4 mb-0.5">Plan</p><p className="text-sm font-semibold text-white">{plan}</p></div>
                 {subEnds && (
                   <div>
-                    <p className="text-[11px] text-gray-400 mb-0.5">Expiration</p>
+                    <p className="text-[11px] text-ink-4 mb-0.5">Expiration</p>
                     <p className="text-sm font-semibold text-white">
                       {new Date(subEnds) > new Date('2099-01-01') ? 'À vie ♾️' : format(new Date(subEnds), 'dd MMM yyyy', { locale: fr })}
                     </p>
                   </div>
                 )}
-                <div><p className="text-[11px] text-gray-400 mb-0.5">Statut</p><p className="text-sm font-semibold text-white capitalize">{user.subscription?.status?.toLowerCase() || 'Aucun'}</p></div>
-                <div><p className="text-[11px] text-gray-400 mb-0.5">Pronos</p><p className="text-sm font-semibold text-white">{user._count?.tips || 0}</p></div>
+                <div><p className="text-[11px] text-ink-4 mb-0.5">Statut</p><p className="text-sm font-semibold text-white capitalize">{user.subscription?.status?.toLowerCase() || 'Aucun'}</p></div>
+                <div><p className="text-[11px] text-ink-4 mb-0.5">Pronos</p><p className="text-sm font-semibold text-white">{user._count?.tips || 0}</p></div>
               </div>
             </div>
 
             {/* Note admin */}
-            <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
               <div className="flex items-center justify-between mb-2">
-                <p className="text-[11px] text-gray-300 font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider flex items-center gap-1.5">
                   <StickyNote size={12} /> Note admin (privée)
                 </p>
                 {!noteEditing && (
@@ -268,17 +268,17 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-gray-400 italic">{note || 'Aucune note'}</p>
+                <p className="text-sm text-ink-4 italic">{note || 'Aucune note'}</p>
               )}
             </div>
 
             {/* Code parrainage */}
             {user.referralCode && (
-              <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
-                <p className="text-[11px] text-gray-300 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5"><Gift size={12} /> Parrainage</p>
+              <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-wider mb-2 flex items-center gap-1.5"><Gift size={12} /> Parrainage</p>
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-200 font-mono">{user.referralCode}</span>
-                  <button onClick={() => copyText(user.referralCode)} className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-white/[0.08] text-gray-400 hover:text-gray-300">
+                  <span className="text-sm text-ink-2 font-mono">{user.referralCode}</span>
+                  <button onClick={() => copyText(user.referralCode)} className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-overlay/[0.08] text-ink-4 hover:text-ink-3">
                     <Copy size={12} />
                   </button>
                 </div>
@@ -286,9 +286,9 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             )}
 
             {/* Envoyer email */}
-            <div className="rounded-xl border border-white/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
+            <div className="rounded-xl border border-overlay/[0.07] p-4" style={{ background: 'rgba(255,255,255,0.02)' }}>
               <button onClick={() => setEmailOpen(!emailOpen)}
-                className="w-full flex items-center justify-between text-[11px] text-gray-300 font-semibold uppercase tracking-wider">
+                className="w-full flex items-center justify-between text-[11px] text-ink-3 font-semibold uppercase tracking-wider">
                 <span className="flex items-center gap-1.5"><Send size={12} /> Envoyer un email</span>
                 <ChevronDown size={14} className={`transition-transform ${emailOpen ? 'rotate-180' : ''}`} />
               </button>
@@ -313,22 +313,22 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           {tab === 'Pronos' && (
             <div className="space-y-2">
               {!tipsData ? (
-                <div className="flex justify-center py-8"><RefreshCw size={18} className="animate-spin text-gray-300" /></div>
+                <div className="flex justify-center py-8"><RefreshCw size={18} className="animate-spin text-ink-3" /></div>
               ) : tipsData.data?.length === 0 ? (
-                <div className="text-center py-8 text-gray-300"><Target size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun pronostic</p></div>
+                <div className="text-center py-8 text-ink-3"><Target size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun pronostic</p></div>
               ) : tipsData.data.map(tip => (
-                <div key={tip.id} className="rounded-xl border border-white/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div key={tip.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium truncate">{tip.match?.homeTeam} — {tip.match?.awayTeam}</p>
-                    <p className="text-[11px] text-gray-400">{tip.match?.competition?.name} · {tip.match?.matchDate && format(new Date(tip.match.matchDate), 'dd MMM yyyy', { locale: fr })}</p>
+                    <p className="text-[11px] text-ink-4">{tip.match?.competition?.name} · {tip.match?.matchDate && format(new Date(tip.match.matchDate), 'dd MMM yyyy', { locale: fr })}</p>
                   </div>
-                  <span className="text-xs font-bold px-2 py-1 rounded-md bg-white/[0.07] text-gray-300">{PRED_LABELS[tip.prediction] || tip.prediction}</span>
+                  <span className="text-xs font-bold px-2 py-1 rounded-md bg-overlay/[0.07] text-ink-3">{PRED_LABELS[tip.prediction] || tip.prediction}</span>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                     tip.result === 'WIN' ? 'bg-emerald-500/15 text-emerald-400' :
                     tip.result === 'LOSS' ? 'bg-red-500/15 text-red-400' :
-                    'bg-gray-500/10 text-gray-300'
+                    'bg-gray-500/10 text-ink-3'
                   }`}>{tip.result || '⏳'}</span>
-                  <span className="text-[11px] text-gray-400 flex items-center gap-1"><MessageSquare size={10} /> {tip._count?.comments || 0}</span>
+                  <span className="text-[11px] text-ink-4 flex items-center gap-1"><MessageSquare size={10} /> {tip._count?.comments || 0}</span>
                 </div>
               ))}
             </div>
@@ -338,14 +338,14 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           {tab === 'Paiements' && (
             <div className="space-y-2">
               {!paymentsData ? (
-                <div className="flex justify-center py-8"><RefreshCw size={18} className="animate-spin text-gray-300" /></div>
+                <div className="flex justify-center py-8"><RefreshCw size={18} className="animate-spin text-ink-3" /></div>
               ) : paymentsData.data?.length === 0 ? (
-                <div className="text-center py-8 text-gray-300"><CreditCard size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun paiement</p></div>
+                <div className="text-center py-8 text-ink-3"><CreditCard size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun paiement</p></div>
               ) : paymentsData.data.map(p => (
-                <div key={p.id} className="rounded-xl border border-white/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div key={p.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
                   <div className="flex-1">
                     <p className="text-sm text-white font-medium">{p.plan?.name || 'Plan inconnu'}</p>
-                    <p className="text-[11px] text-gray-400">{format(new Date(p.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</p>
+                    <p className="text-[11px] text-ink-4">{format(new Date(p.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</p>
                   </div>
                   <p className="text-sm font-bold text-white">{p.amount}€</p>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
@@ -362,15 +362,15 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           {tab === 'Référés' && (
             <div className="space-y-2">
               {!referralsData ? (
-                <div className="flex justify-center py-8"><RefreshCw size={18} className="animate-spin text-gray-300" /></div>
+                <div className="flex justify-center py-8"><RefreshCw size={18} className="animate-spin text-ink-3" /></div>
               ) : referralsData.data?.length === 0 ? (
-                <div className="text-center py-8 text-gray-300"><Users size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun filleul</p></div>
+                <div className="text-center py-8 text-ink-3"><Users size={28} className="mx-auto mb-2" /><p className="text-sm">Aucun filleul</p></div>
               ) : referralsData.data.map(r => (
-                <div key={r.id} className="rounded-xl border border-white/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
+                <div key={r.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgba(255,255,255,0.02)' }}>
                   <UserAvatar user={r.referee} size="md" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-white font-medium">{r.referee.profile?.displayName || r.referee.username}</p>
-                    <p className="text-[11px] text-gray-400">Inscrit {formatDistanceToNow(new Date(r.referee.createdAt), { locale: fr, addSuffix: true })}</p>
+                    <p className="text-[11px] text-ink-4">Inscrit {formatDistanceToNow(new Date(r.referee.createdAt), { locale: fr, addSuffix: true })}</p>
                   </div>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${PLAN_STYLE[r.referee.subscription?.plan?.code || 'FREE']}`}>
                     {r.referee.subscription?.plan?.code || 'FREE'}
@@ -383,7 +383,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
         </div>
 
         {/* Actions footer */}
-        <div className="flex gap-2 p-5 pt-0 border-t border-white/[0.07] shrink-0 mt-2 flex-wrap">
+        <div className="flex gap-2 p-5 pt-0 border-t border-overlay/[0.07] shrink-0 mt-2 flex-wrap">
           <button onClick={() => onActivate(user)}
             className="flex items-center gap-1.5 py-2 px-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 text-xs font-semibold transition-colors">
             <Crown size={13} /> Activer Premium
@@ -393,7 +393,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             disabled={changeRole.isPending}
             className={`flex items-center gap-1.5 py-2 px-3 rounded-xl border text-xs font-semibold transition-colors disabled:opacity-40 ${
               user.role === 'ADMIN'
-                ? 'border-gray-500/30 bg-gray-500/10 text-gray-400 hover:bg-gray-500/20'
+                ? 'border-gray-500/30 bg-gray-500/10 text-ink-4 hover:bg-gray-500/20'
                 : 'border-violet-500/30 bg-violet-500/10 text-violet-400 hover:bg-violet-500/20'
             }`}
           >
@@ -410,7 +410,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             {user.isActive ? 'Suspendre' : 'Réactiver'}
           </button>
           <Link to={`/admin/support?userId=${user.id}`}
-            className="ml-auto flex items-center gap-1.5 py-2 px-3 rounded-xl border border-white/[0.09] text-gray-400 hover:text-gray-200 hover:bg-white/[0.05] text-xs font-semibold transition-colors">
+            className="ml-auto flex items-center gap-1.5 py-2 px-3 rounded-xl border border-overlay/[0.09] text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05] text-xs font-semibold transition-colors">
             <MessageSquare size={13} /> Support
           </Link>
         </div>
@@ -425,26 +425,26 @@ function ActivateModal({ user, onClose, onConfirm, loading }) {
   const [months, setMonths]     = useState(1);
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
-      <div className="rounded-2xl border border-white/[0.11] p-6 max-w-sm w-full" style={{ background: 'var(--color-card)' }}>
+      <div className="rounded-2xl border border-overlay/[0.11] p-6 max-w-sm w-full" style={{ background: 'var(--color-card)' }}>
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-2"><Crown size={18} className="text-amber-400" /><h3 className="text-white font-bold text-base">Activer un abonnement</h3></div>
-          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-white/[0.08] text-gray-300 transition-colors"><X size={15} /></button>
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-overlay/[0.08] text-ink-3 transition-colors"><X size={15} /></button>
         </div>
-        <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.04] border border-white/[0.08] mb-5">
+        <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.08] mb-5">
           <UserAvatar user={user} />
           <div>
             <p className="text-sm font-semibold text-white">{user.profile?.displayName || user.username}</p>
-            <p className="text-[11px] text-gray-300">{user.email}</p>
+            <p className="text-[11px] text-ink-3">{user.email}</p>
           </div>
         </div>
         <div className="space-y-4 mb-6">
           <div>
-            <label className="text-xs text-gray-400 font-medium mb-2 block">Plan</label>
+            <label className="text-xs text-ink-4 font-medium mb-2 block">Plan</label>
             <div className="flex gap-2">
               {[['PREMIUM','Premium','text-primary-400 bg-primary-500/15 border-primary-500/30'],
                 ['LIFETIME','Lifetime ♾️','text-amber-400 bg-amber-500/15 border-amber-500/30']].map(([val,lbl,cls]) => (
                 <button key={val} onClick={() => setPlanCode(val)}
-                  className={`flex-1 py-2 rounded-xl border text-sm font-semibold transition-colors ${planCode === val ? cls : 'border-white/[0.08] text-gray-300 hover:text-gray-200'}`}>
+                  className={`flex-1 py-2 rounded-xl border text-sm font-semibold transition-colors ${planCode === val ? cls : 'border-overlay/[0.08] text-ink-3 hover:text-ink-2'}`}>
                   {lbl}
                 </button>
               ))}
@@ -452,11 +452,11 @@ function ActivateModal({ user, onClose, onConfirm, loading }) {
           </div>
           {planCode !== 'LIFETIME' && (
             <div>
-              <label className="text-xs text-gray-400 font-medium mb-2 block">Durée</label>
+              <label className="text-xs text-ink-4 font-medium mb-2 block">Durée</label>
               <div className="flex gap-2 flex-wrap">
                 {[1,3,6,12].map(m => (
                   <button key={m} onClick={() => setMonths(m)}
-                    className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${months === m ? 'border-primary-500/40 bg-primary-500/15 text-primary-400' : 'border-white/[0.08] text-gray-300 hover:text-gray-200'}`}>
+                    className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${months === m ? 'border-primary-500/40 bg-primary-500/15 text-primary-400' : 'border-overlay/[0.08] text-ink-3 hover:text-ink-2'}`}>
                     {m} mois
                   </button>
                 ))}
@@ -545,10 +545,10 @@ export default function AdminUsers() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">Utilisateurs</h1>
-          <p className="text-sm text-gray-400 mt-0.5">{pagination?.total !== undefined ? `${pagination.total} utilisateurs` : ''}</p>
+          <p className="text-sm text-ink-4 mt-0.5">{pagination?.total !== undefined ? `${pagination.total} utilisateurs` : ''}</p>
         </div>
         <a href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/users`} download
-          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-white/[0.05] border border-white/[0.11] text-gray-300 hover:text-white hover:bg-white/[0.08] transition-colors shrink-0">
+          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-white hover:bg-overlay/[0.08] transition-colors shrink-0">
           <Download size={13} /> Exporter CSV
         </a>
       </div>
@@ -565,7 +565,7 @@ export default function AdminUsers() {
       {/* Filtres */}
       <div className="flex flex-wrap gap-2">
         <div className="relative flex-1 min-w-52">
-          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+          <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-3 pointer-events-none" />
           <input type="search" className="input pl-9 h-10 text-sm" placeholder="Rechercher…"
             value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
         </div>
@@ -617,7 +617,7 @@ export default function AdminUsers() {
           {DATE_PRESETS.map((p, i) => (
             <button key={i} onClick={() => { setDatePreset(i); setPage(1); }}
               className={`px-3 h-10 rounded-xl border text-xs font-medium transition-colors ${
-                datePreset === i ? 'border-primary-500/40 bg-primary-500/15 text-primary-400' : 'border-white/[0.08] text-gray-300 hover:text-gray-200'
+                datePreset === i ? 'border-primary-500/40 bg-primary-500/15 text-primary-400' : 'border-overlay/[0.08] text-ink-3 hover:text-ink-2'
               }`}
             >{p.label}</button>
           ))}
@@ -631,12 +631,12 @@ export default function AdminUsers() {
       </div>
 
       {/* Tableau */}
-      <div className="rounded-2xl border border-white/[0.11] overflow-hidden"
+      <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden"
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/[0.07] text-[11px] text-gray-300 uppercase tracking-wider">
+              <tr className="border-b border-overlay/[0.07] text-[11px] text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-semibold">Utilisateur</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Plan</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Pronos</th>
@@ -648,7 +648,7 @@ export default function AdminUsers() {
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/[0.04]">
+            <tbody className="divide-y divide-overlay/[0.04]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
                   <tr key={i}>{Array.from({ length: 9 }).map((_, j) => (
@@ -658,14 +658,14 @@ export default function AdminUsers() {
                 : users.map(u => {
                   const plan = u.subscription?.plan?.code || 'FREE';
                   return (
-                    <tr key={u.id} className="hover:bg-white/[0.025] transition-colors cursor-pointer"
+                    <tr key={u.id} className="hover:bg-overlay/[0.025] transition-colors cursor-pointer"
                       onClick={() => setSelectedUser(u)}>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
                           <UserAvatar user={u} />
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-200 truncate">{u.profile?.displayName || u.username}</p>
-                            <p className="text-xs text-gray-300 truncate">{u.email}</p>
+                            <p className="text-sm font-medium text-ink-2 truncate">{u.profile?.displayName || u.username}</p>
+                            <p className="text-xs text-ink-3 truncate">{u.email}</p>
                           </div>
                           {u.adminNote && <StickyNote size={12} className="text-amber-400 shrink-0" title="Note admin" />}
                         </div>
@@ -674,15 +674,15 @@ export default function AdminUsers() {
                         <span className={`inline-block text-[11px] font-semibold px-2.5 py-1 rounded-lg ${PLAN_STYLE[plan] || PLAN_STYLE.FREE}`}>{plan}</span>
                       </td>
                       <td className="px-4 py-3.5 hidden lg:table-cell">
-                        <span className="text-sm text-gray-300">{u._count?.tips || 0}</span>
+                        <span className="text-sm text-ink-3">{u._count?.tips || 0}</span>
                         {u.tipsterStats?.successRate != null && (
-                          <span className="text-xs text-gray-400 ml-1.5">({u.tipsterStats.successRate.toFixed(0)}%)</span>
+                          <span className="text-xs text-ink-4 ml-1.5">({u.tipsterStats.successRate.toFixed(0)}%)</span>
                         )}
                       </td>
-                      <td className="px-4 py-3.5 hidden lg:table-cell text-sm text-gray-300">
+                      <td className="px-4 py-3.5 hidden lg:table-cell text-sm text-ink-3">
                         {format(new Date(u.createdAt), 'dd MMM yyyy', { locale: fr })}
                       </td>
-                      <td className="px-4 py-3.5 hidden xl:table-cell text-xs text-gray-400">
+                      <td className="px-4 py-3.5 hidden xl:table-cell text-xs text-ink-4">
                         {u.lastLoginAt ? formatDistanceToNow(new Date(u.lastLoginAt), { locale: fr, addSuffix: true }) : '—'}
                       </td>
                       <td className="px-4 py-3.5 hidden xl:table-cell">
@@ -698,7 +698,7 @@ export default function AdminUsers() {
                           </span>
                         ) : (
                           <span
-                            className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-white/[0.03] text-gray-400 border border-white/[0.06]"
+                            className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-overlay/[0.03] text-ink-4 border border-overlay/[0.06]"
                             title="Application non installée"
                           >
                             <Smartphone size={12} />
@@ -729,15 +729,15 @@ export default function AdminUsers() {
 
         {/* Pagination */}
         {pagination?.pages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3.5 border-t border-white/[0.07]">
-            <p className="text-xs text-gray-300">Page {page} sur {pagination.pages} — {pagination.total} utilisateurs</p>
+          <div className="flex items-center justify-between px-5 py-3.5 border-t border-overlay/[0.07]">
+            <p className="text-xs text-ink-3">Page {page} sur {pagination.pages} — {pagination.total} utilisateurs</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] disabled:opacity-30 transition-colors">
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= pagination.pages}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.06] disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] disabled:opacity-30 transition-colors">
                 <ChevronRight size={16} />
               </button>
             </div>

@@ -144,7 +144,7 @@ export default function Matches() {
         className="md:hidden overflow-hidden transition-all duration-200"
         style={{ height: showPTR ? Math.max(pullDistance * 0.5, refreshing ? 48 : 0) : 0 }}
       >
-        <div className="flex items-center justify-center gap-2 py-3 text-gray-300 text-xs">
+        <div className="flex items-center justify-center gap-2 py-3 text-ink-3 text-xs">
           <RefreshCw
             size={16}
             className={`transition-transform ${refreshing ? 'animate-spin text-primary-400' : ''}`}
@@ -164,11 +164,11 @@ export default function Matches() {
       <div className="px-4">
         <button
           onClick={() => setSearchOpen(true)}
-          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-white/[0.08] text-left transition-colors hover:border-white/[0.14]"
+          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl border border-overlay/[0.08] text-left transition-colors hover:border-overlay/[0.14]"
           style={{ background: 'rgba(255,255,255,0.03)' }}
         >
-          <Search size={16} className="text-gray-300 shrink-0" />
-          <span className="flex-1 text-sm text-gray-300">
+          <Search size={16} className="text-ink-3 shrink-0" />
+          <span className="flex-1 text-sm text-ink-3">
             {t('search.placeholder')}
           </span>
         </button>
@@ -190,7 +190,7 @@ export default function Matches() {
             {liveCount > 0 && <span className="chip-count">{liveCount}</span>}
           </button>
 
-          <div className="w-px h-6 bg-white/[0.06] shrink-0" />
+          <div className="w-px h-6 bg-overlay/[0.06] shrink-0" />
 
           {/* Dates */}
           {dateWindow.map((d, i) => {
@@ -204,7 +204,7 @@ export default function Matches() {
                 className={`flex flex-col items-center px-3 py-1.5 rounded-lg min-w-[44px] border transition-colors ${
                   isSelected
                     ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                    : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                    : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                 }`}
               >
                 <span className="text-[10px] font-medium">{top}</span>
@@ -256,10 +256,10 @@ export default function Matches() {
           <div className="bento-card text-center py-14 space-y-4">
             <div className="text-5xl" aria-hidden="true">{liveOnly ? '📡' : '📅'}</div>
             <div>
-              <p className="text-gray-300 font-semibold text-base">
+              <p className="text-ink-3 font-semibold text-base">
                 {liveOnly ? t('matches.noLive') : t('matches.noMatchesDate')}
               </p>
-              <p className="text-gray-300 text-sm mt-1">
+              <p className="text-ink-3 text-sm mt-1">
                 {liveOnly
                   ? t('matches.noLiveHint')
                   : t('matches.noMatchesDateHint')}
@@ -287,9 +287,9 @@ export default function Matches() {
                       <CompetitionLogo logo={logo} size={20} />
                       <p className="comp-label truncate">{compName}</p>
                     </div>
-                    <span className="text-xs font-semibold text-gray-400 tabular-nums">{compMatches.length}</span>
+                    <span className="text-xs font-semibold text-ink-4 tabular-nums">{compMatches.length}</span>
                   </div>
-                  <div className="card overflow-hidden divide-y divide-white/[0.04]">
+                  <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
                     {visible.map((match) => (
                       <MatchCard key={match.id} match={match} />
                     ))}

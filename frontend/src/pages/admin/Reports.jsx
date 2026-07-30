@@ -8,7 +8,7 @@ import api from '../../services/api';
 const STATUS_LABELS = {
   PENDING: { label: 'En attente', cls: 'bg-orange-500/15 text-orange-400 border border-orange-500/20' },
   REVIEWED: { label: 'Examiné', cls: 'bg-blue-500/15 text-blue-400 border border-blue-500/20' },
-  DISMISSED: { label: 'Ignoré', cls: 'bg-gray-500/15 text-gray-400 border border-gray-500/20' },
+  DISMISSED: { label: 'Ignoré', cls: 'bg-gray-500/15 text-ink-4 border border-gray-500/20' },
   ACTIONED: { label: 'Traité', cls: 'bg-primary-500/15 text-primary-400 border border-primary-500/20' },
 };
 
@@ -31,8 +31,8 @@ export default function AdminReports() {
   return (
     <div className="space-y-5 max-w-4xl">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Signalements</h1>
-        <p className="text-sm text-gray-300 mt-0.5">{data?.pagination?.total ?? 0} signalement(s) au total</p>
+        <h1 className="font-display font-bold text-2xl text-ink-1">Signalements</h1>
+        <p className="text-sm text-ink-3 mt-0.5">{data?.pagination?.total ?? 0} signalement(s) au total</p>
       </div>
 
       {/* Filtres statut */}
@@ -44,7 +44,7 @@ export default function AdminReports() {
             className={`text-xs font-medium px-3.5 py-2 rounded-xl border transition-colors ${
               statusFilter === val
                 ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
-                : 'bg-surface-800 border-surface-700 text-gray-400 hover:border-surface-600 hover:text-gray-200'
+                : 'bg-surface-800 border-surface-700 text-ink-4 hover:border-surface-600 hover:text-ink-2'
             }`}
           >
             {label}
@@ -62,8 +62,8 @@ export default function AdminReports() {
       ) : reports.length === 0 ? (
         <div className="bg-surface-800 border border-surface-700 rounded-2xl py-16 text-center">
           <ShieldCheck size={36} className="mx-auto text-primary-500/50 mb-3" />
-          <p className="text-gray-400 font-medium">Aucun signalement</p>
-          <p className="text-xs text-gray-400 mt-1">Pour ce filtre</p>
+          <p className="text-ink-4 font-medium">Aucun signalement</p>
+          <p className="text-xs text-ink-4 mt-1">Pour ce filtre</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -76,12 +76,12 @@ export default function AdminReports() {
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <AlertTriangle size={14} className="text-orange-400" />
-                      <span className="text-sm font-medium text-gray-200">
+                      <span className="text-sm font-medium text-ink-2">
                         Signalé par <span className="text-primary-400">@{report.reporter?.username}</span>
                       </span>
                     </div>
-                    <p className="text-xs text-gray-300">Raison : {report.reason}</p>
-                    <p className="text-xs text-gray-400 mt-0.5">
+                    <p className="text-xs text-ink-3">Raison : {report.reason}</p>
+                    <p className="text-xs text-ink-4 mt-0.5">
                       {format(new Date(report.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}
                     </p>
                   </div>
@@ -93,17 +93,17 @@ export default function AdminReports() {
                 {/* Pronostic signalé */}
                 {report.tip && (
                   <div className="bg-surface-700/60 border border-surface-600 rounded-xl p-3.5">
-                    <p className="text-xs font-semibold text-gray-400 mb-1.5">
-                      Pronostic de <span className="text-gray-200">@{report.tip.user?.username}</span>
+                    <p className="text-xs font-semibold text-ink-4 mb-1.5">
+                      Pronostic de <span className="text-ink-2">@{report.tip.user?.username}</span>
                     </p>
-                    <p className="text-sm text-gray-300">
+                    <p className="text-sm text-ink-3">
                       {report.tip.match?.homeTeam} vs {report.tip.match?.awayTeam}
                     </p>
-                    <p className="text-xs text-gray-300 mt-0.5">
-                      Prédiction : <span className="text-gray-300 font-medium">{report.tip.prediction}</span>
+                    <p className="text-xs text-ink-3 mt-0.5">
+                      Prédiction : <span className="text-ink-3 font-medium">{report.tip.prediction}</span>
                     </p>
                     {report.tip.analysis && (
-                      <p className="text-xs text-gray-300 italic mt-1.5 border-t border-surface-600 pt-1.5">
+                      <p className="text-xs text-ink-3 italic mt-1.5 border-t border-surface-600 pt-1.5">
                         "{report.tip.analysis}"
                       </p>
                     )}
@@ -116,7 +116,7 @@ export default function AdminReports() {
                     <button
                       onClick={() => resolve.mutate({ reportId: report.id, status: 'DISMISSED' })}
                       disabled={resolve.isPending}
-                      className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-xl border border-surface-600 text-gray-400 hover:text-gray-200 hover:border-surface-500 transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-xl border border-surface-600 text-ink-4 hover:text-ink-2 hover:border-surface-500 transition-colors"
                     >
                       Ignorer
                     </button>

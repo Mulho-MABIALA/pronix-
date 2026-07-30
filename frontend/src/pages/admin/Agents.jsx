@@ -56,14 +56,14 @@ function ResultBlock({ result }) {
       <div className="mt-4 space-y-3">
         <div className="bg-surface-900 rounded-xl p-4 border border-surface-600">
           <p className="text-xs font-semibold text-green-400 mb-2 uppercase tracking-wider">WhatsApp</p>
-          <p className="text-sm text-gray-300 whitespace-pre-wrap">{result.posts.whatsapp}</p>
+          <p className="text-sm text-ink-3 whitespace-pre-wrap">{result.posts.whatsapp}</p>
         </div>
         <div className="bg-surface-900 rounded-xl p-4 border border-surface-600">
           <p className="text-xs font-semibold text-blue-400 mb-2 uppercase tracking-wider">Facebook</p>
-          <p className="text-sm text-gray-300 whitespace-pre-wrap">{result.posts.facebook}</p>
+          <p className="text-sm text-ink-3 whitespace-pre-wrap">{result.posts.facebook}</p>
         </div>
         {result.posts.meilleurMatch && (
-          <p className="text-xs text-gray-300">Match vedette : <span className="text-gray-300">{result.posts.meilleurMatch}</span></p>
+          <p className="text-xs text-ink-3">Match vedette : <span className="text-ink-3">{result.posts.meilleurMatch}</span></p>
         )}
       </div>
     );
@@ -74,7 +74,7 @@ function ResultBlock({ result }) {
     return (
       <div className="mt-4 bg-surface-900 rounded-xl p-4 border border-surface-600">
         <p className="text-xs font-semibold text-orange-400 mb-2 uppercase tracking-wider">Réponse</p>
-        <p className="text-sm text-gray-300 whitespace-pre-wrap">{result.reponse}</p>
+        <p className="text-sm text-ink-3 whitespace-pre-wrap">{result.reponse}</p>
       </div>
     );
   }
@@ -92,13 +92,13 @@ function ResultBlock({ result }) {
         ].map(({ label, value }) => value && (
           <div key={label} className="bg-surface-900 rounded-xl p-3 border border-surface-600">
             <p className="text-[10px] font-semibold text-purple-400 uppercase tracking-wider mb-1">{label}</p>
-            <p className="text-sm text-gray-300">{value}</p>
+            <p className="text-sm text-ink-3">{value}</p>
           </div>
         ))}
         {s.keywords?.length > 0 && (
           <div className="flex flex-wrap gap-1.5 mt-2">
             {s.keywords.map((kw) => (
-              <span key={kw} className="text-[10px] px-2 py-0.5 rounded bg-surface-700 text-gray-400">{kw}</span>
+              <span key={kw} className="text-[10px] px-2 py-0.5 rounded bg-surface-700 text-ink-4">{kw}</span>
             ))}
           </div>
         )}
@@ -114,29 +114,29 @@ function ResultBlock({ result }) {
         {r.tipsterSemaine && (
           <div className="bg-primary-500/10 border border-primary-500/25 rounded-xl p-3">
             <p className="text-xs font-semibold text-primary-400 mb-1">Tipster de la semaine</p>
-            <p className="text-sm text-gray-200 font-medium">{r.tipsterSemaine.username}</p>
-            <p className="text-xs text-gray-400 mt-0.5">{r.tipsterSemaine.raison}</p>
+            <p className="text-sm text-ink-2 font-medium">{r.tipsterSemaine.username}</p>
+            <p className="text-xs text-ink-4 mt-0.5">{r.tipsterSemaine.raison}</p>
           </div>
         )}
         <div className="bg-surface-900 rounded-xl p-3 border border-surface-600 space-y-2">
           {r.classement?.map((t) => (
             <div key={t.rang} className="flex items-start gap-2">
-              <span className="text-xs font-bold text-gray-300 w-4 shrink-0 mt-0.5">#{t.rang}</span>
+              <span className="text-xs font-bold text-ink-3 w-4 shrink-0 mt-0.5">#{t.rang}</span>
               <div>
-                <p className="text-sm font-medium text-gray-200">{t.username} <span className="text-primary-400 font-bold">{t.weeklyRate}%</span></p>
-                <p className="text-xs text-gray-300">{t.commentaire}</p>
+                <p className="text-sm font-medium text-ink-2">{t.username} <span className="text-primary-400 font-bold">{t.weeklyRate}%</span></p>
+                <p className="text-xs text-ink-3">{t.commentaire}</p>
               </div>
             </div>
           ))}
         </div>
         {r.tendances && (
           <div className="bg-surface-900 rounded-xl p-3 border border-surface-600">
-            <p className="text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Tendances</p>
-            <p className="text-sm text-gray-300">{r.tendances}</p>
+            <p className="text-xs font-semibold text-ink-4 mb-1 uppercase tracking-wider">Tendances</p>
+            <p className="text-sm text-ink-3">{r.tendances}</p>
           </div>
         )}
         {r.messageComm && (
-          <p className="text-xs text-gray-300 italic">{r.messageComm}</p>
+          <p className="text-xs text-ink-3 italic">{r.messageComm}</p>
         )}
       </div>
     );
@@ -145,7 +145,7 @@ function ResultBlock({ result }) {
   // Fallback JSON
   return (
     <div className="mt-4">
-      <pre className="text-xs text-gray-400 bg-surface-900 rounded-xl p-3 border border-surface-600 overflow-x-auto">
+      <pre className="text-xs text-ink-4 bg-surface-900 rounded-xl p-3 border border-surface-600 overflow-x-auto">
         {expanded ? full : preview}
         {truncated && !expanded && '...'}
       </pre>
@@ -181,20 +181,20 @@ function AgentCard({ agent }) {
           <Icon size={18} />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="font-semibold text-gray-100 text-sm">{label}</p>
-          <p className="text-xs text-gray-300 mt-0.5">{description}</p>
+          <p className="font-semibold text-ink-1 text-sm">{label}</p>
+          <p className="text-xs text-ink-3 mt-0.5">{description}</p>
         </div>
       </div>
 
       {hasInput && (
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">{inputLabel}</label>
+          <label className="block text-xs font-medium text-ink-4 mb-1.5">{inputLabel}</label>
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder={inputPlaceholder}
-            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500/50"
           />
         </div>
       )}
@@ -239,19 +239,19 @@ function OrchestratorCard() {
           <Bot size={18} />
         </div>
         <div>
-          <p className="font-semibold text-gray-100 text-sm">Orchestrateur</p>
-          <p className="text-xs text-gray-300 mt-0.5">Donnez une instruction en langage naturel — l'orchestrateur choisit et coordonne les bons agents</p>
+          <p className="font-semibold text-ink-1 text-sm">Orchestrateur</p>
+          <p className="text-xs text-ink-3 mt-0.5">Donnez une instruction en langage naturel — l'orchestrateur choisit et coordonne les bons agents</p>
         </div>
       </div>
 
       <div>
-        <label className="block text-xs font-medium text-gray-400 mb-1.5">Instruction</label>
+        <label className="block text-xs font-medium text-ink-4 mb-1.5">Instruction</label>
         <textarea
           value={instruction}
           onChange={(e) => setInstruction(e.target.value)}
           rows={2}
           placeholder="Ex: génère les posts du jour et le classement tipsters de la semaine"
-          className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500/50 resize-none"
+          className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2.5 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500/50 resize-none"
         />
       </div>
 
@@ -275,10 +275,10 @@ function OrchestratorCard() {
           {result.synthese && (
             <div className="bg-surface-900 rounded-xl p-4 border border-surface-600">
               <p className="text-xs font-semibold text-primary-400 mb-2 uppercase tracking-wider">Synthèse</p>
-              <p className="text-sm text-gray-300 whitespace-pre-wrap">{result.synthese}</p>
+              <p className="text-sm text-ink-3 whitespace-pre-wrap">{result.synthese}</p>
             </div>
           )}
-          <p className="text-xs text-gray-400">{result.tours} tour(s) d'orchestration</p>
+          <p className="text-xs text-ink-4">{result.tours} tour(s) d'orchestration</p>
         </div>
       )}
     </div>
@@ -302,42 +302,42 @@ function PushBroadcastCard() {
           <Bell size={18} />
         </div>
         <div>
-          <p className="font-semibold text-gray-100 text-sm">Envoyer une notification push</p>
-          <p className="text-xs text-gray-300 mt-0.5">Diffuse une notification à tous les abonnés aux notifications</p>
+          <p className="font-semibold text-ink-1 text-sm">Envoyer une notification push</p>
+          <p className="text-xs text-ink-3 mt-0.5">Diffuse une notification à tous les abonnés aux notifications</p>
         </div>
       </div>
 
       <div className="space-y-3">
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">Titre *</label>
+          <label className="block text-xs font-medium text-ink-4 mb-1.5">Titre *</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Ex: ⚽ Résultats du soir disponibles"
             maxLength={80}
-            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50"
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-amber-500/50"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">Message *</label>
+          <label className="block text-xs font-medium text-ink-4 mb-1.5">Message *</label>
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             placeholder="Ex: Consultez les analyses de la journée sur fpronix"
             maxLength={180}
             rows={2}
-            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50 resize-none"
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-amber-500/50 resize-none"
           />
         </div>
         <div>
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">Lien (optionnel)</label>
+          <label className="block text-xs font-medium text-ink-4 mb-1.5">Lien (optionnel)</label>
           <input
             type="text"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="/matchs"
-            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500/50"
+            className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-amber-500/50"
           />
         </div>
       </div>
@@ -366,15 +366,15 @@ export default function AdminAgents() {
   return (
     <div className="space-y-6 max-w-5xl">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Agents IA</h1>
-        <p className="text-sm text-gray-300 mt-0.5">Lancez manuellement les agents ou utilisez l'orchestrateur en langage naturel</p>
+        <h1 className="font-display font-bold text-2xl text-ink-1">Agents IA</h1>
+        <p className="text-sm text-ink-3 mt-0.5">Lancez manuellement les agents ou utilisez l'orchestrateur en langage naturel</p>
       </div>
 
-      <div className="bg-surface-800/50 border border-surface-700 rounded-2xl p-4 text-sm text-gray-400 space-y-1">
-        <p className="font-medium text-gray-300">Planification automatique</p>
-        <p>• <span className="text-gray-300">6h00</span> — Agent SEO (contenu page du dernier match terminé)</p>
-        <p>• <span className="text-gray-300">7h00</span> — Agent Contenu (posts réseaux sociaux du jour)</p>
-        <p>• <span className="text-gray-300">Lundi 8h00</span> — Agent Analyse (classement tipsters hebdomadaire)</p>
+      <div className="bg-surface-800/50 border border-surface-700 rounded-2xl p-4 text-sm text-ink-4 space-y-1">
+        <p className="font-medium text-ink-3">Planification automatique</p>
+        <p>• <span className="text-ink-3">6h00</span> — Agent SEO (contenu page du dernier match terminé)</p>
+        <p>• <span className="text-ink-3">7h00</span> — Agent Contenu (posts réseaux sociaux du jour)</p>
+        <p>• <span className="text-ink-3">Lundi 8h00</span> — Agent Analyse (classement tipsters hebdomadaire)</p>
       </div>
 
       {/* Push notifications */}
@@ -385,7 +385,7 @@ export default function AdminAgents() {
 
       {/* Agents individuels */}
       <div>
-        <h2 className="font-semibold text-gray-300 text-sm mb-3">Agents individuels</h2>
+        <h2 className="font-semibold text-ink-3 text-sm mb-3">Agents individuels</h2>
         <div className="grid md:grid-cols-2 gap-4">
           {AGENTS.map((agent) => (
             <AgentCard key={agent.id} agent={agent} />

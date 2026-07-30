@@ -78,7 +78,7 @@ function AvatarCircle({ src, letter, size = 'lg', onClick, uploading }) {
 function Toggle({ checked, onChange, label }) {
   return (
     <label className="flex items-center justify-between gap-3 cursor-pointer select-none">
-      <span className="text-sm text-gray-300">{label}</span>
+      <span className="text-sm text-ink-3">{label}</span>
       <button
         type="button"
         role="switch"
@@ -104,8 +104,8 @@ function Section({ title, icon: Icon, children, action }) {
     <section className="bento-card space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          {Icon && <Icon size={16} className="text-gray-300" />}
-          <h2 className="font-semibold text-gray-100 text-sm">{title}</h2>
+          {Icon && <Icon size={16} className="text-ink-3" />}
+          <h2 className="font-semibold text-ink-1 text-sm">{title}</h2>
         </div>
         {action}
       </div>
@@ -156,11 +156,11 @@ function ReferralSection() {
   return (
     <section className="bento-card space-y-4">
       <div className="flex items-center gap-2">
-        <Gift size={16} className="text-gray-300" />
-        <h2 className="font-semibold text-gray-100 text-sm">{t('profile.referral.title')}</h2>
+        <Gift size={16} className="text-ink-3" />
+        <h2 className="font-semibold text-ink-1 text-sm">{t('profile.referral.title')}</h2>
       </div>
 
-      <p className="text-xs text-gray-300 leading-relaxed">
+      <p className="text-xs text-ink-3 leading-relaxed">
         {t('profile.referral.desc')}
       </p>
 
@@ -168,7 +168,7 @@ function ReferralSection() {
         <div className="h-10 bg-surface-700/40 rounded-xl animate-pulse" />
       ) : code ? (
         <div className="flex items-center gap-2">
-          <div className="flex-1 flex items-center gap-2 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2.5">
+          <div className="flex-1 flex items-center gap-2 bg-surface-700/40 border border-overlay/[0.07] rounded-xl px-3 py-2.5">
             <span className="text-primary-400 font-mono font-bold text-sm tracking-widest">{code}</span>
           </div>
           <button
@@ -186,7 +186,7 @@ function ReferralSection() {
       ) : null}
 
       {count > 0 && (
-        <p className="text-xs text-gray-300">
+        <p className="text-xs text-ink-3">
           {t('profile.referral.referredCount', { count })}
         </p>
       )}
@@ -208,19 +208,19 @@ function ContactSection() {
   const { t } = useTranslation();
   return (
     <Section title={t('profile.contact.title')} icon={HelpCircle}>
-      <p className="text-xs text-gray-300 leading-relaxed mb-1">
+      <p className="text-xs text-ink-3 leading-relaxed mb-1">
         {t('profile.contact.desc')}
       </p>
       <div className="space-y-2">
         <a
           href={`mailto:${SUPPORT_EMAIL}`}
-          className="flex items-center justify-between gap-2 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2.5 hover:border-white/[0.15] transition-colors"
+          className="flex items-center justify-between gap-2 bg-surface-700/40 border border-overlay/[0.07] rounded-xl px-3 py-2.5 hover:border-overlay/[0.15] transition-colors"
         >
           <div className="flex items-center gap-2 min-w-0">
-            <Mail size={15} className="text-gray-300 shrink-0" />
-            <span className="text-sm text-gray-300 truncate">{SUPPORT_EMAIL}</span>
+            <Mail size={15} className="text-ink-3 shrink-0" />
+            <span className="text-sm text-ink-3 truncate">{SUPPORT_EMAIL}</span>
           </div>
-          <ChevronRight size={14} className="text-gray-400 shrink-0" />
+          <ChevronRight size={14} className="text-ink-4 shrink-0" />
         </a>
         <a
           href={SUPPORT_WHATSAPP_LINK}
@@ -244,7 +244,7 @@ const TICKET_STATUS_STYLE = {
   OPEN:        'bg-blue-500/15 text-blue-400',
   IN_PROGRESS: 'bg-amber-500/15 text-amber-400',
   RESOLVED:    'bg-emerald-500/15 text-emerald-400',
-  CLOSED:      'bg-gray-500/15 text-gray-300',
+  CLOSED:      'bg-gray-500/15 text-ink-3',
 };
 
 function TicketStatusBadge({ status }) {
@@ -272,33 +272,33 @@ function TicketCard({ ticket, onReply }) {
   };
 
   return (
-    <div className="rounded-xl border border-white/[0.08] overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>
+    <div className="rounded-xl border border-overlay/[0.08] overflow-hidden" style={{ background: 'rgba(255,255,255,0.02)' }}>
       <button
         onClick={() => setOpen((o) => !o)}
-        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-white/[0.03] transition-colors"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2.5 text-left hover:bg-overlay/[0.03] transition-colors"
       >
         <div className="min-w-0">
-          <p className="text-sm font-medium text-gray-100 truncate">{ticket.subject}</p>
-          <p className="text-[11px] text-gray-300 mt-0.5">
+          <p className="text-sm font-medium text-ink-1 truncate">{ticket.subject}</p>
+          <p className="text-[11px] text-ink-3 mt-0.5">
             {format(new Date(ticket.createdAt), 'dd MMM yyyy', { locale: dateLocale })}
           </p>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <TicketStatusBadge status={ticket.status} />
-          <ChevronRight size={14} className={`text-gray-400 transition-transform ${open ? 'rotate-90' : ''}`} />
+          <ChevronRight size={14} className={`text-ink-4 transition-transform ${open ? 'rotate-90' : ''}`} />
         </div>
       </button>
 
       {open && (
-        <div className="border-t border-white/[0.06] px-3 py-3 space-y-2">
+        <div className="border-t border-overlay/[0.06] px-3 py-3 space-y-2">
           <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
             {ticket.messages.map((msg) => (
               <div key={msg.id} className={`flex ${msg.isAdmin ? '' : 'justify-end'}`}>
                 <div className={`max-w-[85%] rounded-xl px-3 py-2 text-xs leading-relaxed ${
-                  msg.isAdmin ? 'bg-surface-700 text-gray-200' : 'bg-primary-500/15 text-gray-100'
+                  msg.isAdmin ? 'bg-surface-700 text-ink-2' : 'bg-primary-500/15 text-ink-1'
                 }`}>
                   <p>{msg.content}</p>
-                  <p className="text-[10px] text-gray-400 mt-1">
+                  <p className="text-[10px] text-ink-4 mt-1">
                     {format(new Date(msg.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}
                   </p>
                 </div>
@@ -313,7 +313,7 @@ function TicketCard({ ticket, onReply }) {
                 onChange={(e) => setReply(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') send(); }}
                 placeholder={t('profile.tickets.replyPlaceholder')}
-                className="flex-1 bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500"
+                className="flex-1 bg-surface-700/40 border border-overlay/[0.07] rounded-xl px-3 py-2 text-xs text-ink-2 placeholder-ph-a focus:outline-none focus:border-primary-500"
               />
               <button
                 onClick={send}
@@ -385,19 +385,19 @@ function SupportTicketsSection() {
       }
     >
       {showNew && (
-        <div className="space-y-2 bg-surface-700/30 border border-white/[0.06] rounded-xl p-3">
+        <div className="space-y-2 bg-surface-700/30 border border-overlay/[0.06] rounded-xl p-3">
           <input
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             placeholder={t('profile.tickets.subjectPlaceholder')}
-            className="w-full bg-surface-700/60 border border-white/[0.07] rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500"
+            className="w-full bg-surface-700/60 border border-overlay/[0.07] rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-a focus:outline-none focus:border-primary-500"
           />
           <textarea
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             placeholder={t('profile.tickets.messagePlaceholder')}
             rows={3}
-            className="w-full bg-surface-700/60 border border-white/[0.07] rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-500 focus:outline-none focus:border-primary-500 resize-none"
+            className="w-full bg-surface-700/60 border border-overlay/[0.07] rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-a focus:outline-none focus:border-primary-500 resize-none"
           />
           <button
             onClick={createTicket}
@@ -412,7 +412,7 @@ function SupportTicketsSection() {
       {isLoading ? (
         <div className="h-16 bg-surface-700/40 rounded-xl animate-pulse" />
       ) : tickets.length === 0 ? (
-        !showNew && <p className="text-xs text-gray-300">{t('profile.tickets.noTickets')}</p>
+        !showNew && <p className="text-xs text-ink-3">{t('profile.tickets.noTickets')}</p>
       ) : (
         <div className="space-y-2">
           {tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onReply={reply} />)}
@@ -537,13 +537,13 @@ export default function Profile() {
               className="hidden"
               onChange={handleAvatarChange}
             />
-            <p className="text-xs text-gray-400 text-center mt-1.5">{t('profile.changePhoto')}</p>
+            <p className="text-xs text-ink-4 text-center mt-1.5">{t('profile.changePhoto')}</p>
           </div>
 
           {/* Infos */}
           <div className="flex-1 min-w-0 pt-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-bold text-gray-100 text-lg leading-tight truncate">
+              <p className="font-bold text-ink-1 text-lg leading-tight truncate">
                 {displayName}
               </p>
               {isPremium && (
@@ -552,8 +552,8 @@ export default function Profile() {
                 </span>
               )}
             </div>
-            <p className="text-gray-300 text-sm mt-0.5">@{user?.username}</p>
-            <p className="text-gray-400 text-xs mt-0.5 truncate">{user?.email}</p>
+            <p className="text-ink-3 text-sm mt-0.5">@{user?.username}</p>
+            <p className="text-ink-4 text-xs mt-0.5 truncate">{user?.email}</p>
 
             {/* Badge Google */}
             {isGoogleUser && (
@@ -571,7 +571,7 @@ export default function Profile() {
 
             {/* Bio */}
             {user?.profile?.bio && !editing && (
-              <p className="text-gray-400 text-xs mt-2 leading-relaxed line-clamp-2">
+              <p className="text-ink-4 text-xs mt-2 leading-relaxed line-clamp-2">
                 {user.profile.bio}
               </p>
             )}
@@ -587,10 +587,10 @@ export default function Profile() {
 
         {/* ── Formulaire d'édition ─────────────────────────────────────────── */}
         {editing ? (
-          <div className="space-y-4 mt-4 pt-4 border-t border-white/[0.06]">
+          <div className="space-y-4 mt-4 pt-4 border-t border-overlay/[0.06]">
 
             <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-ink-4 mb-1.5 uppercase tracking-wider">
                 {t('profile.displayNameLabel')}
               </label>
               <input
@@ -604,7 +604,7 @@ export default function Profile() {
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">
+              <label className="block text-xs font-semibold text-ink-4 mb-1.5 uppercase tracking-wider">
                 {t('profile.bioLabel')}
               </label>
               <textarea
@@ -614,13 +614,13 @@ export default function Profile() {
                 maxLength={300}
                 placeholder={t('profile.bioPlaceholder')}
               />
-              <p className="text-right text-xs text-gray-400 mt-0.5">
+              <p className="text-right text-xs text-ink-4 mt-0.5">
                 {form.bio.length}/300
               </p>
             </div>
 
             <div className="space-y-3 pt-1">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+              <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">
                 {t('profile.notifications')}
               </p>
               <Toggle
@@ -673,7 +673,7 @@ export default function Profile() {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <PlanBadge planCode={subscription.plan?.code} />
-                <p className="text-xs text-gray-300">
+                <p className="text-xs text-ink-3">
                   {subscription.status === 'ACTIVE'
                     ? subscription.endDate
                       ? t('profile.expiresOn', { date: format(new Date(subscription.endDate), 'dd MMM yyyy', { locale: dateLocale }) })
@@ -696,7 +696,7 @@ export default function Profile() {
 
             {payments?.length > 0 && (
               <details className="group">
-                <summary className="text-xs text-gray-300 cursor-pointer hover:text-gray-200 list-none flex items-center gap-1">
+                <summary className="text-xs text-ink-3 cursor-pointer hover:text-ink-2 list-none flex items-center gap-1">
                   <ChevronRight size={12} className="group-open:rotate-90 transition-transform" />
                   {t('profile.paymentHistory', { count: payments.length })}
                 </summary>
@@ -706,11 +706,11 @@ export default function Profile() {
                       key={p.id}
                       className="flex items-center justify-between py-1.5 border-b border-surface-700/60 last:border-0"
                     >
-                      <span className="text-gray-300">
+                      <span className="text-ink-3">
                         {format(new Date(p.createdAt), 'dd/MM/yyyy', { locale: dateLocale })}
                       </span>
-                      <span className="text-gray-400">{p.method}</span>
-                      <span className="text-gray-300 font-medium">
+                      <span className="text-ink-4">{p.method}</span>
+                      <span className="text-ink-3 font-medium">
                         {p.amount.toLocaleString('fr-FR')} FCFA
                       </span>
                       <span className={p.status === 'COMPLETED' ? 'text-primary-400' : 'text-red-400'}>
@@ -723,7 +723,7 @@ export default function Profile() {
             )}
           </div>
         ) : (
-          <p className="text-gray-300 text-sm">{t('profile.noSubscription')}</p>
+          <p className="text-ink-3 text-sm">{t('profile.noSubscription')}</p>
         )}
       </Section>
 
@@ -732,20 +732,20 @@ export default function Profile() {
         <Section title={t('profile.myStats')} icon={TrendingUp}>
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bento-card py-3">
-              <p className="text-xl font-display font-bold text-gray-100">{stats.totalTips}</p>
-              <p className="text-xs text-gray-300 mt-0.5">{t('profile.picks')}</p>
+              <p className="text-xl font-display font-bold text-ink-1">{stats.totalTips}</p>
+              <p className="text-xs text-ink-3 mt-0.5">{t('profile.picks')}</p>
             </div>
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-primary-400">
                 {stats.successRate?.toFixed(0)}%
               </p>
-              <p className="text-xs text-gray-300 mt-0.5">{t('tipsters.successRate')}</p>
+              <p className="text-xs text-ink-3 mt-0.5">{t('tipsters.successRate')}</p>
             </div>
             <div className="bento-card py-3">
-              <p className="text-xl font-display font-bold text-gray-100">
+              <p className="text-xl font-display font-bold text-ink-1">
                 {stats.totalTips > 0 ? (stats.successRate / 10).toFixed(1) : '—'}
               </p>
-              <p className="text-xs text-gray-300 mt-0.5">{t('profile.score')}</p>
+              <p className="text-xs text-ink-3 mt-0.5">{t('profile.score')}</p>
             </div>
           </div>
           <div className="mt-1">
@@ -760,8 +760,8 @@ export default function Profile() {
       {/* ── Pronostics récents ────────────────────────────────────────────────── */}
       {myTips.length > 0 && (
         <section>
-          <h2 className="font-semibold text-gray-100 text-sm mb-3 flex items-center gap-2">
-            <TrendingUp size={14} className="text-gray-300" />
+          <h2 className="font-semibold text-ink-1 text-sm mb-3 flex items-center gap-2">
+            <TrendingUp size={14} className="text-ink-3" />
             {t('profile.recentPicksTitle')}
           </h2>
           <div className="space-y-2">
@@ -772,15 +772,15 @@ export default function Profile() {
                 className="bento-card flex items-center justify-between gap-3 text-sm hover:border-white/10 transition-colors"
               >
                 <div className="min-w-0">
-                  <p className="font-medium text-gray-200 truncate">
+                  <p className="font-medium text-ink-2 truncate">
                     {tip.match?.homeTeam} vs {tip.match?.awayTeam}
                   </p>
-                  <p className="text-xs text-gray-300 mt-0.5 truncate">{tip.prediction}</p>
+                  <p className="text-xs text-ink-3 mt-0.5 truncate">{tip.prediction}</p>
                 </div>
                 <span className={`badge shrink-0 ${
                   tip.result === 'WIN'  ? 'bg-primary-500/15 text-primary-400' :
                   tip.result === 'LOSS' ? 'bg-red-500/15 text-red-400' :
-                                         'bg-surface-600 text-gray-300'
+                                         'bg-surface-600 text-ink-3'
                 }`}>
                   {tip.result === 'WIN' ? '✓ Gagné' :
                    tip.result === 'LOSS' ? '✗ Perdu' : 'Attente'}
@@ -794,12 +794,12 @@ export default function Profile() {
       {/* ── Sécurité / compte ─────────────────────────────────────────────────── */}
       <Section title={t('profile.account')} icon={Shield}>
         <div className="space-y-2">
-          <div className="flex items-center justify-between py-2 border-b border-white/[0.05]">
+          <div className="flex items-center justify-between py-2 border-b border-overlay/[0.05]">
             <div className="flex items-center gap-2">
-              <Mail size={14} className="text-gray-300" />
-              <span className="text-sm text-gray-300">{t('profile.email')}</span>
+              <Mail size={14} className="text-ink-3" />
+              <span className="text-sm text-ink-3">{t('profile.email')}</span>
             </div>
-            <span className="text-xs text-gray-300 truncate max-w-[180px]">{user?.email}</span>
+            <span className="text-xs text-ink-3 truncate max-w-[180px]">{user?.email}</span>
           </div>
 
           {isGoogleUser ? (
@@ -811,7 +811,7 @@ export default function Profile() {
                   <path d="M4.41 11.905a5.968 5.968 0 010-3.81V5.505H1.064a9.997 9.997 0 000 9l3.345-2.6z" fill="#FBBC05"/>
                   <path d="M10 3.977c1.468 0 2.782.505 3.818 1.495l2.863-2.863C14.959 1 12.695 0 10 0 6.09 0 2.71 2.24 1.063 5.505l3.346 2.59C5.2 5.732 7.4 3.977 10 3.977z" fill="#EA4335"/>
                 </svg>
-                <span className="text-sm text-gray-300">{t('profile.googleLogin')}</span>
+                <span className="text-sm text-ink-3">{t('profile.googleLogin')}</span>
               </div>
               <Link to="/mot-de-passe-oublie" className="text-xs text-primary-400 hover:text-primary-300">
                 {t('profile.setPassword')}
@@ -819,7 +819,7 @@ export default function Profile() {
             </div>
           ) : (
             <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-gray-300">{t('profile.password')}</span>
+              <span className="text-sm text-ink-3">{t('profile.password')}</span>
               <Link to="/mot-de-passe-oublie" className="text-xs text-primary-400 hover:text-primary-300">
                 {t('profile.editPassword')}
               </Link>

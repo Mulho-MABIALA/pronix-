@@ -13,7 +13,7 @@ export function OddsChip({ odd, size = 'sm', muted = false, isReal = false, clas
   return (
     <span
       className={`inline-flex items-center justify-center rounded-md border font-mono font-semibold tabular-nums
-        ${muted ? 'border-white/[0.06] bg-white/[0.02] text-gray-300' : 'border-white/[0.08] bg-white/[0.04] text-gray-200'}
+        ${muted ? 'border-overlay/[0.06] bg-overlay/[0.02] text-ink-3' : 'border-overlay/[0.08] bg-overlay/[0.04] text-ink-2'}
         ${sizing} ${className}`}
       title={isReal ? t('oddsChip.realOddTooltip') : t('oddsChip.simulatedOddTooltip')}
     >

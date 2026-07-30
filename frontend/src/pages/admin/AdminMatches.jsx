@@ -12,7 +12,7 @@ function TeamLogo({ logo, name, size = 20 }) {
   if (!logo || error) {
     return (
       <span
-        className="shrink-0 rounded-full bg-surface-600 text-gray-300 flex items-center justify-center font-bold"
+        className="shrink-0 rounded-full bg-surface-600 text-ink-3 flex items-center justify-center font-bold"
         style={{ width: size, height: size, fontSize: size * 0.45 }}
       >
         {(name || '?').charAt(0).toUpperCase()}
@@ -30,11 +30,11 @@ function TeamLogo({ logo, name, size = 20 }) {
 }
 
 const STATUS_STYLE = {
-  SCHEDULED: 'bg-gray-500/15 text-gray-400',
+  SCHEDULED: 'bg-gray-500/15 text-ink-4',
   LIVE:      'bg-live-500/15 text-live-400',
   FINISHED:  'bg-primary-500/15 text-primary-400',
   POSTPONED: 'bg-amber-500/15 text-amber-400',
-  CANCELLED: 'bg-surface-700 text-gray-400',
+  CANCELLED: 'bg-surface-700 text-ink-4',
 };
 const STATUS_LABELS = {
   SCHEDULED: 'Programmé', LIVE: 'En direct',
@@ -58,8 +58,8 @@ export default function AdminMatches() {
   return (
     <div className="space-y-5 max-w-7xl">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Matchs</h1>
-        <p className="text-sm text-gray-300 mt-0.5">{pagination?.total ?? 0} matchs en base</p>
+        <h1 className="font-display font-bold text-2xl text-ink-1">Matchs</h1>
+        <p className="text-sm text-ink-3 mt-0.5">{pagination?.total ?? 0} matchs en base</p>
       </div>
 
       {/* Filtres */}
@@ -71,7 +71,7 @@ export default function AdminMatches() {
             className={`text-xs font-medium px-3.5 py-2 rounded-xl border transition-colors ${
               statusFilter === val
                 ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
-                : 'bg-surface-800 border-surface-700 text-gray-400 hover:border-surface-600 hover:text-gray-200'
+                : 'bg-surface-800 border-surface-700 text-ink-4 hover:border-surface-600 hover:text-ink-2'
             }`}
           >
             {label}
@@ -83,7 +83,7 @@ export default function AdminMatches() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-gray-300 uppercase tracking-wider">
+              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Match</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden md:table-cell">Compétition</th>
                 <th className="text-center px-4 py-3.5 font-medium">Score</th>
@@ -106,16 +106,16 @@ export default function AdminMatches() {
                 : matches.map((m) => (
                   <tr key={m.id} className="hover:bg-surface-700/40 transition-colors">
                     <td className="px-5 py-3.5">
-                      <div className="flex items-center gap-1.5 text-sm font-medium text-gray-200 max-w-[240px]">
+                      <div className="flex items-center gap-1.5 text-sm font-medium text-ink-2 max-w-[240px]">
                         <TeamLogo logo={m.homeTeamLogo} name={m.homeTeam} />
                         <span className="truncate">{m.homeTeam}</span>
-                        <span className="text-gray-400 shrink-0">vs</span>
+                        <span className="text-ink-4 shrink-0">vs</span>
                         <TeamLogo logo={m.awayTeamLogo} name={m.awayTeam} />
                         <span className="truncate">{m.awayTeam}</span>
                       </div>
-                      {m.round && <p className="text-xs text-gray-400 mt-0.5">{m.round}</p>}
+                      {m.round && <p className="text-xs text-ink-4 mt-0.5">{m.round}</p>}
                     </td>
-                    <td className="px-4 py-3.5 hidden md:table-cell text-xs text-gray-300 max-w-[160px]">
+                    <td className="px-4 py-3.5 hidden md:table-cell text-xs text-ink-3 max-w-[160px]">
                       <div className="flex items-center gap-1.5">
                         <CompetitionLogo logo={m.competition?.logo} size={15} />
                         <span className="truncate">{m.competition?.name}</span>
@@ -123,8 +123,8 @@ export default function AdminMatches() {
                     </td>
                     <td className="px-4 py-3.5 text-center">
                       {m.homeScore !== null
-                        ? <span className="text-sm font-bold text-gray-100 font-mono">{m.homeScore}–{m.awayScore}</span>
-                        : <span className="text-gray-400 text-xs">–</span>
+                        ? <span className="text-sm font-bold text-ink-1 font-mono">{m.homeScore}–{m.awayScore}</span>
+                        : <span className="text-ink-4 text-xs">–</span>
                       }
                     </td>
                     <td className="px-4 py-3.5">
@@ -132,10 +132,10 @@ export default function AdminMatches() {
                         {STATUS_LABELS[m.status] || m.status}
                       </span>
                     </td>
-                    <td className="px-4 py-3.5 text-center hidden lg:table-cell text-sm text-gray-300">
+                    <td className="px-4 py-3.5 text-center hidden lg:table-cell text-sm text-ink-3">
                       {m._count?.tips ?? 0}
                     </td>
-                    <td className="px-5 py-3.5 hidden lg:table-cell text-xs text-gray-300">
+                    <td className="px-5 py-3.5 hidden lg:table-cell text-xs text-ink-3">
                       {format(new Date(m.scheduledAt), 'dd MMM yyyy, HH:mm', { locale: fr })}
                     </td>
                   </tr>
@@ -147,14 +147,14 @@ export default function AdminMatches() {
 
         {pagination?.pages > 1 && (
           <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
-            <p className="text-xs text-gray-300">Page {page} / {pagination.pages}</p>
+            <p className="text-xs text-ink-3">Page {page} / {pagination.pages}</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= pagination.pages}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
                 <ChevronRight size={16} />
               </button>
             </div>

@@ -60,7 +60,7 @@ function ExplorerDrawer({ open, onClose }) {
       />
 
       {/* Drawer */}
-      <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-2xl border-t border-white/[0.08] animate-slide-up flex flex-col"
+      <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-2xl border-t border-overlay/[0.08] animate-slide-up flex flex-col"
         style={{ background: 'rgba(23,24,25,0.98)', backdropFilter: 'blur(20px)', maxHeight: '85vh' }}>
 
         {/* Handle — fixe, ne scrolle pas */}
@@ -69,9 +69,9 @@ function ExplorerDrawer({ open, onClose }) {
         </div>
 
         {/* Header — fixe, ne scrolle pas */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-white/[0.06] shrink-0">
-          <p className="font-semibold text-gray-100 text-sm">{t('bottomNav.exploreTitle')}</p>
-          <button onClick={onClose} className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-white/[0.05] transition-colors">
+        <div className="flex items-center justify-between px-5 py-3 border-b border-overlay/[0.06] shrink-0">
+          <p className="font-semibold text-ink-1 text-sm">{t('bottomNav.exploreTitle')}</p>
+          <button onClick={onClose} className="p-1.5 rounded-lg text-ink-3 hover:text-ink-2 hover:bg-overlay/[0.05] transition-colors">
             <X size={16} />
           </button>
         </div>
@@ -80,22 +80,22 @@ function ExplorerDrawer({ open, onClose }) {
         <div className="overflow-y-auto flex-1 min-h-0 px-4 py-4 space-y-5" style={{ paddingBottom: 'max(5rem, env(safe-area-inset-bottom))' }}>
           {SECTIONS.map((section) => (
             <div key={section.key}>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">{section.label}</p>
+              <p className="text-xs font-bold text-ink-4 uppercase tracking-widest mb-2 px-1">{section.label}</p>
               <div className="space-y-1.5">
                 {section.items.map(({ to, label, Icon, desc, color }) => (
                   <button
                     key={to}
                     onClick={() => { navigate(to); onClose(); }}
-                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-white/[0.04] transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 rounded-xl hover:bg-overlay/[0.04] transition-colors text-left"
                   >
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${color}`}>
                       <Icon size={17} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-200">{label}</p>
-                      <p className="text-xs text-gray-300 truncate">{desc}</p>
+                      <p className="text-sm font-semibold text-ink-2">{label}</p>
+                      <p className="text-xs text-ink-3 truncate">{desc}</p>
                     </div>
-                    <ChevronRight size={14} className="text-gray-400 shrink-0" />
+                    <ChevronRight size={14} className="text-ink-4 shrink-0" />
                   </button>
                 ))}
               </div>
@@ -105,7 +105,7 @@ function ExplorerDrawer({ open, onClose }) {
           {/* ── Installer l'application ─────────────────────── */}
           {!isStandalone() && (
             <div>
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 px-1">{t('bottomNav.application')}</p>
+              <p className="text-xs font-bold text-ink-4 uppercase tracking-widest mb-2 px-1">{t('bottomNav.application')}</p>
               <div className="space-y-1.5">
                 {isInstallable ? (
                   /* Android Chrome / Edge — prompt natif */
@@ -118,7 +118,7 @@ function ExplorerDrawer({ open, onClose }) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-primary-300">{t('bottomNav.installApp')}</p>
-                      <p className="text-xs text-gray-300">{t('bottomNav.quickAccessHome')}</p>
+                      <p className="text-xs text-ink-3">{t('bottomNav.quickAccessHome')}</p>
                     </div>
                     <ChevronRight size={14} className="text-primary-500 shrink-0" />
                   </button>
@@ -134,13 +134,13 @@ function ExplorerDrawer({ open, onClose }) {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-primary-300">{t('bottomNav.installApp')}</p>
-                        <p className="text-xs text-gray-300">{t('bottomNav.addToHomeScreen')}</p>
+                        <p className="text-xs text-ink-3">{t('bottomNav.addToHomeScreen')}</p>
                       </div>
                       <ChevronRight size={14} className={`text-primary-500 shrink-0 transition-transform ${showIOSHint ? 'rotate-90' : ''}`} />
                     </button>
                     {showIOSHint && (
-                      <div className="mt-2 p-3 rounded-xl bg-white/[0.04] border border-white/[0.06] text-xs text-gray-300 space-y-2">
-                        <p className="font-semibold text-gray-100">{t('bottomNav.howToInstall')}</p>
+                      <div className="mt-2 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.06] text-xs text-ink-3 space-y-2">
+                        <p className="font-semibold text-ink-1">{t('bottomNav.howToInstall')}</p>
                         <p>{t('bottomNav.iosStep1Prefix')} <span className="text-primary-400 font-semibold">{t('bottomNav.iosShare')}</span> <Share size={11} className="inline" /> {t('bottomNav.iosStep1Suffix')}</p>
                         <p>{t('bottomNav.iosStep2Prefix')} <span className="text-primary-400 font-semibold">{t('bottomNav.iosStep2Action')}</span></p>
                         <p>{t('bottomNav.iosStep3Prefix')} <span className="text-primary-400 font-semibold">{t('bottomNav.iosAdd')}</span></p>
@@ -149,14 +149,14 @@ function ExplorerDrawer({ open, onClose }) {
                   </div>
                 ) : (
                   /* Autre navigateur — instructions génériques */
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                  <div className="p-3 rounded-xl bg-overlay/[0.03] border border-overlay/[0.06]">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-gray-400 bg-white/[0.06]">
+                      <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 text-ink-4 bg-overlay/[0.06]">
                         <Smartphone size={17} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-gray-300">{t('bottomNav.installApp')}</p>
-                        <p className="text-xs text-gray-300">{t('bottomNav.genericInstallHint')}</p>
+                        <p className="text-sm font-semibold text-ink-3">{t('bottomNav.installApp')}</p>
+                        <p className="text-xs text-ink-3">{t('bottomNav.genericInstallHint')}</p>
                       </div>
                     </div>
                   </div>
@@ -186,7 +186,7 @@ export default function BottomNav() {
       <ExplorerDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-white/[0.06]"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-overlay/[0.06]"
         style={{
           background: 'rgba(23,24,25,0.97)',
           backdropFilter: 'blur(16px)',
@@ -203,7 +203,7 @@ export default function BottomNav() {
               end={end}
               className={({ isActive }) =>
                 `flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-xl transition-colors ${
-                  isActive ? 'text-select-400' : 'text-gray-400 hover:text-gray-300'
+                  isActive ? 'text-select-400' : 'text-ink-4 hover:text-ink-3'
                 }`
               }
               aria-label={label}
@@ -223,7 +223,7 @@ export default function BottomNav() {
           <button
             onClick={() => setDrawerOpen(true)}
             className={`flex flex-col items-center justify-center gap-1 flex-1 h-full rounded-xl transition-colors ${
-              drawerOpen ? 'text-select-400' : 'text-gray-400 hover:text-gray-300'
+              drawerOpen ? 'text-select-400' : 'text-ink-4 hover:text-ink-3'
             }`}
             aria-label={t('nav.explorer')}
           >

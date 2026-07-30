@@ -39,8 +39,8 @@ function ROIChart({ data }) {
   return (
     <div>
       <div className="flex items-center gap-1.5 mb-1.5">
-        <TrendingUp size={13} className="text-gray-300" />
-        <p className="text-xs text-gray-300">{t('tipsterProfile.weeklyRoi')}</p>
+        <TrendingUp size={13} className="text-ink-3" />
+        <p className="text-xs text-ink-3">{t('tipsterProfile.weeklyRoi')}</p>
       </div>
       <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-20">
         {/* Zéro line */}
@@ -106,23 +106,23 @@ function TipComments({ tipId }) {
 
   return (
     <div className="pt-3 border-t border-surface-700 space-y-3">
-      {isLoading && <p className="text-xs text-gray-300">{t('tipsterProfile.loadingComments')}</p>}
+      {isLoading && <p className="text-xs text-ink-3">{t('tipsterProfile.loadingComments')}</p>}
       {comments.map((c) => (
         <div key={c.id} className="flex gap-2 text-xs">
-          <div className="h-6 w-6 rounded-full bg-surface-600 flex items-center justify-center text-gray-300 font-semibold shrink-0 text-[10px]">
+          <div className="h-6 w-6 rounded-full bg-surface-600 flex items-center justify-center text-ink-3 font-semibold shrink-0 text-[10px]">
             {(c.user?.profile?.displayName || c.user?.username || '?').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1">
-            <span className="font-medium text-gray-300">
+            <span className="font-medium text-ink-3">
               {c.user?.profile?.displayName || c.user?.username}
             </span>
-            <span className="text-gray-300 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}</span>
-            <p className="text-gray-400 mt-0.5">{c.content}</p>
+            <span className="text-ink-3 ml-1">{format(new Date(c.createdAt), 'dd MMM HH:mm', { locale: dateLocale })}</span>
+            <p className="text-ink-4 mt-0.5">{c.content}</p>
           </div>
           {(user?.id === c.userId || user?.role === 'ADMIN') && (
             <button
               onClick={() => deleteMutation.mutate(c.id)}
-              className="text-gray-400 hover:text-red-400 transition-colors self-start mt-0.5"
+              className="text-ink-4 hover:text-red-400 transition-colors self-start mt-0.5"
             >
               ×
             </button>
@@ -130,7 +130,7 @@ function TipComments({ tipId }) {
         </div>
       ))}
       {!comments.length && !isLoading && (
-        <p className="text-xs text-gray-400">{t('tipsterProfile.noComments')}</p>
+        <p className="text-xs text-ink-4">{t('tipsterProfile.noComments')}</p>
       )}
       {user && (
         <div className="flex gap-2 items-center">
@@ -139,7 +139,7 @@ function TipComments({ tipId }) {
             onChange={(e) => setText(e.target.value.slice(0, 500))}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && text.trim() && addMutation.mutate()}
             placeholder={t('tipsterProfile.commentPlaceholder')}
-            className="flex-1 bg-surface-700 border border-surface-600 rounded-lg px-2.5 py-1.5 text-xs text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500"
+            className="flex-1 bg-surface-700 border border-surface-600 rounded-lg px-2.5 py-1.5 text-xs text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500"
           />
           <button
             onClick={() => text.trim() && addMutation.mutate()}
@@ -164,14 +164,14 @@ function TipCard({ tip }) {
     <div className="bento-card space-y-2">
       <div className="flex items-center justify-between gap-3">
         <div className="flex-1 min-w-0">
-          <Link to={`/matchs/${tip.matchId}`} className="flex items-center gap-1.5 text-sm font-medium text-gray-200 hover:text-primary-300 truncate">
+          <Link to={`/matchs/${tip.matchId}`} className="flex items-center gap-1.5 text-sm font-medium text-ink-2 hover:text-primary-300 truncate">
             <TeamLogo logo={match?.homeTeamLogo} teamId={match?.homeTeamId} name={match?.homeTeam} size={16} />
             <span className="truncate">{match?.homeTeam}</span>
-            <span className="text-gray-400 shrink-0">vs</span>
+            <span className="text-ink-4 shrink-0">vs</span>
             <TeamLogo logo={match?.awayTeamLogo} teamId={match?.awayTeamId} name={match?.awayTeam} size={16} />
             <span className="truncate">{match?.awayTeam}</span>
           </Link>
-          <p className="text-xs text-gray-300 mt-1 flex items-center gap-1.5 flex-wrap">
+          <p className="text-xs text-ink-3 mt-1 flex items-center gap-1.5 flex-wrap">
             {match?.competition?.name && (
               <span className="inline-flex items-center gap-1">
                 {match.competition.logo && (
@@ -190,7 +190,7 @@ function TipCard({ tip }) {
           <ResultBadge result={tip.result} />
           <button
             onClick={() => setShowComments((v) => !v)}
-            className="flex items-center gap-1 text-xs text-gray-300 hover:text-primary-400 transition-colors"
+            className="flex items-center gap-1 text-xs text-ink-3 hover:text-primary-400 transition-colors"
             title={t('tipsterProfile.comments')}
           >
             <MessageCircle size={13} />
@@ -331,7 +331,7 @@ export default function TipsterProfile() {
   }
 
   const { user: tipster, stats, recentTips, weeklyStats: inlineWeekly } = data?.data || {};
-  if (!tipster) return <div className="text-center py-20 text-gray-300">{t('tipsterProfile.notFound')}</div>;
+  if (!tipster) return <div className="text-center py-20 text-ink-3">{t('tipsterProfile.notFound')}</div>;
 
   const displayName = tipster.profile?.displayName || tipster.username;
   const isOwn = isOwnProfile;
@@ -346,16 +346,16 @@ export default function TipsterProfile() {
         <div className="flex items-start gap-4">
           <Avatar user={tipster} name={displayName} size={64} className="text-2xl" />
           <div className="flex-1 min-w-0">
-            <h1 className="font-display font-bold text-xl text-gray-100">{displayName}</h1>
-            <p className="text-gray-300 text-sm">@{tipster.username}</p>
+            <h1 className="font-display font-bold text-xl text-ink-1">{displayName}</h1>
+            <p className="text-ink-3 text-sm">@{tipster.username}</p>
             {tipster.profile?.bio && (
-              <p className="text-gray-400 text-sm mt-2">{tipster.profile.bio}</p>
+              <p className="text-ink-4 text-sm mt-2">{tipster.profile.bio}</p>
             )}
             <div className="flex flex-wrap gap-1 mt-2">
               {(stats?.badges || []).map((b) => <TipsterBadge key={b} badgeCode={b} />)}
             </div>
             {/* Follower count */}
-            <p className="text-xs text-gray-300 mt-2 flex items-center gap-1">
+            <p className="text-xs text-ink-3 mt-2 flex items-center gap-1">
               <Users size={11} />
               {t('tipsterProfile.followersCount', { count: followerCount })}
             </p>
@@ -370,7 +370,7 @@ export default function TipsterProfile() {
                   disabled={followMutation.isPending || unfollowMutation.isPending}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors disabled:opacity-40 ${
                     isFollowing
-                      ? 'bg-surface-600 text-gray-300 hover:bg-red-500/20 hover:text-red-400'
+                      ? 'bg-surface-600 text-ink-3 hover:bg-red-500/20 hover:text-red-400'
                       : 'bg-primary-500/15 text-primary-400 hover:bg-primary-500/30'
                   }`}
                   aria-label={isFollowing ? t('tipsterProfile.unfollow') : t('tipsterProfile.follow')}
@@ -401,31 +401,31 @@ export default function TipsterProfile() {
       {stats && (
         <div className="grid grid-cols-2 gap-3">
           <div className="bento-card text-center">
-            <p className="text-3xl font-display font-bold text-gray-100">{stats.totalTips}</p>
-            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.picksCount')}</p>
+            <p className="text-3xl font-display font-bold text-ink-1">{stats.totalTips}</p>
+            <p className="text-xs text-ink-3 mt-1">{t('tipsterProfile.picksCount')}</p>
           </div>
           <div className="bento-card">
             <SuccessRateBar rate={stats.successRate} total={stats.totalTips} size="lg" />
-            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.globalSuccessRate')}</p>
+            <p className="text-xs text-ink-3 mt-1">{t('tipsterProfile.globalSuccessRate')}</p>
           </div>
           <div className="bento-card text-center">
-            <p className="text-2xl font-display font-bold text-gray-100">
+            <p className="text-2xl font-display font-bold text-ink-1">
               {stats.globalRank ? `#${stats.globalRank}` : '–'}
             </p>
-            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.globalRank')}</p>
+            <p className="text-xs text-ink-3 mt-1">{t('tipsterProfile.globalRank')}</p>
           </div>
           <div className="bento-card text-center">
-            <p className="text-2xl font-display font-bold text-gray-100">
+            <p className="text-2xl font-display font-bold text-ink-1">
               {stats.monthlyRank ? `#${stats.monthlyRank}` : '–'}
             </p>
-            <p className="text-xs text-gray-300 mt-1">{t('tipsterProfile.monthlyRank')}</p>
+            <p className="text-xs text-ink-3 mt-1">{t('tipsterProfile.monthlyRank')}</p>
           </div>
           {roi != null && (
             <div className="bento-card text-center col-span-2">
               <p className={`text-2xl font-display font-bold ${roi >= 0 ? 'text-primary-400' : 'text-red-400'}`}>
                 {roi >= 0 ? '+' : ''}{roi}%
               </p>
-              <p className="text-xs text-gray-300 mt-1 flex items-center justify-center gap-1">
+              <p className="text-xs text-ink-3 mt-1 flex items-center justify-center gap-1">
                 {t('tipsterProfile.estimatedRoi')}
                 <InfoTooltip text={t('tipsterProfile.estimatedRoiTooltip')} size={10} />
               </p>
@@ -446,22 +446,22 @@ export default function TipsterProfile() {
         <div className="bento-card border-primary-500/30 bg-primary-500/5 space-y-3">
           <div className="flex items-center gap-2">
             <Crown size={16} className="text-primary-400" />
-            <p className="font-semibold text-gray-100">{plan.name}</p>
+            <p className="font-semibold text-ink-1">{plan.name}</p>
             <div className="ml-auto text-right">
               <span className="text-lg font-display font-bold text-primary-400">
                 {plan.price.toLocaleString('fr-FR')} FCFA
-                <span className="text-xs text-gray-300 font-normal"> {t('tipsterProfile.perMonth')}</span>
+                <span className="text-xs text-ink-3 font-normal"> {t('tipsterProfile.perMonth')}</span>
               </span>
               {formatConverted(plan.price) && (
-                <p className="text-xs text-gray-400">≈ {formatConverted(plan.price)}</p>
+                <p className="text-xs text-ink-4">≈ {formatConverted(plan.price)}</p>
               )}
             </div>
           </div>
           {plan.description && (
-            <p className="text-xs text-gray-400">{plan.description}</p>
+            <p className="text-xs text-ink-4">{plan.description}</p>
           )}
           {plan.subscriberCount > 0 && (
-            <p className="text-xs text-gray-300 flex items-center gap-1">
+            <p className="text-xs text-ink-3 flex items-center gap-1">
               <Users size={11} />
               {t('tipsterProfile.subscribersCount', { count: plan.subscriberCount })}
             </p>
@@ -473,7 +473,7 @@ export default function TipsterProfile() {
                 <button
                   onClick={() => unsubscribeMutation.mutate()}
                   disabled={unsubscribeMutation.isPending}
-                  className="text-xs text-gray-300 hover:text-red-400 transition-colors"
+                  className="text-xs text-ink-3 hover:text-red-400 transition-colors"
                 >
                   {unsubscribeMutation.isPending ? <Loader2 size={12} className="animate-spin" /> : t('tipsterProfile.unsubscribe')}
                 </button>
@@ -513,33 +513,33 @@ export default function TipsterProfile() {
         <div className="bento-card space-y-4">
           <div className="flex items-center gap-2">
             <Crown size={16} className="text-primary-400" />
-            <p className="font-semibold text-gray-100">{t('tipsterProfile.managePlanTitle')}</p>
+            <p className="font-semibold text-ink-1">{t('tipsterProfile.managePlanTitle')}</p>
           </div>
-          <p className="text-xs text-gray-300">{t('tipsterProfile.managePlanDesc')}</p>
+          <p className="text-xs text-ink-3">{t('tipsterProfile.managePlanDesc')}</p>
 
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-gray-300 mb-1 block">{t('tipsterProfile.planNameLabel')}</label>
+              <label className="text-xs text-ink-3 mb-1 block">{t('tipsterProfile.planNameLabel')}</label>
               <input
                 type="text"
                 value={planForm.name}
                 onChange={(e) => setPlanForm({ ...planForm, name: e.target.value })}
                 maxLength={100}
-                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-white/[0.08] text-sm text-gray-100 focus:outline-none focus:border-primary-500/50"
+                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-overlay/[0.08] text-sm text-ink-1 focus:outline-none focus:border-primary-500/50"
               />
             </div>
             <div>
-              <label className="text-xs text-gray-300 mb-1 block">{t('tipsterProfile.planDescLabel')}</label>
+              <label className="text-xs text-ink-3 mb-1 block">{t('tipsterProfile.planDescLabel')}</label>
               <textarea
                 value={planForm.description}
                 onChange={(e) => setPlanForm({ ...planForm, description: e.target.value })}
                 maxLength={500}
                 rows={2}
-                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-white/[0.08] text-sm text-gray-100 focus:outline-none focus:border-primary-500/50 resize-none"
+                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-overlay/[0.08] text-sm text-ink-1 focus:outline-none focus:border-primary-500/50 resize-none"
               />
             </div>
             <div>
-              <label className="text-xs text-gray-300 mb-1 block">{t('tipsterProfile.planPriceLabel')}</label>
+              <label className="text-xs text-ink-3 mb-1 block">{t('tipsterProfile.planPriceLabel')}</label>
               <input
                 type="number"
                 min={100}
@@ -547,15 +547,15 @@ export default function TipsterProfile() {
                 step={100}
                 value={planForm.price}
                 onChange={(e) => setPlanForm({ ...planForm, price: Number(e.target.value) })}
-                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-white/[0.08] text-sm text-gray-100 focus:outline-none focus:border-primary-500/50"
+                className="w-full px-3 py-2 rounded-lg bg-surface-700 border border-overlay/[0.08] text-sm text-ink-1 focus:outline-none focus:border-primary-500/50"
               />
             </div>
             <button
               onClick={() => setPlanForm({ ...planForm, isActive: !planForm.isActive })}
               className="flex items-center gap-2 text-xs"
             >
-              <Power size={13} className={planForm.isActive ? 'text-primary-400' : 'text-gray-400'} />
-              <span className={planForm.isActive ? 'text-primary-400' : 'text-gray-300'}>
+              <Power size={13} className={planForm.isActive ? 'text-primary-400' : 'text-ink-4'} />
+              <span className={planForm.isActive ? 'text-primary-400' : 'text-ink-3'}>
                 {planForm.isActive ? t('tipsterProfile.planActiveLabel') : t('tipsterProfile.planInactiveLabel')}
               </span>
             </button>
@@ -580,22 +580,22 @@ export default function TipsterProfile() {
 
           {/* Liste des abonnés */}
           {plan && (
-            <div className="pt-2 border-t border-white/[0.06]">
-              <p className="text-xs font-semibold text-gray-300 mb-2 flex items-center gap-1.5">
+            <div className="pt-2 border-t border-overlay/[0.06]">
+              <p className="text-xs font-semibold text-ink-3 mb-2 flex items-center gap-1.5">
                 <Users size={12} />
                 {t('tipsterProfile.mySubscribers', { count: subscribersData?.total ?? 0 })}
               </p>
               {subscribersData?.data?.length ? (
                 <div className="space-y-1.5">
                   {subscribersData.data.map((sub) => (
-                    <div key={sub.id} className="flex items-center gap-2 text-xs text-gray-400">
+                    <div key={sub.id} className="flex items-center gap-2 text-xs text-ink-4">
                       <Avatar user={sub.subscriber} name={sub.subscriber?.profile?.displayName || sub.subscriber?.username} size={22} />
                       <span className="truncate">{sub.subscriber?.profile?.displayName || sub.subscriber?.username}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <p className="text-xs text-gray-400">{t('tipsterProfile.noSubscribers')}</p>
+                <p className="text-xs text-ink-4">{t('tipsterProfile.noSubscribers')}</p>
               )}
             </div>
           )}
@@ -604,11 +604,11 @@ export default function TipsterProfile() {
 
       {/* ── Pronostics récents avec commentaires ── */}
       <section>
-        <h2 className="font-semibold text-gray-100 mb-3">{t('tipsterProfile.recentPicks')}</h2>
+        <h2 className="font-semibold text-ink-1 mb-3">{t('tipsterProfile.recentPicks')}</h2>
         <div className="space-y-2">
           {recentTips?.map((tip) => <TipCard key={tip.id} tip={tip} />)}
           {!recentTips?.length && (
-            <p className="text-gray-300 text-sm text-center py-4">{t('tipsterProfile.noRecentPicks')}</p>
+            <p className="text-ink-3 text-sm text-center py-4">{t('tipsterProfile.noRecentPicks')}</p>
           )}
         </div>
       </section>
@@ -618,7 +618,7 @@ export default function TipsterProfile() {
         <p className="text-center">
           <button
             onClick={() => {/* modal signalement */}}
-            className="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1 mx-auto"
+            className="text-xs text-ink-4 hover:text-ink-3 flex items-center gap-1 mx-auto"
           >
             <Flag size={12} aria-hidden="true" />
             {t('tipsterProfile.reportTipster')}

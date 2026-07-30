@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain, ArrowLeftRight } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain, ArrowLeftRight, Sun, Moon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
+import { useTheme } from '../../context/ThemeContext';
 
 import NotificationBell from '../ui/NotificationBell';
 import SearchBar from '../ui/SearchBar';
@@ -50,8 +51,8 @@ function LangSwitcher() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen((v) => !v)}
-        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-white/[0.08] text-[11px] font-bold transition-colors ${
-          open ? 'text-primary-400 bg-primary-500/10' : 'text-gray-300 hover:text-gray-200'
+        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-overlay/[0.08] text-[11px] font-bold transition-colors ${
+          open ? 'text-primary-400 bg-primary-500/10' : 'text-ink-3 hover:text-ink-2'
         }`}
         aria-label={t('header.langSwitcherLabel')}
       >
@@ -62,7 +63,7 @@ function LangSwitcher() {
 
       {open && (
         <div
-          className="absolute top-full right-0 mt-1.5 rounded-xl border border-white/[0.08] shadow-card-hover z-50 py-1.5 overflow-hidden"
+          className="absolute top-full right-0 mt-1.5 rounded-xl border border-overlay/[0.08] shadow-card-hover z-50 py-1.5 overflow-hidden"
           style={{ background: 'var(--color-card)', width: 160 }}
         >
           {LANGS.map(({ code, label, name, flag }) => (
@@ -72,17 +73,35 @@ function LangSwitcher() {
               className={`w-full flex items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors ${
                 current.code === code
                   ? 'text-primary-400 bg-primary-500/10'
-                  : 'text-gray-200 hover:bg-white/[0.05]'
+                  : 'text-ink-2 hover:bg-overlay/[0.05]'
               }`}
             >
               <span aria-hidden="true">{flag}</span>
               <span className="font-bold w-6">{label}</span>
-              <span className="text-gray-300">{name}</span>
+              <span className="text-ink-3">{name}</span>
             </button>
           ))}
         </div>
       )}
     </div>
+  );
+}
+
+/** Bascule mode clair / sombre */
+function ThemeToggle() {
+  const { t } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
+  const isLight = theme === 'light';
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="p-2 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05] transition-colors"
+      aria-label={isLight ? t('header.switchToDark', 'Passer en mode sombre') : t('header.switchToLight', 'Passer en mode clair')}
+      title={isLight ? t('header.switchToDark', 'Passer en mode sombre') : t('header.switchToLight', 'Passer en mode clair')}
+    >
+      {isLight ? <Moon size={17} /> : <Sun size={17} />}
+    </button>
   );
 }
 
@@ -124,7 +143,7 @@ function OutilsDropdown() {
     <div ref={ref} className="relative">
       <button onClick={() => setOpen((v) => !v)}
         className={`flex items-center gap-1 px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors duration-150 ${
-          open ? 'text-select-400 bg-select-500/10' : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
+          open ? 'text-select-400 bg-select-500/10' : 'text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05]'
         }`}>
         {t('nav.tools')}
         <ChevronDown size={13} className={`transition-transform ${open ? 'rotate-180' : ''}`} />
@@ -132,24 +151,24 @@ function OutilsDropdown() {
 
       {open && (
         <div
-          className="absolute top-full left-0 mt-1.5 rounded-xl border border-white/[0.08] shadow-card-hover z-50 p-3"
+          className="absolute top-full left-0 mt-1.5 rounded-xl border border-overlay/[0.08] shadow-card-hover z-50 p-3"
           style={{ background: 'var(--color-card)', width: 520 }}
         >
           <div className="grid grid-cols-2 gap-x-3">
             {SECTIONS.map((section, si) => (
               <div key={section.label} className={si >= 2 ? 'mt-2' : ''}>
-                <p className="px-2 pt-1 pb-1.5 text-xs font-bold text-gray-400 uppercase tracking-widest">
+                <p className="px-2 pt-1 pb-1.5 text-xs font-bold text-ink-4 uppercase tracking-widest">
                   {section.label}
                 </p>
                 {section.items.map(({ to, label, Icon, desc, color }) => (
                   <Link key={`${to}-${label}`} to={to} onClick={() => setOpen(false)}
-                    className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-white/[0.05] transition-colors">
+                    className="flex items-center gap-2.5 px-2 py-2 rounded-lg hover:bg-overlay/[0.05] transition-colors">
                     <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${color}`}>
                       <Icon size={13} />
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[12px] font-semibold text-gray-200 truncate">{label}</p>
-                      <p className="text-xs text-gray-300 truncate">{desc}</p>
+                      <p className="text-[12px] font-semibold text-ink-2 truncate">{label}</p>
+                      <p className="text-xs text-ink-3 truncate">{desc}</p>
                     </div>
                   </Link>
                 ))}
@@ -177,7 +196,7 @@ export default function Header() {
 
   return (
     <>
-    <header className="sticky top-0 z-50 border-b border-white/[0.05]"
+    <header className="sticky top-0 z-50 border-b border-overlay/[0.05]"
       style={{ background: 'rgba(23,24,25,0.95)', backdropFilter: 'blur(16px)', paddingTop: 'env(safe-area-inset-top)' }}>
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center gap-6">
 
@@ -197,7 +216,7 @@ export default function Header() {
                 `px-3 py-1.5 rounded-lg text-[13px] font-medium transition-colors duration-150 ${
                   isActive
                     ? 'text-select-400 bg-select-500/10'
-                    : 'text-gray-400 hover:text-gray-200 hover:bg-white/[0.05]'
+                    : 'text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05]'
                 }`
               }>
               {label}
@@ -211,13 +230,16 @@ export default function Header() {
           {/* Bouton recherche */}
           <button
             onClick={() => setSearchOpen(true)}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.05] transition-colors"
+            className="p-2 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05] transition-colors"
             aria-label={t('search.open', 'Rechercher')}
           >
             <Search size={17} />
           </button>
 
           <NotificationBell />
+
+          {/* Mode clair / sombre — visible partout (desktop + mobile) */}
+          <ThemeToggle />
 
           {/* Bouton installer PWA (visible seulement si installable) */}
           {isInstallable && (
@@ -240,18 +262,18 @@ export default function Header() {
             <>
               {isAdmin && (
                 <Link to="/admin"
-                  className="p-2 rounded-lg text-amber-400 hover:bg-white/[0.05] transition-colors"
+                  className="p-2 rounded-lg text-amber-400 hover:bg-overlay/[0.05] transition-colors"
                   aria-label={t('nav.admin')}>
                   <Shield size={17} />
                 </Link>
               )}
               <Link to="/profil"
-                className="p-2 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-white/[0.05] transition-colors"
+                className="p-2 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05] transition-colors"
                 aria-label={t('nav.profile')}>
                 <User size={17} />
               </Link>
               <button onClick={logout}
-                className="hidden md:inline-flex p-2 rounded-lg text-gray-300 hover:text-red-400 hover:bg-white/[0.05] transition-colors"
+                className="hidden md:inline-flex p-2 rounded-lg text-ink-3 hover:text-red-400 hover:bg-overlay/[0.05] transition-colors"
                 aria-label={t('nav.logout')}>
                 <LogOut size={17} />
               </button>

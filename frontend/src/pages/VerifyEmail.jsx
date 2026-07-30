@@ -31,22 +31,22 @@ export default function VerifyEmail() {
         {status === 'loading' && (
           <>
             <Loader size={40} className="text-primary-400 animate-spin mx-auto" />
-            <p className="text-gray-400">{t('auth.verifying')}</p>
+            <p className="text-ink-4">{t('auth.verifying')}</p>
           </>
         )}
         {status === 'success' && (
           <>
             <CheckCircle size={40} className="text-primary-400 mx-auto" />
-            <h1 className="text-xl font-bold text-gray-100">{t('auth.emailVerified')}</h1>
-            <p className="text-gray-300 text-sm">{t('auth.emailVerifiedDesc')}</p>
+            <h1 className="text-xl font-bold text-ink-1">{t('auth.emailVerified')}</h1>
+            <p className="text-ink-3 text-sm">{t('auth.emailVerifiedDesc')}</p>
             <Link to="/" className="btn-cta inline-flex mt-2">{t('auth.homeArrow')}</Link>
           </>
         )}
         {status === 'error' && (
           <>
             <XCircle size={40} className="text-red-400 mx-auto" />
-            <h1 className="text-xl font-bold text-gray-100">{t('auth.invalidLink')}</h1>
-            <p className="text-gray-300 text-sm">{message}</p>
+            <h1 className="text-xl font-bold text-ink-1">{t('auth.invalidLink')}</h1>
+            <p className="text-ink-3 text-sm">{message}</p>
             <Link to="/" className="btn-secondary inline-flex mt-2">{t('common.back')}</Link>
           </>
         )}

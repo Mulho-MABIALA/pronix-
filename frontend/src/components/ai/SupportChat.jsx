@@ -18,7 +18,7 @@ function Message({ msg }) {
       )}
       <div className={`max-w-[85%] px-3 py-2 rounded-2xl text-sm leading-relaxed ${
         isBot
-          ? 'bg-surface-700 text-gray-200 rounded-tl-sm'
+          ? 'bg-surface-700 text-ink-2 rounded-tl-sm'
           : 'bg-primary-500 text-white rounded-tr-sm'
       }`}>
         {msg.content}
@@ -122,16 +122,16 @@ export default function SupportChat() {
 
       {/* Fenêtre de chat */}
       {open && (
-        <div className="fixed bottom-24 right-4 md:bottom-6 z-50 w-80 md:w-96 rounded-2xl border border-white/[0.08] shadow-2xl flex flex-col overflow-hidden"
+        <div className="fixed bottom-24 right-4 md:bottom-6 z-50 w-80 md:w-96 rounded-2xl border border-overlay/[0.08] shadow-2xl flex flex-col overflow-hidden"
           style={{ background: 'rgba(23,24,25,0.98)', backdropFilter: 'blur(20px)', maxHeight: '70vh' }}>
 
           {/* Header */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06] shrink-0">
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-overlay/[0.06] shrink-0">
             <div className="w-8 h-8 rounded-full bg-primary-500/20 flex items-center justify-center">
               <Bot size={16} className="text-primary-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-gray-100">{t('supportChat.assistantName')}</p>
+              <p className="text-sm font-semibold text-ink-1">{t('supportChat.assistantName')}</p>
               <p className="text-xs text-green-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-green-400 rounded-full inline-block" />
                 {t('supportChat.online')}
@@ -139,7 +139,7 @@ export default function SupportChat() {
             </div>
             <button
               onClick={() => setOpen(false)}
-              className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-white/[0.05] transition-colors"
+              className="p-1.5 rounded-lg text-ink-3 hover:text-ink-2 hover:bg-overlay/[0.05] transition-colors"
             >
               <ChevronDown size={16} />
             </button>
@@ -155,7 +155,7 @@ export default function SupportChat() {
                   <Bot size={14} className="text-primary-400" />
                 </div>
                 <div className="px-3 py-2 bg-surface-700 rounded-2xl rounded-tl-sm">
-                  <Loader2 size={14} className="text-gray-400 animate-spin" />
+                  <Loader2 size={14} className="text-ink-4 animate-spin" />
                 </div>
               </div>
             )}
@@ -163,12 +163,12 @@ export default function SupportChat() {
             {/* Questions rapides (affiché seulement au début) */}
             {messages.length <= 1 && (
               <div className="space-y-1.5 pt-2">
-                <p className="text-xs text-gray-400 uppercase tracking-wide">{t('supportChat.quickQuestionsLabel')}</p>
+                <p className="text-xs text-ink-4 uppercase tracking-wide">{t('supportChat.quickQuestionsLabel')}</p>
                 {QUICK_QUESTION_KEYS.map((k) => (
                   <button
                     key={k}
                     onClick={() => sendMessage(t(`supportChat.quickQuestions.${k}`))}
-                    className="w-full text-left text-xs px-3 py-1.5 rounded-xl bg-surface-700 text-gray-300 hover:bg-surface-600 transition-colors"
+                    className="w-full text-left text-xs px-3 py-1.5 rounded-xl bg-surface-700 text-ink-3 hover:bg-surface-600 transition-colors"
                   >
                     {t(`supportChat.quickQuestions.${k}`)}
                   </button>
@@ -180,7 +180,7 @@ export default function SupportChat() {
           </div>
 
           {/* Escalade vers un humain / Input */}
-          <div className="border-t border-white/[0.06] shrink-0">
+          <div className="border-t border-overlay/[0.06] shrink-0">
             {showTicketForm ? (
               <div className="px-3 py-3 space-y-2">
                 {user ? (
@@ -189,19 +189,19 @@ export default function SupportChat() {
                       value={ticketSubject}
                       onChange={(e) => setTicketSubject(e.target.value)}
                       placeholder={t('supportChat.ticketSubjectPlaceholder')}
-                      className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500"
+                      className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500"
                     />
                     <textarea
                       value={ticketMessage}
                       onChange={(e) => setTicketMessage(e.target.value)}
                       placeholder={t('supportChat.ticketMessagePlaceholder')}
                       rows={3}
-                      className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 resize-none"
+                      className="w-full bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500 resize-none"
                     />
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => setShowTicketForm(false)}
-                        className="flex-1 py-2 rounded-xl text-xs font-semibold text-gray-300 bg-surface-700 hover:bg-surface-600 transition-colors"
+                        className="flex-1 py-2 rounded-xl text-xs font-semibold text-ink-3 bg-surface-700 hover:bg-surface-600 transition-colors"
                       >
                         {t('supportChat.cancel')}
                       </button>
@@ -216,7 +216,7 @@ export default function SupportChat() {
                   </>
                 ) : (
                   <div className="flex items-center justify-between gap-2 bg-surface-700 rounded-xl px-3 py-2.5">
-                    <p className="text-xs text-gray-300">{t('supportChat.loginToContact')}</p>
+                    <p className="text-xs text-ink-3">{t('supportChat.loginToContact')}</p>
                     <Link
                       to="/connexion"
                       onClick={() => setOpen(false)}
@@ -228,7 +228,7 @@ export default function SupportChat() {
                 )}
                 <button
                   onClick={() => setShowTicketForm(false)}
-                  className="w-full text-[11px] text-gray-400 hover:text-gray-300 transition-colors"
+                  className="w-full text-[11px] text-ink-4 hover:text-ink-3 transition-colors"
                 >
                   {t('supportChat.backToChat')}
                 </button>
@@ -237,7 +237,7 @@ export default function SupportChat() {
               <>
                 <button
                   onClick={openTicketForm}
-                  className="w-full flex items-center justify-center gap-1.5 text-[11px] text-gray-400 hover:text-primary-400 pt-2 pb-1 transition-colors"
+                  className="w-full flex items-center justify-center gap-1.5 text-[11px] text-ink-4 hover:text-primary-400 pt-2 pb-1 transition-colors"
                 >
                   <UserRound size={12} />
                   {t('supportChat.talkToHuman')}
@@ -250,7 +250,7 @@ export default function SupportChat() {
                       onKeyDown={handleKey}
                       placeholder={t('supportChat.inputPlaceholder')}
                       disabled={loading}
-                      className="flex-1 bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 disabled:opacity-50"
+                      className="flex-1 bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500 disabled:opacity-50"
                     />
                     <button
                       onClick={() => sendMessage()}

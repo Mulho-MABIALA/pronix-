@@ -21,9 +21,9 @@ const RESULT_STYLES = {
 const LEG_STYLES = {
   WIN:  { Icon: CheckCircle2, labelKey: 'legWin',  color: 'text-primary-400', bg: 'bg-primary-500/10 border-primary-500/20' },
   LOSS: { Icon: XCircle,      labelKey: 'legLoss', color: 'text-red-400',     bg: 'bg-red-500/10 border-red-500/20' },
-  VOID: { Icon: Clock,        labelKey: 'legVoid', color: 'text-gray-400',    bg: 'bg-white/[0.03] border-white/[0.08]' },
+  VOID: { Icon: Clock,        labelKey: 'legVoid', color: 'text-ink-4',    bg: 'bg-overlay/[0.03] border-overlay/[0.08]' },
 };
-const LEG_PENDING_STYLE = { color: 'text-gray-300', bg: 'bg-white/[0.03] border-white/[0.06]' };
+const LEG_PENDING_STYLE = { color: 'text-ink-3', bg: 'bg-overlay/[0.03] border-overlay/[0.06]' };
 
 export default function TicketHistory() {
   const { t, i18n } = useTranslation();
@@ -81,8 +81,8 @@ export default function TicketHistory() {
     return (
       <div className="px-4">
         <div className="card-p text-center py-8">
-          <Ticket size={28} className="mx-auto text-gray-400 mb-2" />
-          <p className="text-gray-300 text-sm">{t('machine.historyLoginRequired')}</p>
+          <Ticket size={28} className="mx-auto text-ink-4 mb-2" />
+          <p className="text-ink-3 text-sm">{t('machine.historyLoginRequired')}</p>
         </div>
       </div>
     );
@@ -104,9 +104,9 @@ export default function TicketHistory() {
     return (
       <div className="px-4">
         <div className="card-p text-center py-8">
-          <Ticket size={28} className="mx-auto text-gray-400 mb-2" />
-          <p className="text-gray-300 text-sm">{t('machine.noSavedTickets')}</p>
-          <p className="text-gray-400 text-xs mt-1">{t('machine.noSavedTicketsDesc')}</p>
+          <Ticket size={28} className="mx-auto text-ink-4 mb-2" />
+          <p className="text-ink-3 text-sm">{t('machine.noSavedTickets')}</p>
+          <p className="text-ink-4 text-xs mt-1">{t('machine.noSavedTicketsDesc')}</p>
         </div>
       </div>
     );
@@ -120,17 +120,17 @@ export default function TicketHistory() {
             <TrendingUp size={20} className="text-primary-400" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-300 uppercase tracking-wider">{t('machine.successRate')}</p>
+            <p className="text-xs text-ink-3 uppercase tracking-wider">{t('machine.successRate')}</p>
             {stats.resolved > 0 ? (
               <>
-                <p className="text-lg font-black text-gray-100">{stats.winRate}%</p>
-                <p className="text-[11px] text-gray-300">
+                <p className="text-lg font-black text-ink-1">{stats.winRate}%</p>
+                <p className="text-[11px] text-ink-3">
                   {t('machine.successRateDetail', { won: stats.won, resolved: stats.resolved })}
                   {stats.pending > 0 && ` · ${t('machine.successRatePending', { count: stats.pending })}`}
                 </p>
               </>
             ) : (
-              <p className="text-xs text-gray-300 mt-0.5">
+              <p className="text-xs text-ink-3 mt-0.5">
                 {t('machine.noResolvedTickets')}
                 {stats.pending > 0 && ` · ${t('machine.successRatePending', { count: stats.pending })}`}
               </p>
@@ -144,7 +144,7 @@ export default function TicketHistory() {
           <div key={ticket.id} className="card p-4 space-y-3">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-xs text-gray-300">
+                <p className="text-xs text-ink-3">
                   {format(new Date(ticket.createdAt), 'd MMM yyyy, HH:mm', { locale })}
                   {' · '}{t('machine.selectionsGenerated', { count: ticket.entries.length })}
                 </p>
@@ -157,7 +157,7 @@ export default function TicketHistory() {
                 <button
                   onClick={() => shareTicket(ticket)}
                   disabled={sharingId === ticket.id}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-primary-400 hover:bg-primary-500/10 transition-colors disabled:opacity-50"
+                  className="p-1.5 rounded-lg text-ink-4 hover:text-primary-400 hover:bg-primary-500/10 transition-colors disabled:opacity-50"
                   aria-label={navigator.share ? t('machine.share') : t('machine.image')}
                 >
                   {sharingId === ticket.id
@@ -167,7 +167,7 @@ export default function TicketHistory() {
                 <button
                   onClick={() => deleteMutation.mutate(ticket.id)}
                   disabled={deleteMutation.isPending}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                  className="p-1.5 rounded-lg text-ink-4 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
                   aria-label={t('machine.deleteTicket')}
                 >
                   <Trash2 size={13} />
@@ -175,7 +175,7 @@ export default function TicketHistory() {
               </div>
             </div>
 
-            <div className="divide-y divide-white/[0.04]">
+            <div className="divide-y divide-overlay/[0.04]">
               {ticket.entries.map((e, idx) => {
                 const ls = LEG_STYLES[e.legResult] || LEG_PENDING_STYLE;
                 const LegIcon = ls.Icon || Clock;
@@ -185,18 +185,18 @@ export default function TicketHistory() {
                 const awayWins = hasScore && m.awayScore > m.homeScore;
                 const isDraw   = hasScore && m.homeScore === m.awayScore;
                 // Même code couleur que MatchCard : vert pour le vainqueur, ambre si nul.
-                const scoreColor = (isWinner) => (isDraw ? 'text-amber-400' : isWinner ? 'text-primary-400' : 'text-gray-400');
+                const scoreColor = (isWinner) => (isDraw ? 'text-amber-400' : isWinner ? 'text-primary-400' : 'text-ink-4');
                 return (
                   <div key={e.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
-                    <span className="w-4 shrink-0 text-center text-[11px] font-bold text-gray-400">{idx + 1}</span>
+                    <span className="w-4 shrink-0 text-center text-[11px] font-bold text-ink-4">{idx + 1}</span>
                     <div className="flex-1 min-w-0 space-y-0.5">
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={m.homeTeamLogo} name={m.homeTeam} size={15} />
-                        <p className="text-xs font-medium text-gray-200 truncate">{m.homeTeam}</p>
+                        <p className="text-xs font-medium text-ink-2 truncate">{m.homeTeam}</p>
                       </div>
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={m.awayTeamLogo} name={m.awayTeam} size={15} />
-                        <p className="text-xs font-medium text-gray-200 truncate">{m.awayTeam}</p>
+                        <p className="text-xs font-medium text-ink-2 truncate">{m.awayTeam}</p>
                       </div>
                     </div>
                     {hasScore && (
@@ -226,8 +226,8 @@ export default function TicketHistory() {
               })}
             </div>
 
-            <div className="flex items-center justify-between pt-2 border-t border-white/[0.06]">
-              <span className="text-[11px] text-gray-300">{t('machine.totalOdd')}</span>
+            <div className="flex items-center justify-between pt-2 border-t border-overlay/[0.06]">
+              <span className="text-[11px] text-ink-3">{t('machine.totalOdd')}</span>
               <span className="text-sm font-bold text-orange-400">×{ticket.totalOdds}</span>
             </div>
           </div>

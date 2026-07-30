@@ -12,14 +12,14 @@ import CoachPanel from '../components/ai/CoachPanel';
 const RESULT_STYLES = {
   WIN:  { text: 'text-primary-400', bg: 'bg-primary-500/10' },
   LOSS: { text: 'text-red-400',     bg: 'bg-red-500/10' },
-  VOID: { text: 'text-gray-300',    bg: 'bg-white/[0.04]' },
+  VOID: { text: 'text-ink-3',    bg: 'bg-overlay/[0.04]' },
 };
 
 function StatChip({ label, value, highlight }) {
   return (
     <div className="bento-card py-3 text-center">
-      <p className={`text-xl font-display font-bold ${highlight || 'text-gray-100'}`}>{value}</p>
-      <p className="text-xs text-gray-300 mt-0.5">{label}</p>
+      <p className={`text-xl font-display font-bold ${highlight || 'text-ink-1'}`}>{value}</p>
+      <p className="text-xs text-ink-3 mt-0.5">{label}</p>
     </div>
   );
 }
@@ -56,44 +56,44 @@ function BetForm({ onClose, onSaved }) {
     }
   };
 
-  const inputClass = 'w-full bg-surface-700/40 border border-white/[0.07] rounded-xl px-3 py-2.5 text-sm text-gray-200 placeholder-gray-600 outline-none focus:border-primary-500/40';
+  const inputClass = 'w-full bg-surface-700/40 border border-overlay/[0.07] rounded-xl px-3 py-2.5 text-sm text-ink-2 placeholder-ph-b outline-none focus:border-primary-500/40';
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.homeTeam')}</label>
+          <label className="block text-[11px] text-ink-3 mb-1">{t('bets.homeTeam')}</label>
           <input value={form.teamA} onChange={set('teamA')} required placeholder="PSG" className={inputClass} />
         </div>
         <div>
-          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.awayTeam')}</label>
+          <label className="block text-[11px] text-ink-3 mb-1">{t('bets.awayTeam')}</label>
           <input value={form.teamB} onChange={set('teamB')} required placeholder="OM" className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.prediction')}</label>
+        <label className="block text-[11px] text-ink-3 mb-1">{t('bets.prediction')}</label>
         <input value={form.prediction} onChange={set('prediction')} required placeholder={t('bets.predictionPlaceholder')} className={inputClass} />
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div>
-          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.odds')}</label>
+          <label className="block text-[11px] text-ink-3 mb-1">{t('bets.odds')}</label>
           <input type="number" step="0.01" min="1" value={form.odds} onChange={set('odds')} required placeholder="1.85" className={inputClass} />
         </div>
         <div>
-          <label className="block text-[11px] text-gray-300 mb-1">{t('bets.stakeFcfa')}</label>
+          <label className="block text-[11px] text-ink-3 mb-1">{t('bets.stakeFcfa')}</label>
           <input type="number" min="1" value={form.stake} onChange={set('stake')} required placeholder="5000" className={inputClass} />
         </div>
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.dateTime')}</label>
+        <label className="block text-[11px] text-ink-3 mb-1">{t('bets.dateTime')}</label>
         <input type="datetime-local" value={form.matchDate} onChange={set('matchDate')} required className={inputClass} />
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.resultOptional')}</label>
+        <label className="block text-[11px] text-ink-3 mb-1">{t('bets.resultOptional')}</label>
         <select value={form.result} onChange={set('result')} className={inputClass}>
           <option value="">{t('bets.pending')}</option>
           <option value="WIN">{t('bets.results.WIN')}</option>
@@ -103,7 +103,7 @@ function BetForm({ onClose, onSaved }) {
       </div>
 
       <div>
-        <label className="block text-[11px] text-gray-300 mb-1">{t('bets.notes')}</label>
+        <label className="block text-[11px] text-ink-3 mb-1">{t('bets.notes')}</label>
         <textarea value={form.notes} onChange={set('notes')} placeholder={t('bets.notesPlaceholder')} rows={2} className={inputClass + ' resize-none'} />
       </div>
 
@@ -128,10 +128,10 @@ function BetRow({ bet, onDelete, onResultChange }) {
     <div className="bento-card space-y-2">
       <div className="flex items-center justify-between gap-2" onClick={() => setExpanded((v) => !v)}>
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-gray-200 truncate">
+          <p className="text-[13px] font-semibold text-ink-2 truncate">
             {bet.teamA} vs {bet.teamB}
           </p>
-          <p className="text-[11px] text-gray-300 truncate">
+          <p className="text-[11px] text-ink-3 truncate">
             {t('bets.rowSummary', { prediction: bet.prediction, odds: bet.odds, stake: bet.stake.toLocaleString('fr-FR') })}
           </p>
         </div>
@@ -141,25 +141,25 @@ function BetRow({ bet, onDelete, onResultChange }) {
               {t(`bets.results.${bet.result}`)}
             </span>
           ) : (
-            <span className="text-[11px] text-gray-400 flex items-center gap-1">
+            <span className="text-[11px] text-ink-4 flex items-center gap-1">
               <Clock size={11} /> {t('bets.pending')}
             </span>
           )}
-          {expanded ? <ChevronUp size={14} className="text-gray-400" /> : <ChevronDown size={14} className="text-gray-400" />}
+          {expanded ? <ChevronUp size={14} className="text-ink-4" /> : <ChevronDown size={14} className="text-ink-4" />}
         </div>
       </div>
 
       {expanded && (
-        <div className="pt-2 border-t border-white/[0.05] space-y-3">
+        <div className="pt-2 border-t border-overlay/[0.05] space-y-3">
           {gain && (
             <p className="text-sm text-primary-400">
               {t('bets.gain')} <strong>{parseInt(gain).toLocaleString('fr-FR')} FCFA</strong>
             </p>
           )}
           {bet.notes && (
-            <p className="text-xs text-gray-300 leading-relaxed">{bet.notes}</p>
+            <p className="text-xs text-ink-3 leading-relaxed">{bet.notes}</p>
           )}
-          <p className="text-[11px] text-gray-400">
+          <p className="text-[11px] text-ink-4">
             {format(new Date(bet.matchDate), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
           </p>
 
@@ -172,7 +172,7 @@ function BetRow({ bet, onDelete, onResultChange }) {
                 className={`text-[11px] font-semibold px-3 py-1 rounded-lg transition-colors ${
                   bet.result === r
                     ? `${RESULT_STYLES[r].bg} ${RESULT_STYLES[r].text} border border-current`
-                    : 'text-gray-400 bg-surface-700/40 hover:text-gray-300'
+                    : 'text-ink-4 bg-surface-700/40 hover:text-ink-3'
                 }`}
               >
                 {t(`bets.results.${r}`)}
@@ -241,8 +241,8 @@ export default function BetTracker() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-display font-bold text-gray-100">{t('bets.title')}</h1>
-          <p className="text-xs text-gray-300 mt-0.5">{t('bets.subtitle')}</p>
+          <h1 className="text-xl font-display font-bold text-ink-1">{t('bets.title')}</h1>
+          <p className="text-xs text-ink-3 mt-0.5">{t('bets.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
@@ -256,7 +256,7 @@ export default function BetTracker() {
       {/* Formulaire d'ajout */}
       {showForm && (
         <div className="bento-card">
-          <h2 className="font-semibold text-gray-100 text-sm mb-4">{t('bets.newBet')}</h2>
+          <h2 className="font-semibold text-ink-1 text-sm mb-4">{t('bets.newBet')}</h2>
           <BetForm
             onClose={() => setShowForm(false)}
             onSaved={() => { setShowForm(false); queryClient.invalidateQueries({ queryKey: ['bets'] }); }}
@@ -304,8 +304,8 @@ export default function BetTracker() {
       ) : bets.length === 0 ? (
         <div className="bento-card text-center py-14 space-y-3">
           <div className="text-5xl">📊</div>
-          <p className="text-gray-300 font-semibold">{t('bets.noEntries')}</p>
-          <p className="text-gray-300 text-sm">{t('bets.noEntriesDesc')}</p>
+          <p className="text-ink-3 font-semibold">{t('bets.noEntries')}</p>
+          <p className="text-ink-3 text-sm">{t('bets.noEntriesDesc')}</p>
           <button onClick={() => setShowForm(true)} className="btn-cta inline-flex gap-2 mt-2">
             <Plus size={15} /> {t('bets.addFirstBet')}
           </button>

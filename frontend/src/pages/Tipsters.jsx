@@ -26,9 +26,9 @@ export default function Tipsters() {
       <div>
         <div className="flex items-center gap-2">
           <Trophy size={22} className="text-primary-400" />
-          <h1 className="font-display font-bold text-2xl text-gray-100">{t('tipsters.leaderboardTitle')}</h1>
+          <h1 className="font-display font-bold text-2xl text-ink-1">{t('tipsters.leaderboardTitle')}</h1>
         </div>
-        <p className="text-gray-300 text-sm mt-1 flex items-center gap-1">
+        <p className="text-ink-3 text-sm mt-1 flex items-center gap-1">
           {t('tipsters.leaderboardDesc')}
           <InfoTooltip text={t('tipsterCard.roiTooltip')} size={11} align="left" />
         </p>
@@ -48,7 +48,7 @@ export default function Tipsters() {
             onClick={() => { setPeriod(value); setPage(1); }}
             aria-pressed={period === value}
             className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors ${
-              period === value ? 'bg-primary-500 text-white' : 'bg-surface-700 text-gray-400 hover:text-gray-200'
+              period === value ? 'bg-primary-500 text-white' : 'bg-surface-700 text-ink-4 hover:text-ink-2'
             }`}
           >
             {label}
@@ -64,8 +64,8 @@ export default function Tipsters() {
           ? (
             <div className="bento-card text-center py-12">
               <p className="text-4xl mb-3" aria-hidden="true">🏆</p>
-              <p className="text-gray-400">{t('tipsters.noTipsters')}</p>
-              <p className="text-gray-300 text-sm mt-1">{t('tipsters.noTipstersDesc')}</p>
+              <p className="text-ink-4">{t('tipsters.noTipsters')}</p>
+              <p className="text-ink-3 text-sm mt-1">{t('tipsters.noTipstersDesc')}</p>
             </div>
           )
           : tipsters.map((stats, i) => (
@@ -84,7 +84,7 @@ export default function Tipsters() {
           >
             {t('tipsters.prev')}
           </button>
-          <span className="text-sm text-gray-400">{page} / {pagination.pages}</span>
+          <span className="text-sm text-ink-4">{page} / {pagination.pages}</span>
           <button
             onClick={() => setPage(page + 1)}
             disabled={page >= pagination.pages}

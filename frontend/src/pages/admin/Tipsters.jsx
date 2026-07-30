@@ -22,17 +22,17 @@ export default function AdminTipsters() {
   return (
     <div className="space-y-5 max-w-7xl">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">Tipsters</h1>
-        <p className="text-sm text-gray-300 mt-0.5">
+        <h1 className="font-display font-bold text-2xl text-ink-1">Tipsters</h1>
+        <p className="text-sm text-ink-3 mt-0.5">
           {pagination?.total !== undefined ? `${pagination.total} tipsters actifs` : ''}
         </p>
       </div>
 
       <div className="relative max-w-sm">
-        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+        <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-3 pointer-events-none" />
         <input
           type="search"
-          className="w-full bg-surface-800 border border-surface-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-primary-500 transition-colors"
+          className="w-full bg-surface-800 border border-surface-700 rounded-xl pl-9 pr-4 py-2.5 text-sm text-ink-2 placeholder-ph-b focus:outline-none focus:border-primary-500 transition-colors"
           placeholder="Rechercher un tipster…"
           value={search}
           onChange={(e) => { setSearch(e.target.value); setPage(1); }}
@@ -43,7 +43,7 @@ export default function AdminTipsters() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-gray-300 uppercase tracking-wider">
+              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium w-8">#</th>
                 <th className="text-left px-4 py-3.5 font-medium">Tipster</th>
                 <th className="text-center px-4 py-3.5 font-medium">Pronos</th>
@@ -72,7 +72,7 @@ export default function AdminTipsters() {
 
                   return (
                     <tr key={t.id} className="hover:bg-surface-700/40 transition-colors">
-                      <td className="px-5 py-4 text-sm text-gray-400 font-semibold">{rank}</td>
+                      <td className="px-5 py-4 text-sm text-ink-4 font-semibold">{rank}</td>
                       <td className="px-4 py-4">
                         <div className="flex items-center gap-3">
                           <div className="relative">
@@ -84,16 +84,16 @@ export default function AdminTipsters() {
                               </div>
                             )}
                             {rank <= 3 && (
-                              <Trophy size={10} className={`absolute -top-1 -right-1 ${rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-gray-400' : 'text-orange-500'}`} />
+                              <Trophy size={10} className={`absolute -top-1 -right-1 ${rank === 1 ? 'text-amber-400' : rank === 2 ? 'text-ink-4' : 'text-orange-500'}`} />
                             )}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-gray-200">{t.profile?.displayName || t.username}</p>
-                            <p className="text-xs text-gray-300">{t.email}</p>
+                            <p className="text-sm font-medium text-ink-2">{t.profile?.displayName || t.username}</p>
+                            <p className="text-xs text-ink-3">{t.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-center text-sm text-gray-300">
+                      <td className="px-4 py-4 text-center text-sm text-ink-3">
                         {t.tipsterStats?.totalTips || 0}
                       </td>
                       <td className="px-4 py-4 text-center">
@@ -106,19 +106,19 @@ export default function AdminTipsters() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-4 text-center hidden md:table-cell text-sm text-gray-300">
+                      <td className="px-4 py-4 text-center hidden md:table-cell text-sm text-ink-3">
                         {t.tipsterStats?.globalRank ? `#${t.tipsterStats.globalRank}` : '–'}
                       </td>
                       <td className="px-4 py-4 hidden lg:table-cell">
                         <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
                           plan === 'PRO' ? 'bg-amber-500/15 text-amber-400' :
                           plan === 'PREMIUM' ? 'bg-primary-500/15 text-primary-400' :
-                          'bg-gray-500/15 text-gray-400'
+                          'bg-gray-500/15 text-ink-4'
                         }`}>
                           {plan}
                         </span>
                       </td>
-                      <td className="px-5 py-4 hidden lg:table-cell text-xs text-gray-300">
+                      <td className="px-5 py-4 hidden lg:table-cell text-xs text-ink-3">
                         {format(new Date(t.createdAt), 'dd MMM yyyy', { locale: fr })}
                       </td>
                     </tr>
@@ -131,14 +131,14 @@ export default function AdminTipsters() {
 
         {pagination?.pages > 1 && (
           <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
-            <p className="text-xs text-gray-300">Page {page} / {pagination.pages}</p>
+            <p className="text-xs text-ink-3">Page {page} / {pagination.pages}</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= pagination.pages}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
                 <ChevronRight size={16} />
               </button>
             </div>

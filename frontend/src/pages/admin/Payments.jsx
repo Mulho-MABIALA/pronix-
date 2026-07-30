@@ -9,7 +9,7 @@ const STATUS = {
   COMPLETED: { label: 'Complété',  Icon: CheckCircle, cls: 'text-primary-400 bg-primary-500/15 border-primary-500/20' },
   PENDING:   { label: 'En attente', Icon: Clock,        cls: 'text-amber-400 bg-amber-500/15 border-amber-500/20' },
   FAILED:    { label: 'Échoué',    Icon: XCircle,      cls: 'text-red-400 bg-red-500/15 border-red-500/20' },
-  REFUNDED:  { label: 'Remboursé', Icon: XCircle,      cls: 'text-gray-400 bg-gray-500/15 border-gray-500/20' },
+  REFUNDED:  { label: 'Remboursé', Icon: XCircle,      cls: 'text-ink-4 bg-gray-500/15 border-gray-500/20' },
 };
 
 export default function AdminPayments() {
@@ -31,13 +31,13 @@ export default function AdminPayments() {
     <div className="space-y-5 max-w-7xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-gray-50">Paiements</h1>
-          <p className="text-sm text-gray-300 mt-0.5">{pagination?.total ?? 0} transactions</p>
+          <h1 className="font-display font-bold text-2xl text-ink-1">Paiements</h1>
+          <p className="text-sm text-ink-3 mt-0.5">{pagination?.total ?? 0} transactions</p>
         </div>
         <a
           href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/payments`}
           download
-          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-surface-800 border border-surface-700 text-gray-300 hover:text-gray-100 hover:border-surface-600 transition-colors shrink-0"
+          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-surface-800 border border-surface-700 text-ink-3 hover:text-ink-1 hover:border-surface-600 transition-colors shrink-0"
         >
           <Download size={13} />
           Exporter CSV
@@ -53,7 +53,7 @@ export default function AdminPayments() {
             className={`text-xs font-medium px-3.5 py-2 rounded-xl border transition-colors ${
               statusFilter === val
                 ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
-                : 'bg-surface-800 border-surface-700 text-gray-400 hover:border-surface-600 hover:text-gray-200'
+                : 'bg-surface-800 border-surface-700 text-ink-4 hover:border-surface-600 hover:text-ink-2'
             }`}
           >
             {label}
@@ -66,7 +66,7 @@ export default function AdminPayments() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-gray-300 uppercase tracking-wider">
+              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Utilisateur</th>
                 <th className="text-left px-4 py-3.5 font-medium">Montant</th>
                 <th className="text-left px-4 py-3.5 font-medium">Méthode</th>
@@ -94,22 +94,22 @@ export default function AdminPayments() {
                           {p.user?.profile?.avatar ? (
                             <img src={p.user.profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
                           ) : (
-                            <div className="w-7 h-7 rounded-full bg-surface-700 flex items-center justify-center text-gray-400 text-xs font-bold shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-surface-700 flex items-center justify-center text-ink-4 text-xs font-bold shrink-0">
                               {p.user?.username?.charAt(0).toUpperCase()}
                             </div>
                           )}
                           <div>
-                            <p className="text-sm font-medium text-gray-200">{p.user?.profile?.displayName || p.user?.username}</p>
-                            <p className="text-xs text-gray-300 truncate max-w-[160px]">{p.user?.email}</p>
+                            <p className="text-sm font-medium text-ink-2">{p.user?.profile?.displayName || p.user?.username}</p>
+                            <p className="text-xs text-ink-3 truncate max-w-[160px]">{p.user?.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="text-sm font-bold text-gray-100">{p.amount.toLocaleString('fr-FR')}</span>
-                        <span className="text-xs text-gray-300 ml-1">FCFA</span>
+                        <span className="text-sm font-bold text-ink-1">{p.amount.toLocaleString('fr-FR')}</span>
+                        <span className="text-xs text-ink-3 ml-1">FCFA</span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="text-xs text-gray-400 bg-surface-700 px-2.5 py-1 rounded-lg capitalize">
+                        <span className="text-xs text-ink-4 bg-surface-700 px-2.5 py-1 rounded-lg capitalize">
                           {p.provider || p.method}
                         </span>
                       </td>
@@ -119,7 +119,7 @@ export default function AdminPayments() {
                           {st.label}
                         </span>
                       </td>
-                      <td className="px-5 py-4 hidden lg:table-cell text-xs text-gray-300">
+                      <td className="px-5 py-4 hidden lg:table-cell text-xs text-ink-3">
                         {format(new Date(p.createdAt), 'dd MMM yyyy, HH:mm', { locale: fr })}
                       </td>
                     </tr>
@@ -132,14 +132,14 @@ export default function AdminPayments() {
 
         {pagination?.pages > 1 && (
           <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
-            <p className="text-xs text-gray-300">Page {page} / {pagination.pages} — {pagination.total} transactions</p>
+            <p className="text-xs text-ink-3">Page {page} / {pagination.pages} — {pagination.total} transactions</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= pagination.pages}
-                className="p-1.5 rounded-lg text-gray-400 hover:text-gray-200 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
                 <ChevronRight size={16} />
               </button>
             </div>

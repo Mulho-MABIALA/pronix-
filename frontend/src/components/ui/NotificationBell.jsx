@@ -48,13 +48,13 @@ function IOSBottomSheet({ onClose }) {
         </div>
 
         {/* En-tête */}
-        <div className="flex items-center justify-between px-5 pb-4 border-b border-white/[0.06]">
-          <p className="font-semibold text-gray-100 text-base">
+        <div className="flex items-center justify-between px-5 pb-4 border-b border-overlay/[0.06]">
+          <p className="font-semibold text-ink-1 text-base">
             {t('notificationBell.enableNotifications')}
           </p>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-gray-300 hover:text-gray-200 hover:bg-white/[0.06] transition-colors"
+            className="p-1.5 rounded-xl text-ink-3 hover:text-ink-2 hover:bg-overlay/[0.06] transition-colors"
           >
             <X size={16} />
           </button>
@@ -62,8 +62,8 @@ function IOSBottomSheet({ onClose }) {
 
         {/* Contenu */}
         <div className="px-5 pt-4 space-y-5">
-          <p className="text-sm text-gray-400 leading-relaxed">
-            {t('notificationBell.iosIntro')} <span className="text-gray-300">(iOS 16.4+)</span>.
+          <p className="text-sm text-ink-4 leading-relaxed">
+            {t('notificationBell.iosIntro')} <span className="text-ink-3">(iOS 16.4+)</span>.
           </p>
 
           {/* Étapes */}
@@ -73,7 +73,7 @@ function IOSBottomSheet({ onClose }) {
                 <span className="w-7 h-7 rounded-full bg-primary-500/20 text-primary-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                   {i + 1}
                 </span>
-                <p className="text-sm text-gray-300 leading-snug pt-1">{step}</p>
+                <p className="text-sm text-ink-3 leading-snug pt-1">{step}</p>
               </div>
             ))}
           </div>
@@ -81,7 +81,7 @@ function IOSBottomSheet({ onClose }) {
           {/* Bouton fermer */}
           <button
             onClick={onClose}
-            className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-gray-200 transition-colors"
+            className="w-full mt-2 py-3 rounded-xl text-sm font-semibold text-ink-2 transition-colors"
             style={{ background: 'rgba(255,255,255,0.07)' }}
           >
             {t('notificationBell.gotIt')}
@@ -128,7 +128,7 @@ export default function NotificationBell({ size = 18 }) {
       <>
         <button
           onClick={() => setShowIOSHint(true)}
-          className="p-2 rounded-lg transition-colors text-gray-300 hover:text-gray-200 hover:bg-surface-700"
+          className="p-2 rounded-lg transition-colors text-ink-3 hover:text-ink-2 hover:bg-surface-700"
           aria-label={t('notificationBell.enableNotifications')}
           title={t('notificationBell.iosInstallFirst')}
         >
@@ -153,7 +153,7 @@ export default function NotificationBell({ size = 18 }) {
       className={`p-2 rounded-lg transition-colors ${
         subscribed
           ? 'text-primary-400 hover:text-primary-300 hover:bg-surface-700'
-          : 'text-gray-400 hover:text-gray-200 hover:bg-surface-700'
+          : 'text-ink-4 hover:text-ink-2 hover:bg-surface-700'
       }`}
       aria-label={subscribed ? t('notificationBell.disableNotifications') : t('notificationBell.enableNotifications')}
       title={subscribed ? t('notificationBell.notificationsEnabled') : t('notificationBell.enablePushNotifications')}

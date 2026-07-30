@@ -24,19 +24,19 @@ export default function ForgotPassword() {
       <div className="w-full max-w-sm space-y-6 animate-slide-up">
         <div className="text-center">
           <span className="text-4xl" aria-hidden="true">🔑</span>
-          <h1 className="font-display font-bold text-2xl text-gray-100 mt-2">{t('auth.forgotPasswordTitle')}</h1>
+          <h1 className="font-display font-bold text-2xl text-ink-1 mt-2">{t('auth.forgotPasswordTitle')}</h1>
         </div>
 
         {sent ? (
           <div className="bento-card text-center space-y-3">
             <p className="text-primary-400">✓ {t('auth.emailSent')}</p>
-            <p className="text-gray-400 text-sm">{t('auth.resetLinkSentDesc')}</p>
+            <p className="text-ink-4 text-sm">{t('auth.resetLinkSentDesc')}</p>
             <Link to="/connexion" className="btn-secondary w-full">{t('auth.backToLogin')}</Link>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="bento-card space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-1.5">{t('auth.email')}</label>
+              <label htmlFor="email" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.email')}</label>
               <input id="email" type="email" required className="input" value={email}
                 onChange={(e) => setEmail(e.target.value)} placeholder="vous@exemple.com" />
             </div>
@@ -46,7 +46,7 @@ export default function ForgotPassword() {
           </form>
         )}
 
-        <p className="text-center text-sm text-gray-300">
+        <p className="text-center text-sm text-ink-3">
           <Link to="/connexion" className="text-primary-400 hover:underline">← {t('common.back')}</Link>
         </p>
       </div>

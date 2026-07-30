@@ -7,8 +7,8 @@ export default function CGU() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">{t('cgu.title')}</h1>
-        <p className="text-sm text-gray-300 mt-1">{t('cgu.lastUpdated')}</p>
+        <h1 className="font-display font-bold text-2xl text-ink-1">{t('cgu.title')}</h1>
+        <p className="text-sm text-ink-3 mt-1">{t('cgu.lastUpdated')}</p>
       </div>
 
       <Section title={t('cgu.sections.s1.title')}>
@@ -79,8 +79,8 @@ export default function CGU() {
 function Section({ title, children }) {
   return (
     <section className="space-y-3">
-      <h2 className="font-semibold text-gray-100 text-base">{title}</h2>
-      <div className="text-sm text-gray-400 space-y-2 leading-relaxed">
+      <h2 className="font-semibold text-ink-1 text-base">{title}</h2>
+      <div className="text-sm text-ink-4 space-y-2 leading-relaxed">
         {children}
       </div>
     </section>

@@ -38,7 +38,7 @@ function LiveDot({ color = '#34d399' }) {
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
 function Sk({ className = '' }) {
-  return <div className={`rounded-2xl bg-white/[0.04] animate-pulse ${className}`} />;
+  return <div className={`rounded-2xl bg-overlay/[0.04] animate-pulse ${className}`} />;
 }
 
 // ── KPI Card ──────────────────────────────────────────────────────────────────
@@ -109,8 +109,8 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
         <p className="text-[30px] font-display font-bold text-white leading-none tracking-tight tabular-nums">
           {value ?? '–'}
         </p>
-        <p className="text-[12px] text-gray-300 font-medium mt-1.5">{label}</p>
-        {sub && <p className="text-[11px] text-gray-300 mt-0.5">{sub}</p>}
+        <p className="text-[12px] text-ink-3 font-medium mt-1.5">{label}</p>
+        {sub && <p className="text-[11px] text-ink-3 mt-0.5">{sub}</p>}
       </div>
     </div>
   );
@@ -123,7 +123,7 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
 function StatPill({ icon: Icon, value, label, iconClass }) {
   return (
     <div
-      className="flex items-center gap-3 rounded-xl border border-white/[0.11] px-4 py-3.5"
+      className="flex items-center gap-3 rounded-xl border border-overlay/[0.11] px-4 py-3.5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}
     >
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
@@ -131,7 +131,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
       </div>
       <div>
         <p className="text-[17px] font-display font-bold text-white leading-none tabular-nums">{value ?? '–'}</p>
-        <p className="text-[11px] text-gray-300 mt-0.5">{label}</p>
+        <p className="text-[11px] text-ink-3 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -141,9 +141,9 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
 
 function RevenueChart({ data }) {
   if (!data?.length) return (
-    <div className="rounded-2xl border border-white/[0.11] p-5 flex items-center justify-center h-64"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 flex items-center justify-center h-64"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
-      <p className="text-sm text-gray-300">Aucune donnée</p>
+      <p className="text-sm text-ink-3">Aucune donnée</p>
     </div>
   );
 
@@ -178,12 +178,12 @@ function RevenueChart({ data }) {
     : null;
 
   return (
-    <div className="rounded-2xl border border-white/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-start justify-between mb-1">
         <div>
           <p className="text-sm font-semibold text-white">Revenus mensuels</p>
-          <p className="text-[11px] text-gray-300 mt-0.5">6 derniers mois</p>
+          <p className="text-[11px] text-ink-3 mt-0.5">6 derniers mois</p>
         </div>
         <div className="text-right">
           <p className="text-lg font-display font-bold text-white tabular-nums">{fmt(total)} FCFA</p>
@@ -228,7 +228,7 @@ function RevenueChart({ data }) {
       {/* month labels */}
       <div className="flex justify-between mt-2 px-1">
         {data.map((d, i) => (
-          <span key={i} className="text-xs text-gray-300 capitalize font-medium text-center">{d.month}</span>
+          <span key={i} className="text-xs text-ink-3 capitalize font-medium text-center">{d.month}</span>
         ))}
       </div>
     </div>
@@ -250,12 +250,12 @@ function ConversionCard({ data, kpis }) {
   const premiumArc = (premium / total) * circ;
 
   return (
-    <div className="rounded-2xl border border-white/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
           <p className="text-sm font-semibold text-white">Conversion</p>
-          <p className="text-[11px] text-gray-300 mt-0.5">Plans actifs</p>
+          <p className="text-[11px] text-ink-3 mt-0.5">Plans actifs</p>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
           <Percent size={11} className="text-emerald-400" />
@@ -277,7 +277,7 @@ function ConversionCard({ data, kpis }) {
           </svg>
           <div className="absolute inset-0 flex items-center justify-center flex-col">
             <p className="text-[15px] font-display font-bold text-white leading-none">{convPct}%</p>
-            <p className="text-[11px] text-gray-300 mt-0.5">premium</p>
+            <p className="text-[11px] text-ink-3 mt-0.5">premium</p>
           </div>
         </div>
 
@@ -285,22 +285,22 @@ function ConversionCard({ data, kpis }) {
         <div className="flex-1 space-y-3">
           {[
             { label: 'Premium', count: premium, color: '#34d399', bg: 'bg-emerald-500/15 text-emerald-400', bar: 'bg-emerald-500' },
-            { label: 'Gratuit',  count: free,    color: '#6b7280', bg: 'bg-gray-500/15 text-gray-300',    bar: 'bg-gray-600' },
+            { label: 'Gratuit',  count: free,    color: '#6b7280', bg: 'bg-gray-500/15 text-ink-3',    bar: 'bg-gray-600' },
           ].map(({ label, count, bg, bar }) => (
             <div key={label}>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[11px] text-gray-300 font-medium">{label}</span>
+                <span className="text-[11px] text-ink-3 font-medium">{label}</span>
                 <span className={`text-[11px] font-bold px-1.5 py-0.5 rounded-md ${bg}`}>{count}</span>
               </div>
-              <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
+              <div className="h-1.5 rounded-full bg-overlay/[0.05] overflow-hidden">
                 <div className={`h-full rounded-full transition-all duration-1000 ${bar}`}
                   style={{ width: `${(count / total) * 100}%` }} />
               </div>
             </div>
           ))}
-          <div className="pt-2 border-t border-white/[0.05] flex items-center justify-between">
-            <span className="text-[11px] text-gray-300">Total inscrits</span>
-            <span className="text-[12px] font-bold text-gray-200">{fmt(total)}</span>
+          <div className="pt-2 border-t border-overlay/[0.05] flex items-center justify-between">
+            <span className="text-[11px] text-ink-3">Total inscrits</span>
+            <span className="text-[12px] font-bold text-ink-2">{fmt(total)}</span>
           </div>
         </div>
       </div>
@@ -322,7 +322,7 @@ const AVATAR_COLORS = [
 function TopTipsters({ data }) {
   if (!data?.length) return null;
   return (
-    <div className="rounded-2xl border border-white/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -341,9 +341,9 @@ function TopTipsters({ data }) {
           const rateColor = rate >= 60 ? 'text-emerald-400' : rate >= 45 ? 'text-amber-400' : 'text-red-400';
           return (
             <div key={tip.id}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors group">
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-overlay/[0.03] transition-colors group">
               <span className="w-5 text-center text-sm shrink-0">
-                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-gray-300">{i + 1}</span>}
+                {i < 3 ? MEDALS[i] : <span className="text-xs font-bold text-ink-3">{i + 1}</span>}
               </span>
               {tip.avatar ? (
                 <img src={tip.avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0" />
@@ -353,14 +353,14 @@ function TopTipsters({ data }) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-gray-200 truncate group-hover:text-white transition-colors">
+                <p className="text-[13px] font-semibold text-ink-2 truncate group-hover:text-white transition-colors">
                   {tip.displayName}
                 </p>
-                <p className="text-xs text-gray-300">{fmt(tip.totalTips)} picks</p>
+                <p className="text-xs text-ink-3">{fmt(tip.totalTips)} picks</p>
               </div>
               <div className="text-right shrink-0">
                 <p className={`text-[13px] font-bold tabular-nums ${rateColor}`}>{rate.toFixed(1)}%</p>
-                <div className="h-1 w-14 rounded-full bg-white/[0.05] mt-1 overflow-hidden">
+                <div className="h-1 w-14 rounded-full bg-overlay/[0.05] mt-1 overflow-hidden">
                   <div className={`h-full rounded-full transition-all duration-700 ${rate >= 60 ? 'bg-emerald-500' : rate >= 45 ? 'bg-amber-500' : 'bg-red-500'}`}
                     style={{ width: `${Math.min(rate, 100)}%` }} />
                 </div>
@@ -378,7 +378,7 @@ function TopTipsters({ data }) {
 function RecentUsers({ data }) {
   if (!data?.length) return null;
   return (
-    <div className="rounded-2xl border border-white/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -399,17 +399,17 @@ function RecentUsers({ data }) {
           const avatar    = u.profile?.avatar;
           return (
             <div key={u.id}
-              className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-white/[0.03] transition-colors">
+              className="flex items-center gap-3 px-2 py-2.5 rounded-xl hover:bg-overlay/[0.03] transition-colors">
               {avatar ? (
-                <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-white/[0.08]" />
+                <img src={avatar} alt="" className="w-8 h-8 rounded-full object-cover shrink-0 ring-1 ring-overlay/[0.08]" />
               ) : (
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-white/[0.08] ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ring-1 ring-overlay/[0.08] ${AVATAR_COLORS[i % AVATAR_COLORS.length]}`}>
                   {letter}
                 </div>
               )}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <p className="text-[13px] font-medium text-gray-200 truncate">
+                  <p className="text-[13px] font-medium text-ink-2 truncate">
                     {u.profile?.displayName || u.username}
                   </p>
                   {isPremium && (
@@ -418,9 +418,9 @@ function RecentUsers({ data }) {
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-gray-300 truncate">{u.email}</p>
+                <p className="text-[11px] text-ink-3 truncate">{u.email}</p>
               </div>
-              <p className="text-xs text-gray-300 shrink-0 font-medium">
+              <p className="text-xs text-ink-3 shrink-0 font-medium">
                 {format(new Date(u.createdAt), 'dd MMM', { locale: fr })}
               </p>
             </div>
@@ -494,11 +494,11 @@ function QuickActions() {
   };
 
   return (
-    <div className="rounded-2xl border border-white/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <div className="flex items-center gap-2 mb-4">
-        <div className="w-7 h-7 rounded-lg bg-white/[0.05] flex items-center justify-center">
-          <Sparkles size={13} className="text-gray-300" />
+        <div className="w-7 h-7 rounded-lg bg-overlay/[0.05] flex items-center justify-center">
+          <Sparkles size={13} className="text-ink-3" />
         </div>
         <p className="text-sm font-semibold text-white">Actions rapides</p>
       </div>
@@ -544,7 +544,7 @@ const NAV_SHORTCUTS = [
 
 function NavShortcuts() {
   return (
-    <div className="rounded-2xl border border-white/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)' }}>
       <p className="text-sm font-semibold text-white mb-4">Navigation rapide</p>
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -552,12 +552,12 @@ function NavShortcuts() {
           <Link
             key={to}
             to={to}
-            className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/[0.04] transition-colors group text-center"
+            className="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-overlay/[0.04] transition-colors group text-center"
           >
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}>
               <Icon size={16} />
             </div>
-            <span className="text-[11px] font-medium text-gray-300 group-hover:text-white transition-colors leading-tight">{label}</span>
+            <span className="text-[11px] font-medium text-ink-3 group-hover:text-white transition-colors leading-tight">{label}</span>
           </Link>
         ))}
       </div>
@@ -584,28 +584,28 @@ export default function AdminDashboard() {
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div
-        className="rounded-2xl border border-white/[0.11] p-5 flex items-start justify-between gap-4"
+        className="rounded-2xl border border-overlay/[0.11] p-5 flex items-start justify-between gap-4"
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.09), 0 4px 24px rgba(0,0,0,0.3)' }}
       >
         <div className="flex items-center gap-4">
           <img src="/logo-circle.png" alt="fpronix" className="w-14 h-14 rounded-full shrink-0 drop-shadow-lg" />
           <div>
-            <p className="text-[11px] text-gray-300 font-semibold uppercase tracking-widest mb-1 flex items-center gap-1.5">
+            <p className="text-[11px] text-ink-3 font-semibold uppercase tracking-widest mb-1 flex items-center gap-1.5">
               <LiveDot />
               {format(now, "EEEE d MMMM yyyy", { locale: fr })}
             </p>
             <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
               {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
             </h1>
-            <p className="text-sm text-gray-300 mt-0.5">Vue en temps réel de fpronix.</p>
+            <p className="text-sm text-ink-3 mt-0.5">Vue en temps réel de fpronix.</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           {dataUpdatedAt > 0 && (
-            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/[0.11]">
-              <Clock size={12} className="text-gray-300" />
-              <span className="text-[11px] text-gray-300 font-medium">
+            <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11]">
+              <Clock size={12} className="text-ink-3" />
+              <span className="text-[11px] text-ink-3 font-medium">
                 {format(new Date(dataUpdatedAt), 'HH:mm')}
               </span>
             </div>
@@ -613,7 +613,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => refetch()}
             disabled={isFetching}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/[0.05] border border-white/[0.11] text-[12px] text-gray-300 hover:text-white hover:bg-white/[0.09] transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-[12px] text-ink-3 hover:text-white hover:bg-overlay/[0.09] transition-all disabled:opacity-50"
           >
             <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
             Actualiser

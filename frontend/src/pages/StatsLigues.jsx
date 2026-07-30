@@ -28,7 +28,7 @@ function CompLogo({ logo, name }) {
     return <img src={logo} alt="" className="w-6 h-6 object-contain shrink-0" onError={() => setErr(true)} />;
   }
   return (
-    <div className="w-6 h-6 rounded-full bg-surface-600 flex items-center justify-center text-[11px] font-bold text-gray-300 shrink-0">
+    <div className="w-6 h-6 rounded-full bg-surface-600 flex items-center justify-center text-[11px] font-bold text-ink-3 shrink-0">
       {name?.[0]}
     </div>
   );
@@ -69,7 +69,7 @@ export default function StatsLigues() {
     return (
       <button onClick={() => toggleSort(k)}
         className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${
-          active ? 'bg-select-500/15 text-select-400 border-select-500/25' : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+          active ? 'bg-select-500/15 text-select-400 border-select-500/25' : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
         }`}>
         {t(`statsLigues.sortOptions.${k}`)}
         {active ? (asc ? <ChevronUp size={11} /> : <ChevronDown size={11} />) : null}
@@ -86,7 +86,7 @@ export default function StatsLigues() {
           <BarChart2 size={18} className="text-primary-400" />
           <h1 className="section-title">{t('statsLigues.title')}</h1>
         </div>
-        <p className="text-xs text-gray-300">{t('statsLigues.subtitle')}</p>
+        <p className="text-xs text-ink-3">{t('statsLigues.subtitle')}</p>
       </div>
 
       {/* Recherche + tri */}
@@ -103,7 +103,7 @@ export default function StatsLigues() {
             {SORT_KEYS.map(k => <SortBtn key={k} k={k} />)}
           </div>
         </div>
-        <p className="text-xs text-gray-400">{t('statsLigues.lowSampleHint')}</p>
+        <p className="text-xs text-ink-4">{t('statsLigues.lowSampleHint')}</p>
       </div>
 
       {/* Table */}
@@ -116,11 +116,11 @@ export default function StatsLigues() {
       ) : rows.length === 0 ? (
         <div className="card-p text-center py-12 mx-4">
           <p className="text-3xl mb-2">📊</p>
-          <p className="text-gray-300 text-sm">{t('statsLigues.noData')}</p>
-          <p className="text-gray-400 text-xs mt-1">{t('statsLigues.noDataHint')}</p>
+          <p className="text-ink-3 text-sm">{t('statsLigues.noData')}</p>
+          <p className="text-ink-4 text-xs mt-1">{t('statsLigues.noDataHint')}</p>
         </div>
       ) : (
-        <div className="px-4 card overflow-hidden divide-y divide-white/[0.04]">
+        <div className="px-4 card overflow-hidden divide-y divide-overlay/[0.04]">
           {rows.map((r) => (
             <div key={r.competition.id} className={`px-4 py-3 space-y-2.5 ${r.lowSample ? 'opacity-60' : ''}`}>
               {/* Ligne compétition */}
@@ -128,8 +128,8 @@ export default function StatsLigues() {
                 <div className="flex items-center gap-2 min-w-0">
                   <CompLogo logo={r.competition.logo} name={r.competition.name} />
                   <div className="min-w-0">
-                    <p className="text-sm font-semibold text-gray-200 truncate">{r.competition.name}</p>
-                    <p className="text-xs text-gray-400 flex items-center gap-1.5 flex-wrap">
+                    <p className="text-sm font-semibold text-ink-2 truncate">{r.competition.name}</p>
+                    <p className="text-xs text-ink-4 flex items-center gap-1.5 flex-wrap">
                       <span>{r.competition.country} · {t('statsLigues.matchesCount', { count: r.totalMatches })}</span>
                       {r.lowSample && (
                         <span className="px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-500 font-semibold">
@@ -141,27 +141,27 @@ export default function StatsLigues() {
                 </div>
                 <div className="shrink-0 text-right pl-3">
                   <span className="text-lg font-display font-bold text-primary-400">{r.avgGoals}</span>
-                  <p className="text-xs text-gray-400">{t('statsLigues.goalsPerMatch')}</p>
+                  <p className="text-xs text-ink-4">{t('statsLigues.goalsPerMatch')}</p>
                 </div>
               </div>
 
               {/* Barres 1X2 */}
               <div className="grid grid-cols-3 gap-2 text-center">
                 <div>
-                  <div className="flex justify-between text-xs text-gray-300 mb-1">
-                    <span>{t('statsLigues.home')}</span><span className="font-semibold text-gray-300">{r.homeWinRate}%</span>
+                  <div className="flex justify-between text-xs text-ink-3 mb-1">
+                    <span>{t('statsLigues.home')}</span><span className="font-semibold text-ink-3">{r.homeWinRate}%</span>
                   </div>
                   <MiniBar pct={r.homeWinRate} color="bg-primary-500" />
                 </div>
                 <div>
-                  <div className="flex justify-between text-xs text-gray-300 mb-1">
-                    <span>{t('statsLigues.draw')}</span><span className="font-semibold text-gray-300">{r.drawRate}%</span>
+                  <div className="flex justify-between text-xs text-ink-3 mb-1">
+                    <span>{t('statsLigues.draw')}</span><span className="font-semibold text-ink-3">{r.drawRate}%</span>
                   </div>
                   <MiniBar pct={r.drawRate} color="bg-amber-500" />
                 </div>
                 <div>
-                  <div className="flex justify-between text-xs text-gray-300 mb-1">
-                    <span>{t('statsLigues.away')}</span><span className="font-semibold text-gray-300">{r.awayWinRate}%</span>
+                  <div className="flex justify-between text-xs text-ink-3 mb-1">
+                    <span>{t('statsLigues.away')}</span><span className="font-semibold text-ink-3">{r.awayWinRate}%</span>
                   </div>
                   <MiniBar pct={r.awayWinRate} color="bg-blue-500" />
                 </div>
@@ -169,13 +169,13 @@ export default function StatsLigues() {
 
               {/* Pills Over/BTTS */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs text-gray-400">{t('statsLigues.marketsLabel')}</span>
+                <span className="text-xs text-ink-4">{t('statsLigues.marketsLabel')}</span>
                 <StatPill value={r.over25Rate} color="text-violet-400 bg-violet-500/10" />
-                <span className="text-xs text-gray-400">O2.5</span>
+                <span className="text-xs text-ink-4">O2.5</span>
                 <StatPill value={r.over15Rate} color="text-blue-400 bg-blue-500/10" />
-                <span className="text-xs text-gray-400">O1.5</span>
+                <span className="text-xs text-ink-4">O1.5</span>
                 <StatPill value={r.bttsRate} color="text-orange-400 bg-orange-500/10" />
-                <span className="text-xs text-gray-400">BTTS</span>
+                <span className="text-xs text-ink-4">BTTS</span>
               </div>
             </div>
           ))}

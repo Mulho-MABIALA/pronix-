@@ -22,14 +22,36 @@ export default {
           900: '#0d4425',
         },
         surface: {
+          // 950 reste fixe (utilisé pour quelques fonds toujours très sombres,
+          // ex. overlays/modales) — les autres nuances sont pilotées par des
+          // variables CSS (voir index.css :root / html.light) pour basculer
+          // automatiquement en mode clair sans toucher aux ~250 usages dans
+          // les composants (bg-surface-800, border-surface-600, etc.).
           950: '#0d0e10',
-          900: '#171819',   // fond page — gris pur, zéro tint bleu
-          800: '#212327',   // fond carte
-          700: '#2b2d31',   // hover
-          600: '#3a3c41',   // bordures, séparateurs
-          500: '#4a4c52',   // éléments inactifs
-          400: '#5c5e64',
+          900: 'rgb(var(--surface-900-rgb) / <alpha-value>)',
+          800: 'rgb(var(--surface-800-rgb) / <alpha-value>)',
+          700: 'rgb(var(--surface-700-rgb) / <alpha-value>)',
+          600: 'rgb(var(--surface-600-rgb) / <alpha-value>)',
+          500: 'rgb(var(--surface-500-rgb) / <alpha-value>)',
+          400: 'rgb(var(--surface-400-rgb) / <alpha-value>)',
         },
+        // Texte — remplace les text-gray-100/200/300/400/700 codés en dur
+        // pour qu'ils basculent avec le thème (voir index.css).
+        ink: {
+          1: 'rgb(var(--ink-1-rgb) / <alpha-value>)',
+          2: 'rgb(var(--ink-2-rgb) / <alpha-value>)',
+          3: 'rgb(var(--ink-3-rgb) / <alpha-value>)',
+          4: 'rgb(var(--ink-4-rgb) / <alpha-value>)',
+          5: 'rgb(var(--ink-5-rgb) / <alpha-value>)',
+        },
+        // Placeholders de champs personnalisés (hors .input, qui a son propre style)
+        ph: {
+          a: 'rgb(var(--ph-a-rgb) / <alpha-value>)',
+          b: 'rgb(var(--ph-b-rgb) / <alpha-value>)',
+        },
+        // Remplace bg-white/[x] / border-white/[x] / divide-white/[x] / ring-white/[x] :
+        // un voile clair en mode sombre, sombre en mode clair, même opacité.
+        overlay: 'rgb(var(--overlay-rgb) / <alpha-value>)',
         accent: {
           400: '#fb923c',   // orange clair
           500: '#f97316',   // orange principal — CTAs premium, démarque du vert "marque"

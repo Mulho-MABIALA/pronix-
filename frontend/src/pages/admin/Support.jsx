@@ -13,7 +13,7 @@ const STATUS_MAP = {
   OPEN:        { label: 'Ouvert',      color: 'bg-blue-500/15 text-blue-400',    icon: MessageSquare },
   IN_PROGRESS: { label: 'En cours',    color: 'bg-amber-500/15 text-amber-400',  icon: Clock },
   RESOLVED:    { label: 'Résolu',      color: 'bg-emerald-500/15 text-emerald-400', icon: CheckCircle },
-  CLOSED:      { label: 'Fermé',       color: 'bg-gray-500/15 text-gray-400',    icon: XCircle },
+  CLOSED:      { label: 'Fermé',       color: 'bg-gray-500/15 text-ink-4',    icon: XCircle },
 };
 
 function StatusBadge({ status }) {
@@ -45,12 +45,12 @@ function TicketCard({ ticket, onReply, onStatus }) {
 
   return (
     <div
-      className="rounded-2xl border border-white/[0.11] overflow-hidden"
+      className="rounded-2xl border border-overlay/[0.11] overflow-hidden"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)' }}
     >
       {/* Header */}
       <div
-        className="flex items-start justify-between gap-3 p-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
+        className="flex items-start justify-between gap-3 p-4 cursor-pointer hover:bg-overlay/[0.02] transition-colors"
         onClick={() => setOpen(o => !o)}
       >
         <div className="flex items-start gap-3 min-w-0">
@@ -63,26 +63,26 @@ function TicketCard({ ticket, onReply, onStatus }) {
           )}
           <div className="min-w-0">
             <p className="text-sm font-semibold text-white truncate">{ticket.subject}</p>
-            <p className="text-[11px] text-gray-300 mt-0.5">
+            <p className="text-[11px] text-ink-3 mt-0.5">
               {displayName} · {format(new Date(ticket.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <StatusBadge status={ticket.status} />
-          <span className="text-[11px] text-gray-300 bg-white/[0.05] px-2 py-1 rounded-lg">
+          <span className="text-[11px] text-ink-3 bg-overlay/[0.05] px-2 py-1 rounded-lg">
             {ticket.messages.length} msg
           </span>
-          {open ? <ChevronUp size={14} className="text-gray-300" /> : <ChevronDown size={14} className="text-gray-300" />}
+          {open ? <ChevronUp size={14} className="text-ink-3" /> : <ChevronDown size={14} className="text-ink-3" />}
         </div>
       </div>
 
       {/* Body */}
       {open && (
-        <div className="border-t border-white/[0.07] px-4 pb-4">
+        <div className="border-t border-overlay/[0.07] px-4 pb-4">
           {/* Changer statut */}
-          <div className="flex items-center gap-2 py-3 border-b border-white/[0.05] mb-3">
-            <span className="text-[11px] text-gray-300 font-medium">Statut :</span>
+          <div className="flex items-center gap-2 py-3 border-b border-overlay/[0.05] mb-3">
+            <span className="text-[11px] text-ink-3 font-medium">Statut :</span>
             {Object.keys(STATUS_MAP).map(s => (
               <button
                 key={s}
@@ -90,7 +90,7 @@ function TicketCard({ ticket, onReply, onStatus }) {
                 className={`text-[11px] px-2 py-1 rounded-lg border transition-colors ${
                   ticket.status === s
                     ? 'border-primary-400/40 bg-primary-500/15 text-primary-400'
-                    : 'border-white/[0.08] text-gray-300 hover:text-gray-200 hover:border-white/[0.15]'
+                    : 'border-overlay/[0.08] text-ink-3 hover:text-ink-2 hover:border-overlay/[0.15]'
                 }`}
               >
                 {STATUS_MAP[s].label}
@@ -103,17 +103,17 @@ function TicketCard({ ticket, onReply, onStatus }) {
             {ticket.messages.map(msg => (
               <div key={msg.id} className={`flex gap-2.5 ${msg.isAdmin ? 'flex-row-reverse' : ''}`}>
                 <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-[11px] font-bold ${
-                  msg.isAdmin ? 'bg-primary-500/20 text-primary-400' : 'bg-white/[0.08] text-gray-400'
+                  msg.isAdmin ? 'bg-primary-500/20 text-primary-400' : 'bg-overlay/[0.08] text-ink-4'
                 }`}>
                   {msg.isAdmin ? <Shield size={13} /> : <User size={13} />}
                 </div>
                 <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                   msg.isAdmin
-                    ? 'bg-primary-500/15 text-gray-100 rounded-tr-sm'
-                    : 'bg-white/[0.06] text-gray-200 rounded-tl-sm'
+                    ? 'bg-primary-500/15 text-ink-1 rounded-tr-sm'
+                    : 'bg-overlay/[0.06] text-ink-2 rounded-tl-sm'
                 }`}>
                   <p>{msg.content}</p>
-                  <p className="text-xs text-gray-300 mt-1">
+                  <p className="text-xs text-ink-3 mt-1">
                     {format(new Date(msg.createdAt), 'dd MMM HH:mm', { locale: fr })}
                   </p>
                 </div>
@@ -177,7 +177,7 @@ export default function AdminSupport() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-bold text-2xl text-white">Support</h1>
-          <p className="text-sm text-gray-400 mt-0.5">
+          <p className="text-sm text-ink-4 mt-0.5">
             {openCount > 0
               ? <span className="text-amber-400 font-semibold">{openCount} ticket{openCount > 1 ? 's' : ''} en attente</span>
               : 'Tous les tickets sont traités ✓'
@@ -216,11 +216,11 @@ export default function AdminSupport() {
           ))}
         </div>
       ) : tickets.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.11] p-12 text-center"
+        <div className="rounded-2xl border border-overlay/[0.11] p-12 text-center"
           style={{ background: 'var(--color-card)' }}>
-          <MessageSquare size={32} className="text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-400 font-medium">Aucun ticket</p>
-          <p className="text-sm text-gray-400 mt-1">Les demandes d'assistance apparaîtront ici</p>
+          <MessageSquare size={32} className="text-ink-4 mx-auto mb-3" />
+          <p className="text-ink-4 font-medium">Aucun ticket</p>
+          <p className="text-sm text-ink-4 mt-1">Les demandes d'assistance apparaîtront ici</p>
         </div>
       ) : (
         <div className="space-y-3">

@@ -14,13 +14,63 @@
     --color-border:   rgba(255,255,255,0.10);
     --color-border-strong: rgba(255,255,255,0.16); /* bordure active / focus */
     --color-hover:    rgba(255,255,255,0.05);
+
+    /* ── Tokens mode clair/sombre ──────────────────────────────────────
+       Triplets RGB (sans rgb()) pour pouvoir moduler l'opacité via
+       rgb(var(--x) / <alpha>) — consommés par les couleurs Tailwind
+       "ink-*", "overlay", "ph-a/b" et "surface-*" (tailwind.config.js).
+       Valeurs par défaut = apparence actuelle (mode sombre) ; redéfinies
+       dans html.light juste en dessous pour le mode clair. */
+    --ink-1-rgb: 243 244 246;   /* texte principal — gray-100 */
+    --ink-2-rgb: 229 231 235;   /* texte secondaire fort — gray-200 */
+    --ink-3-rgb: 209 213 219;   /* texte secondaire — gray-300 */
+    --ink-4-rgb: 156 163 175;   /* texte tertiaire / muted — gray-400 */
+    --ink-5-rgb: 55 65 81;      /* texte très discret — gray-700 */
+    --ph-a-rgb:  107 114 128;   /* placeholder clair — gray-500 */
+    --ph-b-rgb:  75 85 99;      /* placeholder discret — gray-600 */
+    --overlay-rgb: 255 255 255; /* voile clair (bg/border/divide/ring en opacité) */
+    --skeleton-shine: #34363b;
+
+    --surface-900-rgb: 23 24 25;
+    --surface-800-rgb: 33 35 39;
+    --surface-700-rgb: 43 45 49;
+    --surface-600-rgb: 58 60 65;
+    --surface-500-rgb: 74 76 82;
+    --surface-400-rgb: 92 94 100;
+  }
+
+  html.light {
+    color-scheme: light;
+    --color-bg:       #f8f9fa;
+    --color-card:     #ffffff;
+    --color-card-alt: #f1f3f5;
+    --color-border:   rgba(0,0,0,0.09);
+    --color-border-strong: rgba(0,0,0,0.16);
+    --color-hover:    rgba(0,0,0,0.035);
+
+    --ink-1-rgb: 17 24 39;      /* gray-900 */
+    --ink-2-rgb: 55 65 81;      /* gray-700 */
+    --ink-3-rgb: 75 85 99;      /* gray-600 */
+    --ink-4-rgb: 107 114 128;   /* gray-500 */
+    --ink-5-rgb: 156 163 175;   /* gray-400 */
+    --ph-a-rgb:  209 213 219;   /* gray-300 */
+    --ph-b-rgb:  156 163 175;   /* gray-400 */
+    --overlay-rgb: 0 0 0;
+    --skeleton-shine: #e9ebee;
+
+    --surface-900-rgb: 248 249 250;
+    --surface-800-rgb: 255 255 255;
+    --surface-700-rgb: 243 244 246;
+    --surface-600-rgb: 224 226 230;
+    --surface-500-rgb: 180 184 190;
+    --surface-400-rgb: 140 144 150;
   }
 
   html { @apply scroll-smooth; overflow-x: hidden; }
 
   body {
     @apply font-sans antialiased;
-    color: #e8eaed;
+    color: rgb(var(--ink-1-rgb));
     background-color: var(--color-bg);
     min-height: 100dvh;
     max-width: 100vw;
@@ -29,6 +79,7 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     font-feature-settings: "kern" 1;
+    transition: background-color 150ms, color 150ms;
   }
 
   ::-webkit-scrollbar { width: 5px; }
@@ -51,8 +102,11 @@
        repéré 13 propriétés (border-radius de chaque coin, largeurs...) suivies
        pour rien puisque seules border-color et box-shadow changent réellement
        au survol — ça allège le travail du thread principal pendant l'animation. */
-    transition: border-color 200ms, box-shadow 200ms;
+    transition: border-color 200ms, box-shadow 200ms, background-color 150ms;
     box-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.4);
+  }
+  html.light .card {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
   }
 
   .card-p {
@@ -60,8 +114,11 @@
   }
 
   .card:hover {
-    border-color: rgba(255,255,255,0.14);
-    box-shadow: 0 10px 28px -8px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.06);
+    border-color: var(--color-border-strong);
+    box-shadow: 0 10px 28px -8px rgba(0,0,0,0.45), 0 0 0 1px rgb(var(--overlay-rgb) / 0.06);
+  }
+  html.light .card:hover {
+    box-shadow: 0 10px 28px -8px rgba(0,0,0,0.1), 0 0 0 1px rgb(var(--overlay-rgb) / 0.06);
   }
 
   /* Legacy alias */
@@ -72,14 +129,17 @@
   /* ── Match card ─────────────────────────────────────────────────── */
   .match-row {
     background-color: var(--color-card);
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid rgb(var(--overlay-rgb) / 0.06);
     @apply rounded-xl transition-colors duration-150 cursor-pointer select-none;
     box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+  }
+  html.light .match-row {
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
   }
 
   .match-row:hover {
     background-color: var(--color-card-alt);
-    border-color: rgba(255,255,255,0.1);
+    border-color: rgb(var(--overlay-rgb) / 0.1);
   }
 
   /* Mode groupé : dans un .card parent */
@@ -104,8 +164,8 @@
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
-           bg-white/[0.07] hover:bg-white/[0.11]
-           text-gray-200 font-semibold text-sm rounded-lg transition-all duration-150 border border-white/[0.08]
+           bg-overlay/[0.07] hover:bg-overlay/[0.11]
+           text-ink-2 font-semibold text-sm rounded-lg transition-all duration-150 border border-overlay/[0.08]
            focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed;
     min-height: 42px;
   }
@@ -123,10 +183,10 @@
   .filter-chip {
     @apply inline-flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-semibold border
            transition-colors duration-150 whitespace-nowrap;
-    color: theme('colors.gray.500');
-    border-color: rgba(255,255,255,0.06);
+    color: rgb(var(--ink-4-rgb));
+    border-color: rgb(var(--overlay-rgb) / 0.06);
   }
-  .filter-chip:hover { color: theme('colors.gray.300'); }
+  .filter-chip:hover { color: rgb(var(--ink-3-rgb)); }
   /* État actif = bleu (sélection UI) — distinct du vert marque/haute-confiance */
   .filter-chip[data-active="true"] {
     @apply bg-select-500/15 text-select-400;
@@ -138,8 +198,8 @@
   }
   .filter-chip .chip-count {
     @apply text-[10px] font-bold rounded-full px-1.5 py-px;
-    background: rgba(255,255,255,0.06);
-    color: theme('colors.gray.500');
+    background: rgb(var(--overlay-rgb) / 0.06);
+    color: rgb(var(--ink-4-rgb));
   }
   .filter-chip[data-active="true"] .chip-count {
     background: rgba(59,130,246,0.2);
@@ -167,7 +227,7 @@
   /* ── "Voir plus / Voir moins" — repli des groupes longs ──────────────── */
   .see-more-btn {
     @apply w-full flex items-center justify-center gap-1 py-2.5 text-xs font-semibold
-           text-gray-500 hover:text-primary-400 transition-colors;
+           text-ink-4 hover:text-primary-400 transition-colors;
   }
 
   /* ── Input ──────────────────────────────────────────────────────── */
@@ -178,8 +238,8 @@
 
   .input {
     background-color: var(--color-card-alt);
-    border: 1px solid rgba(255,255,255,0.08);
-    @apply w-full text-gray-100 placeholder-gray-600
+    border: 1px solid rgb(var(--overlay-rgb) / 0.08);
+    @apply w-full text-ink-1 placeholder-ph-b
            rounded-lg px-4 py-3 transition-colors
            focus:border-primary-400/60 focus:ring-1 focus:ring-primary-400/30 focus:outline-none;
     font-size: 16px;
@@ -202,7 +262,7 @@
     background: linear-gradient(
       90deg,
       var(--color-card-alt) 25%,
-      #34363b 50%,
+      var(--skeleton-shine) 50%,
       var(--color-card-alt) 75%
     );
     background-size: 200% 100%;
@@ -212,17 +272,17 @@
   /* ── Section header ─────────────────────────────────────────────── */
   .section-title {
     @apply font-display font-bold text-base tracking-tight;
-    color: #ffffff;
+    color: rgb(var(--ink-1-rgb));
   }
 
   /* ── Disclaimer ─────────────────────────────────────────────────── */
   .disclaimer {
-    @apply text-[11px] text-gray-500 italic leading-relaxed;
+    @apply text-[11px] text-ink-4 italic leading-relaxed;
   }
 
   /* ── Competition label ──────────────────────────────────────────── */
   .comp-label {
-    @apply text-[10px] font-semibold text-gray-400 uppercase tracking-widest;
+    @apply text-[10px] font-semibold text-ink-4 uppercase tracking-widest;
   }
 
   /* ── Scrollbar hide ─────────────────────────────────────────────── */
@@ -234,35 +294,6 @@
     display: none;
   }
 }
-
-/* ── Light mode ──────────────────────────────────────────────────── */
-html.light body {
-  @apply bg-gray-50 text-gray-900;
-}
-html.light .card,
-html.light .bento-card,
-html.light .match-row {
-  @apply bg-white border-gray-100;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
-}
-html.light .card > a.match-row {
-  background: transparent;
-  border: none;
-  box-shadow: none;
-  border-radius: 0;
-}
-html.light .card > a.match-row:hover { background: rgba(0,0,0,0.02); }
-html.light .input {
-  @apply bg-white border-gray-200 text-gray-900 placeholder-gray-400;
-}
-html.light .btn-secondary {
-  @apply bg-gray-100 hover:bg-gray-200 text-gray-700 border-gray-200;
-}
-html.light .skeleton {
-  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-  background-size: 200% 100%;
-}
-
 
 /* ── Reduced motion ──────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {

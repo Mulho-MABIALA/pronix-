@@ -28,7 +28,7 @@ export default function TipsterCard({ stats, rank }) {
       aria-label={t('tipsterCard.profileOf', { name: displayName })}
     >
       {/* Rang */}
-      <span className={`w-8 text-center font-display font-bold shrink-0 ${isPodium ? 'text-amber-400 text-lg' : 'text-gray-300 text-sm'}`}>
+      <span className={`w-8 text-center font-display font-bold shrink-0 ${isPodium ? 'text-amber-400 text-lg' : 'text-ink-3 text-sm'}`}>
         {isPodium ? ['🥇','🥈','🥉'][rank - 1] : `#${rank}`}
       </span>
 
@@ -38,7 +38,7 @@ export default function TipsterCard({ stats, rank }) {
       {/* Infos */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5 flex-wrap">
-          <p className="font-semibold text-gray-100 group-hover:text-primary-300 transition-colors truncate">
+          <p className="font-semibold text-ink-1 group-hover:text-primary-300 transition-colors truncate">
             {displayName}
           </p>
           {user?.username === 'fpronix_ai' && (

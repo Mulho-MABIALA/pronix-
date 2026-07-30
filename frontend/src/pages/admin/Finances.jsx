@@ -13,7 +13,7 @@ const STATUS_STYLE = {
   COMPLETED: { label: 'Complété',   cls: 'text-primary-400 bg-primary-500/15', Icon: CheckCircle },
   PENDING:   { label: 'En attente', cls: 'text-amber-400 bg-amber-500/15',      Icon: Clock },
   FAILED:    { label: 'Échoué',     cls: 'text-red-400 bg-red-500/15',          Icon: XCircle },
-  REFUNDED:  { label: 'Remboursé',  cls: 'text-gray-400 bg-gray-500/15',        Icon: XCircle },
+  REFUNDED:  { label: 'Remboursé',  cls: 'text-ink-4 bg-gray-500/15',        Icon: XCircle },
 };
 
 const PROVIDER_LABEL = {
@@ -29,12 +29,12 @@ const CATEGORY_LABEL = {
   api:       { label: 'API',         color: 'text-cyan-400 bg-cyan-500/15' },
   marketing: { label: 'Marketing',   color: 'text-orange-400 bg-orange-500/15' },
   salary:    { label: 'Salaire',     color: 'text-yellow-400 bg-yellow-500/15' },
-  other:     { label: 'Autre',       color: 'text-gray-400 bg-gray-500/15' },
+  other:     { label: 'Autre',       color: 'text-ink-4 bg-gray-500/15' },
 };
 
 function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-overlay/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
       <div className="flex items-start justify-between mb-3">
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${bg}`}>
           <Icon size={18} className={color} />
@@ -47,8 +47,8 @@ function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-
         )}
       </div>
       <p className="text-2xl font-bold text-white mb-0.5">{value}</p>
-      <p className="text-xs text-gray-300">{label}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
+      <p className="text-xs text-ink-3">{label}</p>
+      {sub && <p className="text-xs text-ink-4 mt-0.5">{sub}</p>}
     </div>
   );
 }
@@ -134,40 +134,40 @@ export default function AdminFinances() {
       return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setViewExpense(null)} />
-          <div className="relative w-full max-w-sm rounded-2xl border border-white/[0.08] p-6 space-y-5 animate-fade-in"
+          <div className="relative w-full max-w-sm rounded-2xl border border-overlay/[0.08] p-6 space-y-5 animate-fade-in"
             style={{ background: 'var(--color-card)' }}>
 
             {/* En-tête */}
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">Détail dépense</p>
+                <p className="text-xs font-bold text-ink-4 uppercase tracking-widest mb-1">Détail dépense</p>
                 <h3 className="text-base font-bold text-white leading-snug">{viewExpense.description}</h3>
               </div>
               <button onClick={() => setViewExpense(null)}
-                className="p-1.5 rounded-lg text-gray-300 hover:text-white hover:bg-white/[0.08] transition-colors shrink-0">
+                className="p-1.5 rounded-lg text-ink-3 hover:text-white hover:bg-overlay/[0.08] transition-colors shrink-0">
                 <X size={16} />
               </button>
             </div>
 
             {/* Champs */}
             <div className="space-y-3">
-              <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
-                <span className="text-xs text-gray-300">Montant</span>
+              <div className="flex items-center justify-between py-2.5 border-b border-overlay/[0.05]">
+                <span className="text-xs text-ink-3">Montant</span>
                 <span className="text-sm font-bold text-red-400">{formatAmount(viewExpense.amount)}</span>
               </div>
-              <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
-                <span className="text-xs text-gray-300">Catégorie</span>
+              <div className="flex items-center justify-between py-2.5 border-b border-overlay/[0.05]">
+                <span className="text-xs text-ink-3">Catégorie</span>
                 <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${cat.color}`}>{cat.label}</span>
               </div>
-              <div className="flex items-center justify-between py-2.5 border-b border-white/[0.05]">
-                <span className="text-xs text-gray-300">Date</span>
-                <span className="text-sm text-gray-300">
+              <div className="flex items-center justify-between py-2.5 border-b border-overlay/[0.05]">
+                <span className="text-xs text-ink-3">Date</span>
+                <span className="text-sm text-ink-3">
                   {format(new Date(viewExpense.date), 'dd MMMM yyyy', { locale: fr })}
                 </span>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <span className="text-xs text-gray-300">Ajouté le</span>
-                <span className="text-xs text-gray-300">
+                <span className="text-xs text-ink-3">Ajouté le</span>
+                <span className="text-xs text-ink-3">
                   {format(new Date(viewExpense.createdAt), 'dd MMM yyyy HH:mm', { locale: fr })}
                 </span>
               </div>
@@ -186,7 +186,7 @@ export default function AdminFinances() {
               </button>
               <button
                 onClick={() => setViewExpense(null)}
-                className="flex-1 py-2 rounded-xl bg-white/[0.06] text-gray-400 hover:bg-white/[0.10] transition-colors text-sm font-medium"
+                className="flex-1 py-2 rounded-xl bg-overlay/[0.06] text-ink-4 hover:bg-overlay/[0.10] transition-colors text-sm font-medium"
               >
                 Fermer
               </button>
@@ -201,15 +201,15 @@ export default function AdminFinances() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-white">Finances</h1>
-          <p className="text-sm text-gray-300 mt-0.5">Revenus, dépenses et bilan</p>
+          <p className="text-sm text-ink-3 mt-0.5">Revenus, dépenses et bilan</p>
         </div>
-        <span className="text-xs text-gray-400 bg-white/[0.04] border border-white/[0.06] rounded-lg px-3 py-1.5">
+        <span className="text-xs text-ink-4 bg-overlay/[0.04] border border-overlay/[0.06] rounded-lg px-3 py-1.5">
           Mis à jour toutes les minutes
         </span>
       </div>
 
       {/* Onglets */}
-      <div className="flex gap-1 border-b border-white/[0.06]">
+      <div className="flex gap-1 border-b border-overlay/[0.06]">
         {TABS.map(({ key, label }) => (
           <button
             key={key}
@@ -217,7 +217,7 @@ export default function AdminFinances() {
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors -mb-px ${
               activeTab === key
                 ? 'border-primary-500 text-primary-400'
-                : 'border-transparent text-gray-300 hover:text-gray-200'
+                : 'border-transparent text-ink-3 hover:text-ink-2'
             }`}
           >
             {label}
@@ -282,8 +282,8 @@ export default function AdminFinances() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-white/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
-              <h2 className="text-sm font-semibold text-gray-300 mb-4">Par méthode de paiement</h2>
+            <div className="rounded-2xl border border-overlay/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
+              <h2 className="text-sm font-semibold text-ink-3 mb-4">Par méthode de paiement</h2>
               <div className="space-y-3">
                 {Object.keys(PROVIDER_LABEL).map((provider) => {
                   const d = totalByProvider[provider];
@@ -293,34 +293,34 @@ export default function AdminFinances() {
                     <div key={provider}>
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
-                          <CreditCard size={14} className="text-gray-300" />
-                          <span className="text-sm text-gray-300">{PROVIDER_LABEL[provider]}</span>
+                          <CreditCard size={14} className="text-ink-3" />
+                          <span className="text-sm text-ink-3">{PROVIDER_LABEL[provider]}</span>
                         </div>
                         <div className="text-right">
                           <span className="text-sm font-semibold text-white">{formatAmount(d.amount)}</span>
-                          <span className="text-xs text-gray-300 ml-2">{d.count} tx</span>
+                          <span className="text-xs text-ink-3 ml-2">{d.count} tx</span>
                         </div>
                       </div>
-                      <div className="h-1.5 bg-white/[0.05] rounded-full overflow-hidden">
+                      <div className="h-1.5 bg-overlay/[0.05] rounded-full overflow-hidden">
                         <div className="h-full bg-primary-500 rounded-full" style={{ width: `${pct}%` }} />
                       </div>
                     </div>
                   );
                 })}
                 {byMethod.length === 0 && (
-                  <p className="text-sm text-gray-400 text-center py-4">Aucun paiement enregistré</p>
+                  <p className="text-sm text-ink-4 text-center py-4">Aucun paiement enregistré</p>
                 )}
               </div>
             </div>
 
-            <div className="rounded-2xl border border-white/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
-              <h2 className="text-sm font-semibold text-gray-300 mb-4">Par statut</h2>
+            <div className="rounded-2xl border border-overlay/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
+              <h2 className="text-sm font-semibold text-ink-3 mb-4">Par statut</h2>
               <div className="space-y-2.5">
                 {Object.entries(STATUS_STYLE).map(([status, { label, cls, Icon }]) => (
-                  <div key={status} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                  <div key={status} className="flex items-center justify-between p-3 rounded-xl bg-overlay/[0.02] border border-overlay/[0.04]">
                     <div className="flex items-center gap-2">
                       <Icon size={15} className={cls.split(' ')[0]} />
-                      <span className="text-sm text-gray-300">{label}</span>
+                      <span className="text-sm text-ink-3">{label}</span>
                     </div>
                     <span className={`text-sm font-bold px-2.5 py-0.5 rounded-lg ${cls}`}>
                       {statusCount[status] || 0}
@@ -335,32 +335,32 @@ export default function AdminFinances() {
 
       {/* ── ENTRÉES ── */}
       {activeTab === 'transactions' && (
-        <div className="rounded-2xl border border-white/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+        <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-overlay/[0.06]">
                   {['Utilisateur', 'Montant', 'Méthode', 'Statut', 'Date'].map((h) => (
-                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wide">
+                    <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-ink-3 uppercase tracking-wide">
                       {h}
                     </th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-white/[0.04]">
+              <tbody className="divide-y divide-overlay/[0.04]">
                 {recentPayments.map((p) => {
                   const st = STATUS_STYLE[p.status] || STATUS_STYLE.PENDING;
                   return (
-                    <tr key={p.id} className="hover:bg-white/[0.02] transition-colors">
+                    <tr key={p.id} className="hover:bg-overlay/[0.02] transition-colors">
                       <td className="px-4 py-3">
-                        <p className="text-sm font-medium text-gray-200">{p.user?.username || '—'}</p>
-                        <p className="text-xs text-gray-400">{p.user?.email}</p>
+                        <p className="text-sm font-medium text-ink-2">{p.user?.username || '—'}</p>
+                        <p className="text-xs text-ink-4">{p.user?.email}</p>
                       </td>
                       <td className="px-4 py-3">
                         <span className="text-sm font-semibold text-primary-400">{formatAmount(p.amount)}</span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-sm text-gray-400">{PROVIDER_LABEL[p.provider] || p.provider}</span>
+                        <span className="text-sm text-ink-4">{PROVIDER_LABEL[p.provider] || p.provider}</span>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg ${st.cls}`}>
@@ -369,7 +369,7 @@ export default function AdminFinances() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="text-xs text-gray-300">
+                        <span className="text-xs text-ink-3">
                           {format(new Date(p.createdAt), 'dd MMM yyyy HH:mm', { locale: fr })}
                         </span>
                       </td>
@@ -378,7 +378,7 @@ export default function AdminFinances() {
                 })}
                 {recentPayments.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">Aucune transaction</td>
+                    <td colSpan={5} className="px-4 py-8 text-center text-sm text-ink-4">Aucune transaction</td>
                   </tr>
                 )}
               </tbody>
@@ -401,11 +401,11 @@ export default function AdminFinances() {
           </div>
 
           {showForm && (
-            <form onSubmit={handleSubmit} className="rounded-2xl border border-white/[0.08] p-5 space-y-4" style={{ background: 'var(--color-card)' }}>
-              <h3 className="text-sm font-semibold text-gray-200">Nouvelle dépense</h3>
+            <form onSubmit={handleSubmit} className="rounded-2xl border border-overlay/[0.08] p-5 space-y-4" style={{ background: 'var(--color-card)' }}>
+              <h3 className="text-sm font-semibold text-ink-2">Nouvelle dépense</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-gray-300 mb-1.5">Montant (XOF) *</label>
+                  <label className="block text-xs text-ink-3 mb-1.5">Montant (XOF) *</label>
                   <input
                     type="number"
                     min="1"
@@ -413,15 +413,15 @@ export default function AdminFinances() {
                     value={formData.amount}
                     onChange={(e) => setFormData((d) => ({ ...d, amount: e.target.value }))}
                     placeholder="Ex: 15000"
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-300 mb-1.5">Catégorie</label>
+                  <label className="block text-xs text-ink-3 mb-1.5">Catégorie</label>
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData((d) => ({ ...d, category: e.target.value }))}
-                    className="w-full border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                    className="w-full border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
                     style={{ background: 'var(--color-card)' }}
                   >
                     {CATEGORIES.map((c) => (
@@ -430,23 +430,23 @@ export default function AdminFinances() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-300 mb-1.5">Description *</label>
+                  <label className="block text-xs text-ink-3 mb-1.5">Description *</label>
                   <input
                     type="text"
                     required
                     value={formData.description}
                     onChange={(e) => setFormData((d) => ({ ...d, description: e.target.value }))}
                     placeholder="Ex: Serveur OVH mensuel"
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-300 mb-1.5">Date (optionnel)</label>
+                  <label className="block text-xs text-ink-3 mb-1.5">Date (optionnel)</label>
                   <input
                     type="date"
                     value={formData.date}
                     onChange={(e) => setFormData((d) => ({ ...d, date: e.target.value }))}
-                    className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
                     style={{ colorScheme: 'dark' }}
                   />
                 </div>
@@ -462,7 +462,7 @@ export default function AdminFinances() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-5 py-2 rounded-xl bg-white/[0.06] text-gray-400 text-sm font-medium hover:bg-white/[0.10] transition-colors"
+                  className="px-5 py-2 rounded-xl bg-overlay/[0.06] text-ink-4 text-sm font-medium hover:bg-overlay/[0.10] transition-colors"
                 >
                   Annuler
                 </button>
@@ -470,25 +470,25 @@ export default function AdminFinances() {
             </form>
           )}
 
-          <div className="rounded-2xl border border-white/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+          <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-white/[0.06]">
+                  <tr className="border-b border-overlay/[0.06]">
                     {['Description', 'Catégorie', 'Montant', 'Date', ''].map((h) => (
-                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wide">
+                      <th key={h} className="px-4 py-3 text-left text-xs font-semibold text-ink-3 uppercase tracking-wide">
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/[0.04]">
+                <tbody className="divide-y divide-overlay/[0.04]">
                   {expenses.map((exp) => {
                     const cat = CATEGORY_LABEL[exp.category] || CATEGORY_LABEL.other;
                     return (
-                      <tr key={exp.id} className="hover:bg-white/[0.02] transition-colors">
+                      <tr key={exp.id} className="hover:bg-overlay/[0.02] transition-colors">
                         <td className="px-4 py-3">
-                          <p className="text-sm font-medium text-gray-200">{exp.description}</p>
+                          <p className="text-sm font-medium text-ink-2">{exp.description}</p>
                         </td>
                         <td className="px-4 py-3">
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-lg ${cat.color}`}>
@@ -499,7 +499,7 @@ export default function AdminFinances() {
                           <span className="text-sm font-semibold text-red-400">{formatAmount(exp.amount)}</span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className="text-xs text-gray-300">
+                          <span className="text-xs text-ink-3">
                             {format(new Date(exp.date), 'dd MMM yyyy', { locale: fr })}
                           </span>
                         </td>
@@ -507,7 +507,7 @@ export default function AdminFinances() {
                           <div className="flex items-center gap-1">
                             <button
                               onClick={() => setViewExpense(exp)}
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
+                              className="p-1.5 rounded-lg text-ink-4 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
                               title="Voir le détail"
                             >
                               <Eye size={14} />
@@ -516,7 +516,7 @@ export default function AdminFinances() {
                               onClick={() => {
                                 if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(exp.id);
                               }}
-                              className="p-1.5 rounded-lg text-gray-400 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
+                              className="p-1.5 rounded-lg text-ink-4 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
                               title="Supprimer"
                             >
                               <Trash2 size={14} />
@@ -528,7 +528,7 @@ export default function AdminFinances() {
                   })}
                   {expenses.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-gray-400">
+                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-ink-4">
                         Aucune dépense enregistrée — cliquez sur "Ajouter une dépense"
                       </td>
                     </tr>

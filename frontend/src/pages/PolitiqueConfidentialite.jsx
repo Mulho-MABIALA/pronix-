@@ -10,8 +10,8 @@ export default function PolitiqueConfidentialite() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">{t('privacy.title')}</h1>
-        <p className="text-sm text-gray-300 mt-1">{t('privacy.lastUpdated')}</p>
+        <h1 className="font-display font-bold text-2xl text-ink-1">{t('privacy.title')}</h1>
+        <p className="text-sm text-ink-3 mt-1">{t('privacy.lastUpdated')}</p>
       </div>
 
       <Section title={t('privacy.sections.s1.title')}>
@@ -24,7 +24,7 @@ export default function PolitiqueConfidentialite() {
         <p>{t('privacy.sections.s2.intro')}</p>
         <ul>
           {Array.isArray(s2Items) && s2Items.map((item, i) => (
-            <li key={i}><strong className="text-gray-300">{item.label} </strong>{item.text}</li>
+            <li key={i}><strong className="text-ink-3">{item.label} </strong>{item.text}</li>
           ))}
         </ul>
       </Section>
@@ -63,7 +63,7 @@ export default function PolitiqueConfidentialite() {
         </p>
         <ul>
           {Array.isArray(s7Items) && s7Items.map((item, i) => (
-            <li key={i}><strong className="text-gray-300">{item.label} </strong>{item.text}</li>
+            <li key={i}><strong className="text-ink-3">{item.label} </strong>{item.text}</li>
           ))}
         </ul>
         <p>
@@ -103,8 +103,8 @@ export default function PolitiqueConfidentialite() {
 function Section({ title, children }) {
   return (
     <section className="space-y-3">
-      <h2 className="font-semibold text-gray-100 text-base">{title}</h2>
-      <div className="text-sm text-gray-400 space-y-2 leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1">
+      <h2 className="font-semibold text-ink-1 text-base">{title}</h2>
+      <div className="text-sm text-ink-4 space-y-2 leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1">
         {children}
       </div>
     </section>

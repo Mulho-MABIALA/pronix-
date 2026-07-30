@@ -43,7 +43,7 @@ export default function BlogPost() {
   if (isError || !post) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="bento-card text-center py-12 text-gray-300">
+        <div className="bento-card text-center py-12 text-ink-3">
           {t('blog.articleNotFound')}{' '}
           <Link to="/blog" className="text-primary-400 hover:underline">{t('blog.backToBlog')}</Link>
         </div>
@@ -56,7 +56,7 @@ export default function BlogPost() {
       {/* Navigation retour */}
       <Link
         to="/blog"
-        className="flex items-center gap-1.5 text-sm text-gray-300 hover:text-gray-200 transition-colors"
+        className="flex items-center gap-1.5 text-sm text-ink-3 hover:text-ink-2 transition-colors"
       >
         <ChevronLeft size={16} />
         {t('blog.title')}
@@ -72,7 +72,7 @@ export default function BlogPost() {
       )}
 
       {/* Meta */}
-      <div className="flex flex-wrap gap-3 text-xs text-gray-300">
+      <div className="flex flex-wrap gap-3 text-xs text-ink-3">
         {post.category && (
           <span className="text-primary-400 font-medium capitalize">{t(`blog.categories.${post.category}`, { defaultValue: post.category })}</span>
         )}
@@ -95,20 +95,20 @@ export default function BlogPost() {
       </div>
 
       {/* Titre */}
-      <h1 className="font-display font-bold text-2xl text-gray-100 leading-tight">
+      <h1 className="font-display font-bold text-2xl text-ink-1 leading-tight">
         {post.title}
       </h1>
 
       {/* Excerpt */}
       {post.excerpt && (
-        <p className="text-gray-400 text-base leading-relaxed border-l-2 border-primary-500/50 pl-4">
+        <p className="text-ink-4 text-base leading-relaxed border-l-2 border-primary-500/50 pl-4">
           {post.excerpt}
         </p>
       )}
 
       {/* Contenu — rendu comme HTML simple ou texte brut */}
       <div
-        className="prose-fpronix text-gray-300 text-sm leading-relaxed space-y-4"
+        className="prose-fpronix text-ink-3 text-sm leading-relaxed space-y-4"
         style={{ lineHeight: '1.75' }}
         dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br/>') }}
       />

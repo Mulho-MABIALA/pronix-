@@ -61,15 +61,15 @@ export default function PWABanner() {
       <div
         role="alert"
         className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50
-                   bg-surface-800 border border-white/[0.10] rounded-2xl shadow-card-hover
+                   bg-surface-800 border border-overlay/[0.10] rounded-2xl shadow-card-hover
                    p-4 flex items-start gap-3 animate-slide-up"
       >
         <div className="w-10 h-10 rounded-xl bg-primary-500/15 flex items-center justify-center shrink-0">
           <Share size={18} className="text-primary-400" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-gray-100">{t('pwaBanner.installTitle')}</p>
-          <p className="text-xs text-gray-400 mt-1 leading-snug">
+          <p className="text-sm font-semibold text-ink-1">{t('pwaBanner.installTitle')}</p>
+          <p className="text-xs text-ink-4 mt-1 leading-snug">
             {t('pwaBanner.tapOn')}{' '}
             <span className="inline-flex items-center gap-1 text-primary-400 font-semibold">
               <Share size={11} /> {t('pwaBanner.share')}
@@ -80,14 +80,14 @@ export default function PWABanner() {
           </p>
           <button
             onClick={handleDismiss}
-            className="text-xs text-gray-300 hover:text-gray-200 transition-colors mt-2"
+            className="text-xs text-ink-3 hover:text-ink-2 transition-colors mt-2"
           >
             {t('common.close')}
           </button>
         </div>
         <button
           onClick={handleDismiss}
-          className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] transition-colors shrink-0"
+          className="p-1 rounded-lg text-ink-4 hover:text-ink-3 hover:bg-overlay/[0.05] transition-colors shrink-0"
           aria-label={t('common.close')}
         >
           <X size={14} />
@@ -101,27 +101,27 @@ export default function PWABanner() {
     <div
       role="alert"
       className="fixed bottom-20 md:bottom-4 left-4 right-4 md:left-auto md:right-4 md:w-80 z-50
-                 bg-surface-800 border border-white/[0.10] rounded-2xl shadow-card-hover
+                 bg-surface-800 border border-overlay/[0.10] rounded-2xl shadow-card-hover
                  p-4 flex items-start gap-3 animate-slide-up"
     >
       <div className="w-10 h-10 rounded-xl bg-primary-500/15 flex items-center justify-center shrink-0">
         <Download size={18} className="text-primary-400" />
       </div>
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-100">{t('pwa.install')}</p>
-        <p className="text-xs text-gray-300 mt-0.5 leading-snug">{t('pwa.installDesc')}</p>
+        <p className="text-sm font-semibold text-ink-1">{t('pwa.install')}</p>
+        <p className="text-xs text-ink-3 mt-0.5 leading-snug">{t('pwa.installDesc')}</p>
         <div className="flex items-center gap-2 mt-3">
           <button onClick={handleInstall} className="btn-primary text-xs px-3 py-1.5 h-auto">
             {t('pwa.installBtn')}
           </button>
-          <button onClick={handleDismiss} className="text-xs text-gray-300 hover:text-gray-200 transition-colors px-2 py-1.5">
+          <button onClick={handleDismiss} className="text-xs text-ink-3 hover:text-ink-2 transition-colors px-2 py-1.5">
             {t('pwa.dismiss')}
           </button>
         </div>
       </div>
       <button
         onClick={handleDismiss}
-        className="p-1 rounded-lg text-gray-400 hover:text-gray-300 hover:bg-white/[0.05] transition-colors shrink-0"
+        className="p-1 rounded-lg text-ink-4 hover:text-ink-3 hover:bg-overlay/[0.05] transition-colors shrink-0"
         aria-label={t('common.close')}
       >
         <X size={14} />

@@ -4,7 +4,7 @@ import { Radio, Zap, TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-rea
 import api from '../../services/api';
 
 const MOMENTUM_ICONS = { HOME: TrendingUp, AWAY: TrendingDown, BALANCED: Minus };
-const MOMENTUM_COLORS = { HOME: 'text-primary-400', AWAY: 'text-red-400', BALANCED: 'text-gray-400' };
+const MOMENTUM_COLORS = { HOME: 'text-primary-400', AWAY: 'text-red-400', BALANCED: 'text-ink-4' };
 
 export default function LiveAnalysis({ matchId }) {
   const { t, i18n } = useTranslation();
@@ -18,7 +18,7 @@ export default function LiveAnalysis({ matchId }) {
 
   if (isLoading) {
     return (
-      <div className="bento-card flex items-center gap-3 text-gray-300 py-4">
+      <div className="bento-card flex items-center gap-3 text-ink-3 py-4">
         <Loader2 size={15} className="animate-spin text-live-400 shrink-0" />
         <span className="text-sm">{t('liveAnalysis.analyzing')}</span>
       </div>
@@ -28,7 +28,7 @@ export default function LiveAnalysis({ matchId }) {
   if (!data) return null;
 
   const MomentumIcon = MOMENTUM_ICONS[data.momentum] || Minus;
-  const momentumColor = MOMENTUM_COLORS[data.momentum] || 'text-gray-400';
+  const momentumColor = MOMENTUM_COLORS[data.momentum] || 'text-ink-4';
   const momentumLabel = data.momentum ? t(`liveAnalysis.momentum.${data.momentum}`) : '';
 
   return (
@@ -40,7 +40,7 @@ export default function LiveAnalysis({ matchId }) {
             <Radio size={13} className="text-live-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-100">{t('liveAnalysis.title')}</p>
+            <p className="text-sm font-semibold text-ink-1">{t('liveAnalysis.title')}</p>
             {data.minute && (
               <p className="text-[10px] text-live-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse inline-block" />
@@ -58,22 +58,22 @@ export default function LiveAnalysis({ matchId }) {
       </div>
 
       {/* Headline */}
-      <p className="text-sm font-semibold text-gray-100">{data.headline}</p>
+      <p className="text-sm font-semibold text-ink-1">{data.headline}</p>
 
       {/* Analysis */}
-      <p className="text-xs text-gray-400 leading-relaxed">{data.analysis}</p>
+      <p className="text-xs text-ink-4 leading-relaxed">{data.analysis}</p>
 
       {/* Key fact */}
       {data.keyFact && (
-        <div className="flex items-start gap-2 pt-1 border-t border-white/[0.05]">
+        <div className="flex items-start gap-2 pt-1 border-t border-overlay/[0.05]">
           <Zap size={12} className="text-amber-400 shrink-0 mt-0.5" />
-          <p className="text-[11px] text-gray-400">{data.keyFact}</p>
+          <p className="text-[11px] text-ink-4">{data.keyFact}</p>
         </div>
       )}
 
       {/* Footer */}
       {data.generatedAt && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-ink-4">
           {t('liveAnalysis.updatedAt', { time: new Date(data.generatedAt).toLocaleTimeString(i18n.language?.startsWith('en') ? 'en-US' : 'fr-FR', { hour: '2-digit', minute: '2-digit' }) })}
         </p>
       )}

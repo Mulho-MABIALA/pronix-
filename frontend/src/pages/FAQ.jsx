@@ -18,16 +18,16 @@ function FAQItem({ q, a }) {
     <div className="border-b border-surface-700 last:border-0">
       <button
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex items-center justify-between py-4 text-left gap-4 hover:text-gray-100 transition-colors"
+        className="w-full flex items-center justify-between py-4 text-left gap-4 hover:text-ink-1 transition-colors"
       >
-        <span className={`text-sm font-medium ${open ? 'text-gray-100' : 'text-gray-300'}`}>{q}</span>
+        <span className={`text-sm font-medium ${open ? 'text-ink-1' : 'text-ink-3'}`}>{q}</span>
         <ChevronDown
           size={16}
-          className={`shrink-0 text-gray-300 transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`shrink-0 text-ink-3 transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
       {open && (
-        <p className="pb-4 text-sm text-gray-400 leading-relaxed">{a}</p>
+        <p className="pb-4 text-sm text-ink-4 leading-relaxed">{a}</p>
       )}
     </div>
   );
@@ -38,8 +38,8 @@ export default function FAQ() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-10">
       <div>
-        <h1 className="font-display font-bold text-2xl text-gray-50">{t('faq.title')}</h1>
-        <p className="text-sm text-gray-300 mt-1">
+        <h1 className="font-display font-bold text-2xl text-ink-1">{t('faq.title')}</h1>
+        <p className="text-sm text-ink-3 mt-1">
           {t('faq.noAnswer')}{' '}
           <a href="mailto:support@fpronix.com" className="text-primary-400 underline">{t('faq.contactUs')}</a>
         </p>
@@ -61,8 +61,8 @@ export default function FAQ() {
       ))}
 
       <div className="card p-6 text-center space-y-2">
-        <p className="text-gray-300 font-medium text-sm">{t('faq.otherQuestions')}</p>
-        <p className="text-gray-300 text-sm">{t('faq.respondWithin24h')}</p>
+        <p className="text-ink-3 font-medium text-sm">{t('faq.otherQuestions')}</p>
+        <p className="text-ink-3 text-sm">{t('faq.respondWithin24h')}</p>
         <a
           href="mailto:support@fpronix.com"
           className="btn-primary mt-2 inline-flex"

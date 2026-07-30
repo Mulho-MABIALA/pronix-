@@ -31,7 +31,7 @@ function ScorelineSection({ match }) {
   return (
     <section className="px-4 pb-1">
       <div className="bento-card p-4 space-y-3">
-        <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+        <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider flex items-center gap-2">
           <span className="w-1 h-3.5 rounded-full bg-violet-400 shrink-0" />
           {t('matchDetail.scorelinesTitle')}
         </h2>
@@ -39,19 +39,19 @@ function ScorelineSection({ match }) {
           {scorelines.map(({ score, prob, homeGoals, awayGoals }) => {
             const outcome = homeGoals > awayGoals ? 'home' : homeGoals < awayGoals ? 'away' : 'draw';
             const barColor = outcome === 'home' ? 'bg-primary-500' : outcome === 'draw' ? 'bg-surface-400' : 'bg-primary-400/50';
-            const textColor = outcome === 'home' ? 'text-primary-400' : outcome === 'draw' ? 'text-gray-400' : 'text-primary-300';
+            const textColor = outcome === 'home' ? 'text-primary-400' : outcome === 'draw' ? 'text-ink-4' : 'text-primary-300';
             return (
               <div key={score} className="flex items-center gap-2">
                 <span className={`w-10 text-center text-xs font-bold font-display tabular-nums ${textColor} shrink-0`}>{score}</span>
                 <div className="flex-1 h-1.5 bg-surface-600 rounded-full overflow-hidden">
                   <div className={`h-full ${barColor} rounded-full`} style={{ width: `${(prob / max) * 100}%` }} />
                 </div>
-                <span className="text-[11px] text-gray-300 w-7 text-right shrink-0">{prob}%</span>
+                <span className="text-[11px] text-ink-3 w-7 text-right shrink-0">{prob}%</span>
               </div>
             );
           })}
         </div>
-        <p className="text-xs text-gray-400">{t('matchDetail.poissonDisclaimer')}</p>
+        <p className="text-xs text-ink-4">{t('matchDetail.poissonDisclaimer')}</p>
       </div>
     </section>
   );
@@ -67,23 +67,23 @@ function ProbabilitySection({ match }) {
     <section className="px-4 pb-1">
       <div className="bento-card p-4 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('matchDetail.probabilities1x2')}</h2>
-          <span className="text-xs text-gray-400 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
+          <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('matchDetail.probabilities1x2')}</h2>
+          <span className="text-xs text-ink-4 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
         </div>
 
         {/* Gros chiffres */}
         <div className="grid grid-cols-3 text-center gap-2">
           <div>
             <p className="text-4xl font-display font-bold text-primary-400">{home}%</p>
-            <p className="text-xs text-gray-300 mt-1.5">{t('matchDetail.home1Label')}</p>
+            <p className="text-xs text-ink-3 mt-1.5">{t('matchDetail.home1Label')}</p>
           </div>
           <div>
-            <p className="text-4xl font-display font-bold text-gray-400">{draw}%</p>
-            <p className="text-xs text-gray-300 mt-1.5">{t('matchDetail.drawXLabel')}</p>
+            <p className="text-4xl font-display font-bold text-ink-4">{draw}%</p>
+            <p className="text-xs text-ink-3 mt-1.5">{t('matchDetail.drawXLabel')}</p>
           </div>
           <div>
             <p className="text-4xl font-display font-bold text-primary-400/70">{away}%</p>
-            <p className="text-xs text-gray-300 mt-1.5">{t('matchDetail.away2Label')}</p>
+            <p className="text-xs text-ink-3 mt-1.5">{t('matchDetail.away2Label')}</p>
           </div>
         </div>
 
@@ -96,8 +96,8 @@ function ProbabilitySection({ match }) {
 
         {/* Score prédit */}
         <div className="flex items-center justify-center gap-3 border-t border-surface-700 pt-3">
-          <span className="text-xs text-gray-300">{t('matchDetail.predictedScore')}</span>
-          <span className="font-display font-bold text-xl text-gray-200 tabular-nums">
+          <span className="text-xs text-ink-3">{t('matchDetail.predictedScore')}</span>
+          <span className="font-display font-bold text-xl text-ink-2 tabular-nums">
             {predictedHome} — {predictedAway}
           </span>
         </div>
@@ -140,18 +140,18 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
       {open && data && (
         <div className="mt-2 rounded-xl border border-amber-500/15 bg-amber-500/5 p-3 space-y-2">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-semibold text-gray-200">{data.edge}</p>
+            <p className="text-xs font-semibold text-ink-2">{data.edge}</p>
             {data.confidence && (
-              <span className={`text-[10px] font-bold ${CONFIDENCE_COLOR[data.confidence] || 'text-gray-400'}`}>
+              <span className={`text-[10px] font-bold ${CONFIDENCE_COLOR[data.confidence] || 'text-ink-4'}`}>
                 {t('matchDetail.confidenceLevel', { level: data.confidence })}
               </span>
             )}
           </div>
-          <p className="text-xs text-gray-400 leading-relaxed">{data.explanation}</p>
+          <p className="text-xs text-ink-4 leading-relaxed">{data.explanation}</p>
           {data.reasoning?.length > 0 && (
             <ul className="space-y-1">
               {data.reasoning.map((r, i) => (
-                <li key={i} className="text-[11px] text-gray-300 flex items-start gap-1.5">
+                <li key={i} className="text-[11px] text-ink-3 flex items-start gap-1.5">
                   <span className="text-amber-400 shrink-0">•</span> {r}
                 </li>
               ))}
@@ -196,7 +196,7 @@ function OddsAndValueSection({ match, realOdds }) {
   return (
     <section className="card p-4 space-y-3">
       <div className="flex items-center justify-between gap-2">
-        <h2 className="font-semibold text-gray-100 text-sm flex items-center gap-2">
+        <h2 className="font-semibold text-ink-1 text-sm flex items-center gap-2">
           <span className="w-1 h-4 rounded-full bg-amber-400 shrink-0" />
           {t('matchDetail.algoPickOdds')}
         </h2>
@@ -212,8 +212,8 @@ function OddsAndValueSection({ match, realOdds }) {
 
       <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border bg-primary-500/5 border-primary-500/15">
         <div className="min-w-0">
-          <p className="text-xs text-gray-300">{t('matchDetail.recommendedPick')}</p>
-          <p className="text-sm font-semibold text-gray-100 mt-0.5 truncate">
+          <p className="text-xs text-ink-3">{t('matchDetail.recommendedPick')}</p>
+          <p className="text-sm font-semibold text-ink-1 mt-0.5 truncate">
             {t(`matchDetail.pickMarketLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.market || pred.bestPick.label })}
           </p>
         </div>
@@ -221,13 +221,13 @@ function OddsAndValueSection({ match, realOdds }) {
       </div>
 
       <div>
-        <p className="text-[11px] font-semibold text-gray-300 uppercase tracking-wider mb-2">
+        <p className="text-[11px] font-semibold text-ink-3 uppercase tracking-wider mb-2">
           {isReal ? t('matchDetail.oddsComparatorReal') : t('matchDetail.oddsComparatorSimulated')}
         </p>
         <div className="space-y-1.5">
           {panel.map((b, i) => (
             <div key={b.bookmaker} className="flex items-center justify-between text-sm">
-              <span className={i === 0 ? 'font-semibold text-gray-200' : 'text-gray-300'}>{b.bookmaker}</span>
+              <span className={i === 0 ? 'font-semibold text-ink-2' : 'text-ink-3'}>{b.bookmaker}</span>
               <OddsChip odd={b.odd} size="md" muted={i !== 0} isReal={isReal} />
             </div>
           ))}
@@ -272,14 +272,14 @@ function TeamLogoLarge({ logo, teamId, name }) {
   const inner = (src && !error) ? (
     <>
       <img src={src} alt="" className="h-16 w-16 mx-auto mb-2 object-contain" onError={() => setError(true)} aria-hidden="true" />
-      <p className="font-semibold text-gray-100 text-sm leading-tight">{name}</p>
+      <p className="font-semibold text-ink-1 text-sm leading-tight">{name}</p>
     </>
   ) : (
     <>
-      <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-surface-700 flex items-center justify-center text-xl font-bold text-gray-300">
+      <div className="h-16 w-16 mx-auto mb-2 rounded-full bg-surface-700 flex items-center justify-center text-xl font-bold text-ink-3">
         {name?.charAt(0).toUpperCase()}
       </div>
-      <p className="font-semibold text-gray-100 text-sm leading-tight">{name}</p>
+      <p className="font-semibold text-ink-1 text-sm leading-tight">{name}</p>
     </>
   );
 
@@ -311,19 +311,19 @@ function FormBadge({ result }) {
 function FormRow({ label, matches }) {
   const { t } = useTranslation();
   if (!matches || matches.length === 0) {
-    return <p className="text-gray-400 text-xs">{t('matchDetail.noRecentMatches')}</p>;
+    return <p className="text-ink-4 text-xs">{t('matchDetail.noRecentMatches')}</p>;
   }
   return (
     <div className="space-y-1">
       <div className="flex items-center gap-1.5 mb-2">
-        <span className="text-xs font-medium text-gray-400 truncate">{label}</span>
+        <span className="text-xs font-medium text-ink-4 truncate">{label}</span>
         <div className="flex gap-1">
           {matches.map((m) => <FormBadge key={m.id} result={m.result} />)}
         </div>
       </div>
       <div className="space-y-1">
         {matches.map((m) => (
-          <div key={m.id} className="flex items-center justify-between text-xs text-gray-300">
+          <div key={m.id} className="flex items-center justify-between text-xs text-ink-3">
             <span className="truncate max-w-[160px]">{m.homeTeam} — {m.awayTeam}</span>
             <span className="shrink-0 ml-2 font-mono">{m.homeScore}–{m.awayScore}</span>
           </div>
@@ -336,7 +336,7 @@ function FormRow({ label, matches }) {
 function H2HSection({ h2h, homeTeam, awayTeam }) {
   const { t } = useTranslation();
   if (!h2h || h2h.length === 0) {
-    return <p className="text-gray-400 text-xs">{t('matchDetail.noH2H')}</p>;
+    return <p className="text-ink-4 text-xs">{t('matchDetail.noH2H')}</p>;
   }
 
   let homeWins = 0, awayWins = 0, draws = 0;
@@ -351,22 +351,22 @@ function H2HSection({ h2h, homeTeam, awayTeam }) {
       <div className="flex items-center justify-between text-xs">
         <div className="text-center">
           <p className="font-bold text-2xl text-primary-400">{homeWins}</p>
-          <p className="text-gray-300 truncate max-w-[80px]">{homeTeam}</p>
+          <p className="text-ink-3 truncate max-w-[80px]">{homeTeam}</p>
         </div>
         <div className="text-center">
-          <p className="font-bold text-2xl text-gray-400">{draws}</p>
-          <p className="text-gray-300">{t('matchDetail.draws')}</p>
+          <p className="font-bold text-2xl text-ink-4">{draws}</p>
+          <p className="text-ink-3">{t('matchDetail.draws')}</p>
         </div>
         <div className="text-center">
           <p className="font-bold text-2xl text-primary-400">{awayWins}</p>
-          <p className="text-gray-300 truncate max-w-[80px]">{awayTeam}</p>
+          <p className="text-ink-3 truncate max-w-[80px]">{awayTeam}</p>
         </div>
       </div>
       <div className="space-y-1.5">
         {h2h.map((m) => (
-          <div key={m.id} className="flex items-center justify-between text-xs text-gray-400">
+          <div key={m.id} className="flex items-center justify-between text-xs text-ink-4">
             <span className="truncate max-w-[100px]">{m.homeTeam}</span>
-            <span className="mx-2 font-mono font-semibold text-gray-200 shrink-0">{m.homeScore}–{m.awayScore}</span>
+            <span className="mx-2 font-mono font-semibold text-ink-2 shrink-0">{m.homeScore}–{m.awayScore}</span>
             <span className="truncate max-w-[100px] text-right">{m.awayTeam}</span>
           </div>
         ))}
@@ -393,8 +393,8 @@ function StatBar({ stat }) {
         <span className="min-w-[42px] text-center text-sm font-bold px-2 py-0.5 rounded-md bg-primary-500/20 text-primary-400">
           {homeDisplay}
         </span>
-        <span className="flex-1 text-xs text-gray-300 text-center px-3">{stat.label}</span>
-        <span className="min-w-[42px] text-center text-sm font-bold text-gray-300">
+        <span className="flex-1 text-xs text-ink-3 text-center px-3">{stat.label}</span>
+        <span className="min-w-[42px] text-center text-sm font-bold text-ink-3">
           {awayDisplay}
         </span>
       </div>
@@ -416,7 +416,7 @@ function Tab({ label, active, onClick }) {
       className={`px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-colors ${
         active
           ? 'border-primary-400 text-primary-400'
-          : 'border-transparent text-gray-300 hover:text-gray-200'
+          : 'border-transparent text-ink-3 hover:text-ink-2'
       }`}
     >
       {label}
@@ -432,8 +432,8 @@ function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
   return (
     <div className="space-y-2 pt-1">
       <div className="flex items-center justify-between">
-        <p className="text-xs font-medium text-gray-400">{t('matchDetail.reportReasonLabel')}</p>
-        <button onClick={onCancel} className="text-gray-400 hover:text-gray-300">
+        <p className="text-xs font-medium text-ink-4">{t('matchDetail.reportReasonLabel')}</p>
+        <button onClick={onCancel} className="text-ink-4 hover:text-ink-3">
           <X size={13} />
         </button>
       </div>
@@ -446,7 +446,7 @@ function ReportForm({ tipId, onSubmit, onCancel, isPending }) {
             className={`text-xs px-2 py-1 rounded-lg border transition-colors ${
               selected === k
                 ? 'border-red-500/50 bg-red-500/10 text-red-400'
-                : 'border-surface-600 text-gray-300 hover:border-surface-500'
+                : 'border-surface-600 text-ink-3 hover:border-surface-500'
             }`}
           >
             {t(`matchDetail.reportReasons.${k}`)}
@@ -651,12 +651,12 @@ export default function MatchDetail() {
                   const scoreColor = (isWinner) => {
                     if (isLiveNow) return 'text-live-400';
                     if (isDraw) return 'text-amber-400';
-                    return isWinner ? 'text-primary-400' : 'text-gray-400';
+                    return isWinner ? 'text-primary-400' : 'text-ink-4';
                   };
                   return (
                     <p className="font-display font-bold text-4xl">
                       <span className={scoreColor(homeWins)}>{match.homeScore}</span>
-                      <span className="text-gray-400"> — </span>
+                      <span className="text-ink-4"> — </span>
                       <span className={scoreColor(awayWins)}>{match.awayScore}</span>
                     </p>
                   );
@@ -672,10 +672,10 @@ export default function MatchDetail() {
               </>
             ) : (
               <>
-                <p className="font-display font-bold text-2xl text-gray-100">
+                <p className="font-display font-bold text-2xl text-ink-1">
                   {format(new Date(match.scheduledAt), 'HH:mm')}
                 </p>
-                <p className="text-xs text-gray-300 mt-1">
+                <p className="text-xs text-ink-3 mt-1">
                   {format(new Date(match.scheduledAt), 'dd MMM yyyy', { locale: dateLocale })}
                 </p>
               </>
@@ -707,7 +707,7 @@ export default function MatchDetail() {
       )}
 
       {/* ── Onglets — style BetMines ──────────────────────────────────── */}
-      <div className="border-b border-white/[0.06] overflow-x-auto scrollbar-hide">
+      <div className="border-b border-overlay/[0.06] overflow-x-auto scrollbar-hide">
         <div className="flex px-4 min-w-max">
           {isFinishedOrLive && (
             <Tab label={t('matchDetail.tabData')} active={activeTab === 'data'} onClick={() => setActiveTab('data')} />
@@ -740,7 +740,7 @@ export default function MatchDetail() {
               </div>
             ) : !statsData?.data ? (
               <div className="card-p text-center py-10">
-                <p className="text-gray-400 text-sm">{t('matchDetail.statsNotAvailable')}</p>
+                <p className="text-ink-4 text-sm">{t('matchDetail.statsNotAvailable')}</p>
               </div>
             ) : (
               <div className="card p-4 space-y-4">
@@ -748,7 +748,7 @@ export default function MatchDetail() {
                   <StatBar key={stat.key || i} stat={stat} />
                 ))}
                 {statsData.mock && (
-                  <p className="text-[10px] text-gray-700 text-center pt-1">
+                  <p className="text-[10px] text-ink-5 text-center pt-1">
                     {t('matchDetail.statsEstimatedNote')}
                   </p>
                 )}
@@ -766,9 +766,9 @@ export default function MatchDetail() {
             {/* Données premium */}
             {!isPremium && (
               <section className="card border-dashed border-surface-600 p-6 text-center">
-                <Lock size={22} className="mx-auto text-gray-300 mb-2" aria-hidden="true" />
-                <p className="text-gray-400 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
-                <p className="text-gray-300 text-xs mt-1">
+                <Lock size={22} className="mx-auto text-ink-3 mb-2" aria-hidden="true" />
+                <p className="text-ink-4 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
+                <p className="text-ink-3 text-xs mt-1">
                   {t('matchDetail.premiumDataDesc')}
                 </p>
                 <Link to="/abonnement" className="btn-primary mt-4 text-sm">
@@ -787,12 +787,12 @@ export default function MatchDetail() {
                       <Sparkles size={15} className="text-violet-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-gray-100">{t('matchDetail.aiAnalysis')}</p>
-                      <p className="text-xs text-gray-300">{t('matchDetail.aiAnalysisDesc')}</p>
+                      <p className="text-sm font-semibold text-ink-1">{t('matchDetail.aiAnalysis')}</p>
+                      <p className="text-xs text-ink-3">{t('matchDetail.aiAnalysisDesc')}</p>
                     </div>
                   </div>
                   {aiMeta && (
-                    <span className="text-xs text-gray-400 shrink-0">{t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
+                    <span className="text-xs text-ink-4 shrink-0">{t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
                   )}
                 </div>
 
@@ -816,12 +816,12 @@ export default function MatchDetail() {
                         <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
                         <p className="text-xs font-semibold text-violet-400">{t('matchDetail.analysisReady')}</p>
                         {aiMeta && (
-                          <span className="text-xs text-gray-400 ml-auto">{t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
+                          <span className="text-xs text-ink-4 ml-auto">{t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
                         )}
                       </div>
                       {analysis && (
                         <div className="bg-violet-500/5 border border-violet-500/10 rounded-xl px-4 py-3">
-                          <p className="text-sm text-gray-300 leading-relaxed italic">"{analysis}"</p>
+                          <p className="text-sm text-ink-3 leading-relaxed italic">"{analysis}"</p>
                         </div>
                       )}
                     </div>
@@ -835,8 +835,8 @@ export default function MatchDetail() {
             {!user && isScheduled && (
               <section className="card p-4 flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-sm font-semibold text-gray-100">{t('matchDetail.publishPromptTitle')}</p>
-                  <p className="text-xs text-gray-300 mt-0.5">{t('matchDetail.publishPromptDesc')}</p>
+                  <p className="text-sm font-semibold text-ink-1">{t('matchDetail.publishPromptTitle')}</p>
+                  <p className="text-xs text-ink-3 mt-0.5">{t('matchDetail.publishPromptDesc')}</p>
                 </div>
                 <Link to="/connexion" className="btn-primary text-sm px-4 py-2 shrink-0">
                   {t('matchDetail.loginBtn')}
@@ -847,7 +847,7 @@ export default function MatchDetail() {
             {/* Formulaire de pronostic — ouvert à tous les inscrits */}
             {user && isScheduled && (
               <section className="card p-4 space-y-4">
-                <h2 className="font-semibold text-gray-100 text-sm">{t('matchDetail.publishTipTitle')}</h2>
+                <h2 className="font-semibold text-ink-1 text-sm">{t('matchDetail.publishTipTitle')}</h2>
 
                 {tipSuccess && (
                   <Alert variant="success" onClose={() => setTipSuccess(false)}>
@@ -856,7 +856,7 @@ export default function MatchDetail() {
                 )}
 
                 <div>
-                  <label htmlFor="prediction" className="block text-sm font-medium text-gray-300 mb-1.5">
+                  <label htmlFor="prediction" className="block text-sm font-medium text-ink-3 mb-1.5">
                     {t('matchDetail.yourPrediction')}
                   </label>
                   <div className="relative">
@@ -871,12 +871,12 @@ export default function MatchDetail() {
                         <option key={k} value={k}>{t(`matchDetail.predictions.${k}`)}</option>
                       ))}
                     </select>
-                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 pointer-events-none" />
+                    <ChevronDown size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-3 pointer-events-none" />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-ink-3 mb-2">
                     {t('matchDetail.confidenceOutOf5', { n: confidence })}
                   </label>
                   <div className="flex gap-2">
@@ -887,7 +887,7 @@ export default function MatchDetail() {
                         onClick={() => setConfidence(n)}
                         aria-label={t('matchDetail.confidenceAriaLabel', { n })}
                         className={`w-10 h-10 rounded-lg font-semibold transition-colors ${
-                          n <= confidence ? 'bg-primary-500 text-white' : 'bg-surface-700 text-gray-400'
+                          n <= confidence ? 'bg-primary-500 text-white' : 'bg-surface-700 text-ink-4'
                         }`}
                       >
                         {n}
@@ -897,7 +897,7 @@ export default function MatchDetail() {
                 </div>
 
                 <div>
-                  <label htmlFor="analysis" className="block text-sm font-medium text-gray-300 mb-1.5">
+                  <label htmlFor="analysis" className="block text-sm font-medium text-ink-3 mb-1.5">
                     {t('matchDetail.analysisOptional')}
                   </label>
                   <textarea
@@ -908,7 +908,7 @@ export default function MatchDetail() {
                     maxLength={500}
                     placeholder={t('matchDetail.analysisPlaceholder')}
                   />
-                  <p className="text-xs text-gray-400 mt-1 text-right">{analysis.length}/500</p>
+                  <p className="text-xs text-ink-4 mt-1 text-right">{analysis.length}/500</p>
                 </div>
 
                 <button
@@ -923,7 +923,7 @@ export default function MatchDetail() {
 
             {/* Liste des pronostics */}
             <section>
-              <h2 className="font-semibold text-gray-100 text-sm mb-3">
+              <h2 className="font-semibold text-ink-1 text-sm mb-3">
                 {t('matchDetail.tipstersPicksTitle')}{tips.length > 0 ? ` (${tips.length})` : ''}
               </h2>
               <div className="space-y-3">
@@ -940,7 +940,7 @@ export default function MatchDetail() {
                             {displayName?.charAt(0).toUpperCase()}
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <span className="text-sm font-medium text-gray-200">{displayName}</span>
+                            <span className="text-sm font-medium text-ink-2">{displayName}</span>
                             {tip.isAiGenerated && (
                               <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-violet-500/15 text-violet-400 border border-violet-500/20">
                                 <Sparkles size={9} />IA
@@ -952,7 +952,7 @@ export default function MatchDetail() {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-sm font-semibold text-gray-100">{predLabel}</span>
+                        <span className="text-sm font-semibold text-ink-1">{predLabel}</span>
                         <div className="flex items-center gap-1">
                           {Array.from({ length: tip.confidence || 0 }).map((_, i) => (
                             <span key={i} className="w-1.5 h-1.5 rounded-full bg-primary-400" aria-hidden="true" />
@@ -961,7 +961,7 @@ export default function MatchDetail() {
                       </div>
 
                       {tip.analysis && (
-                        <p className="text-sm text-gray-400 italic">"{tip.analysis}"</p>
+                        <p className="text-sm text-ink-4 italic">"{tip.analysis}"</p>
                       )}
 
                       {stats && (
@@ -974,7 +974,7 @@ export default function MatchDetail() {
                       {user && tip.userId !== user.id && (
                         <div className="pt-2">
                           {reportedTips.has(tip.id) ? (
-                            <p className="text-xs text-gray-400">{t('matchDetail.reportSent')}</p>
+                            <p className="text-xs text-ink-4">{t('matchDetail.reportSent')}</p>
                           ) : reportingTipId === tip.id ? (
                             <ReportForm
                               tipId={tip.id}
@@ -985,7 +985,7 @@ export default function MatchDetail() {
                           ) : (
                             <button
                               onClick={() => setReportingTipId(tip.id)}
-                              className="flex items-center gap-1 text-xs text-gray-400 hover:text-red-400 transition-colors"
+                              className="flex items-center gap-1 text-xs text-ink-4 hover:text-red-400 transition-colors"
                             >
                               <Flag size={11} />
                               {t('matchDetail.reportBtn')}
@@ -998,7 +998,7 @@ export default function MatchDetail() {
                 })}
                 {tips.length === 0 && (
                   <div className="card-p text-center py-8">
-                    <p className="text-gray-300 text-sm">{t('matchDetail.noTipsYet')}</p>
+                    <p className="text-ink-3 text-sm">{t('matchDetail.noTipsYet')}</p>
                   </div>
                 )}
               </div>
@@ -1017,7 +1017,7 @@ export default function MatchDetail() {
               </div>
             ) : eventsData.data?.length === 0 ? (
               <div className="card-p text-center py-10">
-                <p className="text-gray-300 text-sm">{t('matchDetail.noEventsYet')}</p>
+                <p className="text-ink-3 text-sm">{t('matchDetail.noEventsYet')}</p>
               </div>
             ) : (
               <div className="space-y-2">
@@ -1037,28 +1037,28 @@ export default function MatchDetail() {
                     : isCard
                     ? <Square size={12} className={evt.detail?.includes('Yellow') ? 'text-yellow-400' : 'text-red-500'} fill="currentColor" />
                     : isSub
-                    ? <ArrowLeftRight size={13} className="text-gray-400" />
-                    : <CircleDot size={13} className="text-gray-300" />;
+                    ? <ArrowLeftRight size={13} className="text-ink-4" />
+                    : <CircleDot size={13} className="text-ink-3" />;
 
                   return (
                     <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl bg-surface-800 border border-surface-700 ${isHome ? '' : 'flex-row-reverse text-right'}`}>
-                      <span className="text-xs font-bold text-gray-400 w-8 shrink-0 tabular-nums">
+                      <span className="text-xs font-bold text-ink-4 w-8 shrink-0 tabular-nums">
                         {evt.time}{evt.extra ? `+${evt.extra}` : ''}'
                       </span>
                       <span className="shrink-0">{icon}</span>
                       <div className={`flex-1 min-w-0 ${isHome ? '' : 'text-right'}`}>
-                        <p className="text-sm font-medium text-gray-100 truncate">{evt.player}</p>
+                        <p className="text-sm font-medium text-ink-1 truncate">{evt.player}</p>
                         {isSub && evt.assist && (
-                          <p className="text-xs text-gray-300 truncate">↙ {evt.assist}</p>
+                          <p className="text-xs text-ink-3 truncate">↙ {evt.assist}</p>
                         )}
                         {isGoal && evt.assist && (
-                          <p className="text-xs text-gray-300 truncate">{t('matchDetail.assistLabel', { assist: evt.assist })}</p>
+                          <p className="text-xs text-ink-3 truncate">{t('matchDetail.assistLabel', { assist: evt.assist })}</p>
                         )}
                         {evt.detail && !isSub && (
-                          <p className="text-xs text-gray-400">{evt.detail}</p>
+                          <p className="text-xs text-ink-4">{evt.detail}</p>
                         )}
                       </div>
-                      <span className={`text-xs shrink-0 ${isHome ? 'text-primary-400' : 'text-gray-400'}`}>
+                      <span className={`text-xs shrink-0 ${isHome ? 'text-primary-400' : 'text-ink-4'}`}>
                         {isHome ? match.homeTeam?.split(' ')[0] : match.awayTeam?.split(' ')[0]}
                       </span>
                     </div>
@@ -1079,7 +1079,7 @@ export default function MatchDetail() {
               </div>
             ) : !contextData?.data ? (
               <div className="card-p text-center py-8">
-                <p className="text-gray-400 text-sm">{t('matchDetail.formDataNotAvailable')}</p>
+                <p className="text-ink-4 text-sm">{t('matchDetail.formDataNotAvailable')}</p>
               </div>
             ) : (
               <div className="space-y-5">
@@ -1088,7 +1088,7 @@ export default function MatchDetail() {
                   <FormRow label={match.awayTeam} matches={contextData.data.awayForm} />
                 </div>
                 <div className="card p-4">
-                  <p className="text-xs font-semibold text-gray-400 mb-3 uppercase tracking-wider">{t('matchDetail.headToHead')}</p>
+                  <p className="text-xs font-semibold text-ink-4 mb-3 uppercase tracking-wider">{t('matchDetail.headToHead')}</p>
                   <H2HSection h2h={contextData.data.h2h} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
                 </div>
               </div>

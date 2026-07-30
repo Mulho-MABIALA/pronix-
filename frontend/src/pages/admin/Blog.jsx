@@ -30,35 +30,35 @@ function PostEditor({ initial = EMPTY_POST, onSave, onCancel, isSaving }) {
   return (
     <div className="bento-card space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="font-semibold text-gray-100">{initial.id ? 'Modifier l\'article' : 'Nouvel article'}</h3>
-        <button onClick={onCancel} className="text-gray-300 hover:text-gray-200"><X size={16} /></button>
+        <h3 className="font-semibold text-ink-1">{initial.id ? 'Modifier l\'article' : 'Nouvel article'}</h3>
+        <button onClick={onCancel} className="text-ink-3 hover:text-ink-2"><X size={16} /></button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div className="sm:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1">Titre *</label>
+          <label className="block text-xs text-ink-4 mb-1">Titre *</label>
           <input
             value={form.title}
             onChange={handleTitleChange}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500"
             placeholder="Titre de l'article"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Slug *</label>
+          <label className="block text-xs text-ink-4 mb-1">Slug *</label>
           <input
             value={form.slug}
             onChange={(e) => set('slug', e.target.value)}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500 font-mono"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500 font-mono"
             placeholder="mon-article"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Catégorie</label>
+          <label className="block text-xs text-ink-4 mb-1">Catégorie</label>
           <select
             value={form.category}
             onChange={(e) => set('category', e.target.value)}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500"
           >
             {['general', 'analyse', 'pronostic', 'actualite', 'conseil'].map((c) => (
               <option key={c} value={c}>{c}</option>
@@ -66,31 +66,31 @@ function PostEditor({ initial = EMPTY_POST, onSave, onCancel, isSaving }) {
           </select>
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1">Résumé (excerpt)</label>
+          <label className="block text-xs text-ink-4 mb-1">Résumé (excerpt)</label>
           <textarea
             value={form.excerpt}
             onChange={(e) => set('excerpt', e.target.value)}
             rows={2}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500 resize-none"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500 resize-none"
             placeholder="Court résumé visible en liste…"
           />
         </div>
         <div className="sm:col-span-2">
-          <label className="block text-xs text-gray-400 mb-1">Contenu *</label>
+          <label className="block text-xs text-ink-4 mb-1">Contenu *</label>
           <textarea
             value={form.content}
             onChange={(e) => set('content', e.target.value)}
             rows={10}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500 resize-y font-mono"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500 resize-y font-mono"
             placeholder="Contenu de l'article (HTML ou texte brut)…"
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Image de couverture (URL)</label>
+          <label className="block text-xs text-ink-4 mb-1">Image de couverture (URL)</label>
           <input
             value={form.coverImage}
             onChange={(e) => set('coverImage', e.target.value)}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500"
             placeholder="https://..."
           />
         </div>
@@ -102,25 +102,25 @@ function PostEditor({ initial = EMPTY_POST, onSave, onCancel, isSaving }) {
               onChange={(e) => set('published', e.target.checked)}
               className="w-4 h-4 rounded accent-primary-500"
             />
-            <span className="text-sm text-gray-300">Publier immédiatement</span>
+            <span className="text-sm text-ink-3">Publier immédiatement</span>
           </label>
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Meta title (SEO)</label>
+          <label className="block text-xs text-ink-4 mb-1">Meta title (SEO)</label>
           <input
             value={form.metaTitle}
             onChange={(e) => set('metaTitle', e.target.value)}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500"
             placeholder="Titre SEO (max 70 car.)"
             maxLength={70}
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-400 mb-1">Meta description (SEO)</label>
+          <label className="block text-xs text-ink-4 mb-1">Meta description (SEO)</label>
           <input
             value={form.metaDesc}
             onChange={(e) => set('metaDesc', e.target.value)}
-            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-gray-100 focus:outline-none focus:border-primary-500"
+            className="w-full bg-surface-700 border border-surface-600 rounded-lg px-3 py-2 text-sm text-ink-1 focus:outline-none focus:border-primary-500"
             placeholder="Description SEO (max 160 car.)"
             maxLength={160}
           />
@@ -128,7 +128,7 @@ function PostEditor({ initial = EMPTY_POST, onSave, onCancel, isSaving }) {
       </div>
 
       <div className="flex justify-end gap-2 pt-2 border-t border-surface-700">
-        <button onClick={onCancel} className="text-sm px-4 py-2 rounded-xl bg-surface-700 text-gray-300 hover:bg-surface-600">
+        <button onClick={onCancel} className="text-sm px-4 py-2 rounded-xl bg-surface-700 text-ink-3 hover:bg-surface-600">
           Annuler
         </button>
         <button
@@ -199,8 +199,8 @@ export default function AdminBlog() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="font-display font-bold text-2xl text-gray-50">Blog SEO</h1>
-          <p className="text-sm text-gray-300 mt-0.5">{posts.length} article{posts.length !== 1 ? 's' : ''}</p>
+          <h1 className="font-display font-bold text-2xl text-ink-1">Blog SEO</h1>
+          <p className="text-sm text-ink-3 mt-0.5">{posts.length} article{posts.length !== 1 ? 's' : ''}</p>
         </div>
         {!editing && (
           <button
@@ -229,7 +229,7 @@ export default function AdminBlog() {
           ))}
         </div>
       ) : posts.length === 0 ? (
-        <div className="bento-card text-center py-12 text-gray-300">
+        <div className="bento-card text-center py-12 text-ink-3">
           Aucun article. Créez votre premier article !
         </div>
       ) : (
@@ -239,9 +239,9 @@ export default function AdminBlog() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full shrink-0 ${post.published ? 'bg-green-500' : 'bg-gray-600'}`} />
-                  <p className="text-sm font-medium text-gray-100 truncate">{post.title}</p>
+                  <p className="text-sm font-medium text-ink-1 truncate">{post.title}</p>
                 </div>
-                <div className="flex items-center gap-3 mt-0.5 text-xs text-gray-300">
+                <div className="flex items-center gap-3 mt-0.5 text-xs text-ink-3">
                   <span className="capitalize">{post.category}</span>
                   <span>/blog/{post.slug}</span>
                   {post.publishedAt && (
@@ -253,14 +253,14 @@ export default function AdminBlog() {
               <div className="flex items-center gap-1 shrink-0">
                 <button
                   onClick={() => updateMutation.mutate({ id: post.id, published: !post.published })}
-                  className="p-1.5 rounded-lg text-gray-300 hover:text-gray-200 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-ink-3 hover:text-ink-2 hover:bg-surface-700 transition-colors"
                   title={post.published ? 'Dépublier' : 'Publier'}
                 >
                   {post.published ? <EyeOff size={14} /> : <Eye size={14} />}
                 </button>
                 <button
                   onClick={() => setEditing(post)}
-                  className="p-1.5 rounded-lg text-gray-300 hover:text-primary-400 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-ink-3 hover:text-primary-400 hover:bg-surface-700 transition-colors"
                   title="Modifier"
                 >
                   <Edit2 size={14} />
@@ -269,7 +269,7 @@ export default function AdminBlog() {
                   onClick={() => {
                     if (window.confirm('Supprimer cet article ?')) deleteMutation.mutate(post.id);
                   }}
-                  className="p-1.5 rounded-lg text-gray-300 hover:text-red-400 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-ink-3 hover:text-red-400 hover:bg-surface-700 transition-colors"
                   title="Supprimer"
                 >
                   <Trash2 size={14} />

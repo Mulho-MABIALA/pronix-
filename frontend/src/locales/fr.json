@@ -1594,6 +1594,8 @@
   },
   "header": {
     "langSwitcherLabel": "Changer de langue / Change language",
+    "switchToDark": "Passer en mode sombre",
+    "switchToLight": "Passer en mode clair",
     "mainNavLabel": "Navigation principale",
     "dropdown": {
       "sections": {

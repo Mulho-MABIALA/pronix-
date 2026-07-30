@@ -17,7 +17,7 @@ function ScoreRing({ score }) {
   return (
     <div className={`text-center ${color}`}>
       <p className="text-4xl font-display font-black">{score}</p>
-      <p className="text-xs text-gray-300 mt-0.5">{t('coachPanel.bettorScore')}</p>
+      <p className="text-xs text-ink-3 mt-0.5">{t('coachPanel.bettorScore')}</p>
     </div>
   );
 }
@@ -36,8 +36,8 @@ export default function CoachPanel() {
     return (
       <div className="bento-card text-center py-6">
         <Lock size={22} className="text-primary-400 mx-auto mb-2" />
-        <p className="text-sm font-semibold text-gray-200 mb-1">{t('coachPanel.title')}</p>
-        <p className="text-xs text-gray-300 mb-4">{t('coachPanel.premiumLocked')}</p>
+        <p className="text-sm font-semibold text-ink-2 mb-1">{t('coachPanel.title')}</p>
+        <p className="text-xs text-ink-3 mb-4">{t('coachPanel.premiumLocked')}</p>
         <Link to="/abonnement" className="btn-primary px-6 py-2 text-sm inline-flex items-center gap-2">
           {t('common.premium')}
         </Link>
@@ -47,7 +47,7 @@ export default function CoachPanel() {
 
   if (isLoading) {
     return (
-      <div className="bento-card flex items-center gap-3 text-gray-300">
+      <div className="bento-card flex items-center gap-3 text-ink-3">
         <Loader2 size={16} className="animate-spin text-primary-400" />
         <span className="text-sm">{t('coachPanel.analyzingHistory')}</span>
       </div>
@@ -61,8 +61,8 @@ export default function CoachPanel() {
       <div className="bento-card flex items-start gap-3">
         <AlertCircle size={18} className="text-amber-400 shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-semibold text-gray-200">{t('coachPanel.title')}</p>
-          <p className="text-xs text-gray-300 mt-0.5">{data.message}</p>
+          <p className="text-sm font-semibold text-ink-2">{t('coachPanel.title')}</p>
+          <p className="text-xs text-ink-3 mt-0.5">{data.message}</p>
         </div>
       </div>
     );
@@ -78,26 +78,26 @@ export default function CoachPanel() {
           <Brain size={16} className="text-primary-400" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-gray-100">{t('coachPanel.title')}</p>
-          <p className="text-xs text-gray-300">{t('coachPanel.analysisOfLastBets', { count: stats.total })}</p>
+          <p className="text-sm font-semibold text-ink-1">{t('coachPanel.title')}</p>
+          <p className="text-xs text-ink-3">{t('coachPanel.analysisOfLastBets', { count: stats.total })}</p>
         </div>
       </div>
 
       {/* Stats rapides */}
       <div className="grid grid-cols-4 gap-2">
         <div className="bento-card text-center py-2 px-1">
-          <p className="text-lg font-display font-bold text-gray-100">{stats.winRate}%</p>
-          <p className="text-xs text-gray-300">{t('tipsters.successRate')}</p>
+          <p className="text-lg font-display font-bold text-ink-1">{stats.winRate}%</p>
+          <p className="text-xs text-ink-3">{t('tipsters.successRate')}</p>
         </div>
         <div className="bento-card text-center py-2 px-1">
           <p className={`text-lg font-display font-bold ${Number(stats.roi) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
             {stats.roi}%
           </p>
-          <p className="text-xs text-gray-300">ROI</p>
+          <p className="text-xs text-ink-3">ROI</p>
         </div>
         <div className="bento-card text-center py-2 px-1">
-          <p className="text-lg font-display font-bold text-gray-100">{stats.avgOdds}</p>
-          <p className="text-xs text-gray-300">{t('coachPanel.avgOdds')}</p>
+          <p className="text-lg font-display font-bold text-ink-1">{stats.avgOdds}</p>
+          <p className="text-xs text-ink-3">{t('coachPanel.avgOdds')}</p>
         </div>
         {advice?.score != null && (
           <div className="bento-card text-center py-2 px-1">
@@ -113,10 +113,10 @@ export default function CoachPanel() {
             <TrendingUp size={14} className="text-green-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-[10px] text-green-400 font-semibold uppercase tracking-wide">{t('coachPanel.strength')}</p>
-              <p className="text-xs text-gray-300 mt-0.5">
+              <p className="text-xs text-ink-3 mt-0.5">
                 {t(`coachPanel.predLabels.${PRED_KEYS[stats.strongestType.name]}`, { defaultValue: stats.strongestType.name })}
               </p>
-              <p className="text-xs text-gray-300">
+              <p className="text-xs text-ink-3">
                 {t('coachPanel.wonFraction', { wins: stats.strongestType.wins, total: stats.strongestType.total })}
               </p>
             </div>
@@ -127,10 +127,10 @@ export default function CoachPanel() {
             <TrendingDown size={14} className="text-red-400 mt-0.5 shrink-0" />
             <div>
               <p className="text-[10px] text-red-400 font-semibold uppercase tracking-wide">{t('coachPanel.toAvoid')}</p>
-              <p className="text-xs text-gray-300 mt-0.5">
+              <p className="text-xs text-ink-3 mt-0.5">
                 {t(`coachPanel.predLabels.${PRED_KEYS[stats.weakestType.name]}`, { defaultValue: stats.weakestType.name })}
               </p>
-              <p className="text-xs text-gray-300">
+              <p className="text-xs text-ink-3">
                 {t('coachPanel.wonFraction', { wins: stats.weakestType.wins, total: stats.weakestType.total })}
               </p>
             </div>
@@ -142,14 +142,14 @@ export default function CoachPanel() {
       {advice && (
         <div className="bento-card space-y-3">
           {advice.summary && (
-            <p className="text-sm text-gray-300 italic">"{ advice.summary }"</p>
+            <p className="text-sm text-ink-3 italic">"{ advice.summary }"</p>
           )}
           {advice.tips?.map((tip, i) => (
             <div key={i} className="flex items-start gap-2">
               <Star size={13} className="text-amber-400 mt-0.5 shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-gray-200">{tip.title}</p>
-                <p className="text-xs text-gray-300 mt-0.5">{tip.detail}</p>
+                <p className="text-xs font-semibold text-ink-2">{tip.title}</p>
+                <p className="text-xs text-ink-3 mt-0.5">{tip.detail}</p>
               </div>
             </div>
           ))}

@@ -16,24 +16,24 @@ function formatAmount(amount) {
 // Carte de stat globale (en haut de page) — même style que /admin/finances.
 function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-overlay/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
       <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
         <Icon size={16} className={color} />
       </div>
       <p className="text-lg font-bold text-white leading-tight truncate">{value}</p>
-      <p className="text-xs text-gray-300 mt-0.5">{label}</p>
+      <p className="text-xs text-ink-3 mt-0.5">{label}</p>
     </div>
   );
 }
 
 // Mini-stat compacte, utilisée en ligne dans chaque carte partenaire.
-function MiniStat({ icon: Icon, label, value, color = 'text-gray-300' }) {
+function MiniStat({ icon: Icon, label, value, color = 'text-ink-3' }) {
   return (
-    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-white/[0.06] bg-white/[0.02]">
+    <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-overlay/[0.06] bg-overlay/[0.02]">
       <Icon size={12} className={color} />
       <div className="leading-none">
         <p className={`text-xs font-bold ${color}`}>{value}</p>
-        <p className="text-[11px] text-gray-400 mt-0.5">{label}</p>
+        <p className="text-[11px] text-ink-4 mt-0.5">{label}</p>
       </div>
     </div>
   );
@@ -55,33 +55,33 @@ function CommissionsPanel({ partnerId }) {
   });
 
   if (isLoading) {
-    return <p className="text-xs text-gray-400 px-4 py-4">Chargement…</p>;
+    return <p className="text-xs text-ink-4 px-4 py-4">Chargement…</p>;
   }
 
   const commissions = data || [];
 
   if (commissions.length === 0) {
-    return <p className="text-xs text-gray-400 px-4 py-4">Aucune commission générée pour l'instant.</p>;
+    return <p className="text-xs text-ink-4 px-4 py-4">Aucune commission générée pour l'instant.</p>;
   }
 
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b border-white/[0.06]">
+          <tr className="border-b border-overlay/[0.06]">
             {['Filleul', 'Paiement', 'Commission', 'Statut', 'Date', ''].map((h) => (
-              <th key={h} className="px-4 py-2 text-left text-xs font-semibold text-gray-300 uppercase tracking-wide">{h}</th>
+              <th key={h} className="px-4 py-2 text-left text-xs font-semibold text-ink-3 uppercase tracking-wide">{h}</th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/[0.04]">
+        <tbody className="divide-y divide-overlay/[0.04]">
           {commissions.map((c) => (
-            <tr key={c.id} className="hover:bg-white/[0.02] transition-colors">
+            <tr key={c.id} className="hover:bg-overlay/[0.02] transition-colors">
               <td className="px-4 py-2.5">
-                <p className="text-xs font-medium text-gray-200">{c.conversion?.user?.username || '—'}</p>
-                <p className="text-xs text-gray-400">{c.conversion?.user?.email}</p>
+                <p className="text-xs font-medium text-ink-2">{c.conversion?.user?.username || '—'}</p>
+                <p className="text-xs text-ink-4">{c.conversion?.user?.email}</p>
               </td>
-              <td className="px-4 py-2.5 text-xs text-gray-400">{formatAmount(c.amount)}</td>
+              <td className="px-4 py-2.5 text-xs text-ink-4">{formatAmount(c.amount)}</td>
               <td className="px-4 py-2.5 text-xs font-bold text-primary-400">{formatAmount(c.commissionAmount)}</td>
               <td className="px-4 py-2.5">
                 {c.status === 'PAID' ? (
@@ -94,7 +94,7 @@ function CommissionsPanel({ partnerId }) {
                   </span>
                 )}
               </td>
-              <td className="px-4 py-2.5 text-xs text-gray-300">
+              <td className="px-4 py-2.5 text-xs text-ink-3">
                 {format(new Date(c.createdAt), 'dd MMM yyyy', { locale: fr })}
               </td>
               <td className="px-4 py-2.5">
@@ -102,7 +102,7 @@ function CommissionsPanel({ partnerId }) {
                   <button
                     onClick={() => markPaidMutation.mutate(c.id)}
                     disabled={markPaidMutation.isPending}
-                    className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-white/[0.06] text-gray-300 hover:bg-white/[0.10] transition-colors disabled:opacity-50"
+                    className="text-[10px] font-semibold px-2.5 py-1 rounded-lg bg-overlay/[0.06] text-ink-3 hover:bg-overlay/[0.10] transition-colors disabled:opacity-50"
                   >
                     Marquer payée
                   </button>
@@ -186,7 +186,7 @@ export default function AdminPartners() {
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-xl font-bold text-white">Partenaires</h1>
-          <p className="text-sm text-gray-300 mt-0.5">Influenceurs rémunérés à la commission sur les abonnements générés</p>
+          <p className="text-sm text-ink-3 mt-0.5">Influenceurs rémunérés à la commission sur les abonnements générés</p>
         </div>
         <button
           onClick={() => setShowForm((v) => !v)}
@@ -207,32 +207,32 @@ export default function AdminPartners() {
 
       {/* Formulaire ajout */}
       {showForm && (
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-white/[0.08] p-5 space-y-4" style={{ background: 'var(--color-card)' }}>
-          <h3 className="text-sm font-semibold text-gray-200">Nouveau partenaire</h3>
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-overlay/[0.08] p-5 space-y-4" style={{ background: 'var(--color-card)' }}>
+          <h3 className="text-sm font-semibold text-ink-2">Nouveau partenaire</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-300 mb-1.5">Nom *</label>
+              <label className="block text-xs text-ink-3 mb-1.5">Nom *</label>
               <input
                 type="text"
                 required
                 value={formData.name}
                 onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
                 placeholder="Ex: @foot_pronostics_225"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-300 mb-1.5">Code (optionnel — auto-généré sinon)</label>
+              <label className="block text-xs text-ink-3 mb-1.5">Code (optionnel — auto-généré sinon)</label>
               <input
                 type="text"
                 value={formData.code}
                 onChange={(e) => setFormData((d) => ({ ...d, code: e.target.value.toUpperCase() }))}
                 placeholder="Ex: FOOT225"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50 uppercase"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50 uppercase"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-300 mb-1.5">Taux de commission (%) *</label>
+              <label className="block text-xs text-ink-3 mb-1.5">Taux de commission (%) *</label>
               <input
                 type="number"
                 min="1"
@@ -240,17 +240,17 @@ export default function AdminPartners() {
                 required
                 value={formData.commissionRate}
                 onChange={(e) => setFormData((d) => ({ ...d, commissionRate: e.target.value }))}
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-300 mb-1.5">Contact (WhatsApp / téléphone)</label>
+              <label className="block text-xs text-ink-3 mb-1.5">Contact (WhatsApp / téléphone)</label>
               <input
                 type="text"
                 value={formData.contact}
                 onChange={(e) => setFormData((d) => ({ ...d, contact: e.target.value }))}
                 placeholder="Ex: +225 07 00 00 00 00"
-                className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-gray-600 focus:outline-none focus:border-primary-500/50"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
               />
             </div>
           </div>
@@ -265,7 +265,7 @@ export default function AdminPartners() {
             <button
               type="button"
               onClick={() => setShowForm(false)}
-              className="px-5 py-2 rounded-xl bg-white/[0.06] text-gray-400 text-sm font-medium hover:bg-white/[0.10] transition-colors"
+              className="px-5 py-2 rounded-xl bg-overlay/[0.06] text-ink-4 text-sm font-medium hover:bg-overlay/[0.10] transition-colors"
             >
               Annuler
             </button>
@@ -281,48 +281,48 @@ export default function AdminPartners() {
       {/* Liste des partenaires */}
       <div className="space-y-3">
         {partners.length === 0 && (
-          <div className="rounded-2xl border border-white/[0.06] p-8 text-center" style={{ background: 'var(--color-card)' }}>
-            <p className="text-sm text-gray-400">Aucun partenaire pour l'instant — cliquez sur "Ajouter un partenaire".</p>
+          <div className="rounded-2xl border border-overlay/[0.06] p-8 text-center" style={{ background: 'var(--color-card)' }}>
+            <p className="text-sm text-ink-4">Aucun partenaire pour l'instant — cliquez sur "Ajouter un partenaire".</p>
           </div>
         )}
 
         {partners.map((p) => (
-          <div key={p.id} className="rounded-2xl border border-white/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+          <div key={p.id} className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
             <div className="p-4 flex items-center gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
                   <p className="text-sm font-semibold text-white truncate">{p.name}</p>
                   {!p.active && (
-                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-gray-500/15 text-gray-300">Désactivé</span>
+                    <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-gray-500/15 text-ink-3">Désactivé</span>
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-1 flex-wrap">
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-300 font-mono bg-white/[0.04] px-2 py-0.5 rounded-lg">
+                  <span className="inline-flex items-center gap-1 text-xs text-ink-3 font-mono bg-overlay/[0.04] px-2 py-0.5 rounded-lg">
                     {p.code}
                   </span>
                   <span className="inline-flex items-center gap-1 text-xs text-purple-400">
                     <Percent size={11} /> {Math.round(p.commissionRate * 100)}%
                   </span>
-                  {p.contact && <span className="text-xs text-gray-400">{p.contact}</span>}
+                  {p.contact && <span className="text-xs text-ink-4">{p.contact}</span>}
                 </div>
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                <MiniStat icon={Users} label="Filleuls" value={p.conversionCount} color="text-gray-300" />
+                <MiniStat icon={Users} label="Filleuls" value={p.conversionCount} color="text-ink-3" />
                 <MiniStat icon={Clock} label="Dû" value={formatAmount(p.totalDue)} color="text-amber-400" />
               </div>
 
               <div className="flex items-center gap-1.5 shrink-0">
                 <button
                   onClick={() => copyLink(p.code, p.id)}
-                  className="p-2 rounded-lg text-gray-300 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
+                  className="p-2 rounded-lg text-ink-3 hover:text-primary-400 hover:bg-primary-500/[0.1] transition-colors"
                   title="Copier le lien de parrainage"
                 >
                   {copiedId === p.id ? <Check size={15} className="text-primary-400" /> : <Copy size={15} />}
                 </button>
                 <button
                   onClick={() => toggleActiveMutation.mutate({ id: p.id, active: !p.active })}
-                  className={`p-2 rounded-lg transition-colors ${p.active ? 'text-gray-300 hover:text-red-400 hover:bg-red-500/[0.1]' : 'text-gray-300 hover:text-primary-400 hover:bg-primary-500/[0.1]'}`}
+                  className={`p-2 rounded-lg transition-colors ${p.active ? 'text-ink-3 hover:text-red-400 hover:bg-red-500/[0.1]' : 'text-ink-3 hover:text-primary-400 hover:bg-primary-500/[0.1]'}`}
                   title={p.active ? 'Désactiver' : 'Réactiver'}
                 >
                   <Power size={15} />
@@ -342,7 +342,7 @@ export default function AdminPartners() {
                 )}
                 <button
                   onClick={() => setExpandedId((v) => (v === p.id ? null : p.id))}
-                  className="p-2 rounded-lg text-gray-300 hover:text-white hover:bg-white/[0.08] transition-colors"
+                  className="p-2 rounded-lg text-ink-3 hover:text-white hover:bg-overlay/[0.08] transition-colors"
                   title="Voir les commissions"
                 >
                   {expandedId === p.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
@@ -351,7 +351,7 @@ export default function AdminPartners() {
             </div>
 
             {expandedId === p.id && (
-              <div className="border-t border-white/[0.06]">
+              <div className="border-t border-overlay/[0.06]">
                 <CommissionsPanel partnerId={p.id} />
               </div>
             )}

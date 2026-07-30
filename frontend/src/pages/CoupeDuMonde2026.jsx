@@ -32,8 +32,8 @@ function DateLabel({ dateStr }) {
   const d = new Date(dateStr + 'T00:00:00');
   return (
     <div className="flex items-center gap-2 px-4 py-2">
-      <Calendar size={12} className="text-gray-400 shrink-0" />
-      <span className="text-xs font-semibold text-gray-300 uppercase tracking-wider">
+      <Calendar size={12} className="text-ink-4 shrink-0" />
+      <span className="text-xs font-semibold text-ink-3 uppercase tracking-wider">
         {format(d, 'EEEE dd MMMM yyyy', { locale: fr })}
       </span>
     </div>
@@ -113,7 +113,7 @@ export default function CoupeDuMonde2026() {
     <div className="max-w-3xl mx-auto animate-fade-in">
 
       {/* ── Hero Banner ──────────────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden mx-4 mt-6 mb-6 rounded-3xl border border-white/[0.08]"
+      <section className="relative overflow-hidden mx-4 mt-6 mb-6 rounded-3xl border border-overlay/[0.08]"
         style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d2040 40%, #0a0b0d 100%)' }}>
 
         {/* Arrière-plan décoratif */}
@@ -132,7 +132,7 @@ export default function CoupeDuMonde2026() {
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-primary-500/30 bg-primary-500/10 text-primary-400 text-xs font-semibold mb-5">
             <Globe size={12} className="shrink-0" />
             FIFA World Cup™
-            {wcPhase === 'finished' && <span className="text-gray-400">· Terminée</span>}
+            {wcPhase === 'finished' && <span className="text-ink-4">· Terminée</span>}
           </div>
 
           <h1 className="font-display font-bold text-3xl md:text-5xl text-white mb-3 leading-tight tracking-tight">
@@ -140,9 +140,9 @@ export default function CoupeDuMonde2026() {
             <span className="block text-primary-400">2026</span>
           </h1>
 
-          <p className="text-gray-400 text-sm md:text-base mb-6 max-w-md mx-auto">
+          <p className="text-ink-4 text-sm md:text-base mb-6 max-w-md mx-auto">
             48 équipes · 3 pays hôtes · 104 matchs<br />
-            <span className="text-gray-300 text-xs">USA · Canada · Mexique · 11 juin – 19 juillet 2026</span>
+            <span className="text-ink-3 text-xs">USA · Canada · Mexique · 11 juin – 19 juillet 2026</span>
           </p>
 
           {/* Live badge */}
@@ -154,7 +154,7 @@ export default function CoupeDuMonde2026() {
           )}
 
           {/* Pays hôtes */}
-          <div className="flex items-center justify-center gap-4 mt-6 text-xs text-gray-400">
+          <div className="flex items-center justify-center gap-4 mt-6 text-xs text-ink-4">
             <span>🇺🇸 États-Unis</span>
             <span>·</span>
             <span>🇨🇦 Canada</span>
@@ -174,7 +174,7 @@ export default function CoupeDuMonde2026() {
           <div key={item.label} className="bento-card p-3 text-center">
             <span className="text-xl block mb-1">{item.icon}</span>
             <p className="font-display font-bold text-xl text-white">{item.value}</p>
-            <p className="text-xs text-gray-300 mt-0.5">{item.label}</p>
+            <p className="text-xs text-ink-3 mt-0.5">{item.label}</p>
           </div>
         ))}
       </div>
@@ -182,33 +182,33 @@ export default function CoupeDuMonde2026() {
       {/* ── Matchs ───────────────────────────────────────────────────────────── */}
       <section className="px-4">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-gray-200 flex items-center gap-2">
+          <h2 className="text-sm font-semibold text-ink-2 flex items-center gap-2">
             <Flame size={14} className="text-primary-400" />
             Matchs
           </h2>
-          <Link to="/matchs" className="text-xs text-gray-400 hover:text-gray-300 flex items-center gap-1 transition-colors">
+          <Link to="/matchs" className="text-xs text-ink-4 hover:text-ink-3 flex items-center gap-1 transition-colors">
             Tous les matchs <ChevronRight size={12} />
           </Link>
         </div>
 
         {isLoading ? (
-          <div className="card divide-y divide-white/[0.04]">
+          <div className="card divide-y divide-overlay/[0.04]">
             {[...Array(6)].map((_, i) => <SkeletonMatchCard key={i} />)}
           </div>
         ) : matches.length === 0 ? (
           <div className="card p-10 text-center">
-            <Globe size={36} className="mx-auto text-gray-700 mb-4" />
+            <Globe size={36} className="mx-auto text-ink-5 mb-4" />
             {wcPhase === 'finished' ? (
               <>
-                <p className="text-gray-400 font-medium">La Coupe du Monde 2026 est terminée</p>
-                <p className="text-gray-400 text-sm mt-2">
+                <p className="text-ink-4 font-medium">La Coupe du Monde 2026 est terminée</p>
+                <p className="text-ink-4 text-sm mt-2">
                   Retrouve les résultats et statistiques dans l'historique des matchs.
                 </p>
               </>
             ) : (
               <>
-                <p className="text-gray-400 font-medium">Les matchs ne sont pas encore disponibles</p>
-                <p className="text-gray-400 text-sm mt-2">
+                <p className="text-ink-4 font-medium">Les matchs ne sont pas encore disponibles</p>
+                <p className="text-ink-4 text-sm mt-2">
                   Le calendrier complet sera publié avant le coup d'envoi du 11 juin 2026.
                 </p>
               </>
@@ -220,11 +220,11 @@ export default function CoupeDuMonde2026() {
             </Link>
           </div>
         ) : (
-          <div className="card divide-y divide-white/[0.04] overflow-hidden">
+          <div className="card divide-y divide-overlay/[0.04] overflow-hidden">
             {groups.map(([dateStr, dayMatches]) => (
               <div key={dateStr}>
                 <DateLabel dateStr={dateStr} />
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-overlay/[0.04]">
                   {dayMatches.map((m) => <MatchCard key={m.id} match={m} />)}
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default function CoupeDuMonde2026() {
 
       {/* ── Groupes ──────────────────────────────────────────────────────────── */}
       <section className="px-4 mt-8 mb-8">
-        <h2 className="text-sm font-semibold text-gray-200 flex items-center gap-2 mb-4">
+        <h2 className="text-sm font-semibold text-ink-2 flex items-center gap-2 mb-4">
           <span className="w-1 h-4 rounded-full bg-primary-400 shrink-0" />
           Groupes · Phase de poules
         </h2>
@@ -245,7 +245,7 @@ export default function CoupeDuMonde2026() {
               <p className="font-display font-bold text-lg text-primary-400">
                 Gr. {g}
               </p>
-              <p className="text-xs text-gray-400 mt-0.5">4 équipes</p>
+              <p className="text-xs text-ink-4 mt-0.5">4 équipes</p>
             </div>
           ))}
         </div>
@@ -253,13 +253,13 @@ export default function CoupeDuMonde2026() {
 
       {/* ── Villes hôtes ─────────────────────────────────────────────────────── */}
       <section className="px-4 mb-10">
-        <h2 className="text-sm font-semibold text-gray-200 flex items-center gap-2 mb-4">
+        <h2 className="text-sm font-semibold text-ink-2 flex items-center gap-2 mb-4">
           <span className="w-1 h-4 rounded-full bg-blue-400 shrink-0" />
           Villes hôtes
         </h2>
         <div className="flex flex-wrap gap-2">
           {HOST_CITIES.map((city) => (
-            <span key={city} className="px-3 py-1.5 rounded-full text-xs font-medium bg-white/[0.04] border border-white/[0.06] text-gray-400">
+            <span key={city} className="px-3 py-1.5 rounded-full text-xs font-medium bg-overlay/[0.04] border border-overlay/[0.06] text-ink-4">
               📍 {city}
             </span>
           ))}

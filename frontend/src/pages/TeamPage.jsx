@@ -18,10 +18,10 @@ function FixtureRow({ fixture }) {
   const date = f?.date ? format(new Date(f.date), 'dd MMM', { locale: dateLocale }) : '–';
   return (
     <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-surface-800 border border-surface-700">
-      <span className="text-xs text-gray-300 w-12 shrink-0">{date}</span>
-      <span className="text-xs text-gray-300 flex-1 truncate">{teams?.home?.name} - {teams?.away?.name}</span>
+      <span className="text-xs text-ink-3 w-12 shrink-0">{date}</span>
+      <span className="text-xs text-ink-3 flex-1 truncate">{teams?.home?.name} - {teams?.away?.name}</span>
       {finished ? (
-        <span className="text-xs font-bold text-gray-100 tabular-nums">{g?.home} – {g?.away}</span>
+        <span className="text-xs font-bold text-ink-1 tabular-nums">{g?.home} – {g?.away}</span>
       ) : (
         <span className="text-xs text-primary-400">{f?.status?.short}</span>
       )}
@@ -74,7 +74,7 @@ export default function TeamPage() {
   if (!team) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-6">
-        <div className="bento-card text-center py-12 text-gray-300">
+        <div className="bento-card text-center py-12 text-ink-3">
           {t('teamPage.teamNotFound')}
         </div>
       </div>
@@ -99,15 +99,15 @@ export default function TeamPage() {
 
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => history.back()} className="text-gray-400 hover:text-gray-200 transition-colors">
+        <button onClick={() => history.back()} className="text-ink-4 hover:text-ink-2 transition-colors">
           <ChevronLeft size={20} />
         </button>
         {team.logo && (
           <img src={team.logo} alt={team.name} className="w-12 h-12 object-contain" />
         )}
         <div className="flex-1 min-w-0">
-          <h1 className="font-display font-bold text-xl text-gray-100 truncate">{team.name}</h1>
-          <div className="flex items-center gap-2 text-xs text-gray-300 mt-0.5">
+          <h1 className="font-display font-bold text-xl text-ink-1 truncate">{team.name}</h1>
+          <div className="flex items-center gap-2 text-xs text-ink-3 mt-0.5">
             <MapPin size={11} />
             <span>{team.country}</span>
             {team.founded && <span>· {t('teamPage.foundedIn', { year: team.founded })}</span>}
@@ -115,7 +115,7 @@ export default function TeamPage() {
         </div>
         <Link
           to={`/comparateur?team1Id=${id}&team1Name=${encodeURIComponent(team.name)}&team1Logo=${encodeURIComponent(team.logo || '')}`}
-          className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl border border-white/[0.08] text-xs font-semibold text-gray-200 hover:border-white/[0.14] transition-colors"
+          className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl border border-overlay/[0.08] text-xs font-semibold text-ink-2 hover:border-overlay/[0.14] transition-colors"
         >
           <ArrowLeftRight size={13} />
           {t('teamPage.compareCta')}
@@ -125,37 +125,37 @@ export default function TeamPage() {
       {/* Stats saison */}
       {stats && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider mb-3">
             {t('teamPage.currentSeasonStats')}
           </h2>
           <div className="grid grid-cols-3 gap-3">
             <div className="bento-card text-center">
-              <p className="text-2xl font-display font-bold text-gray-100">{stats.fixtures?.played?.total ?? '–'}</p>
-              <p className="text-xs text-gray-300 mt-1">{t('teamPage.matchesPlayed')}</p>
+              <p className="text-2xl font-display font-bold text-ink-1">{stats.fixtures?.played?.total ?? '–'}</p>
+              <p className="text-xs text-ink-3 mt-1">{t('teamPage.matchesPlayed')}</p>
             </div>
             <div className="bento-card text-center">
               <p className="text-2xl font-display font-bold text-primary-400">{winPct != null ? `${winPct}%` : '–'}</p>
-              <p className="text-xs text-gray-300 mt-1">{t('teamPage.wins')}</p>
+              <p className="text-xs text-ink-3 mt-1">{t('teamPage.wins')}</p>
             </div>
             <div className="bento-card text-center">
-              <p className="text-2xl font-display font-bold text-gray-100">
+              <p className="text-2xl font-display font-bold text-ink-1">
                 {goalStats?.for?.total?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-300 mt-1">{t('teamPage.goalsScored')}</p>
+              <p className="text-xs text-ink-3 mt-1">{t('teamPage.goalsScored')}</p>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-3 mt-3">
             <div className="bento-card text-center">
-              <p className="text-xl font-display font-bold text-gray-100">
+              <p className="text-xl font-display font-bold text-ink-1">
                 {goalStats?.for?.average?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-300 mt-1">{t('teamPage.avgGoalsPerMatch')}</p>
+              <p className="text-xs text-ink-3 mt-1">{t('teamPage.avgGoalsPerMatch')}</p>
             </div>
             <div className="bento-card text-center">
-              <p className="text-xl font-display font-bold text-gray-100">
+              <p className="text-xl font-display font-bold text-ink-1">
                 {goalStats?.against?.total?.total ?? '–'}
               </p>
-              <p className="text-xs text-gray-300 mt-1">{t('teamPage.goalsConceded')}</p>
+              <p className="text-xs text-ink-3 mt-1">{t('teamPage.goalsConceded')}</p>
             </div>
           </div>
         </section>
@@ -164,7 +164,7 @@ export default function TeamPage() {
       {/* Prochains matchs */}
       {next.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider mb-3 flex items-center gap-2">
             <Calendar size={13} />
             {t('teamPage.upcomingMatches')}
           </h2>
@@ -177,7 +177,7 @@ export default function TeamPage() {
       {/* Derniers résultats */}
       {last.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
+          <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider mb-3">
             {t('teamPage.lastResults')}
           </h2>
           <div className="space-y-2">
@@ -189,13 +189,13 @@ export default function TeamPage() {
       {/* Effectif */}
       {squad.length > 0 && (
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider mb-3 flex items-center gap-2">
             <Users size={13} />
             {t('teamPage.squadCount', { count: squad.length })}
           </h2>
           {Object.entries(byPosition).map(([pos, players]) => (
             <div key={pos} className="mb-4">
-              <p className="text-xs font-medium text-gray-300 mb-2">{pos}</p>
+              <p className="text-xs font-medium text-ink-3 mb-2">{pos}</p>
               <div className="space-y-1.5">
                 {players.map((p) => (
                   <div key={p.id} className="flex items-center gap-3 px-3 py-2 rounded-xl bg-surface-800 border border-surface-700">
@@ -203,10 +203,10 @@ export default function TeamPage() {
                       <img src={p.photo} alt={p.name} className="w-8 h-8 rounded-full object-cover bg-surface-700" />
                     )}
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-100 truncate">{p.name}</p>
-                      {p.number && <p className="text-xs text-gray-300">#{p.number}</p>}
+                      <p className="text-sm font-medium text-ink-1 truncate">{p.name}</p>
+                      {p.number && <p className="text-xs text-ink-3">#{p.number}</p>}
                     </div>
-                    <span className="text-xs text-gray-400">{p.nationality}</span>
+                    <span className="text-xs text-ink-4">{p.nationality}</span>
                   </div>
                 ))}
               </div>

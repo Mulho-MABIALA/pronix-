@@ -96,27 +96,27 @@ export default function SearchBar({ onClose }) {
           style={{ background: 'rgba(18,19,22,0.99)', border: '1px solid rgba(255,255,255,0.1)' }}
         >
           {/* Input */}
-          <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.07]">
-            <Search size={18} className="text-gray-300 shrink-0" />
+          <div className="flex items-center gap-3 px-4 py-3 border-b border-overlay/[0.07]">
+            <Search size={18} className="text-ink-3 shrink-0" />
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={handleChange}
               placeholder={t('search.placeholder', 'Rechercher matchs, tipsters...')}
-              className="flex-1 bg-transparent text-gray-100 placeholder-gray-600 text-[15px] outline-none"
+              className="flex-1 bg-transparent text-ink-1 placeholder-ph-b text-[15px] outline-none"
               autoComplete="off"
               spellCheck={false}
             />
             {query && (
               <button onClick={() => { setQuery(''); setResults(null); inputRef.current?.focus(); }}
-                className="p-1 rounded-lg text-gray-300 hover:text-gray-200 transition-colors">
+                className="p-1 rounded-lg text-ink-3 hover:text-ink-2 transition-colors">
                 <X size={15} />
               </button>
             )}
             <button
               onClick={onClose}
-              className="text-[12px] text-gray-300 hover:text-gray-200 border border-white/[0.08] rounded px-2 py-0.5 transition-colors shrink-0"
+              className="text-[12px] text-ink-3 hover:text-ink-2 border border-overlay/[0.08] rounded px-2 py-0.5 transition-colors shrink-0"
             >
               Esc
             </button>
@@ -130,8 +130,8 @@ export default function SearchBar({ onClose }) {
           )}
 
           {!loading && query.length >= 2 && !hasResults && (
-            <p className="px-4 py-6 text-center text-gray-300 text-sm">
-              {t('search.noResults', 'Aucun résultat pour')} <strong className="text-gray-300">"{query}"</strong>
+            <p className="px-4 py-6 text-center text-ink-3 text-sm">
+              {t('search.noResults', 'Aucun résultat pour')} <strong className="text-ink-3">"{query}"</strong>
             </p>
           )}
 
@@ -142,8 +142,8 @@ export default function SearchBar({ onClose }) {
               {results.matches?.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 px-4 pt-3 pb-1">
-                    <Calendar size={12} className="text-gray-400" />
-                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                    <Calendar size={12} className="text-ink-4" />
+                    <span className="text-[11px] font-semibold text-ink-4 uppercase tracking-wider">
                       {t('search.matches', 'Matchs')}
                     </span>
                   </div>
@@ -151,21 +151,21 @@ export default function SearchBar({ onClose }) {
                     <button
                       key={m.id}
                       onClick={() => go(`/matchs/${m.id}`)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-overlay/[0.04] transition-colors text-left"
                     >
                       <div className="w-1.5 h-1.5 rounded-full shrink-0"
                         style={{ background: m.status === 'LIVE' ? '#ef4444' : '#4b5563' }} />
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] text-gray-200 truncate">
+                        <p className="text-[13px] text-ink-2 truncate">
                           <HighlightMatch text={`${m.homeTeam} vs ${m.awayTeam}`} query={query} />
                         </p>
-                        <p className="text-[11px] text-gray-400 truncate">
+                        <p className="text-[11px] text-ink-4 truncate">
                           {m.competition?.name}
                           {m.status === 'LIVE' && <span className="ml-2 text-live-400 font-semibold">LIVE</span>}
                         </p>
                       </div>
                       {(m.status === 'LIVE' || m.status === 'FINISHED') && (
-                        <span className="text-[13px] font-bold text-gray-300 shrink-0">
+                        <span className="text-[13px] font-bold text-ink-3 shrink-0">
                           {m.homeScore}–{m.awayScore}
                         </span>
                       )}
@@ -177,9 +177,9 @@ export default function SearchBar({ onClose }) {
               {/* Tipsters */}
               {results.tipsters?.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-white/[0.04]">
-                    <Users size={12} className="text-gray-400" />
-                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-overlay/[0.04]">
+                    <Users size={12} className="text-ink-4" />
+                    <span className="text-[11px] font-semibold text-ink-4 uppercase tracking-wider">
                       {t('search.tipsters', 'Tipsters')}
                     </span>
                   </div>
@@ -187,7 +187,7 @@ export default function SearchBar({ onClose }) {
                     <button
                       key={u.id}
                       onClick={() => go(`/tipsters/${u.id}`)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-overlay/[0.04] transition-colors text-left"
                     >
                       {u.profile?.avatar ? (
                         <img src={u.profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
@@ -197,10 +197,10 @@ export default function SearchBar({ onClose }) {
                         </div>
                       )}
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] text-gray-200 truncate">
+                        <p className="text-[13px] text-ink-2 truncate">
                           <HighlightMatch text={u.profile?.displayName || u.username} query={query} />
                         </p>
-                        <p className="text-[11px] text-gray-400">@{u.username}</p>
+                        <p className="text-[11px] text-ink-4">@{u.username}</p>
                       </div>
                       {u.tipsterStats && (
                         <span className="text-[11px] text-primary-400 font-semibold shrink-0">
@@ -215,9 +215,9 @@ export default function SearchBar({ onClose }) {
               {/* Compétitions */}
               {results.competitions?.length > 0 && (
                 <div className="pb-2">
-                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-white/[0.04]">
-                    <Trophy size={12} className="text-gray-400" />
-                    <span className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">
+                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-overlay/[0.04]">
+                    <Trophy size={12} className="text-ink-4" />
+                    <span className="text-[11px] font-semibold text-ink-4 uppercase tracking-wider">
                       {t('search.competitions', 'Compétitions')}
                     </span>
                   </div>
@@ -225,20 +225,20 @@ export default function SearchBar({ onClose }) {
                     <button
                       key={c.id}
                       onClick={() => go(`/matchs?competitionId=${c.id}`)}
-                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-white/[0.04] transition-colors text-left"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-overlay/[0.04] transition-colors text-left"
                     >
-                      <div className="w-7 h-7 rounded-lg bg-white/[0.04] flex items-center justify-center shrink-0">
+                      <div className="w-7 h-7 rounded-lg bg-overlay/[0.04] flex items-center justify-center shrink-0">
                         {c.logo ? (
                           <img src={c.logo} alt="" className="w-5 h-5 object-contain" />
                         ) : (
-                          <Trophy size={13} className="text-gray-400" />
+                          <Trophy size={13} className="text-ink-4" />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-[13px] text-gray-200 truncate">
+                        <p className="text-[13px] text-ink-2 truncate">
                           <HighlightMatch text={c.name} query={query} />
                         </p>
-                        <p className="text-[11px] text-gray-400">{c.country}</p>
+                        <p className="text-[11px] text-ink-4">{c.country}</p>
                       </div>
                     </button>
                   ))}
@@ -250,7 +250,7 @@ export default function SearchBar({ onClose }) {
           {/* Hint */}
           {!query && (
             <div className="px-4 py-4 text-center">
-              <p className="text-[12px] text-gray-400">
+              <p className="text-[12px] text-ink-4">
                 {t('search.hint', 'Tapez pour rechercher des matchs, tipsters ou compétitions')}
               </p>
             </div>

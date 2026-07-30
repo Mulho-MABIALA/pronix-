@@ -73,15 +73,15 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
 
       {/* En-tête */}
       <div>
-        <p className="text-xs font-bold uppercase tracking-widest text-gray-300 mb-1">{plan.displayName}</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-ink-3 mb-1">{plan.displayName}</p>
         {isFree ? (
-          <p className="text-4xl font-display font-bold text-gray-100">Gratuit</p>
+          <p className="text-4xl font-display font-bold text-ink-1">Gratuit</p>
         ) : (
           <div className="flex items-end gap-1.5 flex-wrap">
-            <span className="text-4xl font-display font-bold text-gray-100">
+            <span className="text-4xl font-display font-bold text-ink-1">
               {new Intl.NumberFormat('fr-FR').format(price)}
             </span>
-            <span className="text-gray-300 pb-1 text-sm">
+            <span className="text-ink-3 pb-1 text-sm">
               {' '}FCFA{isLifetime ? ' · paiement unique' : `/${unitLabel}`}
             </span>
           </div>
@@ -94,12 +94,12 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
       </div>
 
       {/* Séparateur */}
-      <div className="h-px bg-white/[0.06]" />
+      <div className="h-px bg-overlay/[0.06]" />
 
       {/* Features */}
       <ul className="space-y-2.5 flex-1">
         {(plan.features || []).map((feat, i) => (
-          <li key={i} className="flex items-start gap-2.5 text-sm text-gray-300">
+          <li key={i} className="flex items-start gap-2.5 text-sm text-ink-3">
             <Check size={15} className="text-primary-400 mt-0.5 shrink-0" />
             <span>{feat}</span>
           </li>
@@ -108,11 +108,11 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
 
       {/* CTA */}
       {isCurrentPlan ? (
-        <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-gray-400 border border-white/[0.08] bg-surface-700/40">
+        <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-ink-4 border border-overlay/[0.08] bg-surface-700/40">
           {t('common.currentPlan')}
         </div>
       ) : isFree ? (
-        <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-gray-300 border border-white/[0.06]">
+        <div className="py-2.5 rounded-xl text-center text-sm font-semibold text-ink-3 border border-overlay/[0.06]">
           {t('common.defaultPlan')}
         </div>
       ) : (
@@ -193,11 +193,11 @@ export default function Subscription() {
           <Zap size={12} />
           {t('subscription.pageBadge')}
         </div>
-        <h1 className="font-display font-bold text-3xl text-gray-100 leading-tight">
+        <h1 className="font-display font-bold text-3xl text-ink-1 leading-tight">
           {t('subscription.title')}<br />
           <span className="text-primary-400">{t('subscription.titleHighlight')}</span>
         </h1>
-        <p className="text-gray-400 text-sm max-w-md mx-auto">
+        <p className="text-ink-4 text-sm max-w-md mx-auto">
           {t('subscription.description')}
         </p>
       </div>
@@ -207,7 +207,7 @@ export default function Subscription() {
         {STATS.map(({ value, label }) => (
           <div key={label} className="bento-card text-center py-4">
             <p className="text-2xl font-display font-bold text-primary-400">{value}</p>
-            <p className="text-xs text-gray-300 mt-1">{label}</p>
+            <p className="text-xs text-ink-3 mt-1">{label}</p>
           </div>
         ))}
       </div>
@@ -225,7 +225,7 @@ export default function Subscription() {
             className={`relative px-5 py-2 rounded-lg text-sm font-medium transition-all ${
               billingCycle === value
                 ? 'bg-primary-500/20 border border-primary-500/40 text-primary-400'
-                : 'text-gray-400 border border-white/[0.08] hover:border-white/20'
+                : 'text-ink-4 border border-overlay/[0.08] hover:border-white/20'
             }`}
           >
             {label}
@@ -262,13 +262,13 @@ export default function Subscription() {
       <div className="bento-card">
         <div className="flex items-center gap-2 mb-4">
           <Lock size={14} className="text-primary-400" />
-          <p className="text-sm font-semibold text-gray-200">{t('subscription.payment.title')}</p>
+          <p className="text-sm font-semibold text-ink-2">{t('subscription.payment.title')}</p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
           {PAYMENT_METHODS.map((m) => (
             <div
               key={m.name}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-white/[0.07] ${m.bg}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-overlay/[0.07] ${m.bg}`}
             >
               <img
                 src={m.logo}
@@ -276,7 +276,7 @@ export default function Subscription() {
                 className="h-5 w-5 object-contain rounded"
                 onError={(e) => { e.currentTarget.style.display = 'none'; }}
               />
-              <span className="text-xs text-gray-200 font-medium">{m.name}</span>
+              <span className="text-xs text-ink-2 font-medium">{m.name}</span>
             </div>
           ))}
         </div>
@@ -285,11 +285,11 @@ export default function Subscription() {
       {/* Badges de confiance */}
       <div className="grid grid-cols-3 gap-3">
         {TRUST_BADGES.map(({ icon: Icon, label }) => (
-          <div key={label} className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl bg-surface-700/30 border border-white/[0.05] text-center">
+          <div key={label} className="flex flex-col items-center gap-2 py-4 px-2 rounded-xl bg-surface-700/30 border border-overlay/[0.05] text-center">
             <div className="w-8 h-8 rounded-full bg-primary-500/15 flex items-center justify-center">
               <Icon size={16} className="text-primary-400" />
             </div>
-            <p className="text-xs text-gray-400 font-medium leading-tight">{label}</p>
+            <p className="text-xs text-ink-4 font-medium leading-tight">{label}</p>
           </div>
         ))}
       </div>
@@ -304,11 +304,11 @@ export default function Subscription() {
 
       {/* FAQ */}
       <section className="space-y-3">
-        <h2 className="font-semibold text-gray-100 text-center text-base mb-4">{t('subscription.faq.title')}</h2>
+        <h2 className="font-semibold text-ink-1 text-center text-base mb-4">{t('subscription.faq.title')}</h2>
         {FAQ_ITEMS.map(({ q, a }) => (
           <div key={q} className="bento-card">
-            <p className="font-medium text-gray-200 text-sm">{q}</p>
-            <p className="text-gray-300 text-sm mt-1.5 leading-relaxed">{a}</p>
+            <p className="font-medium text-ink-2 text-sm">{q}</p>
+            <p className="text-ink-3 text-sm mt-1.5 leading-relaxed">{a}</p>
           </div>
         ))}
       </section>

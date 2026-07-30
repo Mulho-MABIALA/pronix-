@@ -16,7 +16,7 @@ const CONF_KEYS = ['all', 'high', 'medium', 'low'];
 const CONF_COLORS = {
   high:   'text-primary-400 bg-primary-500/10 border-primary-500/20',
   medium: 'text-amber-400 bg-amber-500/10 border-amber-500/20',
-  low:    'text-gray-300 bg-surface-700/50 border-white/[0.05]',
+  low:    'text-ink-3 bg-surface-700/50 border-overlay/[0.05]',
 };
 
 const DATE_PRESETS = [
@@ -36,7 +36,7 @@ function MiniLogo({ logo, teamId, name }) {
   const [err, setErr] = useState(false);
   const src = logo || FOTMOB_CDN(teamId);
   if (src && !err) return <img src={src} alt="" aria-hidden="true" className="w-5 h-5 object-contain shrink-0" onError={() => setErr(true)} />;
-  return <div className="w-5 h-5 rounded-full bg-surface-600 flex items-center justify-center text-[8px] font-bold text-gray-300">{name?.[0]}</div>;
+  return <div className="w-5 h-5 rounded-full bg-surface-600 flex items-center justify-center text-[8px] font-bold text-ink-3">{name?.[0]}</div>;
 }
 
 function FilterChips({ tKey, keys, value, onChange }) {
@@ -50,7 +50,7 @@ function FilterChips({ tKey, keys, value, onChange }) {
             className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors ${
               value === realValue
                 ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
             }`}>
             {t(`${tKey}.${k}`)}
           </button>
@@ -65,9 +65,9 @@ function RangeField({ label, value, onChange, min, max, step, unit, offValue, of
   const isOff = value === offValue;
   return (
     <div>
-      <p className="text-xs font-semibold text-gray-400 mb-1.5 flex items-center justify-between gap-2">
+      <p className="text-xs font-semibold text-ink-4 mb-1.5 flex items-center justify-between gap-2">
         <span>{label}</span>
-        <span className={`shrink-0 ${isOff ? 'text-gray-400' : 'text-primary-400'}`}>
+        <span className={`shrink-0 ${isOff ? 'text-ink-4' : 'text-primary-400'}`}>
           {isOff ? offLabel : `${value}${unit}`}
         </span>
       </p>
@@ -175,7 +175,7 @@ export default function Filtres() {
           <Filter size={18} className="text-primary-400" />
           <h1 className="section-title">{t('filtersPage.title')}</h1>
         </div>
-        <p className="text-xs text-gray-300">{t('filtersPage.subtitle')}</p>
+        <p className="text-xs text-ink-3">{t('filtersPage.subtitle')}</p>
       </div>
 
       {/* ── Filtres statistiques avancés ───────────────────────────────────────── */}
@@ -183,17 +183,17 @@ export default function Filtres() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <SlidersHorizontal size={15} className="text-primary-400" />
-            <p className="text-sm font-bold text-gray-200">{t('filtersPage.advancedSectionTitle')}</p>
+            <p className="text-sm font-bold text-ink-2">{t('filtersPage.advancedSectionTitle')}</p>
           </div>
-          <button onClick={resetAll} className="flex items-center gap-1 text-[11px] text-gray-300 hover:text-gray-200 transition-colors">
+          <button onClick={resetAll} className="flex items-center gap-1 text-[11px] text-ink-3 hover:text-ink-2 transition-colors">
             <RotateCcw size={12} /> {t('filtersPage.reset')}
           </button>
         </div>
-        <p className="text-[11px] text-gray-400 -mt-2">{t('filtersPage.advancedHint')}</p>
+        <p className="text-[11px] text-ink-4 -mt-2">{t('filtersPage.advancedHint')}</p>
 
         {/* Plage de dates */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.dateRangeLabel')}</p>
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('filtersPage.dateRangeLabel')}</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               {DATE_PRESETS.map((o) => (
@@ -201,7 +201,7 @@ export default function Filtres() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     datePreset === o.value
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                      : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                   }`}>
                   {t(`machine.datePresets.${o.labelKey}`)}
                 </button>
@@ -213,14 +213,14 @@ export default function Filtres() {
         {/* Ligues */}
         {competitions.length > 0 && (
           <div>
-            <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.leaguesLabel')}</p>
+            <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('filtersPage.leaguesLabel')}</p>
             <div className="overflow-x-auto scrollbar-hide">
               <div className="flex gap-2 min-w-max">
                 <button onClick={() => setLeagueIds([])}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     leagueIds.length === 0
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                      : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                   }`}>
                   {t('filtersPage.allLeaguesChip')}
                 </button>
@@ -229,7 +229,7 @@ export default function Filtres() {
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap flex items-center gap-1.5 ${
                       leagueIds.includes(c.id)
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                        : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                        : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                     }`}>
                     <CompetitionLogo logo={c.logo} size={14} />
                     {c.name}
@@ -242,7 +242,7 @@ export default function Filtres() {
 
         {/* Événement statistique */}
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.statEventLabel')}</p>
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('filtersPage.statEventLabel')}</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               {STAT_EVENT_KEYS.map((k) => (
@@ -250,7 +250,7 @@ export default function Filtres() {
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     statEvent === k
                       ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                      : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                      : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                   }`}>
                   {t(`filtersPage.statEventOptions.${k}`)}
                 </button>
@@ -261,7 +261,7 @@ export default function Filtres() {
 
         {/* Seuils */}
         <div className="space-y-3 pt-1">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">{t('filtersPage.thresholdsLabel')}</p>
+          <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('filtersPage.thresholdsLabel')}</p>
 
           <RangeField label={t('filtersPage.homeLast10Label')} value={homeLast10Min} onChange={setHomeLast10Min}
             min={0} max={100} step={5} unit="%" offValue={0} offLabel={t('filtersPage.anyLevel')} />
@@ -282,10 +282,10 @@ export default function Filtres() {
 
       {/* ── Affiner sur les pronostics IA ──────────────────────────────────────── */}
       <div className="px-4 card p-4 space-y-4">
-        <p className="text-sm font-bold text-gray-200">{t('filtersPage.aiSectionTitle')}</p>
+        <p className="text-sm font-bold text-ink-2">{t('filtersPage.aiSectionTitle')}</p>
 
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.marketLabel')}</p>
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('filtersPage.marketLabel')}</p>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               {MARKET_KEYS.map((k) => {
@@ -295,7 +295,7 @@ export default function Filtres() {
                     className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                       market === realValue
                         ? 'bg-select-500/15 text-select-400 border-select-500/30'
-                        : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+                        : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
                     }`}>
                     {t(`filtersPage.marketOptions.${k}`)}
                   </button>
@@ -306,18 +306,18 @@ export default function Filtres() {
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">{t('filtersPage.confidenceLabel')}</p>
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('filtersPage.confidenceLabel')}</p>
           <FilterChips tKey="filtersPage.confOptions" keys={CONF_KEYS} value={conf} onChange={setConf} />
         </div>
 
         <div>
-          <p className="text-xs font-semibold text-gray-400 mb-2 uppercase tracking-wider">
+          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">
             {t('filtersPage.minProbLabel')} <span className="text-primary-400">{minProb > 0 ? `${minProb}%` : t('filtersPage.anyLevel')}</span>
           </p>
           <input type="range" min="0" max="90" step="5" value={minProb}
             onChange={(e) => setMinProb(Number(e.target.value))}
             className="w-full accent-primary-500 h-1.5 cursor-pointer" />
-          <div className="flex justify-between text-xs text-gray-400 mt-1">
+          <div className="flex justify-between text-xs text-ink-4 mt-1">
             <span>0%</span><span>90%</span>
           </div>
         </div>
@@ -328,11 +328,11 @@ export default function Filtres() {
           className={`w-full flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm font-semibold transition-colors ${
             valueOnly
               ? 'bg-amber-500/15 text-amber-400 border-amber-500/30'
-              : 'text-gray-300 border-white/[0.06] hover:text-gray-200'
+              : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
           }`}
         >
           <span className="flex items-center gap-2">
-            <Zap size={14} className={valueOnly ? 'text-amber-400' : 'text-gray-400'} />
+            <Zap size={14} className={valueOnly ? 'text-amber-400' : 'text-ink-4'} />
             {t('filtersPage.valueOnly')}
           </span>
           <span className={`w-9 h-5 rounded-full relative transition-colors ${valueOnly ? 'bg-amber-500' : 'bg-surface-600'}`}>
@@ -343,7 +343,7 @@ export default function Filtres() {
 
       {/* Résultats */}
       <div className="px-4">
-        <p className="text-xs text-gray-300 mb-3">
+        <p className="text-xs text-ink-3 mb-3">
           {isLoading ? t('filtersPage.loading') : t('filtersPage.matchesFound', { count: filtered.length })}
         </p>
 
@@ -354,13 +354,13 @@ export default function Filtres() {
         ) : filtered.length === 0 ? (
           <div className="card-p text-center py-10">
             <p className="text-2xl mb-2">🔍</p>
-            <p className="text-gray-300 text-sm">{t('filtersPage.noMatchesFound')}</p>
+            <p className="text-ink-3 text-sm">{t('filtersPage.noMatchesFound')}</p>
             <button onClick={resetAll} className="btn-secondary mt-3 text-sm">
               {t('filtersPage.resetFilters')}
             </button>
           </div>
         ) : (
-          <div className="card overflow-hidden divide-y divide-white/[0.04]">
+          <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
             {filtered.map((m) => {
               const pred   = m.predictions;
               const isToday = format(new Date(m.scheduledAt), 'yyyy-MM-dd') === today;
@@ -370,33 +370,33 @@ export default function Filtres() {
               const ts     = m.teamStats;
               return (
                 <Link key={m.id} to={`/matchs/${m.id}`}
-                  className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors">
+                  className="flex items-center gap-3 px-4 py-3 hover:bg-overlay/[0.03] transition-colors">
                   <div className="w-10 shrink-0 text-center">
-                    <span className="text-xs text-gray-400 block">
+                    <span className="text-xs text-ink-4 block">
                       {isToday ? t('filtersPage.today') : format(new Date(m.scheduledAt), 'dd/MM')}
                     </span>
-                    <span className="text-xs font-semibold text-gray-400 tabular-nums">
+                    <span className="text-xs font-semibold text-ink-4 tabular-nums">
                       {format(new Date(m.scheduledAt), 'HH:mm')}
                     </span>
                   </div>
                   <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2">
                       <MiniLogo logo={m.homeTeamLogo} teamId={m.homeTeamId} name={m.homeTeam} />
-                      <span className="text-sm font-medium text-gray-200 truncate">{m.homeTeam}</span>
+                      <span className="text-sm font-medium text-ink-2 truncate">{m.homeTeam}</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <MiniLogo logo={m.awayTeamLogo} teamId={m.awayTeamId} name={m.awayTeam} />
-                      <span className="text-sm font-medium text-gray-400 truncate">{m.awayTeam}</span>
+                      <span className="text-sm font-medium text-ink-4 truncate">{m.awayTeam}</span>
                     </div>
                     {ts && (
                       <div className="flex items-center gap-1.5 flex-wrap text-[9px] font-semibold">
-                        <span className="px-1.5 py-0.5 rounded bg-surface-700/60 text-gray-400">
+                        <span className="px-1.5 py-0.5 rounded bg-surface-700/60 text-ink-4">
                           {t('filtersPage.statsRow.home')} {ts.home.last10.pct != null ? `${ts.home.last10.pct}%` : '—'}
                         </span>
-                        <span className="px-1.5 py-0.5 rounded bg-surface-700/60 text-gray-400">
+                        <span className="px-1.5 py-0.5 rounded bg-surface-700/60 text-ink-4">
                           {t('filtersPage.statsRow.away')} {ts.away.last10.pct != null ? `${ts.away.last10.pct}%` : '—'}
                         </span>
-                        <span className="px-1.5 py-0.5 rounded bg-surface-700/60 text-gray-400">
+                        <span className="px-1.5 py-0.5 rounded bg-surface-700/60 text-ink-4">
                           {t('filtersPage.statsRow.h2h')} {ts.h2h.pct != null ? `${ts.h2h.pct}%` : '—'}
                         </span>
                       </div>
@@ -414,9 +414,9 @@ export default function Filtres() {
                       </div>
                     </>
                   ) : (
-                    <span className="shrink-0 text-xs text-gray-400">—</span>
+                    <span className="shrink-0 text-xs text-ink-4">—</span>
                   )}
-                  <ChevronRight size={14} className="text-gray-400 shrink-0" />
+                  <ChevronRight size={14} className="text-ink-4 shrink-0" />
                 </Link>
               );
             })}

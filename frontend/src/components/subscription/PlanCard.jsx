@@ -30,16 +30,16 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
 
       {/* En-tête */}
       <div>
-        <h3 className="font-display font-bold text-xl text-gray-100">{plan.displayName}</h3>
+        <h3 className="font-display font-bold text-xl text-ink-1">{plan.displayName}</h3>
         <div className="mt-2 flex items-end gap-1 flex-wrap">
           {isFree ? (
-            <span className="text-3xl font-display font-bold text-gray-100">{t('planCard.free')}</span>
+            <span className="text-3xl font-display font-bold text-ink-1">{t('planCard.free')}</span>
           ) : (
             <>
-              <span className="text-3xl font-display font-bold text-gray-100">
+              <span className="text-3xl font-display font-bold text-ink-1">
                 {fmt(displayPrice)}
               </span>
-              <span className="text-gray-300 pb-1"> FCFA{isYearly ? t('planCard.perYear') : t('planCard.perMonth')}</span>
+              <span className="text-ink-3 pb-1"> FCFA{isYearly ? t('planCard.perYear') : t('planCard.perMonth')}</span>
               {monthlyEquiv && (
                 <span className="text-xs text-primary-400 pb-1 ml-1">{t('planCard.monthlyEquiv', { amount: fmt(monthlyEquiv) })}</span>
               )}
@@ -47,14 +47,14 @@ export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billi
           )}
         </div>
         {convertedPrice && (
-          <p className="text-xs text-gray-400 mt-1">≈ {convertedPrice}</p>
+          <p className="text-xs text-ink-4 mt-1">≈ {convertedPrice}</p>
         )}
       </div>
 
       {/* Fonctionnalités */}
       <ul className="space-y-2 flex-1" aria-label={t('planCard.featuresLabel', { plan: plan.displayName })}>
         {(plan.features || []).map((feat, i) => (
-          <li key={i} className="flex items-start gap-2 text-sm text-gray-300">
+          <li key={i} className="flex items-start gap-2 text-sm text-ink-3">
             <Check size={16} className="text-primary-400 mt-0.5 shrink-0" aria-hidden="true" />
             {feat}
           </li>

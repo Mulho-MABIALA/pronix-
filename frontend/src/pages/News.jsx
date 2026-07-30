@@ -32,7 +32,7 @@ function ArticleCard({ article }) {
         />
       ) : (
         <div className="w-20 h-20 rounded-lg bg-surface-700 shrink-0 flex items-center justify-center">
-          <Newspaper size={24} className="text-gray-400" />
+          <Newspaper size={24} className="text-ink-4" />
         </div>
       )}
 
@@ -40,18 +40,18 @@ function ArticleCard({ article }) {
         <div className="flex items-center gap-2 mb-1">
           <span className="text-xs font-medium text-primary-400">{article.source}</span>
           {dateLabel && (
-            <span className="text-xs text-gray-400">{dateLabel}</span>
+            <span className="text-xs text-ink-4">{dateLabel}</span>
           )}
         </div>
-        <h2 className="text-sm font-semibold text-gray-100 group-hover:text-primary-300 transition-colors line-clamp-2 leading-snug">
+        <h2 className="text-sm font-semibold text-ink-1 group-hover:text-primary-300 transition-colors line-clamp-2 leading-snug">
           {article.title}
         </h2>
         {article.description && (
-          <p className="text-xs text-gray-300 mt-1 line-clamp-2">{article.description}</p>
+          <p className="text-xs text-ink-3 mt-1 line-clamp-2">{article.description}</p>
         )}
       </div>
 
-      <ExternalLink size={13} className="text-gray-400 shrink-0 mt-0.5 group-hover:text-primary-400 transition-colors" />
+      <ExternalLink size={13} className="text-ink-4 shrink-0 mt-0.5 group-hover:text-primary-400 transition-colors" />
     </a>
   );
 }
@@ -70,7 +70,7 @@ export default function News() {
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-4">
       <div className="flex items-center gap-2">
         <Newspaper size={22} className="text-primary-400" />
-        <h1 className="font-display font-bold text-2xl text-gray-100">{t('news.title')}</h1>
+        <h1 className="font-display font-bold text-2xl text-ink-1">{t('news.title')}</h1>
       </div>
 
       {isLoading && (
@@ -82,13 +82,13 @@ export default function News() {
       )}
 
       {isError && (
-        <div className="bento-card text-center py-8 text-gray-300">
+        <div className="bento-card text-center py-8 text-ink-3">
           {t('news.loadError')}
         </div>
       )}
 
       {!isLoading && !isError && articles.length === 0 && (
-        <div className="bento-card text-center py-8 text-gray-300">
+        <div className="bento-card text-center py-8 text-ink-3">
           {t('news.noNews')}
         </div>
       )}

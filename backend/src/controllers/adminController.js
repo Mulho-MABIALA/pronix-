@@ -365,7 +365,7 @@ async function deleteUser(req, res, next) {
     if (err.code === 'P2025') {
       return next(new AppError('Utilisateur introuvable', 404, 'NOT_FOUND'));
     }
-    if (err.code === 'P2003') {
+    if (err.code === 'P2003' || err.code === 'P2014') {
       return next(new AppError(
         "Suppression impossible : ce compte a des paiements, parrainages ou signalements enregistrés (historique conservé). Suspends le compte à la place.",
         409,

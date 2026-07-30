@@ -2,7 +2,7 @@ const { Router } = require('express');
 const { authenticate, requireAdmin } = require('../middleware/auth');
 const {
   getDashboard,
-  getUsers, toggleUserStatus,
+  getUsers, toggleUserStatus, deleteUser,
   getUserStats,
   sendEmailToUser,
   updateUserRole,
@@ -42,6 +42,7 @@ router.get('/dashboard', getDashboard);
 router.get('/users/stats',                         getUserStats);
 router.get('/users',                               getUsers);
 router.patch('/users/:userId/status',              toggleUserStatus);
+router.delete('/users/:userId',                    deleteUser);
 router.patch('/users/:userId/role',                updateUserRole);
 router.patch('/users/:userId/note',                updateAdminNote);
 router.post('/users/:userId/send-email',           sendEmailToUser);

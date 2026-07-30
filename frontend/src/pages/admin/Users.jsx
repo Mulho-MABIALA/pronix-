@@ -94,6 +94,12 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-users'] }),
   });
 
+  const deleteUser = useMutation({
+    mutationFn: () => api.delete(`/admin/users/${user.id}`),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-users'] }); onClose(); },
+    onError: (e) => alert(e?.response?.data?.message || 'Erreur lors de la suppression'),
+  });
+
   const saveNote = useMutation({
     mutationFn: () => api.patch(`/admin/users/${user.id}/note`, { note }),
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['admin-users'] }); setNoteEditing(false); },
@@ -410,9 +416,21 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
             {user.isActive ? 'Suspendre' : 'Réactiver'}
           </button>
           <Link to={`/admin/support?userId=${user.id}`}
-            className="ml-auto flex items-center gap-1.5 py-2 px-3 rounded-xl border border-overlay/[0.09] text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05] text-xs font-semibold transition-colors">
+            className="flex items-center gap-1.5 py-2 px-3 rounded-xl border border-overlay/[0.09] text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.05] text-xs font-semibold transition-colors">
             <MessageSquare size={13} /> Support
           </Link>
+          <button
+            onClick={() => {
+              if (confirm(`Supprimer définitivement le compte de ${user.username} ? Cette action est irréversible.`)) {
+                deleteUser.mutate();
+              }
+            }}
+            disabled={deleteUser.isPending}
+            className="ml-auto flex items-center gap-1.5 py-2 px-3 rounded-xl border border-red-500/30 bg-red-500/10 text-red-400 hover:bg-red-500/20 text-xs font-semibold transition-colors disabled:opacity-40"
+          >
+            {deleteUser.isPending ? <RefreshCw size={13} className="animate-spin" /> : <Trash2 size={13} />}
+            Supprimer
+          </button>
         </div>
       </div>
     </div>

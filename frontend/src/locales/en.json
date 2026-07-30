@@ -463,6 +463,8 @@
     "skip": "Continue",
     "leaguesLabel": "Your favorite leagues (optional)",
     "leaguesHint": "We'll highlight them in your lists. You can also pick none and change this later in your profile.",
+    "leaguesSearchPlaceholder": "Search a league or country...",
+    "leaguesNoResults": "No league found.",
     "preferencesLabel": "Language & currency",
     "leagues": {
       "61": "Ligue 1 (France)",
@@ -520,6 +522,14 @@
     "editPassword": "Edit",
     "logoutBtn": "Log out",
     "avatarUploadError": "Error uploading the photo. Please try again.",
+    "leagues": {
+      "title": "Favorite leagues",
+      "empty": "No favorite league yet.",
+      "edit": "Edit my leagues",
+      "searchPlaceholder": "Search a league or country...",
+      "noResults": "No league found.",
+      "saved": "Favorite leagues updated"
+    },
     "tickets": {
       "title": "My tickets",
       "newTicket": "New ticket",

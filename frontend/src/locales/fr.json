@@ -463,6 +463,8 @@
     "skip": "Continuer",
     "leaguesLabel": "Tes championnats favoris (facultatif)",
     "leaguesHint": "On les mettra en avant dans tes listes. Tu peux aussi ne rien choisir et changer ça plus tard dans ton profil.",
+    "leaguesSearchPlaceholder": "Rechercher un championnat ou un pays...",
+    "leaguesNoResults": "Aucun championnat trouvé.",
     "preferencesLabel": "Langue & devise",
     "leagues": {
       "61": "Ligue 1 (France)",
@@ -520,6 +522,14 @@
     "editPassword": "Modifier",
     "logoutBtn": "Se déconnecter",
     "avatarUploadError": "Erreur lors de l'upload de la photo. Réessaie.",
+    "leagues": {
+      "title": "Championnats favoris",
+      "empty": "Aucun championnat favori pour l'instant.",
+      "edit": "Modifier mes championnats",
+      "searchPlaceholder": "Rechercher un championnat ou un pays...",
+      "noResults": "Aucun championnat trouvé.",
+      "saved": "Championnats favoris mis à jour"
+    },
     "contact": {
       "title": "Contact & support",
       "desc": "Une question, un problème ? Notre équipe te répond directement."

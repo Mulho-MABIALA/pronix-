@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
-  MessageCircle, HelpCircle,
+  MessageCircle, HelpCircle, Trophy, Search,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -16,6 +16,7 @@ import { PlanBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import Disclaimer from '../components/layout/Disclaimer';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 
 /* ─── Compress & crop image to square base64 JPEG ─────────────────────────── */
 function resizeToSquareBase64(file, size = 400) {
@@ -196,6 +197,139 @@ function ReferralSection() {
         </p>
       )}
     </section>
+  );
+}
+
+/* ─── Section championnats favoris ───────────────────────────────────────────
+   Modifiable après l'inscription (favoriteLeagues est fixé une fois à
+   l'onboarding sinon, sans aucun moyen d'y revenir). Même endpoint /matches/
+   competitions et même queryKey que Machine.jsx pour partager le cache. ─── */
+function FavoriteLeaguesSection() {
+  const { t } = useTranslation();
+  const { user, refreshUser } = useAuth();
+  const toast = useToast();
+  const [editing, setEditing] = useState(false);
+  const [search, setSearch] = useState('');
+  const [selected, setSelected] = useState([]);
+
+  const { data: competitionsData, isLoading: competitionsLoading } = useQuery({
+    queryKey: ['machine-competitions'],
+    queryFn: () => api.get('/matches/competitions').then((r) => r.data),
+    staleTime: Infinity,
+  });
+  const competitions = competitionsData?.data || [];
+
+  const favoriteIds = user?.profile?.favoriteLeagues || [];
+  const favoriteCompetitions = useMemo(
+    () => competitions.filter((c) => favoriteIds.includes(String(c.externalId))),
+    [competitions, favoriteIds]
+  );
+
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return competitions;
+    return competitions.filter((c) => c.name?.toLowerCase().includes(q) || c.country?.toLowerCase().includes(q));
+  }, [competitions, search]);
+
+  const startEditing = () => {
+    setSelected(favoriteIds);
+    setSearch('');
+    setEditing(true);
+  };
+
+  const toggle = (id) => {
+    setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id]);
+  };
+
+  const saveLeagues = useMutation({
+    mutationFn: (leagues) => api.patch('/profiles/me', { favoriteLeagues: leagues }),
+    onSuccess: async () => {
+      await refreshUser();
+      setEditing(false);
+      if (toast) toast(t('profile.leagues.saved'), 'success');
+    },
+  });
+
+  return (
+    <Section title={t('profile.leagues.title')} icon={Trophy}>
+      {!editing ? (
+        <>
+          {favoriteCompetitions.length > 0 ? (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {favoriteCompetitions.map((c) => (
+                <span key={c.id} className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-overlay/[0.04] border border-overlay/[0.07] text-xs font-medium text-ink-2">
+                  <CompetitionLogo logo={c.logo} size={16} />
+                  {c.name}
+                </span>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-ink-3 mb-3">{t('profile.leagues.empty')}</p>
+          )}
+          <button onClick={startEditing} className="btn-secondary w-full flex items-center justify-center gap-2">
+            <Pencil size={14} /> {t('profile.leagues.edit')}
+          </button>
+        </>
+      ) : (
+        <div className="space-y-3">
+          <div className="relative">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-4 pointer-events-none" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t('profile.leagues.searchPlaceholder')}
+              className="input pl-9 text-sm"
+            />
+          </div>
+
+          <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1">
+            {competitionsLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-12 rounded-lg bg-overlay/[0.04] animate-pulse" />
+              ))
+            ) : filtered.length === 0 ? (
+              <p className="text-xs text-ink-4 text-center py-4">{t('profile.leagues.noResults')}</p>
+            ) : (
+              filtered.map((c) => {
+                const id = String(c.externalId);
+                const isActive = selected.includes(id);
+                return (
+                  <button
+                    key={c.id}
+                    onClick={() => toggle(id)}
+                    aria-pressed={isActive}
+                    className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border text-left transition-colors ${
+                      isActive ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'border-overlay/[0.07] text-ink-3 hover:border-surface-500'
+                    }`}
+                  >
+                    <CompetitionLogo logo={c.logo} size={20} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-sm font-medium truncate">{c.name}</span>
+                      <span className="block text-[11px] text-ink-4 truncate">{c.country}</span>
+                    </span>
+                    {isActive && <Check size={14} className="text-primary-400 shrink-0" />}
+                  </button>
+                );
+              })
+            )}
+          </div>
+
+          <div className="flex gap-2 pt-1">
+            <button
+              onClick={() => saveLeagues.mutate(selected)}
+              disabled={saveLeagues.isPending}
+              className="btn-primary flex-1"
+            >
+              {saveLeagues.isPending ? t('profile.saving') : t('profile.save')}
+            </button>
+            <button onClick={() => setEditing(false)} className="btn-secondary flex-1">
+              {t('profile.cancel')}
+            </button>
+          </div>
+        </div>
+      )}
+    </Section>
   );
 }
 
@@ -827,6 +961,9 @@ export default function Profile() {
           )}
         </div>
       </Section>
+
+      {/* ── Championnats favoris ──────────────────────────────────────────────── */}
+      <FavoriteLeaguesSection />
 
       {/* ── Contact / support ─────────────────────────────────────────────────── */}
       <ContactSection />

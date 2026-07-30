@@ -463,6 +463,8 @@
     "skip": "Continuar",
     "leaguesLabel": "Tus ligas favoritas (opcional)",
     "leaguesHint": "Las destacaremos en tus listas. También puedes no elegir ninguna y cambiarlo luego en tu perfil.",
+    "leaguesSearchPlaceholder": "Busca una liga o un país...",
+    "leaguesNoResults": "No se encontró ninguna liga.",
     "preferencesLabel": "Idioma y moneda",
     "leagues": {
       "61": "Ligue 1 (Francia)",
@@ -520,6 +522,14 @@
     "editPassword": "Modificar",
     "logoutBtn": "Cerrar sesión",
     "avatarUploadError": "Error al subir la foto. Inténtalo de nuevo.",
+    "leagues": {
+      "title": "Ligas favoritas",
+      "empty": "Aún no tienes ligas favoritas.",
+      "edit": "Editar mis ligas",
+      "searchPlaceholder": "Busca una liga o un país...",
+      "noResults": "No se encontró ninguna liga.",
+      "saved": "Ligas favoritas actualizadas"
+    },
     "contact": {
       "title": "Contacto y soporte",
       "desc": "¿Alguna pregunta o problema? Nuestro equipo te responde directamente."

@@ -3,13 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Zap } from 'lucide-react';
+import { Zap, Search, Check } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
-
-const LEAGUE_IDS = ['61', '140', '39', '135', '78', '2', '892', '529'];
 
 const LANGUAGE_OPTIONS = [
   { code: 'fr', label: '🇫🇷 Français' },
@@ -37,6 +35,7 @@ export default function Onboarding() {
   const { currency: detectedCurrency } = useCurrency();
   const navigate = useNavigate();
   const [selected, setSelected] = useState([]);
+  const [leagueSearch, setLeagueSearch] = useState('');
   const [loading, setLoading] = useState(false);
   const detectedLang = (i18n.language || 'fr').split('-')[0];
   const [language, setLanguage] = useState(SUPPORTED_LANGS.includes(detectedLang) ? detectedLang : 'fr');
@@ -57,17 +56,21 @@ export default function Onboarding() {
       .slice(0, 3);
   }, [exampleData]);
 
-  // Logos des championnats — mêmes données que sur Machine.jsx (externalId + logo API-Football)
-  const { data: competitionsData } = useQuery({
+  // Liste complète des championnats (avec logos) — mêmes données que Machine.jsx,
+  // au lieu d'une sélection figée de 8 ligues qui ne couvrait pas tout.
+  const { data: competitionsData, isLoading: competitionsLoading } = useQuery({
     queryKey: ['onboarding-competitions'],
     queryFn: () => api.get('/matches/competitions').then((r) => r.data),
     staleTime: Infinity,
   });
-  const leagueLogos = useMemo(() => {
-    const map = {};
-    for (const c of competitionsData?.data || []) map[String(c.externalId)] = c.logo;
-    return map;
-  }, [competitionsData]);
+  const competitions = competitionsData?.data || [];
+  const filteredCompetitions = useMemo(() => {
+    const q = leagueSearch.trim().toLowerCase();
+    if (!q) return competitions;
+    return competitions.filter((c) =>
+      c.name?.toLowerCase().includes(q) || c.country?.toLowerCase().includes(q)
+    );
+  }, [competitions, leagueSearch]);
 
   const toggle = (id) => {
     setSelected((s) => s.includes(id) ? s.filter((x) => x !== id) : [...s, id]);
@@ -140,20 +143,47 @@ export default function Onboarding() {
           <p className="text-xs text-ink-4 mt-0.5 mb-3">{t('onboarding.leaguesHint')}</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          {LEAGUE_IDS.map((id) => (
-            <button
-              key={id}
-              onClick={() => toggle(id)}
-              aria-pressed={selected.includes(id)}
-              className={`bento-card text-left transition-all flex items-center gap-2 ${
-                selected.includes(id) ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'text-ink-3 hover:border-surface-500'
-              }`}
-            >
-              <CompetitionLogo logo={leagueLogos[id]} size={20} />
-              <span className="text-sm font-medium truncate">{t(`onboarding.leagues.${id}`)}</span>
-            </button>
-          ))}
+        <div className="relative">
+          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-ink-4 pointer-events-none" />
+          <input
+            type="text"
+            value={leagueSearch}
+            onChange={(e) => setLeagueSearch(e.target.value)}
+            placeholder={t('onboarding.leaguesSearchPlaceholder')}
+            className="input pl-9 text-sm"
+          />
+        </div>
+
+        <div className="max-h-64 overflow-y-auto space-y-1.5 pr-1 -mt-1">
+          {competitionsLoading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-12 rounded-lg bg-overlay/[0.04] animate-pulse" />
+            ))
+          ) : filteredCompetitions.length === 0 ? (
+            <p className="text-xs text-ink-4 text-center py-4">{t('onboarding.leaguesNoResults')}</p>
+          ) : (
+            filteredCompetitions.map((c) => {
+              const id = String(c.externalId);
+              const isActive = selected.includes(id);
+              return (
+                <button
+                  key={c.id}
+                  onClick={() => toggle(id)}
+                  aria-pressed={isActive}
+                  className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg border text-left transition-colors ${
+                    isActive ? 'border-primary-500 bg-primary-500/10 text-primary-300' : 'border-overlay/[0.07] text-ink-3 hover:border-surface-500'
+                  }`}
+                >
+                  <CompetitionLogo logo={c.logo} size={20} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-medium truncate">{c.name}</span>
+                    <span className="block text-[11px] text-ink-4 truncate">{c.country}</span>
+                  </span>
+                  {isActive && <Check size={14} className="text-primary-400 shrink-0" />}
+                </button>
+              );
+            })
+          )}
         </div>
 
         <p className="text-sm font-semibold text-ink-1 -mb-1">{t('onboarding.preferencesLabel')}</p>

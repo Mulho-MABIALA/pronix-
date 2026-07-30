@@ -347,6 +347,35 @@ async function toggleUserStatus(req, res, next) {
   }
 }
 
+// Suppression définitive d'un compte. La plupart des relations (tips,
+// commentaires, tokens, etc.) sont en onDelete: Cascade côté schema, donc
+// supprimées automatiquement. Mais paiements, parrainages et signalements
+// n'ont PAS de cascade (on garde volontairement ces historiques) : la
+// suppression est bloquée (P2003) si l'utilisateur en a — on lui conseille
+// alors de suspendre le compte plutôt que de le supprimer.
+async function deleteUser(req, res, next) {
+  try {
+    const { userId } = req.params;
+    if (req.user.id === userId) {
+      throw new AppError('Impossible de supprimer votre propre compte admin', 400, 'CANNOT_DELETE_SELF');
+    }
+    await prisma.user.delete({ where: { id: userId } });
+    res.json({ success: true, message: 'Compte supprimé définitivement' });
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return next(new AppError('Utilisateur introuvable', 404, 'NOT_FOUND'));
+    }
+    if (err.code === 'P2003') {
+      return next(new AppError(
+        "Suppression impossible : ce compte a des paiements, parrainages ou signalements enregistrés (historique conservé). Suspends le compte à la place.",
+        409,
+        'DELETE_BLOCKED'
+      ));
+    }
+    next(err);
+  }
+}
+
 // ─── Signalements ─────────────────────────────────────────────────────────────
 async function getReports(req, res, next) {
   try {
@@ -992,7 +1021,7 @@ async function updateTicketStatus(req, res, next) {
 
 module.exports = {
   getDashboard,
-  getUsers, toggleUserStatus,
+  getUsers, toggleUserStatus, deleteUser,
   getUserStats,
   sendEmailToUser,
   updateUserRole,

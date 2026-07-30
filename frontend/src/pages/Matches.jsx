@@ -5,6 +5,7 @@ import { fr } from 'date-fns/locale';
 import { ChevronDown, ChevronUp, RefreshCw, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
+import { useAuth } from '../context/AuthContext';
 import MatchCard from '../components/matches/MatchCard';
 import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
@@ -72,8 +73,10 @@ function competitionPriority(name, country, matchesInGroup) {
 
 export default function Matches() {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const queryClient = useQueryClient();
   const isEN = i18n.language?.startsWith('en');
+  const favoriteLeagueIds = user?.profile?.favoriteLeagues || [];
 
   usePageMeta('Matchs du jour', 'Scores en direct, résultats et calendrier de tous les matchs de football. Consultez les statistiques et pronostics.');
   const [date, setDate]                       = useState(new Date());
@@ -124,12 +127,22 @@ export default function Matches() {
 
   const byCompetition = matches.reduce((acc, match) => {
     const key = match.competition?.name || 'Autre';
-    if (!acc[key]) acc[key] = { logo: match.competition?.logo || null, country: match.competition?.country || null, list: [] };
+    if (!acc[key]) acc[key] = {
+      logo: match.competition?.logo || null,
+      country: match.competition?.country || null,
+      externalId: match.competition?.externalId || null,
+      list: [],
+    };
     acc[key].list.push(match);
     return acc;
   }, {});
 
+  // Les championnats favoris de l'utilisateur (choisis à l'onboarding ou dans
+  // son profil) remontent au-dessus même des 7 grands championnats par défaut.
   const sortedCompetitionEntries = Object.entries(byCompetition).sort(([nameA, groupA], [nameB, groupB]) => {
+    const favA = favoriteLeagueIds.includes(String(groupA.externalId));
+    const favB = favoriteLeagueIds.includes(String(groupB.externalId));
+    if (favA !== favB) return favA ? -1 : 1;
     return competitionPriority(nameA, groupA.country, groupA.list) - competitionPriority(nameB, groupB.country, groupB.list);
   });
 

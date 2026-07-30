@@ -65,7 +65,7 @@ function AvatarCircle({ src, letter, size = 'lg', onClick, uploading }) {
       {onClick && (
         <div className="absolute inset-0 rounded-full bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           {uploading
-            ? <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            ? <div className="w-5 h-5 border-2 border-overlay/30 border-t-white rounded-full animate-spin" />
             : <Camera size={20} className="text-white" />
           }
         </div>
@@ -769,7 +769,7 @@ export default function Profile() {
               <Link
                 key={tip.id}
                 to={`/matchs/${tip.matchId}`}
-                className="bento-card flex items-center justify-between gap-3 text-sm hover:border-white/10 transition-colors"
+                className="bento-card flex items-center justify-between gap-3 text-sm hover:border-overlay/10 transition-colors"
               >
                 <div className="min-w-0">
                   <p className="font-medium text-ink-2 truncate">

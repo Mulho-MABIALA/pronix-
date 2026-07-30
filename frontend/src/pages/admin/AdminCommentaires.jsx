@@ -45,7 +45,7 @@ export default function AdminCommentaires() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Commentaires</h1>
+          <h1 className="font-display font-bold text-2xl text-ink-1">Commentaires</h1>
           <p className="text-sm text-ink-4 mt-0.5">
             {pagination ? `${pagination.total} commentaires en base` : 'Modération'}
           </p>
@@ -98,7 +98,7 @@ export default function AdminCommentaires() {
                 {/* Contenu */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1">
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-ink-1">
                       {comment.user?.profile?.displayName || comment.user?.username}
                     </p>
                     <span className="text-[11px] text-ink-4">
@@ -145,14 +145,14 @@ export default function AdminCommentaires() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-overlay/[0.08] text-ink-4 hover:text-white disabled:opacity-30 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-overlay/[0.08] text-ink-4 hover:text-ink-1 disabled:opacity-30 transition-colors"
               >
                 <ChevronLeft size={14} />
               </button>
               <button
                 onClick={() => setPage(p => Math.min(pagination.pages, p + 1))}
                 disabled={page >= pagination.pages}
-                className="w-8 h-8 flex items-center justify-center rounded-lg border border-overlay/[0.08] text-ink-4 hover:text-white disabled:opacity-30 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg border border-overlay/[0.08] text-ink-4 hover:text-ink-1 disabled:opacity-30 transition-colors"
               >
                 <ChevronRight size={14} />
               </button>
@@ -171,7 +171,7 @@ export default function AdminCommentaires() {
             <div className="w-12 h-12 rounded-xl bg-red-500/15 flex items-center justify-center mx-auto mb-4">
               <Trash2 size={22} className="text-red-400" />
             </div>
-            <h3 className="text-white font-bold text-lg text-center">Supprimer ce commentaire ?</h3>
+            <h3 className="text-ink-1 font-bold text-lg text-center">Supprimer ce commentaire ?</h3>
             <p className="text-ink-4 text-sm text-center mt-2 mb-6">Cette action est irréversible.</p>
             <div className="flex gap-3">
               <button onClick={() => setConfirm(null)} className="btn-secondary flex-1">Annuler</button>

@@ -65,7 +65,7 @@ function NavItem({ to, itemKey, Icon, end, badge, onClose, collapsed }) {
         } ${
           isActive
             ? 'bg-primary-500/15 text-primary-300'
-            : 'text-overlay/75 hover:text-white hover:bg-overlay/[0.06]'
+            : 'text-overlay/75 hover:text-ink-1 hover:bg-overlay/[0.06]'
         }`
       }
     >
@@ -101,7 +101,7 @@ function SidebarContent({ onClose, collapsed }) {
           <img src="/logo-circle.png" alt="fpronix" className="w-8 h-8 rounded-full shrink-0" />
           {!collapsed && (
             <div className="min-w-0">
-              <p className="font-display font-bold text-[13px] text-white leading-tight tracking-tight truncate">
+              <p className="font-display font-bold text-[13px] text-ink-1 leading-tight tracking-tight truncate">
                 fp<span className="text-primary-400">ronix</span>
               </p>
               <p className="text-[9px] text-overlay/55 uppercase tracking-[0.15em] font-semibold truncate">{t('adminLayout.adminConsole')}</p>
@@ -110,7 +110,7 @@ function SidebarContent({ onClose, collapsed }) {
         </Link>
         {onClose && (
           <button onClick={onClose}
-            className="p-1.5 rounded-lg text-overlay/40 hover:text-white hover:bg-overlay/[0.08] transition-colors md:hidden">
+            className="p-1.5 rounded-lg text-overlay/40 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors md:hidden">
             <X size={17} />
           </button>
         )}
@@ -139,7 +139,7 @@ function SidebarContent({ onClose, collapsed }) {
       <div className={`pb-3 pt-2 border-t border-overlay/[0.06] space-y-1 shrink-0 ${collapsed ? 'px-2' : 'px-2.5'}`}>
         <Link to="/" target="_blank"
           title={collapsed ? t('adminLayout.viewSite') : undefined}
-          className={`flex items-center gap-3 rounded-xl text-[13px] text-overlay/65 hover:text-white hover:bg-overlay/[0.06] transition-colors ${collapsed ? 'justify-center px-2 py-2' : 'px-3 py-2'}`}>
+          className={`flex items-center gap-3 rounded-xl text-[13px] text-overlay/65 hover:text-ink-1 hover:bg-overlay/[0.06] transition-colors ${collapsed ? 'justify-center px-2 py-2' : 'px-3 py-2'}`}>
           <ExternalLink size={14} />
           {!collapsed && t('adminLayout.viewSite')}
         </Link>
@@ -204,8 +204,8 @@ export default function AdminLayout() {
         {/* Bouton réduire / agrandir */}
         <button
           onClick={() => setCollapsed((v) => !v)}
-          className="hidden md:flex absolute top-[26px] -right-3 w-6 h-6 rounded-full items-center justify-center border border-overlay/[0.1] text-overlay/50 hover:text-white hover:border-white/20 transition-colors z-40"
-          style={{ background: '#1a1b1e' }}
+          className="hidden md:flex absolute top-[26px] -right-3 w-6 h-6 rounded-full items-center justify-center border border-overlay/[0.1] text-overlay/50 hover:text-ink-1 hover:border-overlay/20 transition-colors z-40"
+          style={{ background: 'var(--color-card)' }}
           aria-label={collapsed ? t('adminLayout.expandSidebar') : t('adminLayout.collapseSidebar')}
           title={collapsed ? t('adminLayout.expandSidebar') : t('adminLayout.collapseSidebar')}
         >
@@ -231,13 +231,13 @@ export default function AdminLayout() {
         <div className="md:hidden flex items-center gap-3 px-4 h-14 border-b border-overlay/[0.06] sticky top-0 z-20"
           style={{ background: 'rgb(var(--surface-900-rgb) / 0.95)', backdropFilter: 'blur(12px)' }}>
           <button onClick={() => setMobileOpen(true)}
-            className="p-2 rounded-xl text-overlay/50 hover:text-white hover:bg-overlay/[0.08] transition-colors"
+            className="p-2 rounded-xl text-overlay/50 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors"
             aria-label={t('adminLayout.openMenu')}>
             <Menu size={19} />
           </button>
           <div className="flex items-center gap-2">
             <Shield size={14} className="text-primary-400" />
-            <span className="font-display font-semibold text-white text-[13px]">{t('adminLayout.administration')}</span>
+            <span className="font-display font-semibold text-ink-1 text-[13px]">{t('adminLayout.administration')}</span>
           </div>
         </div>
 

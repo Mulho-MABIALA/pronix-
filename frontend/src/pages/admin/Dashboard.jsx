@@ -106,7 +106,7 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
 
       {/* value */}
       <div className="relative z-10">
-        <p className="text-[30px] font-display font-bold text-white leading-none tracking-tight tabular-nums">
+        <p className="text-[30px] font-display font-bold text-ink-1 leading-none tracking-tight tabular-nums">
           {value ?? '–'}
         </p>
         <p className="text-[12px] text-ink-3 font-medium mt-1.5">{label}</p>
@@ -130,7 +130,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
         <Icon size={15} />
       </div>
       <div>
-        <p className="text-[17px] font-display font-bold text-white leading-none tabular-nums">{value ?? '–'}</p>
+        <p className="text-[17px] font-display font-bold text-ink-1 leading-none tabular-nums">{value ?? '–'}</p>
         <p className="text-[11px] text-ink-3 mt-0.5">{label}</p>
       </div>
     </div>
@@ -182,11 +182,11 @@ function RevenueChart({ data }) {
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-start justify-between mb-1">
         <div>
-          <p className="text-sm font-semibold text-white">Revenus mensuels</p>
+          <p className="text-sm font-semibold text-ink-1">Revenus mensuels</p>
           <p className="text-[11px] text-ink-3 mt-0.5">6 derniers mois</p>
         </div>
         <div className="text-right">
-          <p className="text-lg font-display font-bold text-white tabular-nums">{fmt(total)} FCFA</p>
+          <p className="text-lg font-display font-bold text-ink-1 tabular-nums">{fmt(total)} FCFA</p>
           {momPct !== null && (
             <span className={`inline-flex items-center gap-0.5 text-[11px] font-bold ${momPct >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {momPct >= 0 ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
@@ -254,7 +254,7 @@ function ConversionCard({ data, kpis }) {
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
-          <p className="text-sm font-semibold text-white">Conversion</p>
+          <p className="text-sm font-semibold text-ink-1">Conversion</p>
           <p className="text-[11px] text-ink-3 mt-0.5">Plans actifs</p>
         </div>
         <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
@@ -276,7 +276,7 @@ function ConversionCard({ data, kpis }) {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center flex-col">
-            <p className="text-[15px] font-display font-bold text-white leading-none">{convPct}%</p>
+            <p className="text-[15px] font-display font-bold text-ink-1 leading-none">{convPct}%</p>
             <p className="text-[11px] text-ink-3 mt-0.5">premium</p>
           </div>
         </div>
@@ -327,7 +327,7 @@ function TopTipsters({ data }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Trophy size={14} className="text-amber-400" />
-          <p className="text-sm font-semibold text-white">Top Tipsters</p>
+          <p className="text-sm font-semibold text-ink-1">Top Tipsters</p>
         </div>
         <Link to="/admin/tipsters"
           className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
@@ -353,7 +353,7 @@ function TopTipsters({ data }) {
                 </div>
               )}
               <div className="flex-1 min-w-0">
-                <p className="text-[13px] font-semibold text-ink-2 truncate group-hover:text-white transition-colors">
+                <p className="text-[13px] font-semibold text-ink-2 truncate group-hover:text-ink-1 transition-colors">
                   {tip.displayName}
                 </p>
                 <p className="text-xs text-ink-3">{fmt(tip.totalTips)} picks</p>
@@ -383,7 +383,7 @@ function RecentUsers({ data }) {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <UserPlus size={14} className="text-indigo-400" />
-          <p className="text-sm font-semibold text-white">Derniers inscrits</p>
+          <p className="text-sm font-semibold text-ink-1">Derniers inscrits</p>
         </div>
         <Link to="/admin/utilisateurs"
           className="flex items-center gap-0.5 text-[11px] text-primary-400 hover:text-primary-300 transition-colors font-medium">
@@ -500,7 +500,7 @@ function QuickActions() {
         <div className="w-7 h-7 rounded-lg bg-overlay/[0.05] flex items-center justify-center">
           <Sparkles size={13} className="text-ink-3" />
         </div>
-        <p className="text-sm font-semibold text-white">Actions rapides</p>
+        <p className="text-sm font-semibold text-ink-1">Actions rapides</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -546,7 +546,7 @@ function NavShortcuts() {
   return (
     <div className="rounded-2xl border border-overlay/[0.11] p-5"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
-      <p className="text-sm font-semibold text-white mb-4">Navigation rapide</p>
+      <p className="text-sm font-semibold text-ink-1 mb-4">Navigation rapide</p>
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
         {NAV_SHORTCUTS.map(({ to, label, icon: Icon, color }) => (
           <Link
@@ -557,7 +557,7 @@ function NavShortcuts() {
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${color}`}>
               <Icon size={16} />
             </div>
-            <span className="text-[11px] font-medium text-ink-3 group-hover:text-white transition-colors leading-tight">{label}</span>
+            <span className="text-[11px] font-medium text-ink-3 group-hover:text-ink-1 transition-colors leading-tight">{label}</span>
           </Link>
         ))}
       </div>
@@ -594,7 +594,7 @@ export default function AdminDashboard() {
               <LiveDot />
               {format(now, "EEEE d MMMM yyyy", { locale: fr })}
             </p>
-            <h1 className="font-display font-bold text-[26px] text-white tracking-tight">
+            <h1 className="font-display font-bold text-[26px] text-ink-1 tracking-tight">
               {greeting()}&nbsp;<span className="text-primary-400">Admin</span> 👋
             </h1>
             <p className="text-sm text-ink-3 mt-0.5">Vue en temps réel de fpronix.</p>
@@ -613,7 +613,7 @@ export default function AdminDashboard() {
           <button
             onClick={() => refetch()}
             disabled={isFetching}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-[12px] text-ink-3 hover:text-white hover:bg-overlay/[0.09] transition-all disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-[12px] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.09] transition-all disabled:opacity-50"
           >
             <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
             Actualiser

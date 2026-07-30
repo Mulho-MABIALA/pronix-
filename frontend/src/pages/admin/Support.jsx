@@ -62,7 +62,7 @@ function TicketCard({ ticket, onReply, onStatus }) {
             </div>
           )}
           <div className="min-w-0">
-            <p className="text-sm font-semibold text-white truncate">{ticket.subject}</p>
+            <p className="text-sm font-semibold text-ink-1 truncate">{ticket.subject}</p>
             <p className="text-[11px] text-ink-3 mt-0.5">
               {displayName} · {format(new Date(ticket.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}
             </p>
@@ -176,7 +176,7 @@ export default function AdminSupport() {
       {/* Header */}
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Support</h1>
+          <h1 className="font-display font-bold text-2xl text-ink-1">Support</h1>
           <p className="text-sm text-ink-4 mt-0.5">
             {openCount > 0
               ? <span className="text-amber-400 font-semibold">{openCount} ticket{openCount > 1 ? 's' : ''} en attente</span>

@@ -397,8 +397,8 @@ export default function Pronostics() {
                   sel
                     ? 'bg-select-500/15 text-select-400 border-select-500/30'
                     : dayPast
-                    ? 'text-ink-4 border-overlay/[0.05] hover:text-ink-3 hover:border-white/10'
-                    : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2 hover:border-white/10'
+                    ? 'text-ink-4 border-overlay/[0.05] hover:text-ink-3 hover:border-overlay/10'
+                    : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2 hover:border-overlay/10'
                 }`}>
                 {formatTabDate(d)}
                 {dayPast && <span className="block text-[9px] text-ink-5 leading-none">{t('pronostics.resultsLabel')}</span>}
@@ -420,7 +420,7 @@ export default function Pronostics() {
       <div>
         <button
           onClick={() => setFiltersOpen((v) => !v)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-overlay/[0.08] text-[13px] font-semibold text-ink-3 hover:text-ink-2 hover:border-white/20 transition-colors"
+          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-overlay/[0.08] text-[13px] font-semibold text-ink-3 hover:text-ink-2 hover:border-overlay/20 transition-colors"
         >
           <SlidersHorizontal size={14} />
           {t('pronostics.filtersToggle')}
@@ -451,7 +451,7 @@ export default function Pronostics() {
                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                   activeMarket === key
                     ? 'bg-select-500/20 text-select-400 border-select-500/40'
-                    : 'text-ink-3 border-overlay/[0.08] hover:text-ink-2 hover:border-white/20'
+                    : 'text-ink-3 border-overlay/[0.08] hover:text-ink-2 hover:border-overlay/20'
                 }`}>
                 {key === '1X2' ? t('pronostics.marketFilters.oneXTwo') : key === 'dc' ? t('pronostics.marketFilters.doubleChance') : t(`pronostics.marketFilters.${key}`)}
               </button>
@@ -472,7 +472,7 @@ export default function Pronostics() {
                 className={`shrink-0 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                   leagueIds.length === 0
                     ? 'bg-select-500/20 text-select-400 border-select-500/40'
-                    : 'text-ink-3 border-overlay/[0.08] hover:text-ink-2 hover:border-white/20'
+                    : 'text-ink-3 border-overlay/[0.08] hover:text-ink-2 hover:border-overlay/20'
                 }`}>
                 {t('pronostics.allLeagues')}
               </button>
@@ -481,7 +481,7 @@ export default function Pronostics() {
                   className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold border transition-all ${
                     leagueIds.includes(c.id)
                       ? 'bg-select-500/20 text-select-400 border-select-500/40'
-                      : 'text-ink-3 border-overlay/[0.08] hover:text-ink-2 hover:border-white/20'
+                      : 'text-ink-3 border-overlay/[0.08] hover:text-ink-2 hover:border-overlay/20'
                   }`}>
                   <CompetitionLogo logo={c.logo} size={14} />
                   {c.name}
@@ -499,7 +499,7 @@ export default function Pronostics() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t('pronostics.searchPlaceholder')}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-700/60 border border-overlay/[0.07] text-sm text-ink-2 placeholder:text-ink-4 focus:outline-none focus:border-white/20 transition-colors"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-surface-700/60 border border-overlay/[0.07] text-sm text-ink-2 placeholder:text-ink-4 focus:outline-none focus:border-overlay/20 transition-colors"
           />
           {search && (
             <button onClick={() => setSearch('')}

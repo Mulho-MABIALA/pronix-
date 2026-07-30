@@ -136,7 +136,7 @@ export default function ChatIA({ matchId, matchLabel }) {
               <button
                 key={k}
                 onClick={() => sendMessage(t(`chatIA.suggestions.${k}`))}
-                className="text-xs px-3 py-1.5 rounded-lg bg-surface-700/50 border border-overlay/[0.07] text-ink-4 hover:text-ink-2 hover:border-white/15 transition-colors text-left"
+                className="text-xs px-3 py-1.5 rounded-lg bg-surface-700/50 border border-overlay/[0.07] text-ink-4 hover:text-ink-2 hover:border-overlay/15 transition-colors text-left"
               >
                 {t(`chatIA.suggestions.${k}`)}
               </button>

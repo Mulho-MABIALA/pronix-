@@ -46,7 +46,7 @@ function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-white mb-0.5">{value}</p>
+      <p className="text-2xl font-bold text-ink-1 mb-0.5">{value}</p>
       <p className="text-xs text-ink-3">{label}</p>
       {sub && <p className="text-xs text-ink-4 mt-0.5">{sub}</p>}
     </div>
@@ -141,10 +141,10 @@ export default function AdminFinances() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <p className="text-xs font-bold text-ink-4 uppercase tracking-widest mb-1">Détail dépense</p>
-                <h3 className="text-base font-bold text-white leading-snug">{viewExpense.description}</h3>
+                <h3 className="text-base font-bold text-ink-1 leading-snug">{viewExpense.description}</h3>
               </div>
               <button onClick={() => setViewExpense(null)}
-                className="p-1.5 rounded-lg text-ink-3 hover:text-white hover:bg-overlay/[0.08] transition-colors shrink-0">
+                className="p-1.5 rounded-lg text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors shrink-0">
                 <X size={16} />
               </button>
             </div>
@@ -200,7 +200,7 @@ export default function AdminFinances() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white">Finances</h1>
+          <h1 className="text-xl font-bold text-ink-1">Finances</h1>
           <p className="text-sm text-ink-3 mt-0.5">Revenus, dépenses et bilan</p>
         </div>
         <span className="text-xs text-ink-4 bg-overlay/[0.04] border border-overlay/[0.06] rounded-lg px-3 py-1.5">
@@ -297,7 +297,7 @@ export default function AdminFinances() {
                           <span className="text-sm text-ink-3">{PROVIDER_LABEL[provider]}</span>
                         </div>
                         <div className="text-right">
-                          <span className="text-sm font-semibold text-white">{formatAmount(d.amount)}</span>
+                          <span className="text-sm font-semibold text-ink-1">{formatAmount(d.amount)}</span>
                           <span className="text-xs text-ink-3 ml-2">{d.count} tx</span>
                         </div>
                       </div>
@@ -413,7 +413,7 @@ export default function AdminFinances() {
                     value={formData.amount}
                     onChange={(e) => setFormData((d) => ({ ...d, amount: e.target.value }))}
                     placeholder="Ex: 15000"
-                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
+                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 placeholder-ph-b focus:outline-none focus:border-primary-500/50"
                   />
                 </div>
                 <div>
@@ -421,7 +421,7 @@ export default function AdminFinances() {
                   <select
                     value={formData.category}
                     onChange={(e) => setFormData((d) => ({ ...d, category: e.target.value }))}
-                    className="w-full border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                    className="w-full border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 focus:outline-none focus:border-primary-500/50"
                     style={{ background: 'var(--color-card)' }}
                   >
                     {CATEGORIES.map((c) => (
@@ -437,7 +437,7 @@ export default function AdminFinances() {
                     value={formData.description}
                     onChange={(e) => setFormData((d) => ({ ...d, description: e.target.value }))}
                     placeholder="Ex: Serveur OVH mensuel"
-                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
+                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 placeholder-ph-b focus:outline-none focus:border-primary-500/50"
                   />
                 </div>
                 <div>
@@ -446,7 +446,7 @@ export default function AdminFinances() {
                     type="date"
                     value={formData.date}
                     onChange={(e) => setFormData((d) => ({ ...d, date: e.target.value }))}
-                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                    className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 focus:outline-none focus:border-primary-500/50"
                     style={{ colorScheme: 'dark' }}
                   />
                 </div>

@@ -113,7 +113,7 @@ export default function MatchCard({ match }) {
         <div className="flex items-center gap-2 min-w-0">
           <TeamLogo logo={match.homeTeamLogo} teamId={match.homeTeamId} name={match.homeTeam} />
           <span className={`text-sm font-medium truncate leading-none ${
-            isLive ? 'text-white' : homeWins ? 'text-ink-1' : 'text-ink-3'
+            isLive ? 'text-ink-1' : homeWins ? 'text-ink-1' : 'text-ink-3'
           }`}>{match.homeTeam}</span>
         </div>
         <div className="flex items-center gap-2 min-w-0">

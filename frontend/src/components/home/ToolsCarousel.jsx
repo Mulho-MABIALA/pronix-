@@ -139,7 +139,7 @@ export default function ToolsCarousel() {
                   className={`inline-flex items-center gap-1.5 self-start px-2.5 py-1 rounded-full text-[11px] font-semibold backdrop-blur-sm ${
                     tool.accent
                       ? 'bg-accent-500/20 text-accent-400 border border-accent-500/30'
-                      : 'bg-white/10 text-overlay/90 border border-white/10'
+                      : 'bg-overlay/10 text-overlay/90 border border-overlay/10'
                   }`}
                 >
                   <Icon size={12} />

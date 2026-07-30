@@ -65,7 +65,7 @@ function ExplorerDrawer({ open, onClose }) {
 
         {/* Handle — fixe, ne scrolle pas */}
         <div className="flex justify-center pt-3 pb-1 shrink-0">
-          <div className="w-10 h-1 rounded-full bg-white/20" />
+          <div className="w-10 h-1 rounded-full bg-overlay/20" />
         </div>
 
         {/* Header — fixe, ne scrolle pas */}

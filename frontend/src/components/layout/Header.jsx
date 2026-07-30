@@ -203,7 +203,7 @@ export default function Header() {
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2.5 shrink-0 group">
           <FootballLogo />
-          <span className="hidden sm:block font-display font-bold text-[15px] text-white tracking-tight">
+          <span className="hidden sm:block font-display font-bold text-[15px] text-ink-1 tracking-tight">
             fp<span className="text-primary-400">ronix</span>
           </span>
         </Link>

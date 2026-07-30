@@ -56,7 +56,7 @@ function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
         <Icon size={16} className={color} />
       </div>
       <div>
-        <p className="text-xl font-bold text-white leading-none">{value ?? '—'}</p>
+        <p className="text-xl font-bold text-ink-1 leading-none">{value ?? '—'}</p>
         <p className="text-[11px] text-ink-3 mt-0.5">{label}</p>
       </div>
     </div>
@@ -135,7 +135,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           <div className="flex items-center gap-4">
             <UserAvatar user={user} size="lg" />
             <div>
-              <h2 className="text-white font-bold text-lg leading-tight">{user.profile?.displayName || user.username}</h2>
+              <h2 className="text-ink-1 font-bold text-lg leading-tight">{user.profile?.displayName || user.username}</h2>
               <p className="text-sm text-ink-4">@{user.username}</p>
               <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                 <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${PLAN_STYLE[plan] || PLAN_STYLE.FREE}`}>{plan}</span>
@@ -176,7 +176,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
           {TABS.map(t => (
             <button key={t} onClick={() => setTab(t)}
               className={`px-3 py-2 text-sm font-medium rounded-t-lg transition-colors border-b-2 -mb-px ${
-                tab === t ? 'text-white border-primary-400' : 'text-ink-3 border-transparent hover:text-ink-2'
+                tab === t ? 'text-ink-1 border-primary-400' : 'text-ink-3 border-transparent hover:text-ink-2'
               }`}
             >
               {t}
@@ -227,17 +227,17 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                 )}
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <div><p className="text-[11px] text-ink-4 mb-0.5">Plan</p><p className="text-sm font-semibold text-white">{plan}</p></div>
+                <div><p className="text-[11px] text-ink-4 mb-0.5">Plan</p><p className="text-sm font-semibold text-ink-1">{plan}</p></div>
                 {subEnds && (
                   <div>
                     <p className="text-[11px] text-ink-4 mb-0.5">Expiration</p>
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-ink-1">
                       {new Date(subEnds) > new Date('2099-01-01') ? 'À vie ♾️' : format(new Date(subEnds), 'dd MMM yyyy', { locale: fr })}
                     </p>
                   </div>
                 )}
-                <div><p className="text-[11px] text-ink-4 mb-0.5">Statut</p><p className="text-sm font-semibold text-white capitalize">{user.subscription?.status?.toLowerCase() || 'Aucun'}</p></div>
-                <div><p className="text-[11px] text-ink-4 mb-0.5">Pronos</p><p className="text-sm font-semibold text-white">{user._count?.tips || 0}</p></div>
+                <div><p className="text-[11px] text-ink-4 mb-0.5">Statut</p><p className="text-sm font-semibold text-ink-1 capitalize">{user.subscription?.status?.toLowerCase() || 'Aucun'}</p></div>
+                <div><p className="text-[11px] text-ink-4 mb-0.5">Pronos</p><p className="text-sm font-semibold text-ink-1">{user._count?.tips || 0}</p></div>
               </div>
             </div>
 
@@ -319,7 +319,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               ) : tipsData.data.map(tip => (
                 <div key={tip.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium truncate">{tip.match?.homeTeam} — {tip.match?.awayTeam}</p>
+                    <p className="text-sm text-ink-1 font-medium truncate">{tip.match?.homeTeam} — {tip.match?.awayTeam}</p>
                     <p className="text-[11px] text-ink-4">{tip.match?.competition?.name} · {tip.match?.matchDate && format(new Date(tip.match.matchDate), 'dd MMM yyyy', { locale: fr })}</p>
                   </div>
                   <span className="text-xs font-bold px-2 py-1 rounded-md bg-overlay/[0.07] text-ink-3">{PRED_LABELS[tip.prediction] || tip.prediction}</span>
@@ -344,10 +344,10 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
               ) : paymentsData.data.map(p => (
                 <div key={p.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <div className="flex-1">
-                    <p className="text-sm text-white font-medium">{p.plan?.name || 'Plan inconnu'}</p>
+                    <p className="text-sm text-ink-1 font-medium">{p.plan?.name || 'Plan inconnu'}</p>
                     <p className="text-[11px] text-ink-4">{format(new Date(p.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</p>
                   </div>
-                  <p className="text-sm font-bold text-white">{p.amount}€</p>
+                  <p className="text-sm font-bold text-ink-1">{p.amount}€</p>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${
                     p.status === 'COMPLETED' ? 'bg-emerald-500/15 text-emerald-400' :
                     p.status === 'FAILED' ? 'bg-red-500/15 text-red-400' :
@@ -369,7 +369,7 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                 <div key={r.id} className="rounded-xl border border-overlay/[0.07] p-3 flex items-center gap-3" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
                   <UserAvatar user={r.referee} size="md" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white font-medium">{r.referee.profile?.displayName || r.referee.username}</p>
+                    <p className="text-sm text-ink-1 font-medium">{r.referee.profile?.displayName || r.referee.username}</p>
                     <p className="text-[11px] text-ink-4">Inscrit {formatDistanceToNow(new Date(r.referee.createdAt), { locale: fr, addSuffix: true })}</p>
                   </div>
                   <span className={`text-[11px] font-bold px-2 py-0.5 rounded-md ${PLAN_STYLE[r.referee.subscription?.plan?.code || 'FREE']}`}>
@@ -427,13 +427,13 @@ function ActivateModal({ user, onClose, onConfirm, loading }) {
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
       <div className="rounded-2xl border border-overlay/[0.11] p-6 max-w-sm w-full" style={{ background: 'var(--color-card)' }}>
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2"><Crown size={18} className="text-amber-400" /><h3 className="text-white font-bold text-base">Activer un abonnement</h3></div>
+          <div className="flex items-center gap-2"><Crown size={18} className="text-amber-400" /><h3 className="text-ink-1 font-bold text-base">Activer un abonnement</h3></div>
           <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-overlay/[0.08] text-ink-3 transition-colors"><X size={15} /></button>
         </div>
         <div className="flex items-center gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.08] mb-5">
           <UserAvatar user={user} />
           <div>
-            <p className="text-sm font-semibold text-white">{user.profile?.displayName || user.username}</p>
+            <p className="text-sm font-semibold text-ink-1">{user.profile?.displayName || user.username}</p>
             <p className="text-[11px] text-ink-3">{user.email}</p>
           </div>
         </div>
@@ -544,11 +544,11 @@ export default function AdminUsers() {
       {/* En-tête */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="font-display font-bold text-2xl text-white">Utilisateurs</h1>
+          <h1 className="font-display font-bold text-2xl text-ink-1">Utilisateurs</h1>
           <p className="text-sm text-ink-4 mt-0.5">{pagination?.total !== undefined ? `${pagination.total} utilisateurs` : ''}</p>
         </div>
         <a href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/users`} download
-          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-white hover:bg-overlay/[0.08] transition-colors shrink-0">
+          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors shrink-0">
           <Download size={13} /> Exporter CSV
         </a>
       </div>

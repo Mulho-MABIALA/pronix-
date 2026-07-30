@@ -20,7 +20,7 @@ function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = '
       <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
         <Icon size={16} className={color} />
       </div>
-      <p className="text-lg font-bold text-white leading-tight truncate">{value}</p>
+      <p className="text-lg font-bold text-ink-1 leading-tight truncate">{value}</p>
       <p className="text-xs text-ink-3 mt-0.5">{label}</p>
     </div>
   );
@@ -185,7 +185,7 @@ export default function AdminPartners() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h1 className="text-xl font-bold text-white">Partenaires</h1>
+          <h1 className="text-xl font-bold text-ink-1">Partenaires</h1>
           <p className="text-sm text-ink-3 mt-0.5">Influenceurs rémunérés à la commission sur les abonnements générés</p>
         </div>
         <button
@@ -218,7 +218,7 @@ export default function AdminPartners() {
                 value={formData.name}
                 onChange={(e) => setFormData((d) => ({ ...d, name: e.target.value }))}
                 placeholder="Ex: @foot_pronostics_225"
-                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 placeholder-ph-b focus:outline-none focus:border-primary-500/50"
               />
             </div>
             <div>
@@ -228,7 +228,7 @@ export default function AdminPartners() {
                 value={formData.code}
                 onChange={(e) => setFormData((d) => ({ ...d, code: e.target.value.toUpperCase() }))}
                 placeholder="Ex: FOOT225"
-                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50 uppercase"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 placeholder-ph-b focus:outline-none focus:border-primary-500/50 uppercase"
               />
             </div>
             <div>
@@ -240,7 +240,7 @@ export default function AdminPartners() {
                 required
                 value={formData.commissionRate}
                 onChange={(e) => setFormData((d) => ({ ...d, commissionRate: e.target.value }))}
-                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary-500/50"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 focus:outline-none focus:border-primary-500/50"
               />
             </div>
             <div>
@@ -250,7 +250,7 @@ export default function AdminPartners() {
                 value={formData.contact}
                 onChange={(e) => setFormData((d) => ({ ...d, contact: e.target.value }))}
                 placeholder="Ex: +225 07 00 00 00 00"
-                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-white placeholder-ph-b focus:outline-none focus:border-primary-500/50"
+                className="w-full bg-overlay/[0.04] border border-overlay/[0.08] rounded-xl px-3 py-2.5 text-sm text-ink-1 placeholder-ph-b focus:outline-none focus:border-primary-500/50"
               />
             </div>
           </div>
@@ -291,7 +291,7 @@ export default function AdminPartners() {
             <div className="p-4 flex items-center gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">
-                  <p className="text-sm font-semibold text-white truncate">{p.name}</p>
+                  <p className="text-sm font-semibold text-ink-1 truncate">{p.name}</p>
                   {!p.active && (
                     <span className="text-xs font-semibold px-1.5 py-0.5 rounded bg-gray-500/15 text-ink-3">Désactivé</span>
                   )}
@@ -342,7 +342,7 @@ export default function AdminPartners() {
                 )}
                 <button
                   onClick={() => setExpandedId((v) => (v === p.id ? null : p.id))}
-                  className="p-2 rounded-lg text-ink-3 hover:text-white hover:bg-overlay/[0.08] transition-colors"
+                  className="p-2 rounded-lg text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors"
                   title="Voir les commissions"
                 >
                   {expandedId === p.id ? <ChevronUp size={15} /> : <ChevronDown size={15} />}

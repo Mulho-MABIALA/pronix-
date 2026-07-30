@@ -225,7 +225,7 @@ export default function Subscription() {
             className={`relative px-5 py-2 rounded-lg text-sm font-medium transition-all ${
               billingCycle === value
                 ? 'bg-primary-500/20 border border-primary-500/40 text-primary-400'
-                : 'text-ink-4 border border-overlay/[0.08] hover:border-white/20'
+                : 'text-ink-4 border border-overlay/[0.08] hover:border-overlay/20'
             }`}
           >
             {label}

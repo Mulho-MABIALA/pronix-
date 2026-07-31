@@ -60,10 +60,14 @@ export default function AdminNotificationBell() {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.09] transition-all"
+        className={`relative flex items-center justify-center w-9 h-9 rounded-xl border transition-all ${
+          unreadCount > 0
+            ? 'bg-primary-500/15 border-primary-500/30 text-primary-400 hover:bg-primary-500/25'
+            : 'bg-overlay/[0.05] border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.09]'
+        }`}
         aria-label="Notifications"
       >
-        <Bell size={15} />
+        <Bell size={15} className={unreadCount > 0 ? 'animate-bump' : ''} />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center leading-none">
             {unreadCount > 9 ? '9+' : unreadCount}

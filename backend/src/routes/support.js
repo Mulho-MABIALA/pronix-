@@ -83,6 +83,15 @@ router.post('/tickets/:id/reply', authenticate, async (req, res, next) => {
     // automatiquement pour qu'il redescende dans la file de l'admin.
     const reopen = ['RESOLVED', 'CLOSED'].includes(ticket.status);
 
+    if (reopen) {
+      notifyAdmin({
+        type: 'NEW_SUPPORT_TICKET',
+        title: 'Ticket support rouvert',
+        message: `${req.user.email} a répondu sur un ticket déjà ${ticket.status === 'RESOLVED' ? 'résolu' : 'fermé'} : "${ticket.subject}"`,
+        link: '/admin/support',
+      });
+    }
+
     const [msg] = await prisma.$transaction([
       prisma.supportMessage.create({ data: { ticketId: ticket.id, isAdmin: false, content } }),
       prisma.supportTicket.update({

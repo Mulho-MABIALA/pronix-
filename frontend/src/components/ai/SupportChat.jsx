@@ -235,13 +235,15 @@ export default function SupportChat() {
               </div>
             ) : (
               <>
-                <button
-                  onClick={openTicketForm}
-                  className="w-full flex items-center justify-center gap-1.5 text-[11px] text-ink-4 hover:text-primary-400 pt-2 pb-1 transition-colors"
-                >
-                  <UserRound size={12} />
-                  {t('supportChat.talkToHuman')}
-                </button>
+                <div className="px-3 pt-2.5">
+                  <button
+                    onClick={openTicketForm}
+                    className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border border-select-500/30 bg-select-500/10 text-[12px] font-semibold text-select-400 hover:bg-select-500/20 hover:border-select-500/50 transition-colors"
+                  >
+                    <UserRound size={13} />
+                    {t('supportChat.talkToHuman')}
+                  </button>
+                </div>
                 <div className="px-3 pb-3 pt-1">
                   <div className="flex items-center gap-2">
                     <input

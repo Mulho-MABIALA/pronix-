@@ -288,7 +288,7 @@ export default function Home() {
           </div>
         ) : (
           <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
-            {matches.map((match) => <MatchCard key={match.id} match={match} />)}
+            {matches.map((match, i) => <MatchCard key={match.id} match={match} index={i} />)}
           </div>
         )}
       </section>

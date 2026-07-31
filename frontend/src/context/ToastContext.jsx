@@ -30,7 +30,7 @@ function ToastItem({ toast, onDismiss }) {
 
   return (
     <div
-      className="flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl animate-slide-up overflow-hidden relative"
+      className="flex items-center gap-3 px-4 py-3 rounded-xl shadow-2xl animate-bounce-in overflow-hidden relative"
       style={{
         background: 'rgb(var(--surface-900-rgb) / 0.98)',
         border: '1px solid rgb(var(--overlay-rgb) / 0.09)',

@@ -12,6 +12,7 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
+import { useCountUp } from '../../hooks/useCountUp';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -66,10 +67,16 @@ const KPI_THEMES = {
   },
 };
 
-function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to }) {
+function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'indigo', to }) {
   const t = KPI_THEMES[theme];
   const positive = trend > 0;
   const hasTrend = trend !== undefined && trend !== null && trend !== 0;
+
+  // Compteur qui compte — attire l'oeil au chargement / rafraîchissement des KPIs
+  const numeric = Number(value);
+  const hasNumeric = value !== undefined && value !== null && !Number.isNaN(numeric);
+  const animatedValue = useCountUp(hasNumeric ? numeric : 0, 900);
+  const displayValue = hasNumeric ? `${fmt(animatedValue)}${suffix}` : (value ?? '–');
 
   const inner = (
     <div
@@ -107,7 +114,7 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
       {/* value */}
       <div className="relative z-10">
         <p className="text-[30px] font-display font-bold text-ink-1 leading-none tracking-tight tabular-nums">
-          {value ?? '–'}
+          {displayValue}
         </p>
         <p className="text-[12px] text-ink-3 font-medium mt-1.5">{label}</p>
         {sub && <p className="text-[11px] text-ink-3 mt-0.5">{sub}</p>}
@@ -121,6 +128,9 @@ function KpiCard({ icon: Icon, label, value, sub, trend, theme = 'indigo', to })
 // ── Stat pill ──────────────────────────────────────────────────────────────────
 
 function StatPill({ icon: Icon, value, label, iconClass }) {
+  const numeric = Number(value);
+  const hasNumeric = value !== undefined && value !== null && !Number.isNaN(numeric);
+  const animated = useCountUp(hasNumeric ? numeric : 0, 900);
   return (
     <div
       className="flex items-center gap-3 rounded-xl border border-overlay/[0.11] px-4 py-3.5"
@@ -130,7 +140,9 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
         <Icon size={15} />
       </div>
       <div>
-        <p className="text-[17px] font-display font-bold text-ink-1 leading-none tabular-nums">{value ?? '–'}</p>
+        <p className="text-[17px] font-display font-bold text-ink-1 leading-none tabular-nums">
+          {hasNumeric ? fmt(animated) : (value ?? '–')}
+        </p>
         <p className="text-[11px] text-ink-3 mt-0.5">{label}</p>
       </div>
     </div>
@@ -634,7 +646,7 @@ export default function AdminDashboard() {
           <KpiCard
             icon={Users}
             label="Utilisateurs"
-            value={fmt(kpis?.totalUsers)}
+            value={kpis?.totalUsers ?? 0}
             sub={`+${kpis?.newUsersThisMonth || 0} ce mois`}
             trend={kpis?.userGrowth}
             theme="indigo"
@@ -643,7 +655,7 @@ export default function AdminDashboard() {
           <KpiCard
             icon={TrendingUp}
             label="Abonnés Premium"
-            value={fmt(kpis?.activeSubscriptions)}
+            value={kpis?.activeSubscriptions ?? 0}
             sub="Abonnements actifs"
             theme="emerald"
             to="/admin/utilisateurs"
@@ -651,7 +663,8 @@ export default function AdminDashboard() {
           <KpiCard
             icon={DollarSign}
             label="MRR"
-            value={`${fmt(kpis?.monthlyRevenue)} FCFA`}
+            value={kpis?.monthlyRevenue ?? 0}
+            suffix=" FCFA"
             sub={`Cumulé : ${fmt(kpis?.totalRevenue)} FCFA`}
             trend={kpis?.revenueGrowth}
             theme="orange"
@@ -671,8 +684,8 @@ export default function AdminDashboard() {
       {/* ── Mini stats ───────────────────────────────────────────────────────── */}
       {!isLoading && kpis && (
         <div className="grid grid-cols-3 gap-3">
-          <StatPill icon={Calendar}  value={fmt(kpis.totalMatches)}  label="Matchs en base"     iconClass="bg-blue-500/15 text-blue-400" />
-          <StatPill icon={Target}    value={fmt(kpis.totalTips)}     label="Pronostics publiés" iconClass="bg-violet-500/15 text-violet-400" />
+          <StatPill icon={Calendar}  value={kpis.totalMatches ?? 0}  label="Matchs en base"     iconClass="bg-blue-500/15 text-blue-400" />
+          <StatPill icon={Target}    value={kpis.totalTips ?? 0}     label="Pronostics publiés" iconClass="bg-violet-500/15 text-violet-400" />
           <StatPill icon={Activity}  value={kpis.churnThisMonth ?? 0} label="Churn ce mois"     iconClass="bg-rose-500/15 text-rose-400" />
         </div>
       )}

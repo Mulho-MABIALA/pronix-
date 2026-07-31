@@ -156,17 +156,17 @@
   /* ── Buttons ────────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
-           bg-primary-500 hover:bg-primary-400
+           bg-primary-500 hover:bg-primary-400 active:scale-[0.97]
            text-white font-semibold text-sm rounded-lg transition-all duration-150
-           focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed;
+           focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
     min-height: 42px;
   }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
-           bg-overlay/[0.07] hover:bg-overlay/[0.11]
+           bg-overlay/[0.07] hover:bg-overlay/[0.11] active:scale-[0.97]
            text-ink-2 font-semibold text-sm rounded-lg transition-all duration-150 border border-overlay/[0.08]
-           focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed;
+           focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
     min-height: 42px;
   }
 
@@ -309,7 +309,9 @@
 
 /* ── Reduced motion ──────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .skeleton, .animate-shimmer, .animate-fade-in, .animate-slide-up, .animate-pop {
+  .skeleton, .animate-shimmer, .animate-fade-in, .animate-slide-up, .animate-pop,
+  .animate-bump, .animate-bounce-in, .animate-unfold, .animate-flash, .animate-glow-pulse,
+  .animate-cascade-in {
     animation: none !important;
     transition: none !important;
   }

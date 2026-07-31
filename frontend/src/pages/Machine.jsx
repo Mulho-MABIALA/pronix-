@@ -14,6 +14,7 @@ import TicketHistory from '../components/machine/TicketHistory';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 import { drawTicketCanvas } from '../utils/ticketCanvas';
+import { useCountUp } from '../hooks/useCountUp';
 
 // ─── Templates prédéfinis ──────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -377,6 +378,12 @@ export default function Machine() {
   const totalOdds = ticket && ticket.length
     ? ticket.reduce((acc, row) => acc * row.odd, 1).toFixed(2)
     : null;
+
+  // Gain potentiel animé (count-up) — se déclenche à chaque changement de mise/cote
+  const potentialGain = mise && Number(mise) > 0 && totalOdds
+    ? Math.round(Number(mise) * Number(totalOdds))
+    : 0;
+  const animatedGain = useCountUp(potentialGain, 500);
 
   const saveTicketMutation = useMutation({
     mutationFn: () => {
@@ -860,7 +867,11 @@ export default function Machine() {
 
       {/* Résultat */}
       {ticket && (
-        <div className="px-4 space-y-3">
+        <div
+          key={ticket.map((r) => r.match.id).join('-')}
+          className="px-4 space-y-3 animate-unfold"
+          style={{ transformOrigin: 'top' }}
+        >
 
           {/* ── Barre résultat ────────────────────────────────────────── */}
           <div className="flex items-center justify-between flex-wrap gap-y-2">
@@ -931,7 +942,7 @@ export default function Machine() {
                 <p className="text-[11px] text-ink-4 uppercase tracking-wider mb-0.5">{t('machine.stake.potentialGain')}</p>
                 {mise && Number(mise) > 0 ? (
                   <p className="text-base font-black text-primary-400">
-                    {Math.round(Number(mise) * Number(totalOdds)).toLocaleString('fr-FR')}
+                    {animatedGain.toLocaleString('fr-FR')}
                     <span className="text-[11px] font-normal text-ink-4 ml-0.5">FCFA</span>
                   </p>
                 ) : (

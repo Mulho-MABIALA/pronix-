@@ -60,8 +60,11 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
   const monthly    = !isLifetime && billingCycle === 'YEARLY' ? (plan.priceYearly / 12).toFixed(2) : null;
   const unitLabel  = billingCycle === 'YEARLY' ? 'an' : billingCycle === 'WEEKLY' ? 'semaine' : 'mois';
 
+  // Halo animé discret sur les plans mis en avant, pour attirer l'oeil sans surcharger
+  const glowClass = plan.code === 'PREMIUM' || plan.code === 'LIFETIME' ? 'animate-glow-pulse' : '';
+
   return (
-    <div className={`bento-card flex flex-col gap-5 relative ${style.ring}`}>
+    <div className={`bento-card flex flex-col gap-5 relative ${style.ring} ${glowClass}`}>
       {/* Badge */}
       {style.badge && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">

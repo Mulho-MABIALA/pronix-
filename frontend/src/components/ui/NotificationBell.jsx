@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Bell, BellOff, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -102,6 +102,20 @@ export default function NotificationBell({ size = 18 }) {
     usePushNotifications(user);
   const [showIOSHint, setShowIOSHint] = useState(false);
 
+  // Petit "bump" sur la cloche quand l'abonnement passe à actif — feedback
+  // visuel immédiat en plus du toast de confirmation.
+  const [bump, setBump] = useState(false);
+  const prevSubscribed = useRef(subscribed);
+  useEffect(() => {
+    if (!prevSubscribed.current && subscribed) {
+      setBump(true);
+      const timer = setTimeout(() => setBump(false), 400);
+      prevSubscribed.current = subscribed;
+      return () => clearTimeout(timer);
+    }
+    prevSubscribed.current = subscribed;
+  }, [subscribed]);
+
   const handleToggle = async () => {
     if (subscribed) {
       await unsubscribe();
@@ -159,7 +173,7 @@ export default function NotificationBell({ size = 18 }) {
       title={subscribed ? t('notificationBell.notificationsEnabled') : t('notificationBell.enablePushNotifications')}
     >
       {subscribed
-        ? <Bell size={size} strokeWidth={1.75} />
+        ? <Bell size={size} strokeWidth={1.75} className={bump ? 'animate-bump' : ''} />
         : <BellOff size={size} strokeWidth={1.75} />
       }
     </button>

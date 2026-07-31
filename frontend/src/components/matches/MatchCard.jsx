@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
@@ -54,7 +54,7 @@ export function TeamLogo({ logo, teamId, name, size = 20 }) {
 const CONF_COLOR = { high: 'text-primary-400', medium: 'text-amber-400', low: 'text-ink-3' };
 const CONF_BG    = { high: 'bg-primary-500/10', medium: 'bg-amber-500/10', low: 'bg-overlay/[0.04]' };
 
-export default function MatchCard({ match }) {
+export default function MatchCard({ match, index }) {
   const { t } = useTranslation();
   const isLive     = match.status === 'LIVE';
   const isFinished = match.status === 'FINISHED';
@@ -64,6 +64,25 @@ export default function MatchCard({ match }) {
   const awayWins   = hasScore && match.awayScore > match.homeScore;
   const isDraw     = hasScore && match.homeScore === match.awayScore;
   const pred       = match.predictions;
+
+  // Cascade au chargement de la liste — délai croissant plafonné pour ne pas
+  // pénaliser l'affichage des listes longues.
+  const cascadeDelay = typeof index === 'number' ? Math.min(index * 40, 400) : 0;
+
+  // Flash vert bref quand le score change (but marqué) pour attirer l'oeil
+  // sans dépendre d'un websocket dédié — juste une comparaison de valeur.
+  const prevScoreRef = useRef(`${match.homeScore}-${match.awayScore}`);
+  const [scoreFlash, setScoreFlash] = useState(false);
+  useEffect(() => {
+    const current = `${match.homeScore}-${match.awayScore}`;
+    if (isLive && prevScoreRef.current !== current && prevScoreRef.current !== 'null-null') {
+      setScoreFlash(true);
+      const timer = setTimeout(() => setScoreFlash(false), 700);
+      prevScoreRef.current = current;
+      return () => clearTimeout(timer);
+    }
+    prevScoreRef.current = current;
+  }, [match.homeScore, match.awayScore, isLive]);
 
   // Couleur des scores — vert pour le vainqueur, ambre en cas de nul,
   // rouge "live" pendant le match, pour attirer l'oeil sur le résultat.
@@ -87,7 +106,8 @@ export default function MatchCard({ match }) {
     <div className="relative group">
     <Link
       to={`/matchs/${match.id}`}
-      className={`match-row flex items-center gap-2 px-3 py-3 animate-fade-in pr-8 ${isLive ? 'bg-live-500/[0.04]' : ''}`}
+      className={`match-row flex items-center gap-2 px-3 py-3 animate-cascade-in pr-8 ${isLive ? 'bg-live-500/[0.04]' : ''}`}
+      style={{ animationDelay: cascadeDelay ? `${cascadeDelay}ms` : undefined }}
       aria-label={`${match.homeTeam} vs ${match.awayTeam}`}
     >
       {/* Statut / heure */}
@@ -125,7 +145,7 @@ export default function MatchCard({ match }) {
       </div>
 
       {/* Scores */}
-      <div className="shrink-0 text-right w-5 space-y-2.5">
+      <div className={`shrink-0 text-right w-5 space-y-2.5 rounded-md ${scoreFlash ? 'animate-flash' : ''}`}>
         {hasScore ? (
           <>
             <span className={`block text-sm font-display font-bold tabular-nums leading-none ${scoreColor(homeWins)}`}>

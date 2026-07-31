@@ -225,7 +225,7 @@ export default function CoupeDuMonde2026() {
               <div key={dateStr}>
                 <DateLabel dateStr={dateStr} />
                 <div className="divide-y divide-overlay/[0.04]">
-                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} />)}
+                  {dayMatches.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
                 </div>
               </div>
             ))}

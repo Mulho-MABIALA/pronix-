@@ -303,8 +303,8 @@ export default function Matches() {
                     <span className="text-xs font-semibold text-ink-4 tabular-nums">{compMatches.length}</span>
                   </div>
                   <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
-                    {visible.map((match) => (
-                      <MatchCard key={match.id} match={match} />
+                    {visible.map((match, i) => (
+                      <MatchCard key={match.id} match={match} index={i} />
                     ))}
                   </div>
                   {hasMore && (

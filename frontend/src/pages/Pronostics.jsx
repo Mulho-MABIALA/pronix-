@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -81,13 +81,16 @@ const CONF_COLOR = {
   low:    { color: 'text-ink-3',    dot: 'bg-gray-500',    bar: 'bg-gray-600' },
 };
 
-function PronoRow({ match }) {
+function PronoRow({ match, index }) {
   const { t } = useTranslation();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
 
   const conf = CONF_COLOR[pred.confidence] || CONF_COLOR.low;
   const { data: realOdds } = useOdds(match.id, { enabled: match.status === 'SCHEDULED' });
+
+  // Cascade au chargement — même logique que MatchCard.jsx
+  const cascadeDelay = typeof index === 'number' ? Math.min(index * 40, 400) : 0;
 
   const pickType  = pred.bestPick.type;
   const pickLabel = t(`pronostics.pickShort.${pickType}`, { defaultValue: pred.bestPick.label });
@@ -119,13 +122,30 @@ function PronoRow({ match }) {
     ? 'FT'
     : format(kickoff, 'HH:mm');
 
+  // Flash vert bref quand le score change pendant un match en direct —
+  // même logique que MatchCard.jsx, isolée sur le bloc heure/score pour
+  // éviter la collision avec animate-cascade-in sur le <Link> parent.
+  const prevScoreRef = useRef(`${match.homeScore}-${match.awayScore}`);
+  const [scoreFlash, setScoreFlash] = useState(false);
+  useEffect(() => {
+    const current = `${match.homeScore}-${match.awayScore}`;
+    if (isLive && prevScoreRef.current !== current && prevScoreRef.current !== 'null-null') {
+      setScoreFlash(true);
+      const timer = setTimeout(() => setScoreFlash(false), 700);
+      prevScoreRef.current = current;
+      return () => clearTimeout(timer);
+    }
+    prevScoreRef.current = current;
+  }, [match.homeScore, match.awayScore, isLive]);
+
   return (
     <Link
       to={`/matchs/${match.id}`}
-      className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] border-b border-overlay/[0.04] last:border-0 transition-colors"
+      className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] border-b border-overlay/[0.04] last:border-0 transition-colors animate-cascade-in"
+      style={{ animationDelay: cascadeDelay ? `${cascadeDelay}ms` : undefined }}
     >
       {/* Heure / Score */}
-      <div className="w-10 shrink-0 text-center">
+      <div className={`w-10 shrink-0 text-center rounded-md ${scoreFlash ? 'animate-flash' : ''}`}>
         {isLive ? (
           <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-live-500">
             <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse" />
@@ -209,7 +229,7 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
           return (
             <div key={match.id} className={`relative ${isBlurred ? 'select-none' : ''}`}>
               <div className={isBlurred ? 'blur-sm pointer-events-none' : ''}>
-                <PronoRow match={match} />
+                <PronoRow match={match} index={localIdx} />
               </div>
               {isBlurred && (
                 <div className="absolute inset-0 flex items-center justify-center gap-2 z-10
@@ -589,8 +609,8 @@ export default function Pronostics() {
                 <span className="flex-1" />
                 <span className="text-[10px] text-amber-500 shrink-0">{valueBets.length}</span>
               </div>
-              {valueBets.map((m) => (
-                <PronoRow key={`vb-${m.id}`} match={m} />
+              {valueBets.map((m, i) => (
+                <PronoRow key={`vb-${m.id}`} match={m} index={i} />
               ))}
               <p className="text-[9px] text-ink-5 px-3 py-2 border-t border-overlay/[0.04]">
                 {ODDS_DISCLAIMER}

@@ -92,6 +92,12 @@ export default {
         pulse:      'pulse 2s cubic-bezier(0.4,0,0.6,1) infinite',
         marquee:          'marquee 38s linear infinite',
         'marquee-reverse': 'marquee-reverse 32s linear infinite',
+        bump:       'bump 0.35s cubic-bezier(0.34,1.56,0.64,1)',
+        'bounce-in': 'bounceIn 0.4s cubic-bezier(0.34,1.56,0.64,1)',
+        unfold:     'unfold 0.45s cubic-bezier(0.16,1,0.3,1)',
+        flash:      'flash 0.6s ease-out',
+        'glow-pulse': 'glowPulse 2.4s ease-in-out infinite',
+        'cascade-in': 'fadeIn 0.35s ease-out both, slideUp 0.35s ease-out both',
       },
       keyframes: {
         shimmer: {
@@ -117,6 +123,28 @@ export default {
         'marquee-reverse': {
           '0%':   { transform: 'translateX(-50%)' },
           '100%': { transform: 'translateX(0)' },
+        },
+        bump: {
+          '0%':   { transform: 'scale(1)' },
+          '40%':  { transform: 'scale(1.35)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        bounceIn: {
+          '0%':   { opacity: '0', transform: 'translateY(-14px) scale(0.95)' },
+          '60%':  { opacity: '1', transform: 'translateY(2px) scale(1.01)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        unfold: {
+          '0%':   { opacity: '0', transform: 'scaleY(0.9) translateY(-6px)' },
+          '100%': { opacity: '1', transform: 'scaleY(1) translateY(0)' },
+        },
+        flash: {
+          '0%':   { backgroundColor: 'rgba(26,166,86,0.35)' },
+          '100%': { backgroundColor: 'transparent' },
+        },
+        glowPulse: {
+          '0%, 100%': { boxShadow: '0 0 14px rgba(26,166,86,0.25)' },
+          '50%':      { boxShadow: '0 0 28px rgba(26,166,86,0.55)' },
         },
       },
     },

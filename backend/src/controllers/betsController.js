@@ -2,15 +2,23 @@ const { z } = require('zod');
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 
+// matchId est désormais obligatoire — teamA/teamB/matchDate sont dérivés du
+// match en base (voir createBet), donc on ne les valide plus depuis le client.
 const betSchema = z.object({
-  matchId: z.string().uuid().optional().nullable(),
-  teamA: z.string().min(1),
-  teamB: z.string().min(1),
+  matchId: z.string().uuid({ message: 'Sélectionne un match existant dans la liste.' }),
   prediction: z.string().min(1),
   odds: z.number().min(1),
   stake: z.number().int().min(1),
   result: z.enum(['WIN', 'LOSS', 'VOID']).optional().nullable(),
-  matchDate: z.coerce.date(),
+  notes: z.string().max(2000).optional().nullable(),
+});
+
+// Pour updateBet (résultat, notes, cote, mise) — pas de matchId à revalider.
+const betUpdateSchema = z.object({
+  prediction: z.string().min(1).optional(),
+  odds: z.number().min(1).optional(),
+  stake: z.number().int().min(1).optional(),
+  result: z.enum(['WIN', 'LOSS', 'VOID']).optional().nullable(),
   notes: z.string().max(2000).optional().nullable(),
 });
 
@@ -65,14 +73,25 @@ async function createBet(req, res, next) {
   try {
     const data = betSchema.parse(req.body);
 
-    // Vérifier que le matchId existe si fourni
-    if (data.matchId) {
-      const match = await prisma.match.findUnique({ where: { id: data.matchId } });
-      if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
-    }
+    // Le match doit exister dans la base fpronix — teamA/teamB/matchDate
+    // proviennent de ce match (pas du client), pour empêcher d'enregistrer
+    // un pari sur un match fictif ou mal orthographié.
+    const match = await prisma.match.findUnique({ where: { id: data.matchId } });
+    if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
 
     const bet = await prisma.betEntry.create({
-      data: { ...data, userId: req.user.id },
+      data: {
+        matchId: match.id,
+        teamA: match.homeTeam,
+        teamB: match.awayTeam,
+        matchDate: match.scheduledAt,
+        prediction: data.prediction,
+        odds: data.odds,
+        stake: data.stake,
+        result: data.result || undefined,
+        notes: data.notes || undefined,
+        userId: req.user.id,
+      },
       include: { match: { include: { competition: true } } },
     });
 
@@ -90,7 +109,7 @@ async function updateBet(req, res, next) {
     });
     if (!existing) throw new AppError('Paris introuvable', 404, 'NOT_FOUND');
 
-    const data = betSchema.partial().parse(req.body);
+    const data = betUpdateSchema.parse(req.body);
     const bet = await prisma.betEntry.update({
       where: { id: existing.id },
       data,

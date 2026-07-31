@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Plus, TrendingUp, Trash2, ChevronDown, ChevronUp, X, Check, Clock } from 'lucide-react';
+import { Plus, TrendingUp, Trash2, ChevronDown, ChevronUp, X, Check, Clock, Search, CalendarClock } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
@@ -8,6 +8,14 @@ import api from '../services/api';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useToast } from '../context/ToastContext';
 import CoachPanel from '../components/ai/CoachPanel';
+
+function debounce(fn, delay) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), delay);
+  };
+}
 
 const RESULT_STYLES = {
   WIN:  { text: 'text-primary-400', bg: 'bg-primary-500/10' },
@@ -24,13 +32,113 @@ function StatChip({ label, value, highlight }) {
   );
 }
 
+// Recherche un vrai match fpronix — impossible d'enregistrer un pari sur un
+// match qui n'existe pas dans la base (voir betsController.js côté backend,
+// qui de toute façon dérive teamA/teamB/matchDate du match choisi ici).
+function MatchPicker({ selectedMatch, onSelect, onClear }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState(null);
+  const [searching, setSearching] = useState(false);
+
+  const doSearch = useCallback(
+    debounce(async (q) => {
+      if (!q || q.length < 2) { setResults(null); setSearching(false); return; }
+      setSearching(true);
+      try {
+        const { data } = await api.get(`/search?type=matches&q=${encodeURIComponent(q)}`);
+        setResults(data.data?.matches || []);
+      } catch {
+        setResults(null);
+      } finally {
+        setSearching(false);
+      }
+    }, 300),
+    []
+  );
+
+  const handleChange = (e) => {
+    const v = e.target.value;
+    setQuery(v);
+    doSearch(v);
+  };
+
+  if (selectedMatch) {
+    return (
+      <div className="flex items-center gap-3 bg-surface-700/40 border border-primary-500/30 rounded-xl px-3 py-2.5">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-semibold text-ink-2 truncate">
+            {selectedMatch.homeTeam} vs {selectedMatch.awayTeam}
+          </p>
+          <p className="text-[11px] text-ink-4 flex items-center gap-1 truncate">
+            <CalendarClock size={11} className="shrink-0" />
+            {selectedMatch.competition?.name ? `${selectedMatch.competition.name} · ` : ''}
+            {format(new Date(selectedMatch.scheduledAt), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onClear}
+          className="shrink-0 text-[11px] font-semibold text-ink-3 hover:text-primary-400 px-2 py-1 rounded-lg transition-colors"
+        >
+          {t('bets.changeMatch')}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative">
+      <div className="flex items-center gap-2 bg-surface-700/40 border border-overlay/[0.07] rounded-xl px-3 py-2.5 focus-within:border-primary-500/40">
+        <Search size={14} className="text-ink-4 shrink-0" />
+        <input
+          value={query}
+          onChange={handleChange}
+          placeholder={t('bets.searchMatchPlaceholder')}
+          className="flex-1 bg-transparent text-sm text-ink-2 placeholder-ph-b outline-none"
+          autoComplete="off"
+        />
+      </div>
+
+      {query.length >= 2 && (
+        <div className="absolute z-10 left-0 right-0 mt-1 max-h-60 overflow-y-auto rounded-xl border border-overlay/[0.08] bg-surface-800 shadow-2xl">
+          {searching ? (
+            <div className="px-3 py-3 text-center">
+              <div className="w-4 h-4 border-2 border-primary-500/30 border-t-primary-400 rounded-full animate-spin mx-auto" />
+            </div>
+          ) : results && results.length > 0 ? (
+            results.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => { onSelect(m); setQuery(''); setResults(null); }}
+                className="w-full text-left px-3 py-2.5 hover:bg-overlay/[0.05] transition-colors border-b border-overlay/[0.04] last:border-0"
+              >
+                <p className="text-sm text-ink-2 truncate">{m.homeTeam} vs {m.awayTeam}</p>
+                <p className="text-[11px] text-ink-4 truncate">
+                  {m.competition?.name ? `${m.competition.name} · ` : ''}
+                  {format(new Date(m.scheduledAt), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
+                </p>
+              </button>
+            ))
+          ) : (
+            <p className="px-3 py-3 text-center text-xs text-ink-3">
+              {t('bets.noMatchFound')}
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function BetForm({ onClose, onSaved }) {
   const { t } = useTranslation();
   const toast = useToast();
+  const [selectedMatch, setSelectedMatch] = useState(null);
   const [form, setForm] = useState({
-    teamA: '', teamB: '', prediction: '',
-    odds: '', stake: '', matchDate: format(new Date(), "yyyy-MM-dd'T'HH:mm"),
-    notes: '', result: '',
+    prediction: '', odds: '', stake: '', notes: '', result: '',
   });
   const [loading, setLoading] = useState(false);
 
@@ -38,14 +146,16 @@ function BetForm({ onClose, onSaved }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!selectedMatch) return;
     setLoading(true);
     try {
       await api.post('/bets', {
-        ...form,
+        matchId: selectedMatch.id,
+        prediction: form.prediction,
         odds: parseFloat(form.odds),
         stake: parseInt(form.stake, 10),
-        matchDate: new Date(form.matchDate).toISOString(),
         result: form.result || undefined,
+        notes: form.notes || undefined,
       });
       toast(t('bets.addedSuccess'), 'success');
       onSaved();
@@ -60,15 +170,13 @@ function BetForm({ onClose, onSaved }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <label className="block text-[11px] text-ink-3 mb-1">{t('bets.homeTeam')}</label>
-          <input value={form.teamA} onChange={set('teamA')} required placeholder="PSG" className={inputClass} />
-        </div>
-        <div>
-          <label className="block text-[11px] text-ink-3 mb-1">{t('bets.awayTeam')}</label>
-          <input value={form.teamB} onChange={set('teamB')} required placeholder="OM" className={inputClass} />
-        </div>
+      <div>
+        <label className="block text-[11px] text-ink-3 mb-1">{t('bets.matchLabel')}</label>
+        <MatchPicker
+          selectedMatch={selectedMatch}
+          onSelect={setSelectedMatch}
+          onClear={() => setSelectedMatch(null)}
+        />
       </div>
 
       <div>
@@ -88,11 +196,6 @@ function BetForm({ onClose, onSaved }) {
       </div>
 
       <div>
-        <label className="block text-[11px] text-ink-3 mb-1">{t('bets.dateTime')}</label>
-        <input type="datetime-local" value={form.matchDate} onChange={set('matchDate')} required className={inputClass} />
-      </div>
-
-      <div>
         <label className="block text-[11px] text-ink-3 mb-1">{t('bets.resultOptional')}</label>
         <select value={form.result} onChange={set('result')} className={inputClass}>
           <option value="">{t('bets.pending')}</option>
@@ -109,7 +212,7 @@ function BetForm({ onClose, onSaved }) {
 
       <div className="flex gap-3 pt-2">
         <button type="button" onClick={onClose} className="btn-secondary flex-1">{t('common.cancel')}</button>
-        <button type="submit" disabled={loading} className="btn-cta flex-1">
+        <button type="submit" disabled={loading || !selectedMatch} className="btn-cta flex-1">
           {loading ? '...' : t('common.save')}
         </button>
       </div>

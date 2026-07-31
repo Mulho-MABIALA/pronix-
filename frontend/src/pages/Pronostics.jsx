@@ -420,12 +420,16 @@ export default function Pronostics() {
       <div>
         <button
           onClick={() => setFiltersOpen((v) => !v)}
-          className="inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-overlay/[0.08] text-[13px] font-semibold text-ink-3 hover:text-ink-2 hover:border-overlay/20 transition-colors"
+          className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl border text-[13px] font-semibold transition-colors ${
+            filtersOpen
+              ? 'bg-select-500/20 border-select-500/40 text-select-400'
+              : 'bg-select-500/10 border-select-500/30 text-select-400 hover:bg-select-500/15 hover:border-select-500/40'
+          }`}
         >
           <SlidersHorizontal size={14} />
           {t('pronostics.filtersToggle')}
           {activeFilterCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-select-500/20 text-select-400 text-[10px] font-bold flex items-center justify-center">
+            <span className="w-4 h-4 rounded-full bg-select-500 text-white text-[10px] font-bold flex items-center justify-center">
               {activeFilterCount}
             </span>
           )}

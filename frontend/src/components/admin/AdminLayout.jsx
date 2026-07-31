@@ -226,7 +226,7 @@ export default function AdminLayout() {
       )}
 
       {/* ── Zone principale ──────────────────────────────────────────────────── */}
-      <div className={`flex-1 flex flex-col min-h-screen transition-[margin] duration-200 ${collapsed ? 'md:ml-16' : 'md:ml-56'}`}>
+      <div className={`flex-1 flex flex-col min-h-screen min-w-0 transition-[margin] duration-200 ${collapsed ? 'md:ml-16' : 'md:ml-56'}`}>
 
         {/* Topbar mobile */}
         <div className="md:hidden flex items-center gap-3 px-4 h-14 border-b border-overlay/[0.06] sticky top-0 z-20"

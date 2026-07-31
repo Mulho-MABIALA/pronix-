@@ -54,9 +54,9 @@ function TeamPicker({ label, team, onPick, onClear }) {
 
   if (team) {
     return (
-      <div className="flex items-center gap-2.5 p-2.5 rounded-2xl border border-overlay/[0.08]" style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}>
+      <div className="flex items-center gap-2.5 p-2.5 rounded-2xl border border-overlay/[0.08] min-w-0" style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}>
         <TeamLogo logo={team.logo} teamId={team.id} name={team.name} size={28} />
-        <p className="flex-1 text-sm font-semibold text-ink-1 truncate">{team.name}</p>
+        <p className="flex-1 min-w-0 text-sm font-semibold text-ink-1 truncate">{team.name}</p>
         <button onClick={onClear} className="text-ink-4 hover:text-ink-2 transition-colors shrink-0" aria-label="Retirer">
           <X size={15} />
         </button>
@@ -65,8 +65,8 @@ function TeamPicker({ label, team, onPick, onClear }) {
   }
 
   return (
-    <div className="relative">
-      <div className="flex items-center gap-2 px-3 py-2.5 rounded-2xl border border-overlay/[0.08]" style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}>
+    <div className="relative min-w-0">
+      <div className="flex items-center gap-2 px-3 py-2.5 rounded-2xl border border-overlay/[0.08] min-w-0" style={{ background: 'rgb(var(--overlay-rgb) / 0.03)' }}>
         <Search size={15} className="text-ink-4 shrink-0" />
         <input
           value={query}

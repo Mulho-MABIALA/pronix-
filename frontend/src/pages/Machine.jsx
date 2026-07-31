@@ -157,6 +157,27 @@ function getConfidence(prob) {
   return 'low';
 }
 
+// Habille chaque bloc de réglage d'un numéro d'étape visible — la page était
+// perçue comme "un gros bloc de filtres" sans hiérarchie ; ce léger balisage
+// façon wizard (1 → 6) guide l'oeil dans l'ordre logique de configuration.
+function StepSection({ n, title, icon: Icon, right, children }) {
+  return (
+    <div className="rounded-xl border border-overlay/[0.06] bg-overlay/[0.015] p-3.5">
+      <div className="flex items-center justify-between gap-2 mb-2.5">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-5 h-5 rounded-full bg-primary-500/15 text-primary-400 text-[11px] font-bold flex items-center justify-center shrink-0">
+            {n}
+          </span>
+          {Icon && <Icon size={12} className="text-ink-3 shrink-0" />}
+          <p className="text-xs font-semibold text-ink-2 uppercase tracking-wider truncate">{title}</p>
+        </div>
+        {right && <div className="shrink-0">{right}</div>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
 export default function Machine() {
   const { t } = useTranslation();
   const { user, isPremium } = useAuth();
@@ -453,13 +474,10 @@ export default function Machine() {
       ) : (
       <>
       {/* Paramètres */}
-      <div className="px-4 card p-4 space-y-4">
+      <div className="px-4 space-y-3">
 
-        {/* ── Templates prédéfinis ──────────────────────────────────── */}
-        <div>
-          <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider mb-2">
-            {t('machine.quickStart')}
-          </p>
+        {/* ── 1. Démarrage rapide ──────────────────────────────────── */}
+        <StepSection n={1} title={t('machine.quickStart')} icon={Zap}>
           <div className="grid grid-cols-3 gap-2">
             {TEMPLATES.map((tpl) => (
               <button key={tpl.id} onClick={() => applyTemplate(tpl)}
@@ -480,28 +498,21 @@ export default function Machine() {
               {t('machine.customizeManually')}
             </button>
           )}
-        </div>
+        </StepSection>
 
-        <div className="border-t border-overlay/[0.06]" />
-
-        {/* Nombre de picks */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('machine.selectionsCount')}</p>
-            <span className="text-sm font-bold text-primary-400">{nbPicks}</span>
-          </div>
+        {/* ── 2. Nombre de sélections ──────────────────────────────── */}
+        <StepSection n={2} title={t('machine.selectionsCount')} right={<span className="text-sm font-bold text-primary-400">{nbPicks}</span>}>
           <input type="range" min="2" max="45" step="1" value={nbPicks}
             onChange={(e) => setNbPicks(Number(e.target.value))}
             className="w-full accent-primary-500 h-1.5 cursor-pointer" />
           <div className="flex justify-between text-xs text-ink-4 mt-1">
             <span>2</span><span>45</span>
           </div>
-        </div>
+        </StepSection>
 
-        {/* Marché — sélecteur 2 niveaux (catégorie → marché) */}
-        <div className="space-y-2">
-          <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('machine.market')}</p>
-
+        {/* ── 3. Marché — sélecteur 2 niveaux (catégorie → marché) ─── */}
+        <StepSection n={3} title={t('machine.market')}>
+          <div className="space-y-2">
           {/* Niveau 1 : catégories */}
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
@@ -545,11 +556,11 @@ export default function Machine() {
               </div>
             </div>
           ))}
-        </div>
+          </div>
+        </StepSection>
 
-        {/* Confiance minimale */}
-        <div>
-          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('machine.filters.confidence')}</p>
+        {/* ── 4. Confiance minimale ────────────────────────────────── */}
+        <StepSection n={4} title={t('machine.filters.confidence')}>
           <div className="flex gap-2">
             {[
               { value: 'high',   label: t('machine.confHigh'),   active: 'bg-primary-500/15 text-primary-400 border-primary-500/30' },
@@ -566,11 +577,10 @@ export default function Machine() {
               </button>
             ))}
           </div>
-        </div>
+        </StepSection>
 
-        {/* Date / Période */}
-        <div>
-          <p className="text-xs font-semibold text-ink-4 mb-2 uppercase tracking-wider">{t('machine.filters.dateRange')}</p>
+        {/* ── 5. Date / Période ────────────────────────────────────── */}
+        <StepSection n={5} title={t('machine.filters.dateRange')}>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               {DATE_PRESETS.map((o) => (
@@ -585,22 +595,16 @@ export default function Machine() {
               ))}
             </div>
           </div>
-        </div>
+        </StepSection>
 
-        {/* ── Championnat ─────────────────────────────────────────────── */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-1.5">
-              <Trophy size={11} className="text-ink-3" />
-              <p className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('machine.championship')}</p>
-            </div>
-            {leagues.length > 0 && (
-              <button onClick={() => { setLeagues([]); setTicket(null); }}
-                className="text-xs text-ink-4 hover:text-primary-400 transition-colors">
-                {t('machine.showAll')}
-              </button>
-            )}
-          </div>
+        {/* ── 6. Championnat ───────────────────────────────────────── */}
+        <StepSection n={6} title={t('machine.championship')} icon={Trophy}
+          right={leagues.length > 0 && (
+            <button onClick={() => { setLeagues([]); setTicket(null); }}
+              className="text-xs text-ink-4 hover:text-primary-400 transition-colors">
+              {t('machine.showAll')}
+            </button>
+          )}>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
               <button
@@ -638,25 +642,31 @@ export default function Machine() {
               })}
             </div>
           </div>
-        </div>
+        </StepSection>
 
-        {/* ── Filtre amicaux ──────────────────────────────────────────── */}
-        <div className="flex items-center justify-between py-1">
-          <div className="flex items-center gap-2">
-            <Bot size={12} className="text-ink-3" />
-            <span className="text-xs text-ink-4">{t('machine.excludeFriendly')}</span>
-            <span className="text-xs text-ink-4">{t('machine.excludeFriendlyHint')}</span>
+        {/* ── Options avancées (facultatif, hors du flux numéroté) ──── */}
+        <div className="rounded-xl border border-dashed border-overlay/[0.08] p-3.5 space-y-3">
+          <p className="text-[10px] font-semibold text-ink-4 uppercase tracking-wider">
+            {t('machine.advancedOptions')}
+          </p>
+
+          {/* Filtre amicaux */}
+          <div className="flex items-center justify-between py-1">
+            <div className="flex items-center gap-2">
+              <Bot size={12} className="text-ink-3" />
+              <span className="text-xs text-ink-4">{t('machine.excludeFriendly')}</span>
+              <span className="text-xs text-ink-4">{t('machine.excludeFriendlyHint')}</span>
+            </div>
+            <button
+              onClick={() => { setExcludeFriendly((v) => !v); setTicket(null); }}
+              className={`relative w-9 h-5 rounded-full transition-colors ${excludeFriendly ? 'bg-primary-500' : 'bg-surface-600'}`}
+              role="switch" aria-checked={excludeFriendly}>
+              <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${excludeFriendly ? 'translate-x-4' : ''}`} />
+            </button>
           </div>
-          <button
-            onClick={() => { setExcludeFriendly((v) => !v); setTicket(null); }}
-            className={`relative w-9 h-5 rounded-full transition-colors ${excludeFriendly ? 'bg-primary-500' : 'bg-surface-600'}`}
-            role="switch" aria-checked={excludeFriendly}>
-            <span className={`absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${excludeFriendly ? 'translate-x-4' : ''}`} />
-          </button>
-        </div>
 
-        {/* ── Sélection manuelle de matchs ────────────────────────────── */}
-        <div>
+          {/* Sélection manuelle de matchs */}
+          <div>
           <button
             onClick={() => setShowMatchPicker((p) => !p)}
             className="w-full flex items-center justify-between py-2 group">
@@ -801,68 +811,74 @@ export default function Machine() {
               )}
             </div>
           )}
+          </div>
         </div>
 
-        {/* Compteur de matchs disponibles */}
-        <div className="flex items-center justify-center gap-2 py-1">
-          {isLoading ? (
-            <span className="text-xs text-ink-4">{t('machine.searchingMatches')}</span>
+        {/* ── Étape finale : compteur + génération, mise en avant ────── */}
+        <div className="rounded-xl border border-primary-500/20 bg-primary-500/[0.04] p-3.5 space-y-2.5">
+          {/* Compteur de matchs disponibles */}
+          <div className="flex items-center justify-center gap-2 py-0.5 flex-wrap">
+            {isLoading ? (
+              <span className="text-xs text-ink-4">{t('machine.searchingMatches')}</span>
+            ) : (
+              <>
+                <span className={`text-[11px] font-semibold ${
+                  availableCandidates.length === 0
+                    ? 'text-rose-400'
+                    : availableCandidates.length < nbPicks
+                      ? 'text-amber-400'
+                      : 'text-select-400'
+                }`}>
+                  {t('machine.matchesAvailable', { count: availableCandidates.length })}
+                </span>
+                <span className="text-ink-5">·</span>
+                <span className="text-xs text-ink-4">
+                  {pinnedMatchIds.size > 0
+                    ? t('machine.selectedManually', { count: pinnedMatchIds.size })
+                    : t('machine.bestRetained', { count: Math.min(nbPicks, availableCandidates.length) })}
+                </span>
+                {availableCandidates.length < nbPicks && availableCandidates.length > 0 && (
+                  <span className="text-[10px] text-amber-500">
+                    {t('machine.ticketReduced', { count: availableCandidates.length })}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+
+          {/* Bouton générer — ou upsell si quota gratuit épuisé */}
+          {quotaExhausted ? (
+            <div className="w-full rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 flex items-center justify-between gap-3 flex-wrap">
+              <div className="flex items-center gap-2 min-w-0">
+                <Sparkles size={16} className="text-amber-400 shrink-0" />
+                <p className="text-xs text-amber-200 leading-snug">
+                  {t('machine.ticketQuotaExceededDesc', { limit: quotaQ.data?.limit || 3 })}
+                </p>
+              </div>
+              <Link to="/abonnement" className="btn-primary shrink-0 px-3 py-2 text-xs whitespace-nowrap">
+                {t('machine.premiumUnlimitedTickets')}
+              </Link>
+            </div>
           ) : (
             <>
-              <span className={`text-[11px] font-semibold ${
-                availableCandidates.length === 0
-                  ? 'text-rose-400'
-                  : availableCandidates.length < nbPicks
-                    ? 'text-amber-400'
-                    : 'text-select-400'
-              }`}>
-                {t('machine.matchesAvailable', { count: availableCandidates.length })}
-              </span>
-              <span className="text-ink-5">·</span>
-              <span className="text-xs text-ink-4">
-                {pinnedMatchIds.size > 0
-                  ? t('machine.selectedManually', { count: pinnedMatchIds.size })
-                  : t('machine.bestRetained', { count: Math.min(nbPicks, availableCandidates.length) })}
-              </span>
-              {availableCandidates.length < nbPicks && availableCandidates.length > 0 && (
-                <span className="text-[10px] text-amber-500">
-                  {t('machine.ticketReduced', { count: availableCandidates.length })}
-                </span>
+              <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
+                className={`btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed ${
+                  !isLoading && availableCandidates.length > 0 ? 'animate-glow-pulse' : ''
+                }`}>
+                <Zap size={16} />
+                {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
+              </button>
+              {user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && (
+                <p className="text-center text-xs text-ink-3 mt-1.5">
+                  {t('machine.ticketsToday', { used: quotaQ.data.used, limit: quotaQ.data.limit })}
+                </p>
+              )}
+              {quotaError && (
+                <p className="text-center text-[10px] text-amber-400 mt-1.5">{quotaError}</p>
               )}
             </>
           )}
         </div>
-
-        {/* Bouton générer — ou upsell si quota gratuit épuisé */}
-        {quotaExhausted ? (
-          <div className="w-full rounded-xl border border-amber-500/25 bg-amber-500/10 p-3 flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2 min-w-0">
-              <Sparkles size={16} className="text-amber-400 shrink-0" />
-              <p className="text-xs text-amber-200 leading-snug">
-                {t('machine.ticketQuotaExceededDesc', { limit: quotaQ.data?.limit || 3 })}
-              </p>
-            </div>
-            <Link to="/abonnement" className="btn-primary shrink-0 px-3 py-2 text-xs whitespace-nowrap">
-              {t('machine.premiumUnlimitedTickets')}
-            </Link>
-          </div>
-        ) : (
-          <>
-            <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
-              className="btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed">
-              <Zap size={16} />
-              {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}
-            </button>
-            {user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && (
-              <p className="text-center text-xs text-ink-3 mt-1.5">
-                {t('machine.ticketsToday', { used: quotaQ.data.used, limit: quotaQ.data.limit })}
-              </p>
-            )}
-            {quotaError && (
-              <p className="text-center text-[10px] text-amber-400 mt-1.5">{quotaError}</p>
-            )}
-          </>
-        )}
       </div>
 
       {/* Résultat */}

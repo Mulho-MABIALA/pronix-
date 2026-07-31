@@ -1634,7 +1634,8 @@
         "tools": "Herramientas",
         "community": "Comunidad",
         "mySpace": "Mi espacio",
-        "aiIntelligence": "Inteligencia IA"
+        "aiIntelligence": "Inteligencia IA",
+        "content": "Contenido"
       },
       "items": {
         "betTracker": "Seguimiento de mis pronósticos",
@@ -1642,7 +1643,9 @@
         "aiCoach": "Coach Personal IA",
         "aiCoachDesc": "Consejos IA según tus stats",
         "aiPronostics": "Pronósticos IA",
-        "aiPronosticsDesc": "Picks generados por el Tipster IA"
+        "aiPronosticsDesc": "Picks generados por el Tipster IA",
+        "blog": "Blog",
+        "blogDesc": "Análisis y consejos de fútbol"
       }
     }
   },
@@ -1651,6 +1654,7 @@
     "tipstersDesc": "Top pronosticadores",
     "transparencyDesc": "Tasa de acierto real, tipsters e IA",
     "betTrackerDesc": "Sigue tus pronósticos y tu ROI",
+    "blogDesc": "Análisis y consejos de fútbol",
     "exploreTitle": "Explorar fpronix",
     "application": "Aplicación",
     "installApp": "Instalar la app",

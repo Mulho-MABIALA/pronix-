@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Calendar, TrendingUp, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain, ShieldCheck, ArrowLeftRight, Newspaper } from 'lucide-react';
+import { Home, Calendar, TrendingUp, LayoutGrid, X, Filter, Zap, BarChart2, Trophy, Users, ChevronRight, Download, Share, Smartphone, BookOpen, Brain, ShieldCheck, ArrowLeftRight, Newspaper, Rss } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
 
@@ -38,6 +38,7 @@ function ExplorerDrawer({ open, onClose }) {
         { to: '/tipsters',              label: t('nav.tipsters'),        Icon: Users,   desc: t('bottomNav.tipstersDesc'),  color: 'text-primary-400 bg-primary-500/10' },
         { to: '/transparence',          label: t('nav.transparency'),    Icon: ShieldCheck, desc: t('bottomNav.transparencyDesc'), color: 'text-cyan-400 bg-cyan-500/10' },
         { to: '/blog',                  label: t('header.dropdown.items.blog'), Icon: Newspaper, desc: t('bottomNav.blogDesc'), color: 'text-orange-400 bg-orange-500/10' },
+        { to: '/actualites',            label: t('header.dropdown.items.news'), Icon: Rss, desc: t('bottomNav.newsDesc'), color: 'text-amber-400 bg-amber-500/10' },
       ],
     },
     {

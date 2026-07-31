@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain, ArrowLeftRight, Sun, Moon, Newspaper } from 'lucide-react';
+import { User, LogOut, Shield, ChevronDown, Filter, Zap, TrendingUp, BarChart2, Download, Search, BookOpen, Brain, ArrowLeftRight, Sun, Moon, Newspaper, Rss } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
@@ -142,6 +142,7 @@ function OutilsDropdown() {
       label: t('header.dropdown.sections.content'),
       items: [
         { to: '/blog', label: t('header.dropdown.items.blog'), Icon: Newspaper, desc: t('header.dropdown.items.blogDesc'), color: 'text-orange-400 bg-orange-500/10' },
+        { to: '/actualites', label: t('header.dropdown.items.news'), Icon: Rss, desc: t('header.dropdown.items.newsDesc'), color: 'text-amber-400 bg-amber-500/10' },
       ],
     },
   ];

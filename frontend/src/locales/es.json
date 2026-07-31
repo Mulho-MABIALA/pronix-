@@ -1645,7 +1645,9 @@
         "aiPronostics": "Pronósticos IA",
         "aiPronosticsDesc": "Picks generados por el Tipster IA",
         "blog": "Blog",
-        "blogDesc": "Análisis y consejos de fútbol"
+        "blogDesc": "Análisis y consejos de fútbol",
+        "news": "Actualidad",
+        "newsDesc": "Últimas noticias de fútbol"
       }
     }
   },
@@ -1655,6 +1657,7 @@
     "transparencyDesc": "Tasa de acierto real, tipsters e IA",
     "betTrackerDesc": "Sigue tus pronósticos y tu ROI",
     "blogDesc": "Análisis y consejos de fútbol",
+    "newsDesc": "Últimas noticias de fútbol",
     "exploreTitle": "Explorar fpronix",
     "application": "Aplicación",
     "installApp": "Instalar la app",

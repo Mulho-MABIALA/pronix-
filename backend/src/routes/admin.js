@@ -25,6 +25,7 @@ const {
   getAdminComments, deleteAdminComment,
   activateUserSubscription,
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
+  getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
 } = require('../controllers/adminController');
 const { adminBroadcast, getPushStats } = require('../controllers/pushController');
 const {
@@ -37,6 +38,11 @@ const router = Router();
 router.use(authenticate, requireAdmin);
 
 router.get('/dashboard', getDashboard);
+
+// Cloche d'activité (nouveau user / paiement / signalement / ticket support)
+router.get('/activity', getActivityNotifications);
+router.patch('/activity/:id/read', markActivityNotificationRead);
+router.patch('/activity/read-all', markAllActivityNotificationsRead);
 
 // Utilisateurs
 router.get('/users/stats',                         getUserStats);

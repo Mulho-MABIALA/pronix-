@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
 import { useCountUp } from '../../hooks/useCountUp';
+import AdminNotificationBell from '../../components/admin/AdminNotificationBell';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -630,6 +631,7 @@ export default function AdminDashboard() {
             <RefreshCw size={12} className={isFetching ? 'animate-spin' : ''} />
             Actualiser
           </button>
+          <AdminNotificationBell />
         </div>
       </div>
 

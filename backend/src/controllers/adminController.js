@@ -1028,6 +1028,44 @@ async function updateTicketStatus(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ── Cloche d'activité admin (nouveau user / paiement / signalement / ticket) ─
+// Flux distinct des push notifications utilisateurs — alimenté par
+// adminNotificationService.notifyAdmin() depuis les controllers concernés.
+
+async function getActivityNotifications(req, res, next) {
+  try {
+    const limit = Math.min(50, Math.max(1, parseInt(req.query.limit, 10) || 20));
+
+    const [items, unreadCount] = await Promise.all([
+      prisma.adminNotification.findMany({
+        orderBy: { createdAt: 'desc' },
+        take: limit,
+      }),
+      prisma.adminNotification.count({ where: { isRead: false } }),
+    ]);
+
+    res.json({ success: true, data: items, unreadCount });
+  } catch (err) { next(err); }
+}
+
+async function markActivityNotificationRead(req, res, next) {
+  try {
+    const { id } = req.params;
+    await prisma.adminNotification.update({ where: { id }, data: { isRead: true } });
+    res.json({ success: true });
+  } catch (err) {
+    if (err.code === 'P2025') return next(new AppError('Notification introuvable', 404, 'NOT_FOUND'));
+    next(err);
+  }
+}
+
+async function markAllActivityNotificationsRead(req, res, next) {
+  try {
+    await prisma.adminNotification.updateMany({ where: { isRead: false }, data: { isRead: true } });
+    res.json({ success: true });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getDashboard,
   getUsers, toggleUserStatus, deleteUser,
@@ -1053,4 +1091,5 @@ module.exports = {
   getAdminComments, deleteAdminComment,
   activateUserSubscription,
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
+  getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
 };

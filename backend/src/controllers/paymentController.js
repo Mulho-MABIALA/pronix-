@@ -11,6 +11,7 @@ const env = require('../config/env');
 const { notifyUser } = require('./pushController');
 const { grantReferralReward } = require('./referralController');
 const { grantPartnerCommission } = require('./partnerController');
+const { notifyAdmin } = require('../services/adminNotificationService');
 
 // ─── Helper : prix du plan selon le cycle de facturation (hebdo/mensuel/annuel) ─
 // LIFETIME est un paiement unique, indépendant du cycle sélectionné dans l'UI —
@@ -36,7 +37,7 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + durationDays);
 
-  await prisma.$transaction([
+  const [, payment] = await prisma.$transaction([
     prisma.subscription.upsert({
       where: { userId },
       update: { planId, billingCycle, status: 'ACTIVE', endDate, updatedAt: new Date() },
@@ -47,6 +48,16 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
       data: { status: 'COMPLETED' },
     }),
   ]);
+
+  // Cloche admin — best-effort, ne bloque jamais l'activation de l'abonnement
+  prisma.user.findUnique({ where: { id: userId }, select: { username: true, email: true } })
+    .then((u) => notifyAdmin({
+      type: 'NEW_PAYMENT',
+      title: 'Nouveau paiement',
+      message: `${u?.username || 'Un utilisateur'} a payé ${payment.amount.toLocaleString('fr-FR')} FCFA (${billingLabel(billingCycle)}).`,
+      link: '/admin/paiements',
+    }))
+    .catch(() => {});
 
   // Push de confirmation (fire & forget)
   notifyUser(userId, {
@@ -68,7 +79,7 @@ async function activateTipsterSubscription(subscriberId, tipsterId, planId, paym
   const endDate = new Date();
   endDate.setMonth(endDate.getMonth() + 1);
 
-  await prisma.$transaction([
+  const [, payment] = await prisma.$transaction([
     prisma.tipsterSubscription.upsert({
       where:  { subscriberId_planId: { subscriberId, planId } },
       update: { status: 'ACTIVE', startDate: new Date(), endDate },
@@ -79,6 +90,16 @@ async function activateTipsterSubscription(subscriberId, tipsterId, planId, paym
       data:  { status: 'COMPLETED' },
     }),
   ]);
+
+  // Cloche admin — best-effort
+  prisma.user.findUnique({ where: { id: subscriberId }, select: { username: true } })
+    .then((u) => notifyAdmin({
+      type: 'NEW_PAYMENT',
+      title: 'Nouveau paiement (abonnement tipster)',
+      message: `${u?.username || 'Un utilisateur'} a payé ${payment.amount.toLocaleString('fr-FR')} FCFA pour un abonnement tipster.`,
+      link: '/admin/paiements',
+    }))
+    .catch(() => {});
 
   notifyUser(subscriberId, {
     title: '🎉 Abonnement tipster activé',

@@ -4,6 +4,7 @@ const { z } = require('zod');
 const { answerSupportQuestion } = require('../services/supportChatService');
 const { authenticate } = require('../middleware/auth');
 const prisma = require('../config/database');
+const { notifyAdmin } = require('../services/adminNotificationService');
 
 const router = express.Router();
 
@@ -43,6 +44,13 @@ router.post('/tickets', authenticate, async (req, res, next) => {
         messages: { create: { isAdmin: false, content: message } },
       },
       include: { messages: true },
+    });
+
+    notifyAdmin({
+      type: 'NEW_SUPPORT_TICKET',
+      title: 'Nouveau ticket support',
+      message: `${req.user.email} : "${subject}"`,
+      link: '/admin/support',
     });
 
     res.status(201).json({ success: true, data: ticket, message: 'Ticket soumis. L\'équipe vous répondra sous 24h.' });

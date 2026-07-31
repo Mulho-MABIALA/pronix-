@@ -8,6 +8,7 @@ const env = require('../config/env');
 const { AppError } = require('../middleware/errorHandler');
 const { sendWelcomeEmail, sendPasswordResetEmail, sendEmailVerification } = require('../services/emailService');
 const { REFRESH_COOKIE, setAuthCookies, clearAuthCookies } = require('../config/cookies');
+const { notifyAdmin } = require('../services/adminNotificationService');
 
 // Inscrit automatiquement tout nouveau compte à la newsletter (source "signup").
 // Non bloquant : une erreur ici ne doit jamais faire échouer l'inscription.
@@ -123,6 +124,12 @@ async function register(req, res, next) {
 
     sendWelcomeEmail(user).catch(console.error);
     autoSubscribeToNewsletter(user, 'signup');
+    notifyAdmin({
+      type: 'NEW_USER',
+      title: 'Nouvel utilisateur',
+      message: `${user.username} (${user.email}) vient de s'inscrire.`,
+      link: '/admin/utilisateurs',
+    });
 
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
@@ -360,6 +367,12 @@ async function googleAuth(req, res, next) {
 
       sendWelcomeEmail(user).catch(console.error);
       autoSubscribeToNewsletter(user, 'signup_google');
+      notifyAdmin({
+        type: 'NEW_USER',
+        title: 'Nouvel utilisateur',
+        message: `${user.username} (${user.email}) vient de s'inscrire via Google.`,
+        link: '/admin/utilisateurs',
+      });
     }
 
     const accessToken = generateAccessToken(user.id);

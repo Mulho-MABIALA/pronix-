@@ -2,6 +2,7 @@ const { z } = require('zod');
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { broadcastNotification } = require('./pushController');
+const { notifyAdmin } = require('../services/adminNotificationService');
 
 const PRED_LABELS = {
   HOME_WIN:   'Victoire domicile',
@@ -166,6 +167,13 @@ async function reportTip(req, res, next) {
 
     const report = await prisma.report.create({
       data: { reporterId: req.user.id, tipId, reason },
+    });
+
+    notifyAdmin({
+      type: 'NEW_REPORT',
+      title: 'Nouveau signalement',
+      message: `Un pronostic a été signalé : "${reason.slice(0, 80)}${reason.length > 80 ? '…' : ''}"`,
+      link: '/admin/signalements',
     });
 
     res.status(201).json({ success: true, message: 'Signalement envoyé', data: report });

@@ -813,3 +813,22 @@ model NewsletterCampaign {
   @@index([createdAt])
   @@map("newsletter_campaigns")
 }
+
+// ─── NOTIFICATIONS ADMIN ────────────────────────────────────────────────────
+// Flux d'activité pour la cloche du dashboard admin : un événement métier
+// (nouvel utilisateur, paiement reçu, signalement, ticket support...) crée une
+// entrée ici via adminNotificationService.notifyAdmin(). Purement informatif,
+// distinct des push notifications envoyées aux utilisateurs (voir PushSubscription).
+model AdminNotification {
+  id        String   @id @default(uuid())
+  type      String   // NEW_USER | NEW_PAYMENT | NEW_REPORT | NEW_SUPPORT_TICKET | NEW_TIPSTER_APPLICATION
+  title     String
+  message   String
+  link      String?  // route frontend admin à ouvrir au clic (ex: /admin/utilisateurs)
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("admin_notifications")
+}

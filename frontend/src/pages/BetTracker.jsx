@@ -209,12 +209,18 @@ export default function BetTracker() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => api.delete(`/bets/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bets'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bets'] });
+      queryClient.invalidateQueries({ queryKey: ['coach-advice'] });
+    },
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, result }) => api.patch(`/bets/${id}`, { result }),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['bets'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bets'] });
+      queryClient.invalidateQueries({ queryKey: ['coach-advice'] });
+    },
   });
 
   const bets = data?.data || [];
@@ -259,7 +265,11 @@ export default function BetTracker() {
           <h2 className="font-semibold text-ink-1 text-sm mb-4">{t('bets.newBet')}</h2>
           <BetForm
             onClose={() => setShowForm(false)}
-            onSaved={() => { setShowForm(false); queryClient.invalidateQueries({ queryKey: ['bets'] }); }}
+            onSaved={() => {
+              setShowForm(false);
+              queryClient.invalidateQueries({ queryKey: ['bets'] });
+              queryClient.invalidateQueries({ queryKey: ['coach-advice'] });
+            }}
           />
         </div>
       )}

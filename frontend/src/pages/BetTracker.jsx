@@ -8,6 +8,8 @@ import api from '../services/api';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useToast } from '../context/ToastContext';
 import CoachPanel from '../components/ai/CoachPanel';
+import { TeamLogo } from '../components/matches/MatchCard';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 
 function debounce(fn, delay) {
   let timer;
@@ -67,11 +69,16 @@ function MatchPicker({ selectedMatch, onSelect, onClear }) {
   if (selectedMatch) {
     return (
       <div className="flex items-center gap-3 bg-surface-700/40 border border-primary-500/30 rounded-xl px-3 py-2.5">
+        <CompetitionLogo logo={selectedMatch.competition?.logo} size={22} className="shrink-0" />
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-ink-2 truncate">
-            {selectedMatch.homeTeam} vs {selectedMatch.awayTeam}
+          <p className="text-sm font-semibold text-ink-2 truncate flex items-center gap-1.5">
+            <TeamLogo logo={selectedMatch.homeTeamLogo} teamId={selectedMatch.homeTeamId} name={selectedMatch.homeTeam} size={16} />
+            {selectedMatch.homeTeam}
+            <span className="text-ink-4 font-normal">vs</span>
+            <TeamLogo logo={selectedMatch.awayTeamLogo} teamId={selectedMatch.awayTeamId} name={selectedMatch.awayTeam} size={16} />
+            {selectedMatch.awayTeam}
           </p>
-          <p className="text-[11px] text-ink-4 flex items-center gap-1 truncate">
+          <p className="text-[11px] text-ink-4 flex items-center gap-1 truncate mt-0.5">
             <CalendarClock size={11} className="shrink-0" />
             {selectedMatch.competition?.name ? `${selectedMatch.competition.name} · ` : ''}
             {format(new Date(selectedMatch.scheduledAt), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
@@ -113,13 +120,22 @@ function MatchPicker({ selectedMatch, onSelect, onClear }) {
                 key={m.id}
                 type="button"
                 onClick={() => { onSelect(m); setQuery(''); setResults(null); }}
-                className="w-full text-left px-3 py-2.5 hover:bg-overlay/[0.05] transition-colors border-b border-overlay/[0.04] last:border-0"
+                className="w-full flex items-center gap-2.5 text-left px-3 py-2.5 hover:bg-overlay/[0.05] transition-colors border-b border-overlay/[0.04] last:border-0"
               >
-                <p className="text-sm text-ink-2 truncate">{m.homeTeam} vs {m.awayTeam}</p>
-                <p className="text-[11px] text-ink-4 truncate">
-                  {m.competition?.name ? `${m.competition.name} · ` : ''}
-                  {format(new Date(m.scheduledAt), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
-                </p>
+                <CompetitionLogo logo={m.competition?.logo} size={18} className="shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-ink-2 truncate flex items-center gap-1.5">
+                    <TeamLogo logo={m.homeTeamLogo} teamId={m.homeTeamId} name={m.homeTeam} size={15} />
+                    {m.homeTeam}
+                    <span className="text-ink-4">vs</span>
+                    <TeamLogo logo={m.awayTeamLogo} teamId={m.awayTeamId} name={m.awayTeam} size={15} />
+                    {m.awayTeam}
+                  </p>
+                  <p className="text-[11px] text-ink-4 truncate mt-0.5">
+                    {m.competition?.name ? `${m.competition.name} · ` : ''}
+                    {format(new Date(m.scheduledAt), 'dd MMM yyyy HH:mm', { locale: dateLocale })}
+                  </p>
+                </div>
               </button>
             ))
           ) : (
@@ -230,11 +246,22 @@ function BetRow({ bet, onDelete, onResultChange }) {
   return (
     <div className="bento-card space-y-2">
       <div className="flex items-center justify-between gap-2" onClick={() => setExpanded((v) => !v)}>
+        {bet.match?.competition?.logo && (
+          <CompetitionLogo logo={bet.match.competition.logo} size={20} className="shrink-0" />
+        )}
         <div className="flex-1 min-w-0">
-          <p className="text-[13px] font-semibold text-ink-2 truncate">
-            {bet.teamA} vs {bet.teamB}
+          <p className="text-[13px] font-semibold text-ink-2 truncate flex items-center gap-1.5">
+            {bet.match && (
+              <TeamLogo logo={bet.match.homeTeamLogo} teamId={bet.match.homeTeamId} name={bet.teamA} size={14} />
+            )}
+            {bet.teamA}
+            <span className="text-ink-4 font-normal">vs</span>
+            {bet.match && (
+              <TeamLogo logo={bet.match.awayTeamLogo} teamId={bet.match.awayTeamId} name={bet.teamB} size={14} />
+            )}
+            {bet.teamB}
           </p>
-          <p className="text-[11px] text-ink-3 truncate">
+          <p className="text-[11px] text-ink-3 truncate mt-0.5">
             {t('bets.rowSummary', { prediction: bet.prediction, odds: bet.odds, stake: bet.stake.toLocaleString('fr-FR') })}
           </p>
         </div>

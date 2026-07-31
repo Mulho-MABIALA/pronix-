@@ -963,7 +963,7 @@
     "awayTeam": "Away team",
     "matchLabel": "Match",
     "searchMatchPlaceholder": "Search a match (e.g. PSG vs OM)...",
-    "noMatchFound": "No match found",
+    "noMatchFound": "No upcoming match found",
     "changeMatch": "Change",
     "prediction": "Prediction",
     "predictionPlaceholder": "Home win, +2.5 goals...",

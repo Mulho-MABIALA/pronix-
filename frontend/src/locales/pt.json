@@ -963,7 +963,7 @@
     "awayTeam": "Time visitante",
     "matchLabel": "Partida",
     "searchMatchPlaceholder": "Buscar uma partida (ex: PSG vs OM)...",
-    "noMatchFound": "Nenhuma partida encontrada",
+    "noMatchFound": "Nenhuma partida futura encontrada",
     "changeMatch": "Trocar",
     "prediction": "Palpite",
     "predictionPlaceholder": "Vitória da casa, +2.5 gols...",

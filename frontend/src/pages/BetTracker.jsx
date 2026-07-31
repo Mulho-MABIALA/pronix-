@@ -49,7 +49,7 @@ function MatchPicker({ selectedMatch, onSelect, onClear }) {
       if (!q || q.length < 2) { setResults(null); setSearching(false); return; }
       setSearching(true);
       try {
-        const { data } = await api.get(`/search?type=matches&q=${encodeURIComponent(q)}`);
+        const { data } = await api.get(`/search?type=matches&status=upcoming&q=${encodeURIComponent(q)}`);
         setResults(data.data?.matches || []);
       } catch {
         setResults(null);

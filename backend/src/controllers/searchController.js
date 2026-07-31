@@ -6,6 +6,10 @@ async function globalSearch(req, res, next) {
   try {
     const q = (req.query.q || '').trim();
     const type = req.query.type || 'all'; // matches | tipsters | competitions | all
+    // status=upcoming : ne renvoie que les matchs à venir (SCHEDULED/LIVE) —
+    // utilisé par le carnet de pronostics, où un pari se fait avant le coup
+    // d'envoi et non sur un match déjà terminé.
+    const upcomingOnly = req.query.status === 'upcoming';
 
     if (!q || q.length < 2) {
       return res.json({ success: true, data: { matches: [], tipsters: [], competitions: [], teams: [] } });
@@ -23,9 +27,10 @@ async function globalSearch(req, res, next) {
                 { awayTeam: { contains: searchStr, mode: 'insensitive' } },
                 { competition: { name: { contains: searchStr, mode: 'insensitive' } } },
               ],
+              ...(upcomingOnly ? { status: { in: ['SCHEDULED', 'LIVE'] } } : {}),
             },
             include: { competition: true },
-            orderBy: { scheduledAt: 'desc' },
+            orderBy: { scheduledAt: upcomingOnly ? 'asc' : 'desc' },
             take: 8,
           })
         : [],

@@ -107,7 +107,7 @@ function ProbabilitySection({ match }) {
 }
 
 // ── Value Bet AI Explain ─────────────────────────────────────────────────────
-function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
+function ValueBetExplainButton({ matchId, market, bookOdds, trueProb, isPremium }) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState(null);
@@ -124,6 +124,15 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
       setOpen(true);
     } catch { /* silent */ }
     finally { setLoading(false); }
+  }
+
+  if (!isPremium) {
+    return (
+      <Link to="/abonnement" className="mt-1 flex items-center gap-1.5 text-[11px] text-amber-400 hover:text-amber-300 transition-colors">
+        <Lock size={11} />
+        {t('matchDetail.whyValueBet')}
+      </Link>
+    );
   }
 
   return (
@@ -164,7 +173,7 @@ function ValueBetExplainButton({ matchId, market, bookOdds, trueProb }) {
 }
 
 // ── Cotes réelles ou simulées — comparateur style BetMines ───────────────────
-function OddsAndValueSection({ match, realOdds }) {
+function OddsAndValueSection({ match, realOdds, isPremium }) {
   const { t } = useTranslation();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
@@ -241,6 +250,7 @@ function OddsAndValueSection({ match, realOdds }) {
           market={pred.bestPick.type}
           bookOdds={best.odd}
           trueProb={pred.bestPick.prob}
+          isPremium={isPremium}
         />
       )}
 
@@ -699,10 +709,22 @@ export default function MatchDetail() {
         </div>
       )}
 
-      {/* ── Analyse IA Live ──────────────────────────────────────────── */}
+      {/* ── Analyse IA Live (Premium) ───────────────────────────────── */}
       {match.status === 'LIVE' && (
         <div className="px-4">
-          <LiveAnalysis matchId={match.id} />
+          {isPremium ? (
+            <LiveAnalysis matchId={match.id} />
+          ) : (
+            <Link to="/abonnement" className="card border-dashed border-surface-600 p-4 flex items-center gap-3 hover:border-primary-500/40 transition-colors">
+              <div className="w-9 h-9 rounded-lg bg-live-500/15 flex items-center justify-center shrink-0">
+                <Lock size={16} className="text-live-400" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-ink-1">{t('liveAnalysis.title')}</p>
+                <p className="text-xs text-ink-4">{t('matchDetail.premiumDataDesc')}</p>
+              </div>
+            </Link>
+          )}
         </div>
       )}
 
@@ -761,7 +783,7 @@ export default function MatchDetail() {
         {activeTab === 'tips' && (
           <>
             {/* Cotes réelles ou simulées */}
-            <OddsAndValueSection match={match} realOdds={realOdds} />
+            <OddsAndValueSection match={match} realOdds={realOdds} isPremium={isPremium} />
 
             {/* Données premium */}
             {!isPremium && (
@@ -1077,6 +1099,15 @@ export default function MatchDetail() {
                 <SkeletonCard className="h-24" />
                 <SkeletonCard className="h-24" />
               </div>
+            ) : contextData?.data?.locked ? (
+              <section className="card border-dashed border-surface-600 p-6 text-center">
+                <Lock size={22} className="mx-auto text-ink-3 mb-2" aria-hidden="true" />
+                <p className="text-ink-4 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
+                <p className="text-ink-3 text-xs mt-1">{t('matchDetail.premiumDataDesc')}</p>
+                <Link to="/abonnement" className="btn-primary mt-4 text-sm">
+                  {t('matchDetail.upgradePremium', { price: '5 150' })}
+                </Link>
+              </section>
             ) : !contextData?.data ? (
               <div className="card-p text-center py-8">
                 <p className="text-ink-4 text-sm">{t('matchDetail.formDataNotAvailable')}</p>

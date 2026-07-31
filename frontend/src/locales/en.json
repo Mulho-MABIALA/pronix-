@@ -567,6 +567,8 @@
   "tipsters": {
     "leaderboardTitle": "Tipsters Leaderboard",
     "leaderboardDesc": "Success rate automatically calculated from verified picks.",
+    "fullLeaderboardTitle": "Full leaderboard — Premium only",
+    "fullLeaderboardDesc": "Upgrade to Premium to see all {{total}} ranked tipsters, beyond the top 20.",
     "disclaimer": "This data is informational only. No guarantee of winnings. Please play responsibly.",
     "periodGroupLabel": "Leaderboard period",
     "periodGlobal": "Global",

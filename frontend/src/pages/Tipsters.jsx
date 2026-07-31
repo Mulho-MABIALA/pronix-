@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Trophy } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { Trophy, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import TipsterCard from '../components/tipsters/TipsterCard';
@@ -93,6 +94,22 @@ export default function Tipsters() {
             {t('tipsters.next')}
           </button>
         </div>
+      )}
+
+      {/* Classement complet réservé Premium */}
+      {data?.premiumLocked && (
+        <Link
+          to="/abonnement"
+          className="bento-card flex items-center gap-3 hover:border-primary-500/40 transition-colors"
+        >
+          <div className="w-9 h-9 rounded-lg bg-amber-500/15 flex items-center justify-center shrink-0">
+            <Lock size={16} className="text-amber-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-ink-1">{t('tipsters.fullLeaderboardTitle')}</p>
+            <p className="text-xs text-ink-4">{t('tipsters.fullLeaderboardDesc', { total: pagination?.total })}</p>
+          </div>
+        </Link>
       )}
     </div>
   );

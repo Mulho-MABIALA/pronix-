@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const { authenticate } = require('../middleware/auth');
-const { requirePlan } = require('../middleware/subscription');
+const { requirePlan, attachPlan } = require('../middleware/subscription');
 const {
   createTip, getTipsByMatch, getLeaderboard,
   getTipsterProfile, getTipsterWeeklyStats, reportTip, getMyTips,
@@ -9,8 +9,13 @@ const { generateAiTip } = require('../controllers/aiTipController');
 
 const router = Router();
 
-// Public
-router.get('/leaderboard', getLeaderboard);
+// Public — top 20 en accès libre, classement complet réservé Premium (cf. controller)
+router.get('/leaderboard', (req, res, next) => {
+  if (req.headers.authorization) {
+    return authenticate(req, res, () => attachPlan(req, res, () => getLeaderboard(req, res, next)));
+  }
+  attachPlan(req, res, () => getLeaderboard(req, res, next));
+});
 router.get('/match/:matchId', getTipsByMatch);
 router.get('/tipster/:userId', getTipsterProfile);
 router.get('/tipster/:userId/weekly-stats', getTipsterWeeklyStats);

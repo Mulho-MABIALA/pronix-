@@ -163,6 +163,13 @@ async function getMatchContext(req, res, next) {
     const match = await prisma.match.findUnique({ where: { id: req.params.id } });
     if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
 
+    // Forme récente + confrontations directes = contenu Premium.
+    // On coupe avant les requêtes lourdes pour ne pas exposer la donnée aux non-abonnés.
+    const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(req.userPlan || 'FREE');
+    if (!isPremium) {
+      return res.json({ success: true, data: { locked: true, homeForm: null, awayForm: null, h2h: null } });
+    }
+
     const formFilter = (teamName) => ({
       OR: [{ homeTeam: teamName }, { awayTeam: teamName }],
       status: 'FINISHED',

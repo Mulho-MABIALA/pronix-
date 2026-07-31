@@ -574,6 +574,8 @@
     "unfollow": "Dejar de seguir",
     "leaderboardTitle": "Clasificación de Tipsters",
     "leaderboardDesc": "Tasa de acierto calculada automáticamente sobre los pronósticos verificados.",
+    "fullLeaderboardTitle": "Clasificación completa — solo Premium",
+    "fullLeaderboardDesc": "Pásate a Premium para ver los {{total}} tipsters clasificados, más allá del top 20.",
     "disclaimer": "Estos datos son informativos. No hay garantía de ganancia. Juega de forma responsable.",
     "periodGroupLabel": "Período de la clasificación",
     "periodGlobal": "Global",

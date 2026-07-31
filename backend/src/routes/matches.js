@@ -4,6 +4,7 @@ const { attachPlan } = require('../middleware/subscription');
 const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
 const { setReminder, deleteReminder } = require('../controllers/remindersController');
+const { requirePlan } = require('../middleware/subscription');
 const { getLiveAnalysis } = require('../services/liveAnalysisService');
 const { explainValueBet } = require('../services/valueBetAiService');
 
@@ -25,8 +26,13 @@ router.get('/:id', (req, res, next) => {
   attachPlan(req, res, () => getMatchById(req, res, next));
 });
 
-// Contexte enrichi (H2H + forme) — public
-router.get('/:id/context', getMatchContext);
+// Contexte enrichi (H2H + forme) — Premium (dégradé gracieusement pour FREE, cf. controller)
+router.get('/:id/context', (req, res, next) => {
+  if (req.headers.authorization) {
+    return authenticate(req, res, () => attachPlan(req, res, () => getMatchContext(req, res, next)));
+  }
+  attachPlan(req, res, () => getMatchContext(req, res, next));
+});
 
 // Statistiques du match (possession, tirs, etc.) — public
 router.get('/:id/stats', getMatchStats);
@@ -55,8 +61,8 @@ router.post('/:id/chat', authenticate, attachPlan, async (req, res) => {
   }
 });
 
-// Analyse IA live — public (cachée 5 min)
-router.get('/:id/live-analysis', async (req, res, next) => {
+// Analyse IA live — Premium (coût IA, cachée 5 min)
+router.get('/:id/live-analysis', authenticate, requirePlan('PREMIUM'), async (req, res, next) => {
   try {
     const analysis = await getLiveAnalysis(req.params.id);
     if (!analysis) return res.json({ success: true, data: null });
@@ -64,8 +70,8 @@ router.get('/:id/live-analysis', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// Explication IA value bet — public (cachée 30 min)
-router.post('/:id/value-bet-explain', async (req, res, next) => {
+// Explication IA value bet — Premium (coût IA, cachée 30 min)
+router.post('/:id/value-bet-explain', authenticate, requirePlan('PREMIUM'), async (req, res, next) => {
   try {
     const { market, bookOdds, trueProb } = req.body;
     if (!market || !bookOdds || !trueProb) {

@@ -91,7 +91,10 @@ async function getLeaderboard(req, res, next) {
   try {
     const { period = 'global', page = '1', limit = '20' } = req.query;
     const limitNum = Math.min(Number(limit), 100);
-    const skip = (Number(page) - 1) * limitNum;
+    const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(req.userPlan || 'FREE');
+    // Classement complet réservé Premium — FREE plafonné à la 1ère page (top 20)
+    const pageNum = isPremium ? Number(page) : 1;
+    const skip = (pageNum - 1) * limitNum;
 
     const orderField = period === 'monthly' ? 'monthlyRate' : 'successRate';
     const minTips = 1;
@@ -110,7 +113,12 @@ async function getLeaderboard(req, res, next) {
       }),
     ]);
 
-    res.json({ success: true, data: stats, pagination: { total, page: Number(page), limit: limitNum } });
+    res.json({
+      success: true,
+      data: stats,
+      pagination: { total, page: pageNum, limit: limitNum, pages: Math.max(1, Math.ceil(total / limitNum)) },
+      premiumLocked: !isPremium && total > limitNum,
+    });
   } catch (err) {
     next(err);
   }

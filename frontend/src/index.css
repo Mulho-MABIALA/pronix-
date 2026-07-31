@@ -293,6 +293,18 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* ── Admin : contours verts sur toutes les cards ───────────────────
+     Cible les cards (bordure + coins arrondis) sans toucher aux
+     dividers/inputs qui utilisent border-overlay sans rounded. ──── */
+  .admin-console [class*="rounded-2xl"][class*="border-overlay/"],
+  .admin-console [class*="rounded-xl"][class*="border-overlay/"] {
+    border-color: rgba(26, 166, 86, 0.4) !important;
+  }
+  .admin-console [class*="rounded-2xl"][class*="border-overlay/"]:hover,
+  .admin-console [class*="rounded-xl"][class*="border-overlay/"]:hover {
+    border-color: rgba(26, 166, 86, 0.6) !important;
+  }
 }
 
 /* ── Reduced motion ──────────────────────────────────────────────── */

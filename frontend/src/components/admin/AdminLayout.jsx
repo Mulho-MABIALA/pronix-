@@ -195,7 +195,7 @@ export default function AdminLayout() {
   }, [collapsed]);
 
   return (
-    <div className="min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
+    <div className="admin-console min-h-screen flex" style={{ background: 'var(--color-bg)' }}>
 
       {/* ── Sidebar desktop ─────────────────────────────────────────────────── */}
       <aside className={`hidden md:flex flex-col shrink-0 fixed inset-y-0 left-0 z-30 border-r border-overlay/[0.06] transition-[width] duration-200 ${collapsed ? 'w-16' : 'w-56'}`}

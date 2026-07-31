@@ -11,8 +11,8 @@
     --color-bg:       #131415;   /* fond page — légèrement plus foncé pour mieux faire ressortir les cartes */
     --color-card:     #1e2023;   /* fond carte — +30% contraste vs bg */
     --color-card-alt: #272a2e;   /* fond carte secondaire */
-    --color-border:   rgba(255,255,255,0.10);
-    --color-border-strong: rgba(255,255,255,0.16); /* bordure active / focus */
+    --color-border:   rgba(26,166,86,0.35);
+    --color-border-strong: rgba(26,166,86,0.55); /* bordure active / focus */
     --color-hover:    rgba(255,255,255,0.05);
 
     /* ── Tokens mode clair/sombre ──────────────────────────────────────
@@ -44,8 +44,8 @@
     --color-bg:       #f8f9fa;
     --color-card:     #ffffff;
     --color-card-alt: #f1f3f5;
-    --color-border:   rgba(0,0,0,0.09);
-    --color-border-strong: rgba(0,0,0,0.16);
+    --color-border:   rgba(26,166,86,0.35);
+    --color-border-strong: rgba(26,166,86,0.55);
     --color-hover:    rgba(0,0,0,0.035);
 
     --ink-1-rgb: 17 24 39;      /* gray-900 */

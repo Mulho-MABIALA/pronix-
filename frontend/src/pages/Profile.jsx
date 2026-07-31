@@ -100,12 +100,26 @@ function Toggle({ checked, onChange, label }) {
 }
 
 /* ─── Section wrapper ───────────────────────────────────────────────────────── */
-function Section({ title, icon: Icon, children, action }) {
+const SECTION_COLORS = {
+  amber:   'bg-amber-500/15 text-amber-400',
+  primary: 'bg-primary-500/15 text-primary-400',
+  blue:    'bg-blue-500/15 text-blue-400',
+  violet:  'bg-violet-500/15 text-violet-400',
+  cyan:    'bg-cyan-500/15 text-cyan-400',
+  indigo:  'bg-indigo-500/15 text-indigo-400',
+  pink:    'bg-pink-500/15 text-pink-400',
+};
+
+function Section({ title, icon: Icon, color = 'primary', children, action }) {
   return (
     <section className="bento-card space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {Icon && <Icon size={16} className="text-ink-3" />}
+        <div className="flex items-center gap-2.5">
+          {Icon && (
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${SECTION_COLORS[color] || SECTION_COLORS.primary}`}>
+              <Icon size={15} />
+            </div>
+          )}
           <h2 className="font-semibold text-ink-1 text-sm">{title}</h2>
         </div>
         {action}
@@ -155,12 +169,7 @@ function ReferralSection() {
   };
 
   return (
-    <section className="bento-card space-y-4">
-      <div className="flex items-center gap-2">
-        <Gift size={16} className="text-ink-3" />
-        <h2 className="font-semibold text-ink-1 text-sm">{t('profile.referral.title')}</h2>
-      </div>
-
+    <Section title={t('profile.referral.title')} icon={Gift} color="pink">
       <p className="text-xs text-ink-3 leading-relaxed">
         {t('profile.referral.desc')}
       </p>
@@ -174,10 +183,10 @@ function ReferralSection() {
           </div>
           <button
             onClick={handleCopy}
-            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] font-semibold transition-colors ${
+            className={`flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-[12px] font-semibold transition-colors border ${
               copied
-                ? 'bg-primary-500/20 text-primary-400 border border-primary-500/30'
-                : 'btn-secondary'
+                ? 'bg-primary-500/20 text-primary-400 border-primary-500/30'
+                : 'bg-pink-500/15 text-pink-400 border-pink-500/25 hover:bg-pink-500/20'
             }`}
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -196,7 +205,7 @@ function ReferralSection() {
           {t('profile.referral.rewardedCount', { count: rewardedCount, days: rewardedCount * REFERRAL_REWARD_DAYS })}
         </p>
       )}
-    </section>
+    </Section>
   );
 }
 
@@ -251,7 +260,7 @@ function FavoriteLeaguesSection() {
   });
 
   return (
-    <Section title={t('profile.leagues.title')} icon={Trophy}>
+    <Section title={t('profile.leagues.title')} icon={Trophy} color="violet">
       {!editing ? (
         <>
           {favoriteCompetitions.length > 0 ? (
@@ -341,7 +350,7 @@ const SUPPORT_WHATSAPP_LINK = 'https://wa.me/221787308706';
 function ContactSection() {
   const { t } = useTranslation();
   return (
-    <Section title={t('profile.contact.title')} icon={HelpCircle}>
+    <Section title={t('profile.contact.title')} icon={HelpCircle} color="cyan">
       <p className="text-xs text-ink-3 leading-relaxed mb-1">
         {t('profile.contact.desc')}
       </p>
@@ -509,6 +518,7 @@ function SupportTicketsSection() {
     <Section
       title={t('profile.tickets.title')}
       icon={MessageCircle}
+      color="indigo"
       action={
         <button
           onClick={() => setShowNew((s) => !s)}
@@ -671,7 +681,7 @@ export default function Profile() {
               className="hidden"
               onChange={handleAvatarChange}
             />
-            <p className="text-xs text-ink-4 text-center mt-1.5">{t('profile.changePhoto')}</p>
+            <p className="text-xs text-primary-400 font-semibold text-center mt-1.5">{t('profile.changePhoto')}</p>
           </div>
 
           {/* Infos */}
@@ -791,7 +801,7 @@ export default function Profile() {
         ) : (
           <button
             onClick={() => { setForm(initForm()); setEditing(true); }}
-            className="btn-secondary w-full mt-4 flex items-center justify-center gap-2"
+            className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
           >
             <Pencil size={14} /> {t('profile.editProfile')}
           </button>
@@ -799,7 +809,7 @@ export default function Profile() {
       </section>
 
       {/* ── Abonnement ────────────────────────────────────────────────────────── */}
-      <Section title={t('profile.subscription')} icon={Crown}>
+      <Section title={t('profile.subscription')} icon={Crown} color="amber">
         {subLoading ? (
           <SkeletonCard />
         ) : subscription ? (
@@ -818,8 +828,10 @@ export default function Profile() {
               </div>
               <Link
                 to="/abonnement"
-                className={`btn-secondary text-xs px-3 py-1.5 flex items-center gap-1 ${
-                  subscription.plan?.code === 'FREE' ? 'border-amber-500/30 text-amber-400 hover:border-amber-400' : ''
+                className={`text-xs px-3 py-1.5 rounded-lg font-semibold flex items-center gap-1 border transition-colors ${
+                  subscription.plan?.code === 'FREE'
+                    ? 'bg-amber-500/15 border-amber-500/30 text-amber-400 hover:bg-amber-500/20'
+                    : 'bg-primary-500/10 border-primary-500/25 text-primary-400 hover:bg-primary-500/15'
                 }`}
               >
                 {subscription.plan?.code === 'FREE' ? (
@@ -863,7 +875,7 @@ export default function Profile() {
 
       {/* ── Statistiques tipster ──────────────────────────────────────────────── */}
       {stats && (
-        <Section title={t('profile.myStats')} icon={TrendingUp}>
+        <Section title={t('profile.myStats')} icon={TrendingUp} color="primary">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bento-card py-3">
               <p className="text-xl font-display font-bold text-ink-1">{stats.totalTips}</p>
@@ -926,7 +938,7 @@ export default function Profile() {
       )}
 
       {/* ── Sécurité / compte ─────────────────────────────────────────────────── */}
-      <Section title={t('profile.account')} icon={Shield}>
+      <Section title={t('profile.account')} icon={Shield} color="blue">
         <div className="space-y-2">
           <div className="flex items-center justify-between py-2 border-b border-overlay/[0.05]">
             <div className="flex items-center gap-2">

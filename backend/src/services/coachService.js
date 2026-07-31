@@ -124,15 +124,31 @@ score = note globale du parieur de 0 à 100. Sois bienveillant mais honnête. To
   try {
     const resp = await client.messages.create({
       model: 'claude-haiku-4-5-20251001',
-      max_tokens: 500,
+      // 500 tokens suffisaient rarement à boucler le JSON (résumé + 3 conseils
+      // détaillés + score) en français — la réponse était coupée avant la
+      // accolade fermante, JSON.parse échouait, et on retombait ici en
+      // silence sur advice: null. Marge relevée pour laisser la réponse
+      // se terminer proprement.
+      max_tokens: 900,
       messages: [{ role: 'user', content: prompt }],
     });
 
+    const stopReason = resp.stop_reason;
     const text = (resp.content[0]?.text || '').trim();
     const json = text.match(/\{[\s\S]*\}/);
-    if (!json) return { hasEnoughData: true, stats, advice: null };
+    if (!json) {
+      console.error('[Coach] Pas de JSON dans la réponse Claude (stop_reason:', stopReason, ') texte:', text.slice(0, 300));
+      return { hasEnoughData: true, stats, advice: null };
+    }
 
-    const advice = JSON.parse(json[0]);
+    let advice;
+    try {
+      advice = JSON.parse(json[0]);
+    } catch (parseErr) {
+      console.error('[Coach] JSON invalide (stop_reason:', stopReason, '):', parseErr.message, '—', json[0].slice(0, 300));
+      return { hasEnoughData: true, stats, advice: null };
+    }
+
     return { hasEnoughData: true, stats, advice };
   } catch (err) {
     console.error('[Coach] Erreur Claude:', err.message);

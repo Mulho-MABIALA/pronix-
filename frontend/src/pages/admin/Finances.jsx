@@ -516,7 +516,7 @@ export default function AdminFinances() {
                               onClick={() => {
                                 if (window.confirm('Supprimer cette dépense ?')) delMutation.mutate(exp.id);
                               }}
-                              className="p-1.5 rounded-lg text-ink-4 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors"
+                              className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                               title="Supprimer"
                             >
                               <Trash2 size={14} />

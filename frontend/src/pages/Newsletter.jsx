@@ -83,7 +83,7 @@ export default function Newsletter() {
                 />
               </div>
               {status === 'error' && (
-                <p className="text-danger-400 text-sm">{errorMsg}</p>
+                <p className="text-red-400 text-sm">{errorMsg}</p>
               )}
               <button type="submit" disabled={status === 'loading'} className="btn-primary w-full">
                 {status === 'loading' ? t('newsletter.sending') : t('newsletter.subscribeBtn')}

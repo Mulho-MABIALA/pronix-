@@ -167,7 +167,7 @@ export default function TicketHistory() {
                 <button
                   onClick={() => deleteMutation.mutate(ticket.id)}
                   disabled={deleteMutation.isPending}
-                  className="p-1.5 rounded-lg text-ink-4 hover:text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
+                  className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-50"
                   aria-label={t('machine.deleteTicket')}
                 >
                   <Trash2 size={13} />

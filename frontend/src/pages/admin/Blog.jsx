@@ -269,7 +269,7 @@ export default function AdminBlog() {
                   onClick={() => {
                     if (window.confirm('Supprimer cet article ?')) deleteMutation.mutate(post.id);
                   }}
-                  className="p-1.5 rounded-lg text-ink-3 hover:text-red-400 hover:bg-surface-700 transition-colors"
+                  className="p-1.5 rounded-lg text-red-400 hover:bg-surface-700 transition-colors"
                   title="Supprimer"
                 >
                   <Trash2 size={14} />

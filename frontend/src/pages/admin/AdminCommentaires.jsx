@@ -126,7 +126,7 @@ export default function AdminCommentaires() {
                 {/* Actions */}
                 <button
                   onClick={() => setConfirm(comment.id)}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/15 text-ink-3 hover:text-red-400 transition-all shrink-0"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg opacity-0 group-hover:opacity-100 hover:bg-red-500/15 text-red-400 transition-all shrink-0"
                 >
                   <Trash2 size={15} />
                 </button>

@@ -189,7 +189,7 @@ export default function AdminPronostics() {
                           <button
                             onClick={() => setConfirm(tip.id)}
                             title="Supprimer"
-                            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/15 text-ink-3 hover:text-red-400 transition-colors"
+                            className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-500/15 text-red-400 transition-colors"
                           >
                             <Trash2 size={14} />
                           </button>

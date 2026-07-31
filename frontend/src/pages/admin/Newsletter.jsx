@@ -134,7 +134,7 @@ function CampaignsHistory() {
             <span className="flex items-center gap-1"><Users size={12} /> {c.recipientCount} destinataire(s)</span>
             <span className="flex items-center gap-1 text-primary-400"><CheckCircle2 size={12} /> {c.sentCount} envoyé(s)</span>
             {c.failedCount > 0 && (
-              <span className="flex items-center gap-1 text-danger-400"><XCircle size={12} /> {c.failedCount} échec(s)</span>
+              <span className="flex items-center gap-1 text-red-400"><XCircle size={12} /> {c.failedCount} échec(s)</span>
             )}
             <span className="ml-auto">{format(new Date(c.createdAt), 'dd MMM yyyy à HH:mm', { locale: fr })}</span>
           </div>
@@ -296,7 +296,7 @@ export default function AdminNewsletter() {
                         onClick={() => {
                           if (confirm(`Supprimer ${s.email} de la newsletter ?`)) deleteMutation.mutate(s.id);
                         }}
-                        className="p-1.5 rounded-lg text-danger-400 hover:bg-danger-500/10 transition-colors"
+                        className="p-1.5 rounded-lg text-red-400 hover:bg-red-500/10 transition-colors"
                       >
                         <Trash2 size={14} />
                       </button>

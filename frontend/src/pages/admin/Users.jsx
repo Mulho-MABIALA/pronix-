@@ -590,7 +590,7 @@ export default function AdminUsers() {
 
         {/* Plan */}
         <select value={planFilter} onChange={e => { setPlanFilter(e.target.value); setPage(1); }}
-          className="input h-10 text-sm px-3 appearance-none">
+          className="input w-auto min-w-[130px] h-10 text-sm px-3 appearance-none">
           <option value="">Tous les plans</option>
           <option value="FREE">Gratuit</option>
           <option value="PREMIUM">Premium</option>
@@ -599,7 +599,7 @@ export default function AdminUsers() {
 
         {/* Statut */}
         <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setPage(1); }}
-          className="input h-10 text-sm px-3 appearance-none">
+          className="input w-auto min-w-[110px] h-10 text-sm px-3 appearance-none">
           <option value="">Tous statuts</option>
           <option value="true">Actifs</option>
           <option value="false">Suspendus</option>
@@ -607,7 +607,7 @@ export default function AdminUsers() {
 
         {/* Langue */}
         <select value={languageFilter} onChange={e => { setLanguageFilter(e.target.value); setPage(1); }}
-          className="input h-10 text-sm px-3 appearance-none">
+          className="input w-auto min-w-[120px] h-10 text-sm px-3 appearance-none">
           <option value="">Toutes langues</option>
           <option value="fr">Français</option>
           <option value="en">English</option>
@@ -617,7 +617,7 @@ export default function AdminUsers() {
 
         {/* Devise */}
         <select value={currencyFilter} onChange={e => { setCurrencyFilter(e.target.value); setPage(1); }}
-          className="input h-10 text-sm px-3 appearance-none">
+          className="input w-auto min-w-[130px] h-10 text-sm px-3 appearance-none">
           <option value="">Toutes devises</option>
           <option value="NONE">Non défini (auto)</option>
           <option value="FCFA">FCFA</option>
@@ -631,7 +631,7 @@ export default function AdminUsers() {
         </select>
 
         {/* Date preset chips */}
-        <div className="flex gap-1">
+        <div className="flex gap-1 flex-wrap">
           {DATE_PRESETS.map((p, i) => (
             <button key={i} onClick={() => { setDatePreset(i); setPage(1); }}
               className={`px-3 h-10 rounded-xl border text-xs font-medium transition-colors ${
@@ -643,7 +643,7 @@ export default function AdminUsers() {
 
         {/* Tri */}
         <select value={sortIdx} onChange={e => setSortIdx(Number(e.target.value))}
-          className="input h-10 text-sm px-3 appearance-none">
+          className="input w-auto min-w-[150px] h-10 text-sm px-3 appearance-none">
           {ORDER_OPTIONS.map((o, i) => <option key={i} value={i}>{o.label}</option>)}
         </select>
       </div>

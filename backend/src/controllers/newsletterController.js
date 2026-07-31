@@ -185,22 +185,20 @@ async function importExistingUsers(req, res, next) {
   }
 }
 
-// ── Admin: envoyer un email à tous les abonnés actifs ────────────────────────
+// ── Admin: envoyer une campagne (tous les abonnés actifs, ou une sélection) ──
 // Répond immédiatement avec le nombre de destinataires, puis envoie en arrière-
 // plan avec un léger espacement entre chaque envoi (limite de débit Resend).
+// `message` est désormais du HTML produit par l'éditeur riche de l'admin
+// (gras/italique/titres/listes/liens) et inséré tel quel — on ne le découpe
+// plus en paragraphes ligne par ligne comme avant.
 function buildBroadcastHtml({ subject, message, email }) {
   const appUrl = env.FRONTEND_URL || 'https://fpronix.com';
   const unsubscribeUrl = `${appUrl}/newsletter/desinscription?email=${encodeURIComponent(email)}`;
-  const paragraphs = message
-    .split('\n')
-    .filter((line) => line.trim() !== '')
-    .map((line) => `<p style="margin: 0 0 14px;">${line}</p>`)
-    .join('');
 
   return `
     <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #111;">
       <h2 style="color: #16a34a; margin-bottom: 16px;">${subject}</h2>
-      ${paragraphs}
+      <div>${message}</div>
       <p style="margin-top: 24px;"><a href="${appUrl}" style="color: #16a34a; font-weight: bold;">Voir fpronix</a></p>
       <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
       <p style="font-size: 12px; color: #888;">
@@ -213,24 +211,34 @@ function buildBroadcastHtml({ subject, message, email }) {
 
 async function broadcastEmail(req, res, next) {
   try {
-    const { subject, message } = req.body || {};
-    if (!subject || !message || typeof subject !== 'string' || typeof message !== 'string') {
-      throw new AppError('Sujet et message sont requis', 400, 'MISSING_FIELDS');
+    // `content` est le nouveau nom (HTML riche) ; `message` reste accepté pour
+    // compatibilité avec d'anciens appels. `recipientIds`, s'il est fourni et
+    // non vide, restreint l'envoi à cette sélection d'abonnés actifs — sinon
+    // l'envoi part à tous les abonnés actifs.
+    const { subject, content, message, recipientIds } = req.body || {};
+    const body = content ?? message;
+    if (!subject || !body || typeof subject !== 'string' || typeof body !== 'string') {
+      throw new AppError('Sujet et contenu sont requis', 400, 'MISSING_FIELDS');
+    }
+
+    const where = { isActive: true };
+    if (Array.isArray(recipientIds) && recipientIds.length > 0) {
+      where.id = { in: recipientIds };
     }
 
     const subscribers = await prisma.newsletterSubscriber.findMany({
-      where: { isActive: true },
+      where,
       select: { email: true },
     });
 
     if (subscribers.length === 0) {
-      return res.json({ success: true, message: 'Aucun abonné actif', sent: 0 });
+      return res.json({ success: true, message: 'Aucun destinataire à contacter', sent: 0 });
     }
 
     const campaign = await prisma.newsletterCampaign.create({
       data: {
         subject,
-        message,
+        message: body,
         recipientCount: subscribers.length,
         status: 'sending',
         sentByEmail: req.user?.email || null,
@@ -254,7 +262,7 @@ async function broadcastEmail(req, res, next) {
           await sendEmail({
             to: sub.email,
             subject,
-            html: buildBroadcastHtml({ subject, message, email: sub.email }),
+            html: buildBroadcastHtml({ subject, message: body, email: sub.email }),
           });
           sentCount++;
         } catch (err) {

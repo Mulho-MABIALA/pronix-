@@ -1,6 +1,9 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus, Send, X, History, Clock, XCircle } from 'lucide-react';
+import {
+  Mail, Download, Trash2, Search, Users, CheckCircle2, UserPlus, Send, X, History, Clock, XCircle,
+  UserCheck, Bold, Italic, Underline, Heading1, Heading2, List, ListOrdered, Link2, Undo2, Redo2, Eye, EyeOff,
+} from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -17,12 +20,79 @@ function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = '
   );
 }
 
+// ── Barre d'outils de l'éditeur riche ────────────────────────────────────────
+// Éditeur volontairement léger (contentEditable + document.execCommand),
+// suffisant pour du HTML basique (gras/italique/souligné/titres/listes/lien)
+// sans dépendance externe. Le div éditable reste monté en permanence (juste
+// masqué en mode "Prévisualiser") pour ne jamais perdre le contenu tapé.
+function ToolbarButton({ icon: Icon, onClick, title }) {
+  return (
+    <button
+      type="button"
+      onMouseDown={(e) => e.preventDefault()} // évite de perdre la sélection texte
+      onClick={onClick}
+      title={title}
+      className="p-1.5 rounded-lg text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.06] transition-colors"
+    >
+      <Icon size={14} />
+    </button>
+  );
+}
+
 function ComposeModal({ activeCount, onClose, onSent }) {
   const [subject, setSubject] = useState('');
-  const [message, setMessage] = useState('');
+  const [recipientMode, setRecipientMode] = useState('all'); // 'all' | 'select'
+  const [selectedIds, setSelectedIds] = useState(new Set());
+  const [subSearch, setSubSearch] = useState('');
+  const [preview, setPreview] = useState(false);
+  const [content, setContent] = useState('');
+  const editorRef = useRef(null);
+
+  const { data: subsData, isLoading: subsLoading } = useQuery({
+    queryKey: ['admin-newsletter-active-full'],
+    queryFn: () =>
+      api.get('/newsletter/admin/subscribers', { params: { active: true, limit: 200 } }).then((r) => r.data),
+    enabled: recipientMode === 'select',
+    staleTime: 60_000,
+  });
+
+  const allSubs = subsData?.data || [];
+  const filteredSubs = subSearch
+    ? allSubs.filter((s) => s.email.toLowerCase().includes(subSearch.toLowerCase()))
+    : allSubs;
+
+  const toggleSub = (id) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  };
+
+  const selectAllFiltered = () => setSelectedIds(new Set(filteredSubs.map((s) => s.id)));
+
+  const recipientCount = recipientMode === 'all' ? activeCount : selectedIds.size;
+
+  const syncContent = () => setContent(editorRef.current?.innerHTML || '');
+
+  const exec = (cmd, value) => {
+    document.execCommand(cmd, false, value);
+    editorRef.current?.focus();
+    syncContent();
+  };
+
+  const handleLink = () => {
+    const url = window.prompt('URL du lien :', 'https://');
+    if (url) exec('createLink', url);
+  };
 
   const sendMutation = useMutation({
-    mutationFn: () => api.post('/newsletter/admin/broadcast', { subject, message }),
+    mutationFn: () =>
+      api.post('/newsletter/admin/broadcast', {
+        subject,
+        content,
+        ...(recipientMode === 'select' ? { recipientIds: [...selectedIds] } : {}),
+      }),
     onSuccess: (res) => {
       alert(res?.data?.message || 'Envoi lancé.');
       onSent?.();
@@ -31,55 +101,182 @@ function ComposeModal({ activeCount, onClose, onSent }) {
     onError: (e) => alert(e?.response?.data?.message || "Erreur lors de l'envoi"),
   });
 
+  const handleSend = () => {
+    if (!subject.trim() || !content.trim()) {
+      alert('Sujet et contenu sont requis.');
+      return;
+    }
+    if (recipientCount === 0) {
+      alert('Sélectionne au moins un destinataire.');
+      return;
+    }
+    if (confirm(`Envoyer cette campagne à ${recipientCount} destinataire(s) ?`)) sendMutation.mutate();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4" onClick={onClose}>
       <div
-        className="w-full max-w-lg rounded-2xl border border-overlay/[0.08] p-5 space-y-4"
+        className="w-full max-w-lg rounded-2xl border border-overlay/[0.08] flex flex-col max-h-[88vh]"
         style={{ background: 'var(--color-card)' }}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between">
-          <h2 className="font-display font-bold text-lg text-ink-1">Envoyer un email</h2>
+        {/* En-tête */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-overlay/[0.06] shrink-0">
+          <h2 className="font-display font-bold text-lg text-ink-1 flex items-center gap-2">
+            <Send size={16} className="text-primary-400" /> Envoyer une campagne
+          </h2>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-overlay/[0.06] text-ink-3">
             <X size={18} />
           </button>
         </div>
-        <p className="text-xs text-ink-4">
-          Cet email sera envoyé à <span className="text-ink-2 font-semibold">{activeCount}</span> abonné(s) actif(s).
-        </p>
-        <div>
-          <label className="block text-xs font-medium text-ink-3 mb-1.5">Sujet</label>
-          <input
-            className="input"
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Ex : Les meilleurs pronostics de la semaine"
-          />
+
+        {/* Corps scrollable */}
+        <div className="px-5 py-4 space-y-4 overflow-y-auto">
+          <div>
+            <label className="block text-xs font-medium text-ink-3 mb-1.5">Sujet *</label>
+            <input
+              className="input"
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              placeholder="Ex : Les meilleurs pronostics de la semaine"
+            />
+          </div>
+
+          {/* Destinataires */}
+          <div>
+            <p className="text-xs font-medium text-ink-3 mb-1.5">Destinataires</p>
+            <div className="flex items-center gap-2 mb-2">
+              <button
+                type="button"
+                onClick={() => setRecipientMode('all')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                  recipientMode === 'all' ? 'bg-primary-500/15 text-primary-400 border border-primary-500/30' : 'text-ink-3 bg-overlay/[0.04] border border-transparent hover:text-ink-1'
+                }`}
+              >
+                <Users size={13} /> Tous les abonnés actifs ({activeCount})
+              </button>
+              <button
+                type="button"
+                onClick={() => setRecipientMode('select')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${
+                  recipientMode === 'select' ? 'bg-primary-500/15 text-primary-400 border border-primary-500/30' : 'text-ink-3 bg-overlay/[0.04] border border-transparent hover:text-ink-1'
+                }`}
+              >
+                <UserCheck size={13} /> Sélectionner
+              </button>
+            </div>
+
+            {recipientMode === 'select' && (
+              <div className="rounded-xl border border-overlay/[0.07] overflow-hidden">
+                <div className="flex items-center gap-2 px-3 py-2 border-b border-overlay/[0.06]">
+                  <Search size={13} className="text-ink-4 shrink-0" />
+                  <input
+                    value={subSearch}
+                    onChange={(e) => setSubSearch(e.target.value)}
+                    placeholder="Rechercher un abonné..."
+                    className="flex-1 bg-transparent text-sm text-ink-2 placeholder-ph-b outline-none"
+                  />
+                  <button
+                    type="button"
+                    onClick={selectAllFiltered}
+                    className="shrink-0 text-xs font-semibold text-primary-400 hover:text-primary-300"
+                  >
+                    Tout sélectionner
+                  </button>
+                </div>
+                <div className="max-h-44 overflow-y-auto">
+                  {subsLoading ? (
+                    <p className="text-xs text-ink-4 text-center py-4">Chargement…</p>
+                  ) : filteredSubs.length === 0 ? (
+                    <p className="text-xs text-ink-4 text-center py-4">Aucun abonné trouvé.</p>
+                  ) : (
+                    filteredSubs.map((s) => (
+                      <label
+                        key={s.id}
+                        className="flex items-center gap-2.5 px-3 py-2 hover:bg-overlay/[0.03] cursor-pointer border-b border-overlay/[0.04] last:border-0"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(s.id)}
+                          onChange={() => toggleSub(s.id)}
+                          className="accent-primary-500"
+                        />
+                        <span className="text-sm text-ink-2 truncate">{s.email}</span>
+                      </label>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Contenu riche */}
+          <div>
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="block text-xs font-medium text-ink-3">Contenu (HTML supporté) *</label>
+              <button
+                type="button"
+                onClick={() => setPreview((v) => !v)}
+                className="flex items-center gap-1 text-xs font-semibold text-primary-400 hover:text-primary-300"
+              >
+                {preview ? <EyeOff size={12} /> : <Eye size={12} />}
+                {preview ? 'Édition' : 'Prévisualiser'}
+              </button>
+            </div>
+
+            <div className="rounded-xl border border-overlay/[0.07] overflow-hidden">
+              {!preview && (
+                <div className="flex items-center gap-0.5 px-2 py-1.5 border-b border-overlay/[0.06] flex-wrap">
+                  <ToolbarButton icon={Bold} title="Gras" onClick={() => exec('bold')} />
+                  <ToolbarButton icon={Italic} title="Italique" onClick={() => exec('italic')} />
+                  <ToolbarButton icon={Underline} title="Souligné" onClick={() => exec('underline')} />
+                  <span className="w-px h-4 bg-overlay/[0.08] mx-1" />
+                  <ToolbarButton icon={Heading1} title="Titre 1" onClick={() => exec('formatBlock', '<h2>')} />
+                  <ToolbarButton icon={Heading2} title="Titre 2" onClick={() => exec('formatBlock', '<h3>')} />
+                  <span className="w-px h-4 bg-overlay/[0.08] mx-1" />
+                  <ToolbarButton icon={List} title="Liste à puces" onClick={() => exec('insertUnorderedList')} />
+                  <ToolbarButton icon={ListOrdered} title="Liste numérotée" onClick={() => exec('insertOrderedList')} />
+                  <ToolbarButton icon={Link2} title="Lien" onClick={handleLink} />
+                  <span className="w-px h-4 bg-overlay/[0.08] mx-1" />
+                  <ToolbarButton icon={Undo2} title="Annuler" onClick={() => exec('undo')} />
+                  <ToolbarButton icon={Redo2} title="Rétablir" onClick={() => exec('redo')} />
+                </div>
+              )}
+
+              {/* Éditeur — toujours monté, juste masqué en prévisualisation */}
+              <div
+                ref={editorRef}
+                contentEditable
+                onInput={syncContent}
+                data-placeholder="Écris le contenu de ta campagne ici..."
+                className={`min-h-[160px] max-h-64 overflow-y-auto px-3 py-2.5 text-sm text-ink-2 outline-none [&_h2]:text-lg [&_h2]:font-bold [&_h3]:text-base [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-primary-400 [&_a]:underline empty:before:content-[attr(data-placeholder)] empty:before:text-ph-b ${preview ? 'hidden' : ''}`}
+              />
+
+              {preview && (
+                <div
+                  className="min-h-[160px] max-h-64 overflow-y-auto px-3 py-2.5 text-sm text-ink-2 [&_h2]:text-lg [&_h2]:font-bold [&_h3]:text-base [&_h3]:font-bold [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_a]:text-primary-400 [&_a]:underline"
+                  dangerouslySetInnerHTML={{ __html: content || '<span class="text-ink-4">Rien à prévisualiser pour l\'instant.</span>' }}
+                />
+              )}
+            </div>
+          </div>
         </div>
-        <div>
-          <label className="block text-xs font-medium text-ink-3 mb-1.5">Message</label>
-          <textarea
-            className="input min-h-[160px] resize-y"
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            placeholder="Écris ton message ici. Chaque ligne devient un paragraphe."
-          />
-        </div>
-        <div className="flex gap-2 pt-1">
-          <button
-            onClick={() => {
-              if (!subject.trim() || !message.trim()) {
-                alert('Sujet et message sont requis.');
-                return;
-              }
-              if (confirm(`Envoyer cet email à ${activeCount} abonné(s) ?`)) sendMutation.mutate();
-            }}
-            disabled={sendMutation.isPending}
-            className="btn-primary flex-1 flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            <Send size={14} /> {sendMutation.isPending ? 'Envoi…' : 'Envoyer'}
-          </button>
-          <button onClick={onClose} className="btn-secondary flex-1">Annuler</button>
+
+        {/* Pied — compteur + actions */}
+        <div className="flex items-center justify-between gap-3 px-5 py-4 border-t border-overlay/[0.06] shrink-0">
+          <p className="text-xs text-ink-4">
+            <span className="text-ink-2 font-semibold">{recipientCount}</span> destinataire(s) sélectionné(s)
+          </p>
+          <div className="flex items-center gap-2">
+            <button onClick={onClose} className="btn-secondary text-sm">Annuler</button>
+            <button
+              onClick={handleSend}
+              disabled={sendMutation.isPending}
+              className="btn-primary flex items-center gap-2 text-sm disabled:opacity-50"
+            >
+              <Send size={14} /> {sendMutation.isPending ? 'Envoi…' : 'Envoyer'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

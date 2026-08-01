@@ -60,7 +60,7 @@ function UserAvatar({ user, size = 'sm' }) {
 
 function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
   return (
-    <div className="rounded-xl border border-overlay/[0.09] p-4 flex items-center gap-3"
+    <div className="rounded-xl border border-overlay/[0.09] p-4 flex items-center gap-3 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.06)' }}>
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${color} bg-current/10`}
         style={{ background: 'rgba(var(--tw-ring-color,0,0,0),0.08)' }}>
@@ -672,7 +672,7 @@ export default function AdminUsers() {
       </div>
 
       {/* Tableau */}
-      <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden"
+      <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden shine-subtle"
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
         <div className="overflow-x-auto">
           <table className="w-full">

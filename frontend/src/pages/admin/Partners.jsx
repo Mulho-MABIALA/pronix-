@@ -16,7 +16,7 @@ function formatAmount(amount) {
 // Carte de stat globale (en haut de page) — même style que /admin/finances.
 function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
   return (
-    <div className="rounded-2xl border border-overlay/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-overlay/[0.06] p-4 shine-subtle" style={{ background: 'var(--color-card)' }}>
       <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
         <Icon size={16} className={color} />
       </div>
@@ -287,7 +287,7 @@ export default function AdminPartners() {
         )}
 
         {partners.map((p) => (
-          <div key={p.id} className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+          <div key={p.id} className="rounded-2xl border border-overlay/[0.06] overflow-hidden shine-subtle" style={{ background: 'var(--color-card)' }}>
             <div className="p-4 flex items-center gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 flex-wrap">

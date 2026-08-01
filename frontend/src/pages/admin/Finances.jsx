@@ -34,7 +34,7 @@ const CATEGORY_LABEL = {
 
 function StatCard({ label, value, sub, trend, icon: Icon, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
   return (
-    <div className="rounded-2xl border border-overlay/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-overlay/[0.06] p-5 shine-subtle" style={{ background: 'var(--color-card)' }}>
       <div className="flex items-start justify-between mb-3">
         <div className={`w-9 h-9 rounded-xl flex items-center justify-center ${bg}`}>
           <Icon size={18} className={color} />
@@ -282,7 +282,7 @@ export default function AdminFinances() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-overlay/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
+            <div className="rounded-2xl border border-overlay/[0.06] p-5 shine-subtle" style={{ background: 'var(--color-card)' }}>
               <h2 className="text-sm font-semibold text-ink-3 mb-4">Par méthode de paiement</h2>
               <div className="space-y-3">
                 {Object.keys(PROVIDER_LABEL).map((provider) => {
@@ -313,7 +313,7 @@ export default function AdminFinances() {
               </div>
             </div>
 
-            <div className="rounded-2xl border border-overlay/[0.06] p-5" style={{ background: 'var(--color-card)' }}>
+            <div className="rounded-2xl border border-overlay/[0.06] p-5 shine-subtle" style={{ background: 'var(--color-card)' }}>
               <h2 className="text-sm font-semibold text-ink-3 mb-4">Par statut</h2>
               <div className="space-y-2.5">
                 {Object.entries(STATUS_STYLE).map(([status, { label, cls, Icon }]) => (
@@ -335,7 +335,7 @@ export default function AdminFinances() {
 
       {/* ── ENTRÉES ── */}
       {activeTab === 'transactions' && (
-        <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+        <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden shine-subtle" style={{ background: 'var(--color-card)' }}>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -470,7 +470,7 @@ export default function AdminFinances() {
             </form>
           )}
 
-          <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+          <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden shine-subtle" style={{ background: 'var(--color-card)' }}>
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>

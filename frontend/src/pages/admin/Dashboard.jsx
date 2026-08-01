@@ -81,7 +81,7 @@ function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'i
 
   const inner = (
     <div
-      className="group relative overflow-hidden rounded-2xl border p-5 flex flex-col gap-4 h-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer"
+      className="group relative overflow-hidden rounded-2xl border p-5 flex flex-col gap-4 h-full transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl cursor-pointer shine-subtle"
       style={{
         background: 'var(--color-card)',
         borderColor: 'rgb(var(--overlay-rgb) / 0.11)',
@@ -134,7 +134,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
   const animated = useCountUp(hasNumeric ? numeric : 0, 900);
   return (
     <div
-      className="flex items-center gap-3 rounded-xl border border-overlay/[0.11] px-4 py-3.5"
+      className="flex items-center gap-3 rounded-xl border border-overlay/[0.11] px-4 py-3.5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}
     >
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClass}`}>
@@ -154,7 +154,7 @@ function StatPill({ icon: Icon, value, label, iconClass }) {
 
 function RevenueChart({ data }) {
   if (!data?.length) return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5 flex items-center justify-center h-64"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 flex items-center justify-center h-64 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <p className="text-sm text-ink-3">Aucune donnée</p>
     </div>
@@ -191,7 +191,7 @@ function RevenueChart({ data }) {
     : null;
 
   return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-start justify-between mb-1">
         <div>
@@ -263,7 +263,7 @@ function ConversionCard({ data, kpis }) {
   const premiumArc = (premium / total) * circ;
 
   return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-5">
         <div>
@@ -335,7 +335,7 @@ const AVATAR_COLORS = [
 function TopTipsters({ data }) {
   if (!data?.length) return null;
   return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -391,7 +391,7 @@ function TopTipsters({ data }) {
 function RecentUsers({ data }) {
   if (!data?.length) return null;
   return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
@@ -507,7 +507,7 @@ function QuickActions() {
   };
 
   return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <div className="flex items-center gap-2 mb-4">
         <div className="w-7 h-7 rounded-lg bg-overlay/[0.05] flex items-center justify-center">
@@ -557,7 +557,7 @@ const NAV_SHORTCUTS = [
 
 function NavShortcuts() {
   return (
-    <div className="rounded-2xl border border-overlay/[0.11] p-5"
+    <div className="rounded-2xl border border-overlay/[0.11] p-5 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
       <p className="text-sm font-semibold text-ink-1 mb-4">Navigation rapide</p>
       <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
@@ -597,7 +597,7 @@ export default function AdminDashboard() {
 
       {/* ── Header ───────────────────────────────────────────────────────────── */}
       <div
-        className="rounded-2xl border border-overlay/[0.11] p-5 flex items-start justify-between gap-4"
+        className="rounded-2xl border border-overlay/[0.11] p-5 flex items-start justify-between gap-4 shine-subtle"
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.09), 0 4px 24px rgb(var(--surface-900-rgb) / 0.3)' }}
       >
         <div className="flex items-center gap-4">

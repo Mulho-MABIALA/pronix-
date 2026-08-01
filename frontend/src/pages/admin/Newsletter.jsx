@@ -10,7 +10,7 @@ import api from '../../services/api';
 
 function StatCard({ icon: Icon, label, value, color = 'text-primary-400', bg = 'bg-primary-500/10' }) {
   return (
-    <div className="rounded-2xl border border-overlay/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
+    <div className="rounded-2xl border border-overlay/[0.06] p-4 shine-subtle" style={{ background: 'var(--color-card)' }}>
       <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-3 ${bg}`}>
         <Icon size={16} className={color} />
       </div>
@@ -310,7 +310,7 @@ function CampaignsHistory() {
   return (
     <div className="space-y-3">
       {campaigns.map((c) => (
-        <div key={c.id} className="rounded-2xl border border-overlay/[0.06] p-4" style={{ background: 'var(--color-card)' }}>
+        <div key={c.id} className="rounded-2xl border border-overlay/[0.06] p-4 shine-subtle" style={{ background: 'var(--color-card)' }}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-ink-1 truncate">{c.subject}</p>
@@ -457,7 +457,7 @@ export default function AdminNewsletter() {
         />
       </div>
 
-      <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden" style={{ background: 'var(--color-card)' }}>
+      <div className="rounded-2xl border border-overlay/[0.06] overflow-hidden shine-subtle" style={{ background: 'var(--color-card)' }}>
         {isLoading ? (
           <p className="text-sm text-ink-4 px-4 py-6 text-center">Chargement…</p>
         ) : subscribers.length === 0 ? (

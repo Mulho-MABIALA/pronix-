@@ -106,7 +106,7 @@ export default function AdminPronostics() {
 
       {/* Table */}
       <div
-        className="rounded-2xl border border-overlay/[0.11] overflow-hidden"
+        className="rounded-2xl border border-overlay/[0.11] overflow-hidden shine-subtle"
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.06)' }}
       >
         {isLoading || isFetching ? (

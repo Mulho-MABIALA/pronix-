@@ -99,7 +99,9 @@ function SidebarContent({ onClose, collapsed }) {
       {/* ── Logo ───────────────────────────────────────────────────────────── */}
       <div className={`flex items-center h-[60px] shrink-0 border-b border-overlay/[0.06] ${collapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
         <Link to="/admin" onClick={onClose} className="flex items-center gap-2.5 group min-w-0">
-          <img src="/logo-circle.png" alt="fpronix" className="w-8 h-8 rounded-full shrink-0" />
+          <span className="logo-shine rounded-full shrink-0">
+            <img src="/logo-circle.png" alt="fpronix" className="w-8 h-8 rounded-full block" />
+          </span>
           {!collapsed && (
             <div className="min-w-0">
               <p className="font-display font-bold text-[13px] text-ink-1 leading-tight tracking-tight truncate">

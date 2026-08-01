@@ -65,13 +65,32 @@
       background: radial-gradient(circle, rgba(26,166,86,.35) 0%, rgba(26,166,86,0) 70%);
       animation: splashGlow 2.2s ease-in-out infinite;
     }
+    .splash-logo-wrap {
+      position: relative;
+      display: inline-block;
+      overflow: hidden;
+      border-radius: 50%;
+      animation: splashPulse 1.8s ease-in-out infinite;
+    }
+    .splash-logo-wrap::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.65) 50%, transparent 65%);
+      background-size: 250% 100%;
+      background-position: 200% 0;
+      background-repeat: no-repeat;
+      mix-blend-mode: overlay;
+      animation: splashShine 3.4s ease-in-out infinite;
+      pointer-events: none;
+    }
     .splash-logo {
       width: 72px;
       height: 72px;
       border-radius: 50%;
       position: relative;
+      display: block;
       box-shadow: 0 8px 30px rgba(0,0,0,.35);
-      animation: splashPulse 1.8s ease-in-out infinite;
     }
     .splash-word {
       margin-top: 18px;
@@ -117,6 +136,11 @@
       0%   { transform: translateX(-140%); }
       100% { transform: translateX(240%); }
     }
+    @keyframes splashShine {
+      0%   { background-position: 200% 0; }
+      18%  { background-position: -50% 0; }
+      100% { background-position: -50% 0; }
+    }
   </style>
 </head>
 <body>
@@ -124,7 +148,9 @@
 
   <div id="splash">
     <div class="splash-glow"></div>
-    <img src="/logo-circle.png" alt="" class="splash-logo" />
+    <span class="splash-logo-wrap">
+      <img src="/logo-circle.png" alt="" class="splash-logo" />
+    </span>
     <p class="splash-word"><span class="splash-fp">fp</span>ronix</p>
     <div class="splash-bar-track"><div class="splash-bar-fill"></div></div>
   </div>

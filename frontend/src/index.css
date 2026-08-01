@@ -113,9 +113,14 @@
     @apply card p-4;
   }
 
+  .card {
+    background-repeat: no-repeat; background-size: 250% 100%; background-position: 200% 0;
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
+  }
   .card:hover {
     border-color: var(--color-border-strong);
     box-shadow: 0 10px 28px -8px rgba(0,0,0,0.45), 0 0 0 1px rgb(var(--overlay-rgb) / 0.06);
+    animation: shine-sweep 1s ease forwards;
   }
   html.light .card:hover {
     box-shadow: 0 10px 28px -8px rgba(0,0,0,0.1), 0 0 0 1px rgb(var(--overlay-rgb) / 0.06);
@@ -132,6 +137,8 @@
     border: 1px solid rgb(var(--overlay-rgb) / 0.06);
     @apply rounded-xl transition-colors duration-150 cursor-pointer select-none;
     box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+    background-repeat: no-repeat; background-size: 250% 100%; background-position: 200% 0;
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.1) 50%, transparent 75%);
   }
   html.light .match-row {
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
@@ -140,6 +147,7 @@
   .match-row:hover {
     background-color: var(--color-card-alt);
     border-color: rgb(var(--overlay-rgb) / 0.1);
+    animation: shine-sweep 1s ease forwards;
   }
 
   /* Mode groupé : dans un .card parent */
@@ -153,6 +161,62 @@
   .card > a.match-row:last-child  { border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; }
   .card > a.match-row:hover { background: var(--color-hover); }
 
+  /* ── Effet miroir / reflet brillant ────────────────────────────────
+     Liseré de lumière diagonal qui balaie l'élément — touche "premium"
+     appliquée aux boutons, cartes et logos dans toute l'app. Implémenté
+     via background-position (pas de pseudo-élément ni d'overflow:hidden)
+     pour ne jamais rogner un badge ou un tooltip qui déborderait
+     intentionnellement d'une carte/bouton. */
+  .shine, .shine-subtle, .shine-auto {
+    background-repeat: no-repeat;
+    background-size: 250% 100%;
+    background-position: 200% 0;
+  }
+  .shine {
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.5) 50%, transparent 75%);
+  }
+  .shine-subtle {
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.16) 50%, transparent 75%);
+  }
+  .shine:hover, .shine-subtle:hover {
+    animation: shine-sweep 0.85s ease forwards;
+  }
+  .shine-auto {
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.4) 50%, transparent 75%);
+    animation: shine-sweep-loop 3.2s ease-in-out infinite;
+  }
+  @keyframes shine-sweep {
+    from { background-position: 200% 0; }
+    to   { background-position: -50% 0; }
+  }
+  @keyframes shine-sweep-loop {
+    0%   { background-position: 200% 0; }
+    18%  { background-position: -50% 0; }
+    100% { background-position: -50% 0; }
+  }
+
+  /* Variante pour logos/images : le reflet ne peut pas se peindre "sur" un
+     <img> comme il le fait sur un fond de bouton/carte (le PNG couvre tout
+     son cadre), donc on enveloppe l'image et on superpose le balayage en
+     mix-blend-mode dessus — rendu réaliste d'un reflet qui glisse sur le logo. */
+  .logo-shine {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+  }
+  .logo-shine::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(115deg, transparent 35%, rgba(255,255,255,0.6) 50%, transparent 65%);
+    background-size: 250% 100%;
+    background-position: 200% 0;
+    background-repeat: no-repeat;
+    mix-blend-mode: overlay;
+    animation: shine-sweep-loop 3.4s ease-in-out infinite;
+    pointer-events: none;
+  }
+
   /* ── Buttons ────────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
@@ -161,6 +225,9 @@
            focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
     min-height: 42px;
   }
+  .btn-primary { background-repeat: no-repeat; background-size: 250% 100%; background-position: 200% 0;
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.45) 50%, transparent 75%); }
+  .btn-primary:hover { animation: shine-sweep 0.85s ease forwards; }
 
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5
@@ -169,6 +236,9 @@
            focus-visible:outline-primary-400 disabled:opacity-40 disabled:cursor-not-allowed disabled:active:scale-100;
     min-height: 42px;
   }
+  .btn-secondary { background-repeat: no-repeat; background-size: 250% 100%; background-position: 200% 0;
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.18) 50%, transparent 75%); }
+  .btn-secondary:hover { animation: shine-sweep 0.9s ease forwards; }
 
   /* Bouton CTA orange — Devenir Premium / S'inscrire */
   .btn-cta {
@@ -178,6 +248,9 @@
            focus-visible:outline-accent-400 disabled:opacity-40 disabled:cursor-not-allowed;
     min-height: 42px;
   }
+  .btn-cta { background-repeat: no-repeat; background-size: 250% 100%; background-position: 200% 0;
+    background-image: linear-gradient(115deg, transparent 25%, rgba(255,255,255,0.5) 50%, transparent 75%); }
+  .btn-cta:hover { animation: shine-sweep 0.85s ease forwards; }
 
   /* ── Filter chip — façon BeSoccer (Tous / Live / Favoris) avec compteur ─── */
   .filter-chip {

@@ -11,11 +11,13 @@ import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 function FootballLogo() {
   return (
-    <img
-      src="/logo-circle.png"
-      alt="fpronix logo"
-      className="w-8 h-8 rounded-full shrink-0"
-    />
+    <span className="logo-shine rounded-full shrink-0">
+      <img
+        src="/logo-circle.png"
+        alt="fpronix logo"
+        className="w-8 h-8 rounded-full block"
+      />
+    </span>
   );
 }
 

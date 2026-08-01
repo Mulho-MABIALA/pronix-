@@ -61,7 +61,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
   const unitLabel  = billingCycle === 'YEARLY' ? 'an' : billingCycle === 'WEEKLY' ? 'semaine' : 'mois';
 
   // Halo animé discret sur les plans mis en avant, pour attirer l'oeil sans surcharger
-  const glowClass = plan.code === 'PREMIUM' || plan.code === 'LIFETIME' ? 'animate-glow-pulse' : '';
+  const glowClass = plan.code === 'PREMIUM' || plan.code === 'LIFETIME' ? 'animate-glow-pulse shine-auto' : '';
 
   return (
     <div className={`bento-card flex flex-col gap-5 relative ${style.ring} ${glowClass}`}>

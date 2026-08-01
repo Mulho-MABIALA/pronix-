@@ -863,7 +863,7 @@ export default function Machine() {
             <>
               <button onClick={generateTicket} disabled={isLoading || availableCandidates.length === 0}
                 className={`btn-primary w-full flex items-center justify-center gap-2 py-3 disabled:opacity-40 disabled:cursor-not-allowed ${
-                  !isLoading && availableCandidates.length > 0 ? 'animate-glow-pulse' : ''
+                  !isLoading && availableCandidates.length > 0 ? 'animate-glow-pulse shine-auto' : ''
                 }`}>
                 <Zap size={16} />
                 {isLoading ? t('machine.loading') : availableCandidates.length === 0 ? t('machine.noMatchAvailable') : t('machine.generateBtn')}

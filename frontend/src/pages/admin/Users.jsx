@@ -29,22 +29,26 @@ const LANG_LABELS = { fr: 'FR', en: 'EN', es: 'ES', pt: 'PT' };
 
 const COUNTRY_BY_CODE = Object.fromEntries(COUNTRIES.map((c) => [c.code, c]));
 
-function LangCurrencyBadge({ user }) {
+function LangBadge({ user }) {
   const lang = LANG_LABELS[user.language] || 'FR';
+  return <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-overlay/[0.06] text-ink-3">{lang}</span>;
+}
+
+function CurrencyBadge({ user }) {
   const currency = user.currency || 'auto';
+  return <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-4">{currency}</span>;
+}
+
+function CountryBadge({ user }) {
   const country = user.country ? COUNTRY_BY_CODE[user.country] : null;
+  if (!country) {
+    return <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-5">—</span>;
+  }
   return (
-    <div className="flex items-center gap-1 flex-wrap">
-      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-overlay/[0.06] text-ink-3">{lang}</span>
-      <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-4">{currency}</span>
-      {country ? (
-        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-4" title={country.label}>
-          {country.flag} {country.code}
-        </span>
-      ) : (
-        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-5">—</span>
-      )}
-    </div>
+    <span className="inline-flex items-center gap-1.5 text-[11px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-3 whitespace-nowrap">
+      <span>{country.flag}</span>
+      <span>{country.label}</span>
+    </span>
   );
 }
 
@@ -677,13 +681,15 @@ export default function AdminUsers() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-overlay/[0.07] text-[11px] text-ink-3 uppercase tracking-wider">
+              <tr className="border-b border-overlay/[0.07] divide-x divide-overlay/[0.07] text-[11px] text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-semibold">Utilisateur</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Plan</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Pronos</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Inscrit le</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Dernier login</th>
-                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Langue / Devise / Pays</th>
+                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Langue</th>
+                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Devise</th>
+                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Pays</th>
                 <th className="text-center px-4 py-3.5 font-semibold hidden lg:table-cell">App</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Statut</th>
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>
@@ -692,14 +698,14 @@ export default function AdminUsers() {
             <tbody className="divide-y divide-overlay/[0.04]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i}>{Array.from({ length: 9 }).map((_, j) => (
+                  <tr key={i} className="divide-x divide-overlay/[0.05]">{Array.from({ length: 11 }).map((_, j) => (
                     <td key={j} className="px-5 py-4"><div className="h-4 skeleton rounded" /></td>
                   ))}</tr>
                 ))
                 : users.map(u => {
                   const plan = u.subscription?.plan?.code || 'FREE';
                   return (
-                    <tr key={u.id} className="hover:bg-overlay/[0.025] transition-colors cursor-pointer"
+                    <tr key={u.id} className="hover:bg-overlay/[0.025] transition-colors cursor-pointer divide-x divide-overlay/[0.05]"
                       onClick={() => setSelectedUser(u)}>
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-3">
@@ -727,7 +733,13 @@ export default function AdminUsers() {
                         {u.lastLoginAt ? formatDistanceToNow(new Date(u.lastLoginAt), { locale: fr, addSuffix: true }) : '—'}
                       </td>
                       <td className="px-4 py-3.5 hidden xl:table-cell">
-                        <LangCurrencyBadge user={u} />
+                        <LangBadge user={u} />
+                      </td>
+                      <td className="px-4 py-3.5 hidden xl:table-cell">
+                        <CurrencyBadge user={u} />
+                      </td>
+                      <td className="px-4 py-3.5 hidden xl:table-cell">
+                        <CountryBadge user={u} />
                       </td>
                       <td className="px-4 py-3.5 hidden lg:table-cell text-center">
                         {u.appInstalledAt ? (

@@ -11,6 +11,7 @@ import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
+import { COUNTRIES } from '../../data/countries';
 
 const PLAN_STYLE = {
   FREE:     'bg-gray-500/15 text-ink-4 border border-gray-500/20',
@@ -26,13 +27,23 @@ const PRED_LABELS = {
 
 const LANG_LABELS = { fr: 'FR', en: 'EN', es: 'ES', pt: 'PT' };
 
+const COUNTRY_BY_CODE = Object.fromEntries(COUNTRIES.map((c) => [c.code, c]));
+
 function LangCurrencyBadge({ user }) {
   const lang = LANG_LABELS[user.language] || 'FR';
   const currency = user.currency || 'auto';
+  const country = user.country ? COUNTRY_BY_CODE[user.country] : null;
   return (
-    <div className="flex items-center gap-1">
+    <div className="flex items-center gap-1 flex-wrap">
       <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-overlay/[0.06] text-ink-3">{lang}</span>
       <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-4">{currency}</span>
+      {country ? (
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-4" title={country.label}>
+          {country.flag} {country.code}
+        </span>
+      ) : (
+        <span className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-overlay/[0.03] text-ink-5">—</span>
+      )}
     </div>
   );
 }
@@ -514,6 +525,7 @@ export default function AdminUsers() {
   const [statusFilter, setStatusFilter] = useState('');
   const [languageFilter, setLanguageFilter] = useState('');
   const [currencyFilter, setCurrencyFilter] = useState('');
+  const [countryFilter, setCountryFilter] = useState('');
   const [datePreset, setDatePreset] = useState(0);
   const [sortIdx, setSortIdx]       = useState(0);
   const [page, setPage]             = useState(1);
@@ -531,7 +543,7 @@ export default function AdminUsers() {
   });
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-users', search, planFilter, statusFilter, languageFilter, currencyFilter, datePreset, sortIdx, page],
+    queryKey: ['admin-users', search, planFilter, statusFilter, languageFilter, currencyFilter, countryFilter, datePreset, sortIdx, page],
     queryFn: () => api.get('/admin/users', {
       params: {
         page, limit: 20,
@@ -540,6 +552,7 @@ export default function AdminUsers() {
         ...(statusFilter !== '' && { isActive: statusFilter }),
         ...(languageFilter && { language: languageFilter }),
         ...(currencyFilter && { currency: currencyFilter }),
+        ...(countryFilter && { country: countryFilter }),
         ...(createdAfter && { createdAfter }),
         orderBy: sort.orderBy,
         order: sort.order,
@@ -630,6 +643,16 @@ export default function AdminUsers() {
           <option value="ZAR">ZAR</option>
         </select>
 
+        {/* Pays */}
+        <select value={countryFilter} onChange={e => { setCountryFilter(e.target.value); setPage(1); }}
+          className="input w-auto min-w-[140px] h-10 text-sm px-3 appearance-none">
+          <option value="">Tous les pays</option>
+          <option value="NONE">Non défini</option>
+          {COUNTRIES.map(({ code, flag, label }) => (
+            <option key={code} value={code}>{flag} {label}</option>
+          ))}
+        </select>
+
         {/* Date preset chips */}
         <div className="flex gap-1 flex-wrap">
           {DATE_PRESETS.map((p, i) => (
@@ -660,7 +683,7 @@ export default function AdminUsers() {
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Pronos</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden lg:table-cell">Inscrit le</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Dernier login</th>
-                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Langue / Devise</th>
+                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Langue / Devise / Pays</th>
                 <th className="text-center px-4 py-3.5 font-semibold hidden lg:table-cell">App</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Statut</th>
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>

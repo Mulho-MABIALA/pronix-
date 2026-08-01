@@ -410,6 +410,8 @@
     "languagePreference": "Idioma principal",
     "currencyPreference": "Moeda preferida",
     "currencyPreferenceHint": "Usada apenas para exibição indicativa — o pagamento é sempre feito em FCFA.",
+    "countryPreference": "País",
+    "countryPreferencePlaceholder": "Seleciona o teu país",
     "confirmPassword": "Confirmar senha",
     "passwordMismatch": "As senhas não coincidem",
     "freeNoCommit": "Grátis, sem compromisso",

@@ -146,10 +146,11 @@ async function getUsers(req, res, next) {
       createdAfter: z.string().optional(),
       language:     z.enum(['fr', 'en', 'es', 'pt']).optional(),
       currency:     z.string().optional(),
+      country:      z.string().optional(),
       orderBy:      z.string().default('createdAt'),
       order:        z.enum(['asc', 'desc']).default('desc'),
     });
-    const { page, limit, search, role, plan, isActive, createdAfter, language, currency, orderBy, order } = schema.parse(req.query);
+    const { page, limit, search, role, plan, isActive, createdAfter, language, currency, country, orderBy, order } = schema.parse(req.query);
 
     const where = {};
     if (search) {
@@ -165,6 +166,7 @@ async function getUsers(req, res, next) {
     if (language) where.language = language;
     // "NONE" = comptes créés avant cette fonctionnalité (aucune préférence enregistrée)
     if (currency) where.currency = currency === 'NONE' ? null : currency;
+    if (country) where.country = country === 'NONE' ? null : country;
 
     const orderByClause = orderBy === 'tips'
       ? { tips: { _count: order } }
@@ -784,20 +786,21 @@ async function exportUsers(req, res, next) {
       select: {
         id: true, email: true, username: true, role: true,
         emailVerified: true, isActive: true, createdAt: true,
-        referralCode: true,
+        referralCode: true, country: true,
         subscription: { select: { status: true, plan: { select: { code: true } } } },
       },
       orderBy: { createdAt: 'desc' },
     });
 
     const csv = toCsv(
-      ['id', 'email', 'username', 'role', 'emailVerified', 'isActive', 'plan', 'subscription', 'referralCode', 'createdAt'],
+      ['id', 'email', 'username', 'role', 'emailVerified', 'isActive', 'plan', 'subscription', 'referralCode', 'country', 'createdAt'],
       users.map((u) => [
         u.id, u.email, u.username, u.role,
         u.emailVerified, u.isActive,
         u.subscription?.plan?.code || 'FREE',
         u.subscription?.status || 'NONE',
         u.referralCode || '',
+        u.country || '',
         u.createdAt.toISOString(),
       ])
     );

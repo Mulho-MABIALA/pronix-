@@ -8,6 +8,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
+import { COUNTRIES } from '../data/countries';
 
 const LANGUAGE_OPTIONS = [
   { code: 'fr', label: '🇫🇷 Français' },
@@ -40,6 +41,7 @@ export default function Onboarding() {
   const detectedLang = (i18n.language || 'fr').split('-')[0];
   const [language, setLanguage] = useState(SUPPORTED_LANGS.includes(detectedLang) ? detectedLang : 'fr');
   const [currency, setCurrency] = useState(detectedCurrency || 'FCFA');
+  const [country, setCountry] = useState('');
 
   // Exemple concret : un vrai pronostic généré aujourd'hui, pour montrer tout
   // de suite ce que fpronix produit (au lieu de juste demander de choisir des ligues).
@@ -79,7 +81,7 @@ export default function Onboarding() {
   const handleFinish = async () => {
     setLoading(true);
     try {
-      await api.post('/profiles/me/onboarding', { favoriteLeagues: selected, language, currency });
+      await api.post('/profiles/me/onboarding', { favoriteLeagues: selected, language, currency, ...(country && { country }) });
       i18n.changeLanguage(language);
       await refreshUser();
       navigate('/');
@@ -207,6 +209,16 @@ export default function Onboarding() {
           </div>
         </div>
         <p className="text-xs text-ink-3 -mt-2">{t('auth.currencyPreferenceHint')}</p>
+
+        <div>
+          <label htmlFor="onb-country" className="block text-sm font-medium text-ink-3 mb-1.5">{t('auth.countryPreference')}</label>
+          <select id="onb-country" className="input" value={country} onChange={(e) => setCountry(e.target.value)}>
+            <option value="">{t('auth.countryPreferencePlaceholder')}</option>
+            {COUNTRIES.map(({ code, flag, label }) => (
+              <option key={code} value={code}>{flag} {label}</option>
+            ))}
+          </select>
+        </div>
 
         <button onClick={handleFinish} disabled={loading} className="btn-primary w-full">
           {loading ? t('profile.saving') : t('onboarding.start')}

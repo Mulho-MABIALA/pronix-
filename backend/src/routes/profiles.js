@@ -1,8 +1,11 @@
 const { Router } = require('express');
 const { z } = require('zod');
+const bcrypt = require('bcryptjs');
 const prisma = require('../config/database');
 const { authenticate } = require('../middleware/auth');
 const { AppError } = require('../middleware/errorHandler');
+const { REFRESH_COOKIE, clearAuthCookies } = require('../config/cookies');
+const { notifyAdmin } = require('../services/adminNotificationService');
 
 const router = Router();
 router.use(authenticate);
@@ -61,6 +64,80 @@ router.post('/me/onboarding', async (req, res, next) => {
     ]);
     res.json({ success: true, data: profile });
   } catch (err) {
+    next(err);
+  }
+});
+
+// Préférences localisation (pays / langue / devise) — éditables depuis la page
+// Profil, séparé de /me/onboarding qui touche aussi les favoris.
+router.patch('/me/preferences', async (req, res, next) => {
+  try {
+    const schema = z.object({
+      language: z.enum(['fr', 'en', 'es', 'pt']).optional(),
+      currency: z.enum(['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR']).optional(),
+      country:  z.string().min(2).max(10).optional(),
+    });
+    const { language, currency, country } = schema.parse(req.body);
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: {
+        ...(language && { language }),
+        ...(currency && { currency }),
+        ...(country && { country }),
+      },
+    });
+    const { password: _, ...userSafe } = user;
+    res.json({ success: true, data: userSafe });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Suppression définitive du compte (self-service)
+router.delete('/me', async (req, res, next) => {
+  try {
+    // Compte avec mot de passe (non-Google) : on exige le mot de passe actuel
+    if (req.user.password) {
+      const { password } = z.object({ password: z.string().min(1) }).parse(req.body || {});
+      const isValid = await bcrypt.compare(password, req.user.password);
+      if (!isValid) {
+        throw new AppError('Mot de passe incorrect', 401, 'INVALID_PASSWORD');
+      }
+    }
+
+    // On garde username/email avant suppression : plus rien à lire une fois le compte parti.
+    const { username, email } = req.user;
+
+    await prisma.user.delete({ where: { id: req.user.id } });
+
+    notifyAdmin({
+      type: 'ACCOUNT_DELETED',
+      title: 'Compte supprimé',
+      message: `${username} (${email}) a supprimé son compte lui-même.`,
+      link: '/admin/utilisateurs',
+    });
+
+    const token = req.cookies?.[REFRESH_COOKIE];
+    if (token) await prisma.refreshToken.deleteMany({ where: { token } });
+    clearAuthCookies(res);
+
+    res.json({ success: true, message: 'Compte supprimé définitivement' });
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return next(new AppError('Compte introuvable', 404, 'NOT_FOUND'));
+    }
+    const msg = (err.message || '').toLowerCase();
+    const isRestrictViolation =
+      err.code === 'P2003' || err.code === 'P2014' ||
+      msg.includes('23001') || msg.includes('foreign key constraint') || msg.includes('violates restrict');
+    if (isRestrictViolation) {
+      return next(new AppError(
+        "Suppression impossible : ton compte a des paiements ou signalements enregistrés (historique conservé pour raisons légales/comptables). Contacte le support pour une suppression manuelle.",
+        409,
+        'DELETE_BLOCKED'
+      ));
+    }
     next(err);
   }
 });

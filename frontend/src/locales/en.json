@@ -524,6 +524,27 @@
     "editPassword": "Edit",
     "logoutBtn": "Log out",
     "avatarUploadError": "Error uploading the photo. Please try again.",
+    "memberSince": "Member since {{date}}",
+    "lastLogin": "last login on {{date}}",
+    "preferences": {
+      "title": "Country, language & currency",
+      "language": "Language",
+      "currency": "Currency",
+      "saved": "Preferences updated",
+      "saveError": "Something went wrong. Please try again."
+    },
+    "deleteAccount": {
+      "rowLabel": "Delete my account",
+      "rowAction": "Delete",
+      "modalTitle": "Permanently delete your account?",
+      "warning": "This action cannot be undone. Your profile, picks, favorites and account history will be permanently deleted.",
+      "confirmWord": "DELETE",
+      "typeToConfirm": "Type {{word}} to confirm",
+      "confirmBtn": "Delete permanently",
+      "deleting": "Deleting…",
+      "doneToast": "Account deleted. Goodbye!",
+      "error": "Error while deleting. Please try again or contact support."
+    },
     "leagues": {
       "title": "Favorite leagues",
       "empty": "No favorite league yet.",

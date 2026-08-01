@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Bell, UserPlus, CreditCard, AlertTriangle, MessageCircle, Check, Loader2 } from 'lucide-react';
+import { Bell, UserPlus, UserMinus, CreditCard, AlertTriangle, MessageCircle, Check, Loader2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -15,6 +15,7 @@ const TYPE_META = {
   NEW_PAYMENT:        { Icon: CreditCard,     className: 'bg-emerald-500/15 text-emerald-400' },
   NEW_REPORT:         { Icon: AlertTriangle,  className: 'bg-red-500/15 text-red-400' },
   NEW_SUPPORT_TICKET: { Icon: MessageCircle,  className: 'bg-orange-500/15 text-orange-400' },
+  ACCOUNT_DELETED:    { Icon: UserMinus,      className: 'bg-red-500/15 text-red-400' },
 };
 const DEFAULT_META = { Icon: Bell, className: 'bg-overlay/[0.08] text-ink-3' };
 

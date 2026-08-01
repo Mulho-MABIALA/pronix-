@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
-  MessageCircle, HelpCircle, Trophy, Search,
+  MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -17,6 +17,15 @@ import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import Disclaimer from '../components/layout/Disclaimer';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
+import { COUNTRIES } from '../data/countries';
+
+const LANGUAGES = [
+  { code: 'fr', label: 'Français' },
+  { code: 'en', label: 'English' },
+  { code: 'es', label: 'Español' },
+  { code: 'pt', label: 'Português' },
+];
+const CURRENCIES = ['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR'];
 
 /* ─── Compress & crop image to square base64 JPEG ─────────────────────────── */
 function resizeToSquareBase64(file, size = 400) {
@@ -342,6 +351,156 @@ function FavoriteLeaguesSection() {
   );
 }
 
+/* ─── Section préférences : pays / langue / devise ───────────────────────────
+   Modifiable après l'inscription (ces champs sont figés une fois à
+   l'onboarding sinon). Endpoint dédié /profiles/me/preferences, séparé de
+   /me/onboarding qui touche aussi favoriteLeagues/favoriteTeams. ─── */
+function PreferencesSection() {
+  const { t } = useTranslation();
+  const { user, refreshUser } = useAuth();
+  const toast = useToast();
+  const [language, setLanguage] = useState(user?.language || 'fr');
+  const [currency, setCurrency] = useState(user?.currency || 'FCFA');
+  const [country,  setCountry]  = useState(user?.country  || '');
+
+  const savePrefs = useMutation({
+    mutationFn: () => api.patch('/profiles/me/preferences', { language, currency, country: country || undefined }),
+    onSuccess: async () => {
+      await refreshUser();
+      if (toast) toast(t('profile.preferences.saved'), 'success');
+    },
+    onError: () => {
+      if (toast) toast(t('profile.preferences.saveError'), 'error');
+    },
+  });
+
+  const dirty =
+    language !== (user?.language || 'fr') ||
+    currency !== (user?.currency || 'FCFA') ||
+    country  !== (user?.country  || '');
+
+  return (
+    <Section title={t('profile.preferences.title')} icon={Globe} color="cyan">
+      <div className="space-y-3">
+        <div>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">{t('profile.preferences.language')}</label>
+          <select value={language} onChange={(e) => setLanguage(e.target.value)} className="input w-full">
+            {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">{t('profile.preferences.currency')}</label>
+          <select value={currency} onChange={(e) => setCurrency(e.target.value)} className="input w-full">
+            {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">{t('auth.countryPreference')}</label>
+          <select value={country} onChange={(e) => setCountry(e.target.value)} className="input w-full">
+            <option value="">{t('auth.countryPreferencePlaceholder')}</option>
+            {COUNTRIES.map(({ code, flag, label }) => (
+              <option key={code} value={code}>{flag} {label}</option>
+            ))}
+          </select>
+        </div>
+        {dirty && (
+          <button
+            onClick={() => savePrefs.mutate()}
+            disabled={savePrefs.isPending}
+            className="btn-primary w-full py-2.5 text-sm disabled:opacity-50"
+          >
+            {savePrefs.isPending ? t('profile.saving') : t('profile.save')}
+          </button>
+        )}
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Modale de suppression de compte ────────────────────────────────────────── */
+function DeleteAccountModal({ requiresPassword, onClose }) {
+  const { t } = useTranslation();
+  const { logout } = useAuth();
+  const toast = useToast();
+  const [password, setPassword] = useState('');
+  const [confirmText, setConfirmText] = useState('');
+  const [error, setError] = useState('');
+  const CONFIRM_WORD = t('profile.deleteAccount.confirmWord');
+
+  const deleteAccount = useMutation({
+    mutationFn: () => api.delete('/profiles/me', { data: requiresPassword ? { password } : {} }),
+    onSuccess: async () => {
+      if (toast) toast(t('profile.deleteAccount.doneToast'), 'success');
+      await logout();
+    },
+    onError: (err) => {
+      setError(err?.response?.data?.message || t('profile.deleteAccount.error'));
+    },
+  });
+
+  const canSubmit = confirmText.trim().toUpperCase() === CONFIRM_WORD.toUpperCase() && (!requiresPassword || password.length > 0);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onClose}>
+      <div
+        className="w-full max-w-sm rounded-2xl border border-red-500/25 p-5 space-y-4"
+        style={{ background: 'var(--color-card)', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="w-9 h-9 rounded-lg bg-red-500/15 text-red-400 flex items-center justify-center shrink-0">
+            <AlertTriangle size={16} />
+          </div>
+          <h3 className="font-semibold text-ink-1 text-sm">{t('profile.deleteAccount.modalTitle')}</h3>
+        </div>
+
+        <p className="text-xs text-ink-3 leading-relaxed">{t('profile.deleteAccount.warning')}</p>
+
+        {requiresPassword && (
+          <div>
+            <label className="block text-xs font-medium text-ink-3 mb-1.5">{t('profile.password')}</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input w-full"
+              autoComplete="current-password"
+            />
+          </div>
+        )}
+
+        <div>
+          <label className="block text-xs font-medium text-ink-3 mb-1.5">
+            {t('profile.deleteAccount.typeToConfirm', { word: CONFIRM_WORD })}
+          </label>
+          <input
+            type="text"
+            value={confirmText}
+            onChange={(e) => setConfirmText(e.target.value)}
+            className="input w-full"
+            placeholder={CONFIRM_WORD}
+          />
+        </div>
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+
+        <div className="flex gap-2 pt-1">
+          <button onClick={onClose} className="btn-secondary flex-1 py-2.5 text-sm">
+            {t('profile.cancel')}
+          </button>
+          <button
+            onClick={() => deleteAccount.mutate()}
+            disabled={!canSubmit || deleteAccount.isPending}
+            className="flex-1 py-2.5 text-sm font-semibold rounded-lg bg-red-500 hover:bg-red-400 text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            {deleteAccount.isPending ? t('profile.deleteAccount.deleting') : t('profile.deleteAccount.confirmBtn')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ─── Section contact / support fpronix ────────────────────────────────────── */
 const SUPPORT_EMAIL = 'support@fpronix.com';
 const SUPPORT_WHATSAPP = '+221787308706';
@@ -579,6 +738,7 @@ export default function Profile() {
   const [editing,   setEditing]   = useState(false);
   const [uploading, setUploading] = useState(false);
   const [saved,     setSaved]     = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const initForm = () => ({
     displayName: user?.profile?.displayName || '',
@@ -698,6 +858,19 @@ export default function Profile() {
             </div>
             <p className="text-ink-3 text-sm mt-0.5">@{user?.username}</p>
             <p className="text-ink-4 text-xs mt-0.5 truncate">{user?.email}</p>
+
+            {/* Membre depuis / dernière connexion */}
+            {user?.createdAt && (
+              <p className="text-ink-4 text-[11px] mt-1.5">
+                {t('profile.memberSince', { date: format(new Date(user.createdAt), 'MMM yyyy', { locale: dateLocale }) })}
+                {user?.lastLoginAt && (
+                  <>
+                    {' · '}
+                    {t('profile.lastLogin', { date: format(new Date(user.lastLoginAt), 'dd MMM yyyy', { locale: dateLocale }) })}
+                  </>
+                )}
+              </p>
+            )}
 
             {/* Badge Google */}
             {isGoogleUser && (
@@ -971,8 +1144,21 @@ export default function Profile() {
               </Link>
             </div>
           )}
+
+          <div className="flex items-center justify-between pt-3 mt-1 border-t border-overlay/[0.05]">
+            <div className="flex items-center gap-2">
+              <Trash2 size={14} className="text-red-400" />
+              <span className="text-sm text-ink-3">{t('profile.deleteAccount.rowLabel')}</span>
+            </div>
+            <button onClick={() => setShowDeleteModal(true)} className="text-xs text-red-400 hover:text-red-300 font-medium">
+              {t('profile.deleteAccount.rowAction')}
+            </button>
+          </div>
         </div>
       </Section>
+
+      {/* ── Préférences (pays / langue / devise) ─────────────────────────────── */}
+      <PreferencesSection />
 
       {/* ── Championnats favoris ──────────────────────────────────────────────── */}
       <FavoriteLeaguesSection />
@@ -998,6 +1184,10 @@ export default function Profile() {
       {/* ── Mentions légales / liens de bas de page (mobile uniquement — le
            bandeau global couvre déjà le PC) ─────────────────────────────────── */}
       <Disclaimer variant="inline" />
+
+      {showDeleteModal && (
+        <DeleteAccountModal requiresPassword={!isGoogleUser} onClose={() => setShowDeleteModal(false)} />
+      )}
     </div>
   );
 }

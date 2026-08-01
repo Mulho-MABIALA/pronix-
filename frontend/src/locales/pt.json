@@ -524,6 +524,27 @@
     "editPassword": "Modificar",
     "logoutBtn": "Sair",
     "avatarUploadError": "Erro ao enviar a foto. Tente novamente.",
+    "memberSince": "Membro desde {{date}}",
+    "lastLogin": "último acesso em {{date}}",
+    "preferences": {
+      "title": "País, idioma e moeda",
+      "language": "Idioma",
+      "currency": "Moeda",
+      "saved": "Preferências atualizadas",
+      "saveError": "Ocorreu um erro. Tente novamente."
+    },
+    "deleteAccount": {
+      "rowLabel": "Excluir minha conta",
+      "rowAction": "Excluir",
+      "modalTitle": "Excluir sua conta definitivamente?",
+      "warning": "Esta ação é irreversível. Seu perfil, palpites, favoritos e histórico da conta serão excluídos permanentemente.",
+      "confirmWord": "EXCLUIR",
+      "typeToConfirm": "Digite {{word}} para confirmar",
+      "confirmBtn": "Excluir definitivamente",
+      "deleting": "Excluindo…",
+      "doneToast": "Conta excluída. Até logo!",
+      "error": "Erro ao excluir. Tente novamente ou contate o suporte."
+    },
     "leagues": {
       "title": "Ligas favoritas",
       "empty": "Nenhuma liga favorita ainda.",

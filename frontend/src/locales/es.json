@@ -524,6 +524,27 @@
     "editPassword": "Modificar",
     "logoutBtn": "Cerrar sesión",
     "avatarUploadError": "Error al subir la foto. Inténtalo de nuevo.",
+    "memberSince": "Miembro desde {{date}}",
+    "lastLogin": "última conexión el {{date}}",
+    "preferences": {
+      "title": "País, idioma y moneda",
+      "language": "Idioma",
+      "currency": "Moneda",
+      "saved": "Preferencias actualizadas",
+      "saveError": "Ocurrió un error. Inténtalo de nuevo."
+    },
+    "deleteAccount": {
+      "rowLabel": "Eliminar mi cuenta",
+      "rowAction": "Eliminar",
+      "modalTitle": "¿Eliminar tu cuenta definitivamente?",
+      "warning": "Esta acción es irreversible. Tu perfil, pronósticos, favoritos e historial de cuenta se eliminarán permanentemente.",
+      "confirmWord": "ELIMINAR",
+      "typeToConfirm": "Escribe {{word}} para confirmar",
+      "confirmBtn": "Eliminar definitivamente",
+      "deleting": "Eliminando…",
+      "doneToast": "Cuenta eliminada. ¡Adiós!",
+      "error": "Error al eliminar. Inténtalo de nuevo o contacta con soporte."
+    },
     "leagues": {
       "title": "Ligas favoritas",
       "empty": "Aún no tienes ligas favoritas.",

@@ -12,7 +12,7 @@ function TeamLogo({ logo, name, size = 20 }) {
   if (!logo || error) {
     return (
       <span
-        className="shrink-0 rounded-full bg-surface-600 text-ink-3 flex items-center justify-center font-bold"
+        className="shrink-0 rounded-full bg-overlay/[0.1] text-ink-3 flex items-center justify-center font-bold"
         style={{ width: size, height: size, fontSize: size * 0.45 }}
       >
         {(name || '?').charAt(0).toUpperCase()}
@@ -34,7 +34,7 @@ const STATUS_STYLE = {
   LIVE:      'bg-live-500/15 text-live-400',
   FINISHED:  'bg-primary-500/15 text-primary-400',
   POSTPONED: 'bg-amber-500/15 text-amber-400',
-  CANCELLED: 'bg-surface-700 text-ink-4',
+  CANCELLED: 'bg-overlay/[0.08] text-ink-4',
 };
 const STATUS_LABELS = {
   SCHEDULED: 'Programmé', LIVE: 'En direct',
@@ -71,7 +71,7 @@ export default function AdminMatches() {
             className={`text-xs font-medium px-3.5 py-2 rounded-xl border transition-colors ${
               statusFilter === val
                 ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
-                : 'bg-surface-800 border-surface-700 text-ink-4 hover:border-surface-600 hover:text-ink-2'
+                : 'bg-overlay/[0.05] border-overlay/[0.11] text-ink-4 hover:border-overlay/[0.2] hover:text-ink-2'
             }`}
           >
             {label}
@@ -79,11 +79,12 @@ export default function AdminMatches() {
         ))}
       </div>
 
-      <div className="bg-surface-800 border border-surface-700 rounded-2xl overflow-hidden">
+      <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden shine-subtle"
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
+              <tr className="border-b border-overlay/[0.07] divide-x divide-overlay/[0.07] text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Match</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden md:table-cell">Compétition</th>
                 <th className="text-center px-4 py-3.5 font-medium">Score</th>
@@ -92,19 +93,19 @@ export default function AdminMatches() {
                 <th className="text-left px-5 py-3.5 font-medium hidden lg:table-cell">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-700">
+            <tbody className="divide-y divide-overlay/[0.04]">
               {isLoading
                 ? Array.from({ length: 10 }).map((_, i) => (
-                  <tr key={i}>
+                  <tr key={i} className="divide-x divide-overlay/[0.05]">
                     {Array.from({ length: 5 }).map((_, j) => (
                       <td key={j} className="px-5 py-4">
-                        <div className="h-4 bg-surface-700 rounded animate-pulse" />
+                        <div className="h-4 skeleton rounded" />
                       </td>
                     ))}
                   </tr>
                 ))
                 : matches.map((m) => (
-                  <tr key={m.id} className="hover:bg-surface-700/40 transition-colors">
+                  <tr key={m.id} className="hover:bg-overlay/[0.025] transition-colors divide-x divide-overlay/[0.05]">
                     <td className="px-5 py-3.5">
                       <div className="flex items-center gap-1.5 text-sm font-medium text-ink-2 max-w-[240px]">
                         <TeamLogo logo={m.homeTeamLogo} name={m.homeTeam} />
@@ -146,15 +147,15 @@ export default function AdminMatches() {
         </div>
 
         {pagination?.pages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
+          <div className="flex items-center justify-between px-5 py-3.5 border-t border-overlay/[0.07]">
             <p className="text-xs text-ink-3">Page {page} / {pagination.pages}</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
-                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] disabled:opacity-30 transition-colors">
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= pagination.pages}
-                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] disabled:opacity-30 transition-colors">
                 <ChevronRight size={16} />
               </button>
             </div>

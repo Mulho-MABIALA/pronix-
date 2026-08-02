@@ -44,7 +44,7 @@ export default function AdminReports() {
             className={`text-xs font-medium px-3.5 py-2 rounded-xl border transition-colors ${
               statusFilter === val
                 ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
-                : 'bg-surface-800 border-surface-700 text-ink-4 hover:border-surface-600 hover:text-ink-2'
+                : 'bg-overlay/[0.05] border-overlay/[0.11] text-ink-4 hover:border-overlay/[0.2] hover:text-ink-2'
             }`}
           >
             {label}
@@ -56,11 +56,12 @@ export default function AdminReports() {
       {isLoading ? (
         <div className="space-y-3">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="bg-surface-800 rounded-2xl h-32 animate-pulse" />
+            <div key={i} className="skeleton rounded-2xl h-32" />
           ))}
         </div>
       ) : reports.length === 0 ? (
-        <div className="bg-surface-800 border border-surface-700 rounded-2xl py-16 text-center">
+        <div className="rounded-2xl border border-overlay/[0.11] py-16 text-center"
+          style={{ background: 'var(--color-card)' }}>
           <ShieldCheck size={36} className="mx-auto text-primary-500/50 mb-3" />
           <p className="text-ink-4 font-medium">Aucun signalement</p>
           <p className="text-xs text-ink-4 mt-1">Pour ce filtre</p>
@@ -70,7 +71,8 @@ export default function AdminReports() {
           {reports.map((report) => {
             const st = STATUS_LABELS[report.status] || STATUS_LABELS.PENDING;
             return (
-              <div key={report.id} className="bg-surface-800 border border-surface-700 rounded-2xl p-5 space-y-4">
+              <div key={report.id} className="rounded-2xl border border-overlay/[0.11] p-5 space-y-4 shine-subtle"
+                style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
                 {/* Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div>
@@ -92,7 +94,7 @@ export default function AdminReports() {
 
                 {/* Pronostic signalé */}
                 {report.tip && (
-                  <div className="bg-surface-700/60 border border-surface-600 rounded-xl p-3.5">
+                  <div className="bg-overlay/[0.04] border border-overlay/[0.09] rounded-xl p-3.5">
                     <p className="text-xs font-semibold text-ink-4 mb-1.5">
                       Pronostic de <span className="text-ink-2">@{report.tip.user?.username}</span>
                     </p>
@@ -103,7 +105,7 @@ export default function AdminReports() {
                       Prédiction : <span className="text-ink-3 font-medium">{report.tip.prediction}</span>
                     </p>
                     {report.tip.analysis && (
-                      <p className="text-xs text-ink-3 italic mt-1.5 border-t border-surface-600 pt-1.5">
+                      <p className="text-xs text-ink-3 italic mt-1.5 border-t border-overlay/[0.09] pt-1.5">
                         "{report.tip.analysis}"
                       </p>
                     )}
@@ -116,7 +118,7 @@ export default function AdminReports() {
                     <button
                       onClick={() => resolve.mutate({ reportId: report.id, status: 'DISMISSED' })}
                       disabled={resolve.isPending}
-                      className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-xl border border-surface-600 text-ink-4 hover:text-ink-2 hover:border-surface-500 transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-medium px-3.5 py-2 rounded-xl border border-overlay/[0.12] text-ink-4 hover:text-ink-2 hover:border-overlay/[0.2] transition-colors"
                     >
                       Ignorer
                     </button>

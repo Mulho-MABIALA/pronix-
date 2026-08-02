@@ -28,21 +28,22 @@ export default function AdminCompetitions() {
         </p>
       </div>
 
-      <div className="bg-surface-800 border border-surface-700 rounded-2xl overflow-hidden">
+      <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden shine-subtle"
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
         {isLoading ? (
-          <div className="divide-y divide-surface-700">
+          <div className="divide-y divide-overlay/[0.04]">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center gap-4 px-5 py-4">
-                <div className="h-4 w-4 bg-surface-700 rounded animate-pulse" />
-                <div className="h-4 flex-1 bg-surface-700 rounded animate-pulse" />
-                <div className="h-6 w-16 bg-surface-700 rounded animate-pulse" />
+                <div className="h-4 w-4 skeleton rounded" />
+                <div className="h-4 flex-1 skeleton rounded" />
+                <div className="h-6 w-16 skeleton rounded" />
               </div>
             ))}
           </div>
         ) : (
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
+              <tr className="border-b border-overlay/[0.07] divide-x divide-overlay/[0.07] text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Compétition</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden sm:table-cell">Pays</th>
                 <th className="text-left px-4 py-3.5 font-medium hidden md:table-cell">ID API</th>
@@ -51,9 +52,9 @@ export default function AdminCompetitions() {
                 <th className="text-right px-5 py-3.5 font-medium">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-700">
+            <tbody className="divide-y divide-overlay/[0.04]">
               {competitions.map((c) => (
-                <tr key={c.id} className={`hover:bg-surface-700/40 transition-colors ${!c.isDisplayed ? 'opacity-50' : ''}`}>
+                <tr key={c.id} className={`hover:bg-overlay/[0.025] transition-colors divide-x divide-overlay/[0.05] ${!c.isDisplayed ? 'opacity-50' : ''}`}>
                   <td className="px-5 py-3.5">
                     <div className="flex items-center gap-2.5">
                       <CompetitionLogo logo={c.logo} size={28} />
@@ -76,7 +77,7 @@ export default function AdminCompetitions() {
                       disabled={toggle.isPending}
                       className={`flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg border ml-auto transition-colors ${
                         c.isDisplayed
-                          ? 'border-gray-600 text-ink-4 hover:border-red-500/40 hover:text-red-400'
+                          ? 'border-overlay/[0.14] text-ink-4 hover:border-red-500/40 hover:text-red-400'
                           : 'border-primary-500/30 text-primary-400 hover:bg-primary-500/10'
                       }`}
                     >

@@ -37,7 +37,7 @@ export default function AdminPayments() {
         <a
           href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/payments`}
           download
-          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-surface-800 border border-surface-700 text-ink-3 hover:text-ink-1 hover:border-surface-600 transition-colors shrink-0"
+          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:border-overlay/[0.2] transition-colors shrink-0"
         >
           <Download size={13} />
           Exporter CSV
@@ -53,7 +53,7 @@ export default function AdminPayments() {
             className={`text-xs font-medium px-3.5 py-2 rounded-xl border transition-colors ${
               statusFilter === val
                 ? 'bg-primary-500/20 border-primary-500/40 text-primary-300'
-                : 'bg-surface-800 border-surface-700 text-ink-4 hover:border-surface-600 hover:text-ink-2'
+                : 'bg-overlay/[0.05] border-overlay/[0.11] text-ink-4 hover:border-overlay/[0.2] hover:text-ink-2'
             }`}
           >
             {label}
@@ -62,11 +62,12 @@ export default function AdminPayments() {
       </div>
 
       {/* Tableau */}
-      <div className="bg-surface-800 border border-surface-700 rounded-2xl overflow-hidden">
+      <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden shine-subtle"
+        style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-surface-700 text-xs text-ink-3 uppercase tracking-wider">
+              <tr className="border-b border-overlay/[0.07] divide-x divide-overlay/[0.07] text-xs text-ink-3 uppercase tracking-wider">
                 <th className="text-left px-5 py-3.5 font-medium">Utilisateur</th>
                 <th className="text-left px-4 py-3.5 font-medium">Montant</th>
                 <th className="text-left px-4 py-3.5 font-medium">Méthode</th>
@@ -74,13 +75,13 @@ export default function AdminPayments() {
                 <th className="text-left px-5 py-3.5 font-medium hidden lg:table-cell">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-700">
+            <tbody className="divide-y divide-overlay/[0.04]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i}>
+                  <tr key={i} className="divide-x divide-overlay/[0.05]">
                     {Array.from({ length: 5 }).map((_, j) => (
                       <td key={j} className="px-5 py-4">
-                        <div className="h-4 bg-surface-700 rounded animate-pulse" />
+                        <div className="h-4 skeleton rounded" />
                       </td>
                     ))}
                   </tr>
@@ -88,13 +89,13 @@ export default function AdminPayments() {
                 : payments.map((p) => {
                   const st = STATUS[p.status] || STATUS.PENDING;
                   return (
-                    <tr key={p.id} className="hover:bg-surface-700/40 transition-colors">
+                    <tr key={p.id} className="hover:bg-overlay/[0.025] transition-colors divide-x divide-overlay/[0.05]">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2.5">
                           {p.user?.profile?.avatar ? (
                             <img src={p.user.profile.avatar} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
                           ) : (
-                            <div className="w-7 h-7 rounded-full bg-surface-700 flex items-center justify-center text-ink-4 text-xs font-bold shrink-0">
+                            <div className="w-7 h-7 rounded-full bg-overlay/[0.1] flex items-center justify-center text-ink-4 text-xs font-bold shrink-0">
                               {p.user?.username?.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -109,7 +110,7 @@ export default function AdminPayments() {
                         <span className="text-xs text-ink-3 ml-1">FCFA</span>
                       </td>
                       <td className="px-4 py-4">
-                        <span className="text-xs text-ink-4 bg-surface-700 px-2.5 py-1 rounded-lg capitalize">
+                        <span className="text-xs text-ink-4 bg-overlay/[0.08] px-2.5 py-1 rounded-lg capitalize">
                           {p.provider || p.method}
                         </span>
                       </td>
@@ -131,15 +132,15 @@ export default function AdminPayments() {
         </div>
 
         {pagination?.pages > 1 && (
-          <div className="flex items-center justify-between px-5 py-3.5 border-t border-surface-700">
+          <div className="flex items-center justify-between px-5 py-3.5 border-t border-overlay/[0.07]">
             <p className="text-xs text-ink-3">Page {page} / {pagination.pages} — {pagination.total} transactions</p>
             <div className="flex gap-1">
               <button onClick={() => setPage(p => p - 1)} disabled={page === 1}
-                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] disabled:opacity-30 transition-colors">
                 <ChevronLeft size={16} />
               </button>
               <button onClick={() => setPage(p => p + 1)} disabled={page >= pagination.pages}
-                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-surface-700 disabled:opacity-30 transition-colors">
+                className="p-1.5 rounded-lg text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] disabled:opacity-30 transition-colors">
                 <ChevronRight size={16} />
               </button>
             </div>

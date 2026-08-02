@@ -19,7 +19,11 @@ export default function Login() {
       const user = await loginWithGoogle(credential);
       navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
     } catch (err) {
-      setError(err.response?.data?.message || t('errors.serverError'));
+      if (err.response?.data?.code === 'AGE_CONFIRMATION_REQUIRED') {
+        setError(t('auth.ageConfirmOnRegister'));
+      } else {
+        setError(err.response?.data?.message || t('errors.serverError'));
+      }
     } finally {
       setLoading(false);
     }

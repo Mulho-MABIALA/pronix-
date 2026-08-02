@@ -27,6 +27,7 @@ export default function Register() {
   const refCode = searchParams.get('ref');
   const partnerCode = searchParams.get('partner');
   const [form, setForm] = useState({ email: '', username: '', password: '', confirm: '' });
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -41,7 +42,7 @@ export default function Register() {
     setError('');
     setLoading(true);
     try {
-      const user = await loginWithGoogle(credential);
+      const user = await loginWithGoogle(credential, ageConfirmed);
       const isNewAccount = user.profile?.onboardingDone === false;
       if (isNewAccount) registerReferralIfAny();
       navigate(isNewAccount ? '/onboarding' : '/');
@@ -59,9 +60,13 @@ export default function Register() {
       setError(t('auth.passwordMismatch'));
       return;
     }
+    if (!ageConfirmed) {
+      setError(t('auth.ageConfirmRequired'));
+      return;
+    }
     setLoading(true);
     try {
-      await register(form.email, form.password, form.username);
+      await register(form.email, form.password, form.username, undefined, undefined, ageConfirmed);
       registerReferralIfAny();
       navigate('/onboarding');
     } catch (err) {
@@ -126,7 +131,17 @@ export default function Register() {
               placeholder="••••••••" />
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full">
+          <label className="flex items-start gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={ageConfirmed}
+              onChange={(e) => setAgeConfirmed(e.target.checked)}
+              className="mt-0.5 w-4 h-4 rounded border-overlay/[0.2] accent-primary-500 shrink-0"
+            />
+            <span className="text-xs text-ink-3 leading-relaxed">{t('auth.ageConfirmLabel')}</span>
+          </label>
+
+          <button type="submit" disabled={loading || !ageConfirmed} className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed">
             {loading ? '…' : t('auth.registerCta')}
           </button>
         </form>
@@ -138,17 +153,27 @@ export default function Register() {
           <div className="flex-grow border-t border-surface-600" />
         </div>
 
-        {/* Inscription Google */}
+        {/* Inscription Google — n'apparaît qu'après confirmation de l'âge (18+) */}
         <div className="flex justify-center">
-          <GoogleLogin
-            onSuccess={(res) => handleGoogleSuccess(res.credential)}
-            onError={() => setError(t('errors.serverError'))}
-            theme="filled_black"
-            shape="rectangular"
-            text="signup_with"
-            locale="fr"
-            width="320"
-          />
+          {ageConfirmed ? (
+            <GoogleLogin
+              onSuccess={(res) => handleGoogleSuccess(res.credential)}
+              onError={() => setError(t('errors.serverError'))}
+              theme="filled_black"
+              shape="rectangular"
+              text="signup_with"
+              locale="fr"
+              width="320"
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => setError(t('auth.ageConfirmRequired'))}
+              className="w-[320px] max-w-full py-2.5 rounded-xl border border-overlay/[0.1] text-ink-4 text-sm font-medium opacity-60 cursor-not-allowed"
+            >
+              {t('auth.googleLogin')}
+            </button>
+          )}
         </div>
 
         <p className="text-center text-sm text-ink-3">

@@ -41,14 +41,14 @@ export function AuthProvider({ children }) {
     return data.data.user;
   };
 
-  const register = async (email, password, username, language, currency) => {
-    const { data } = await api.post('/auth/register', { email, password, username, language, currency });
+  const register = async (email, password, username, language, currency, ageConfirmed) => {
+    const { data } = await api.post('/auth/register', { email, password, username, language, currency, ageConfirmed });
     setUser(data.data.user);
     return data.data.user;
   };
 
-  const loginWithGoogle = async (credential) => {
-    const { data } = await api.post('/auth/google', { credential });
+  const loginWithGoogle = async (credential, ageConfirmed) => {
+    const { data } = await api.post('/auth/google', { credential, ageConfirmed });
     setUser(data.data.user);
     applyAccountLanguage(data.data.user);
     return data.data.user;

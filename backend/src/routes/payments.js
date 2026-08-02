@@ -1,6 +1,6 @@
 const { Router } = require('express');
 const rateLimit = require('express-rate-limit');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, blockIfSelfExcluded } = require('../middleware/auth');
 const {
   initiateWavePayment, handleWaveWebhook,
   initiateCinetpayPayment, handleCinetpayWebhook,
@@ -31,14 +31,14 @@ router.post('/paydunya/webhook',  handlePaydunyaWebhook);
 
 // Paiements initiés par l'utilisateur (authentifié)
 router.use(authenticate);
-router.post('/wave/init',      paymentLimit, initiateWavePayment);
-router.post('/cinetpay/init',  paymentLimit, initiateCinetpayPayment);
-router.post('/fedapay/init',   paymentLimit, initiateFedapayPayment);
+router.post('/wave/init',      paymentLimit, blockIfSelfExcluded, initiateWavePayment);
+router.post('/cinetpay/init',  paymentLimit, blockIfSelfExcluded, initiateCinetpayPayment);
+router.post('/fedapay/init',   paymentLimit, blockIfSelfExcluded, initiateFedapayPayment);
 // GeniusPay — mis de côté (remplacé par PayDunya). Code conservé, route désactivée :
-// router.post('/geniuspay/init', paymentLimit, initiateGeniuspayPayment);
-router.post('/paydunya/init',  paymentLimit, initiatePaydunyaPayment);
+// router.post('/geniuspay/init', paymentLimit, blockIfSelfExcluded, initiateGeniuspayPayment);
+router.post('/paydunya/init',  paymentLimit, blockIfSelfExcluded, initiatePaydunyaPayment);
 // Abonnement payant à un tipster (même provider PayDunya, webhook partagé)
-router.post('/tipster/paydunya/init', paymentLimit, initiateTipsterPaydunyaPayment);
+router.post('/tipster/paydunya/init', paymentLimit, blockIfSelfExcluded, initiateTipsterPaydunyaPayment);
 router.get('/verify',          verifyPayment);
 
 module.exports = router;

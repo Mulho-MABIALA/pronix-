@@ -329,9 +329,13 @@ export default function Machine() {
           setQuotaError(t('machine.ticketQuotaExceededDesc', { limit: data.data.limit }));
           return;
         }
-      } catch {
-        // En cas d'erreur réseau sur la vérification, on ne bloque pas la génération
-        // (mieux vaut un ticket généré sans compteur à jour qu'une page cassée).
+      } catch (err) {
+        // Pause auto-imposée (jeu responsable) : on bloque explicitement, contrairement
+        // aux autres erreurs réseau où on laisse passer la génération sans compteur à jour.
+        if (err.response?.data?.code === 'SELF_EXCLUDED') {
+          setQuotaError(err.response.data.message);
+          return;
+        }
       }
     }
 

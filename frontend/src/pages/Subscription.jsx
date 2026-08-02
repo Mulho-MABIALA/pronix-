@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Lock, RefreshCw, Check, Star, Users, TrendingUp, Zap } from 'lucide-react';
+import { Shield, Lock, RefreshCw, Check, Star, Users, TrendingUp, Zap, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -131,6 +131,49 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
   );
 }
 
+/* ─── Modale de confirmation — rappel jeu responsable juste avant paiement ─── */
+function ConfirmPaymentModal({ plan, billingCycle, price, onCancel, onConfirm, loading }) {
+  const { t } = useTranslation();
+  const unitLabel = billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onCancel}>
+      <div
+        className="w-full max-w-sm rounded-2xl border border-overlay/[0.1] p-5 space-y-4"
+        style={{ background: 'var(--color-card)', boxShadow: '0 24px 64px rgba(0,0,0,0.5)' }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="font-semibold text-ink-1 text-sm">{t('subscription.confirmModal.title')}</h3>
+
+        <div className="bg-overlay/[0.04] rounded-xl px-3 py-2.5 flex items-center justify-between">
+          <span className="text-sm text-ink-2">{plan.displayName} — {unitLabel}</span>
+          <span className="text-sm font-bold text-ink-1">
+            {new Intl.NumberFormat('fr-FR').format(price)} FCFA
+          </span>
+        </div>
+
+        <div className="flex items-start gap-2.5 bg-amber-500/10 border border-amber-500/25 rounded-xl px-3 py-2.5">
+          <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-300 leading-relaxed">{t('subscription.confirmModal.reminder')}</p>
+        </div>
+
+        <div className="flex gap-2 pt-1">
+          <button onClick={onCancel} className="btn-secondary flex-1 py-2.5 text-sm">
+            {t('subscription.confirmModal.cancel')}
+          </button>
+          <button
+            onClick={onConfirm}
+            disabled={loading}
+            className="btn-primary flex-1 py-2.5 text-sm disabled:opacity-50"
+          >
+            {loading ? t('common.loading') : t('subscription.confirmModal.confirm')}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Subscription() {
   usePageMeta('Abonnement Premium', 'Passez à Premium fpronix — pronostics IA, value bets, données temps réel. Paiement sécurisé via Wave, Orange Money, Carte bancaire.');
   const { t } = useTranslation();
@@ -139,6 +182,7 @@ export default function Subscription() {
   const [billingCycle, setBillingCycle] = useState('MONTHLY');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [pendingPlan, setPendingPlan] = useState(null);
 
   const TRUST_BADGES = [
     { icon: Lock,      label: t('subscription.trust.secure') },
@@ -172,16 +216,26 @@ export default function Subscription() {
   const lifetimePlan = allPlans.find((p) => p.code === 'LIFETIME');
   const plans = [freePlan, premiumPlan, lifetimePlan].filter(Boolean);
 
-  const handleSelectPlan = async (plan) => {
+  // Étape 1 : sélection d'un plan → ouvre la modale de confirmation (rappel
+  // jeu responsable) au lieu d'initier le paiement directement.
+  const handleSelectPlan = (plan) => {
     if (!user) { navigate('/connexion'); return; }
+    setError('');
+    setPendingPlan(plan);
+  };
+
+  // Étape 2 : confirmation explicite dans la modale → initiation réelle du paiement.
+  const confirmAndPay = async () => {
+    if (!pendingPlan) return;
     setError('');
     setLoading(true);
     try {
       // PayDunya a remplacé GeniusPay comme moyen de paiement actif
-      const { data: res } = await api.post('/payments/paydunya/init', { planId: plan.id, billingCycle });
+      const { data: res } = await api.post('/payments/paydunya/init', { planId: pendingPlan.id, billingCycle });
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');
+      setPendingPlan(null);
     } finally {
       setLoading(false);
     }
@@ -315,6 +369,23 @@ export default function Subscription() {
           </div>
         ))}
       </section>
+
+      {pendingPlan && (
+        <ConfirmPaymentModal
+          plan={pendingPlan}
+          billingCycle={billingCycle}
+          price={
+            pendingPlan.code === 'LIFETIME'
+              ? pendingPlan.priceMonthly
+              : billingCycle === 'YEARLY' ? pendingPlan.priceYearly
+              : billingCycle === 'WEEKLY' ? pendingPlan.priceWeekly
+              : pendingPlan.priceMonthly
+          }
+          loading={loading}
+          onCancel={() => setPendingPlan(null)}
+          onConfirm={confirmAndPay}
+        />
+      )}
 
     </div>
   );

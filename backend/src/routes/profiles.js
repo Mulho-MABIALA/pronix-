@@ -94,6 +94,38 @@ router.patch('/me/preferences', async (req, res, next) => {
   }
 });
 
+// Jeu responsable : pause auto-imposée. Bloque la génération de tickets et
+// l'initiation de paiement (voir middleware/auth.js#blockIfSelfExcluded)
+// jusqu'à la date choisie. Volontairement pas de route pour annuler la pause
+// avant son terme — sinon elle perd tout son sens comme garde-fou.
+router.post('/me/self-exclusion', async (req, res, next) => {
+  try {
+    const { days } = z.object({
+      days: z.number().int().refine((v) => [1, 7, 30].includes(v), {
+        message: 'Durée invalide (1, 7 ou 30 jours uniquement)',
+      }),
+    }).parse(req.body);
+
+    const already = req.user.selfExclusionUntil && new Date(req.user.selfExclusionUntil) > new Date();
+    if (already) {
+      throw new AppError('Une pause est déjà active sur ton compte', 409, 'SELF_EXCLUSION_ACTIVE');
+    }
+
+    const until = new Date();
+    until.setDate(until.getDate() + days);
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { selfExclusionUntil: until },
+    });
+
+    const { password: _, ...userSafe } = user;
+    res.json({ success: true, data: userSafe });
+  } catch (err) {
+    next(err);
+  }
+});
+
 // Suppression définitive du compte (self-service)
 router.delete('/me', async (req, res, next) => {
   try {

@@ -15,7 +15,10 @@ function FooterLinks() {
       <p className="disclaimer text-center">
         {t('disclaimer.intro')}{' '}
         <strong>{t('disclaimer.warning')}</strong>{' '}
-        {t('disclaimer.playResponsibly')}
+        {t('disclaimer.playResponsibly')}{' '}
+        <a href="https://www.joueurs-info-service.fr" target="_blank" rel="noopener noreferrer" className={linkClass}>
+          {t('disclaimer.helpLink')}
+        </a>.
       </p>
       <div className="flex items-center justify-center gap-x-3 gap-y-1.5 text-xs flex-wrap">
         <a href="/transparence" className={linkClass}>{t('disclaimer.transparencyLink')}</a>

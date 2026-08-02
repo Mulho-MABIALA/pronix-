@@ -93,6 +93,8 @@ model User {
   language      String   @default("fr") // langue principale choisie à l'inscription : fr, en, es, pt
   currency      String?  // devise préférée choisie à l'inscription (FCFA si null) : EUR, USD, GBP, BRL, MXN, CAD, ZAR
   country       String?  // pays choisi à l'onboarding — code ISO 3166-1 alpha-2 (voir frontend/src/data/countries.js)
+  ageConfirmedAt      DateTime? // horodatage de la confirmation "18 ans ou plus" à l'inscription (preuve de consentement)
+  selfExclusionUntil  DateTime? // pause auto-imposée (jeu responsable) — bloque tickets + paiements tant que non expirée
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

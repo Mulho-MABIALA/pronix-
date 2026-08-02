@@ -45,6 +45,10 @@ const registerSchema = z.object({
     .refine((v) => !/\s{2,}/.test(v), { message: 'Pseudo : un seul espace consécutif autorisé' }),
   language: z.enum(['fr', 'en', 'es', 'pt']).default('fr'),
   currency: z.enum(['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR']).nullable().optional(),
+  // Jeu responsable : case à cocher obligatoire, jamais pré-cochée côté client.
+  ageConfirmed: z.boolean().refine((v) => v === true, {
+    message: 'Tu dois confirmer avoir 18 ans ou plus pour créer un compte',
+  }),
 });
 
 const loginSchema = z.object({
@@ -110,6 +114,7 @@ async function register(req, res, next) {
         username,
         language,
         currency: currency || null,
+        ageConfirmedAt: new Date(),
         trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
         profile: { create: {} },
         subscription: {
@@ -316,7 +321,10 @@ async function googleAuth(req, res, next) {
       throw new AppError('Google OAuth non configuré', 500, 'GOOGLE_NOT_CONFIGURED');
     }
 
-    const { credential } = z.object({ credential: z.string() }).parse(req.body);
+    const { credential, ageConfirmed } = z.object({
+      credential: z.string(),
+      ageConfirmed: z.boolean().optional(),
+    }).parse(req.body);
 
     let ticket;
     try {
@@ -349,7 +357,12 @@ async function googleAuth(req, res, next) {
         await prisma.user.update({ where: { id: user.id }, data: { googleId } });
       }
     } else {
-      // Créer un nouveau compte via Google
+      // Créer un nouveau compte via Google — jeu responsable : la case 18+ doit
+      // avoir été cochée côté client avant l'appel (voir Register.jsx).
+      if (!ageConfirmed) {
+        throw new AppError('Tu dois confirmer avoir 18 ans ou plus pour créer un compte', 400, 'AGE_CONFIRMATION_REQUIRED');
+      }
+
       const username = await generateUniqueUsername(email);
       const freePlan = await prisma.plan.findUnique({ where: { code: 'FREE' } });
 
@@ -358,6 +371,7 @@ async function googleAuth(req, res, next) {
           email,
           googleId,
           username,
+          ageConfirmedAt: new Date(),
           trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
           profile: { create: { displayName: name || username, avatar: picture } },
           subscription: { create: { planId: freePlan.id, status: 'ACTIVE' } },

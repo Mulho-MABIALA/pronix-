@@ -381,6 +381,12 @@
     "payment": {
       "title": "Pago seguro vía GeniusPay"
     },
+    "confirmModal": {
+      "title": "Confirmar suscripción",
+      "reminder": "Ningún pronóstico está garantizado. Asegúrate de que este gasto encaja en tu presupuesto antes de continuar.",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar y pagar"
+    },
     "trust": {
       "secure": "Pago 100% seguro",
       "cancel": "Cancelación en cualquier momento",
@@ -434,6 +440,9 @@
     "termsReg": "Al registrarte, aceptas nuestros",
     "termsLink": "Términos",
     "disclaimer18": "Plataforma reservada para mayores de 18 años. Esto no es asesoramiento financiero.",
+    "ageConfirmLabel": "Confirmo que tengo 18 años o más.",
+    "ageConfirmRequired": "Debes confirmar que tienes 18 años o más para crear una cuenta.",
+    "ageConfirmOnRegister": "¿Nuevo en fpronix? Confirma tu edad en la página de registro para crear tu cuenta.",
     "privacy": "y nuestra",
     "privacyLink": "Política de privacidad",
     "forgotPasswordTitle": "Contraseña olvidada",
@@ -544,6 +553,18 @@
       "deleting": "Eliminando…",
       "doneToast": "Cuenta eliminada. ¡Adiós!",
       "error": "Error al eliminar. Inténtalo de nuevo o contacta con soporte."
+    },
+    "selfExclusion": {
+      "title": "Pausa / juego responsable",
+      "desc": "¿Necesitas un descanso? Activa una pausa temporal: la generación de tickets y los pagos se bloquearán hasta que termine el período elegido. No se puede cancelar antes de su fin.",
+      "duration24h": "24 horas",
+      "duration7d": "7 días",
+      "duration30d": "30 días",
+      "confirmPrompt": "¿Confirmar una pausa de {{days}} día(s)? Esta acción no se puede deshacer antes de que termine el período.",
+      "confirmBtn": "Confirmar pausa",
+      "activeUntil": "Pausa activa hasta el {{date}}. Los tickets y pagos están bloqueados hasta entonces.",
+      "activatedToast": "Pausa activada. Cuídate.",
+      "error": "Error al activar la pausa."
     },
     "leagues": {
       "title": "Ligas favoritas",
@@ -1641,6 +1662,7 @@
     "intro": "fpronix proporciona datos y estadísticas únicamente con fines informativos.",
     "warning": "Esto no es asesoramiento financiero. No se promete ninguna garantía de ganancia.",
     "playResponsibly": "Juega de forma responsable. Solo 18+.",
+    "helpLink": "¿Necesitas ayuda?",
     "transparencyLink": "Transparencia",
     "termsLink": "Términos",
     "privacyLink": "Política de privacidad",

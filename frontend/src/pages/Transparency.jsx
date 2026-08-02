@@ -150,6 +150,11 @@ export default function Transparency() {
                   })}
                 </p>
               )}
+              <p className="text-[11px] text-ink-4">
+                <a href="https://www.joueurs-info-service.fr" target="_blank" rel="noopener noreferrer" className="underline text-primary-400 hover:text-primary-300">
+                  {t('disclaimer.helpLink')}
+                </a>
+              </p>
             </div>
           </div>
         </>

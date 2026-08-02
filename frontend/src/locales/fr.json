@@ -381,6 +381,12 @@
     "payment": {
       "title": "Paiement sécurisé via GeniusPay"
     },
+    "confirmModal": {
+      "title": "Confirmer l'abonnement",
+      "reminder": "Aucun pronostic n'est garanti. Assure-toi que cette dépense reste dans ton budget avant de continuer.",
+      "cancel": "Annuler",
+      "confirm": "Confirmer et payer"
+    },
     "trust": {
       "secure": "Paiement 100% sécurisé",
       "cancel": "Annulation à tout moment",
@@ -434,6 +440,9 @@
     "termsReg": "En vous inscrivant, vous acceptez nos",
     "termsLink": "CGU",
     "disclaimer18": "Plateforme réservée aux 18+. Ceci n'est pas un conseil financier.",
+    "ageConfirmLabel": "Je confirme avoir 18 ans ou plus.",
+    "ageConfirmRequired": "Tu dois confirmer avoir 18 ans ou plus pour créer un compte.",
+    "ageConfirmOnRegister": "Nouveau sur fpronix ? Confirme ton âge sur la page d'inscription pour créer ton compte.",
     "privacy": "et notre",
     "privacyLink": "Politique de confidentialité",
     "forgotPasswordTitle": "Mot de passe oublié",
@@ -544,6 +553,18 @@
       "deleting": "Suppression…",
       "doneToast": "Compte supprimé. Au revoir !",
       "error": "Erreur lors de la suppression. Réessaie ou contacte le support."
+    },
+    "selfExclusion": {
+      "title": "Pause / jeu responsable",
+      "desc": "Besoin de faire une pause ? Active une pause temporaire : la génération de tickets et les paiements seront bloqués jusqu'à la fin de la période choisie. Impossible à annuler avant son terme.",
+      "duration24h": "24 heures",
+      "duration7d": "7 jours",
+      "duration30d": "30 jours",
+      "confirmPrompt": "Confirmer une pause de {{days}} jour(s) ? Cette action ne pourra pas être annulée avant la fin de la période.",
+      "confirmBtn": "Confirmer la pause",
+      "activeUntil": "Pause active jusqu'au {{date}}. Tickets et paiements sont bloqués jusque-là.",
+      "activatedToast": "Pause activée. Prends soin de toi.",
+      "error": "Erreur lors de l'activation de la pause."
     },
     "leagues": {
       "title": "Championnats favoris",
@@ -1641,6 +1662,7 @@
     "intro": "fpronix fournit des données et statistiques à titre informatif uniquement.",
     "warning": "Ceci n'est pas un conseil financier. Aucune garantie de gain n'est promise.",
     "playResponsibly": "Jouez de manière responsable. 18+ uniquement.",
+    "helpLink": "Besoin d'aide ?",
     "transparencyLink": "Transparence",
     "termsLink": "CGU",
     "privacyLink": "Politique de confidentialité",

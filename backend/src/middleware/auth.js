@@ -58,6 +58,22 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+// Jeu responsable : bloque les actions de pari/paiement tant que l'utilisateur
+// est en pause auto-imposée (voir POST /profiles/me/self-exclusion). À placer
+// après `authenticate` sur les routes concernées (génération de tickets,
+// initiation de paiement) — jamais sur les routes de simple lecture.
+function blockIfSelfExcluded(req, res, next) {
+  const until = req.user?.selfExclusionUntil;
+  if (until && new Date(until) > new Date()) {
+    return next(new AppError(
+      `Pause active jusqu'au ${new Date(until).toLocaleDateString('fr-FR')}. Cette action est bloquée pendant ta pause.`,
+      403,
+      'SELF_EXCLUDED',
+    ));
+  }
+  next();
+}
+
 // Auth optionnelle : lit le token si présent, ne bloque pas si absent
 async function optionalAuthenticate(req, res, next) {
   try {
@@ -74,4 +90,4 @@ async function optionalAuthenticate(req, res, next) {
   next();
 }
 
-module.exports = { authenticate, requireAdmin, optionalAuthenticate };
+module.exports = { authenticate, requireAdmin, optionalAuthenticate, blockIfSelfExcluded };

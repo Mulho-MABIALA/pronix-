@@ -381,6 +381,12 @@
     "payment": {
       "title": "Secure payment via GeniusPay"
     },
+    "confirmModal": {
+      "title": "Confirm subscription",
+      "reminder": "No pick is guaranteed. Make sure this expense fits your budget before continuing.",
+      "cancel": "Cancel",
+      "confirm": "Confirm and pay"
+    },
     "trust": {
       "secure": "100% secure payment",
       "cancel": "Cancel anytime",
@@ -434,6 +440,9 @@
     "termsReg": "By signing up, you agree to our",
     "termsLink": "Terms",
     "disclaimer18": "Platform for 18+ only. Not financial advice.",
+    "ageConfirmLabel": "I confirm I am 18 or older.",
+    "ageConfirmRequired": "You must confirm you are 18 or older to create an account.",
+    "ageConfirmOnRegister": "New to fpronix? Confirm your age on the sign-up page to create your account.",
     "privacy": "and our",
     "privacyLink": "Privacy policy",
     "forgotPasswordTitle": "Forgot password",
@@ -544,6 +553,18 @@
       "deleting": "Deleting…",
       "doneToast": "Account deleted. Goodbye!",
       "error": "Error while deleting. Please try again or contact support."
+    },
+    "selfExclusion": {
+      "title": "Pause / responsible gaming",
+      "desc": "Need a break? Activate a temporary pause: ticket generation and payments will be blocked until the chosen period ends. Cannot be cancelled before it expires.",
+      "duration24h": "24 hours",
+      "duration7d": "7 days",
+      "duration30d": "30 days",
+      "confirmPrompt": "Confirm a {{days}}-day pause? This action cannot be undone before the period ends.",
+      "confirmBtn": "Confirm pause",
+      "activeUntil": "Pause active until {{date}}. Tickets and payments are blocked until then.",
+      "activatedToast": "Pause activated. Take care of yourself.",
+      "error": "Error while activating the pause."
     },
     "leagues": {
       "title": "Favorite leagues",
@@ -1641,6 +1662,7 @@
     "intro": "fpronix provides data and statistics for informational purposes only.",
     "warning": "This is not financial advice. No guarantee of winnings is promised.",
     "playResponsibly": "Play responsibly. 18+ only.",
+    "helpLink": "Need help?",
     "transparencyLink": "Transparency",
     "termsLink": "Terms",
     "privacyLink": "Privacy Policy",

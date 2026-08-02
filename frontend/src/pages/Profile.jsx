@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
-  MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle,
+  MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle, PauseCircle,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -413,6 +413,88 @@ function PreferencesSection() {
           </button>
         )}
       </div>
+    </Section>
+  );
+}
+
+/* ─── Section jeu responsable : pause auto-imposée ───────────────────────────
+   Bloque côté backend la génération de tickets + l'initiation de paiement
+   tant que selfExclusionUntil n'est pas expiré (voir middleware/auth.js).
+   Volontairement pas de bouton pour annuler une pause en cours — sinon elle
+   ne sert à rien comme garde-fou. ─── */
+const SELF_EXCLUSION_DURATIONS = [
+  { days: 1,  labelKey: 'profile.selfExclusion.duration24h' },
+  { days: 7,  labelKey: 'profile.selfExclusion.duration7d' },
+  { days: 30, labelKey: 'profile.selfExclusion.duration30d' },
+];
+
+function SelfExclusionSection() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
+  const { user, refreshUser } = useAuth();
+  const toast = useToast();
+  const [pendingDays, setPendingDays] = useState(null);
+
+  const activeUntil = user?.selfExclusionUntil && new Date(user.selfExclusionUntil) > new Date()
+    ? new Date(user.selfExclusionUntil)
+    : null;
+
+  const activate = useMutation({
+    mutationFn: (days) => api.post('/profiles/me/self-exclusion', { days }),
+    onSuccess: async () => {
+      await refreshUser();
+      setPendingDays(null);
+      if (toast) toast(t('profile.selfExclusion.activatedToast'), 'success');
+    },
+    onError: (err) => {
+      if (toast) toast(err?.response?.data?.message || t('profile.selfExclusion.error'), 'error');
+    },
+  });
+
+  return (
+    <Section title={t('profile.selfExclusion.title')} icon={PauseCircle} color="amber">
+      <p className="text-xs text-ink-3 leading-relaxed">
+        {t('profile.selfExclusion.desc')}
+      </p>
+
+      {activeUntil ? (
+        <div className="flex items-center gap-2.5 bg-amber-500/10 border border-amber-500/25 rounded-xl px-3 py-2.5">
+          <PauseCircle size={16} className="text-amber-400 shrink-0" />
+          <p className="text-xs text-amber-300">
+            {t('profile.selfExclusion.activeUntil', { date: format(activeUntil, 'dd MMM yyyy', { locale: dateLocale }) })}
+          </p>
+        </div>
+      ) : pendingDays ? (
+        <div className="space-y-2 bg-surface-700/30 border border-overlay/[0.07] rounded-xl p-3">
+          <p className="text-xs text-ink-2">
+            {t('profile.selfExclusion.confirmPrompt', { days: pendingDays })}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => activate.mutate(pendingDays)}
+              disabled={activate.isPending}
+              className="flex-1 py-2 rounded-lg text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-white transition-colors disabled:opacity-50"
+            >
+              {activate.isPending ? t('profile.saving') : t('profile.selfExclusion.confirmBtn')}
+            </button>
+            <button onClick={() => setPendingDays(null)} className="flex-1 py-2 rounded-lg text-xs font-semibold btn-secondary">
+              {t('profile.cancel')}
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex gap-2 flex-wrap">
+          {SELF_EXCLUSION_DURATIONS.map(({ days, labelKey }) => (
+            <button
+              key={days}
+              onClick={() => setPendingDays(days)}
+              className="flex-1 min-w-[90px] py-2 rounded-lg text-xs font-semibold border border-overlay/[0.1] text-ink-2 hover:border-amber-500/40 hover:text-amber-400 transition-colors"
+            >
+              {t(labelKey)}
+            </button>
+          ))}
+        </div>
+      )}
     </Section>
   );
 }
@@ -1156,6 +1238,9 @@ export default function Profile() {
           </div>
         </div>
       </Section>
+
+      {/* ── Jeu responsable : pause auto-imposée ──────────────────────────────── */}
+      <SelfExclusionSection />
 
       {/* ── Préférences (pays / langue / devise) ─────────────────────────────── */}
       <PreferencesSection />

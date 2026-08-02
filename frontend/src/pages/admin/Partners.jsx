@@ -74,7 +74,7 @@ function CommissionsPanel({ partnerId }) {
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-overlay/[0.04]">
+        <tbody className="divide-y divide-overlay/[0.09]">
           {commissions.map((c) => (
             <tr key={c.id} className="hover:bg-overlay/[0.02] transition-colors">
               <td className="px-4 py-2.5">

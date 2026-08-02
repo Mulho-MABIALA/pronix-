@@ -192,7 +192,7 @@ export default function CoupeDuMonde2026() {
         </div>
 
         {isLoading ? (
-          <div className="card divide-y divide-overlay/[0.04]">
+          <div className="card divide-y divide-overlay/[0.09]">
             {[...Array(6)].map((_, i) => <SkeletonMatchCard key={i} />)}
           </div>
         ) : matches.length === 0 ? (
@@ -220,11 +220,11 @@ export default function CoupeDuMonde2026() {
             </Link>
           </div>
         ) : (
-          <div className="card divide-y divide-overlay/[0.04] overflow-hidden">
+          <div className="card divide-y divide-overlay/[0.09] overflow-hidden">
             {groups.map(([dateStr, dayMatches]) => (
               <div key={dateStr}>
                 <DateLabel dateStr={dateStr} />
-                <div className="divide-y divide-overlay/[0.04]">
+                <div className="divide-y divide-overlay/[0.09]">
                   {dayMatches.map((m, i) => <MatchCard key={m.id} match={m} index={i} />)}
                 </div>
               </div>

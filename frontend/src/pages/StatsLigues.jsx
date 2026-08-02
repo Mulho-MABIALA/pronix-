@@ -120,7 +120,7 @@ export default function StatsLigues() {
           <p className="text-ink-4 text-xs mt-1">{t('statsLigues.noDataHint')}</p>
         </div>
       ) : (
-        <div className="px-4 card overflow-hidden divide-y divide-overlay/[0.04]">
+        <div className="px-4 card overflow-hidden divide-y divide-overlay/[0.09]">
           {rows.map((r) => (
             <div key={r.competition.id} className={`px-4 py-3 space-y-2.5 ${r.lowSample ? 'opacity-60' : ''}`}>
               {/* Ligne compétition */}

@@ -93,7 +93,7 @@ export default function AdminMatches() {
                 <th className="text-left px-5 py-3.5 font-medium hidden lg:table-cell">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-overlay/[0.04]">
+            <tbody className="divide-y divide-overlay/[0.09]">
               {isLoading
                 ? Array.from({ length: 10 }).map((_, i) => (
                   <tr key={i} className="divide-x divide-overlay/[0.05]">

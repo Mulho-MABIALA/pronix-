@@ -317,7 +317,7 @@ export default function AdminFinances() {
               <h2 className="text-sm font-semibold text-ink-3 mb-4">Par statut</h2>
               <div className="space-y-2.5">
                 {Object.entries(STATUS_STYLE).map(([status, { label, cls, Icon }]) => (
-                  <div key={status} className="flex items-center justify-between p-3 rounded-xl bg-overlay/[0.02] border border-overlay/[0.04]">
+                  <div key={status} className="flex items-center justify-between p-3 rounded-xl bg-overlay/[0.02] border border-overlay/[0.09]">
                     <div className="flex items-center gap-2">
                       <Icon size={15} className={cls.split(' ')[0]} />
                       <span className="text-sm text-ink-3">{label}</span>
@@ -347,7 +347,7 @@ export default function AdminFinances() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-overlay/[0.04]">
+              <tbody className="divide-y divide-overlay/[0.09]">
                 {recentPayments.map((p) => {
                   const st = STATUS_STYLE[p.status] || STATUS_STYLE.PENDING;
                   return (
@@ -482,7 +482,7 @@ export default function AdminFinances() {
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-overlay/[0.04]">
+                <tbody className="divide-y divide-overlay/[0.09]">
                   {expenses.map((exp) => {
                     const cat = CATEGORY_LABEL[exp.category] || CATEGORY_LABEL.other;
                     return (

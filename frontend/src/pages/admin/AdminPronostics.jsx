@@ -130,7 +130,7 @@ export default function AdminPronostics() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-overlay/[0.04]">
+              <tbody className="divide-y divide-overlay/[0.09]">
                 {tips.map(tip => {
                   const res = RESULT_MAP[tip.result] || RESULT_MAP[null];
                   const ResIcon = res.icon;

@@ -31,7 +31,7 @@ export default function AdminCompetitions() {
       <div className="rounded-2xl border border-overlay/[0.11] overflow-hidden shine-subtle"
         style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.07)' }}>
         {isLoading ? (
-          <div className="divide-y divide-overlay/[0.04]">
+          <div className="divide-y divide-overlay/[0.09]">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="flex items-center gap-4 px-5 py-4">
                 <div className="h-4 w-4 skeleton rounded" />
@@ -52,7 +52,7 @@ export default function AdminCompetitions() {
                 <th className="text-right px-5 py-3.5 font-medium">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-overlay/[0.04]">
+            <tbody className="divide-y divide-overlay/[0.09]">
               {competitions.map((c) => (
                 <tr key={c.id} className={`hover:bg-overlay/[0.025] transition-colors divide-x divide-overlay/[0.05] ${!c.isDisplayed ? 'opacity-50' : ''}`}>
                   <td className="px-5 py-3.5">

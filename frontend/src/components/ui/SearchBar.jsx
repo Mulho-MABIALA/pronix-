@@ -177,7 +177,7 @@ export default function SearchBar({ onClose }) {
               {/* Tipsters */}
               {results.tipsters?.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-overlay/[0.04]">
+                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-overlay/[0.09]">
                     <Users size={12} className="text-ink-4" />
                     <span className="text-[11px] font-semibold text-ink-4 uppercase tracking-wider">
                       {t('search.tipsters', 'Tipsters')}
@@ -215,7 +215,7 @@ export default function SearchBar({ onClose }) {
               {/* Compétitions */}
               {results.competitions?.length > 0 && (
                 <div className="pb-2">
-                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-overlay/[0.04]">
+                  <div className="flex items-center gap-2 px-4 pt-3 pb-1 border-t border-overlay/[0.09]">
                     <Trophy size={12} className="text-ink-4" />
                     <span className="text-[11px] font-semibold text-ink-4 uppercase tracking-wider">
                       {t('search.competitions', 'Compétitions')}

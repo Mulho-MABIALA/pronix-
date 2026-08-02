@@ -360,7 +360,7 @@ export default function Filtres() {
             </button>
           </div>
         ) : (
-          <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
+          <div className="card overflow-hidden divide-y divide-overlay/[0.09]">
             {filtered.map((m) => {
               const pred   = m.predictions;
               const isToday = format(new Date(m.scheduledAt), 'yyyy-MM-dd') === today;

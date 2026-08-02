@@ -120,7 +120,7 @@ function MatchPicker({ selectedMatch, onSelect, onClear }) {
                 key={m.id}
                 type="button"
                 onClick={() => { onSelect(m); setQuery(''); setResults(null); }}
-                className="w-full flex items-center gap-2.5 text-left px-3 py-2.5 hover:bg-overlay/[0.05] transition-colors border-b border-overlay/[0.04] last:border-0"
+                className="w-full flex items-center gap-2.5 text-left px-3 py-2.5 hover:bg-overlay/[0.05] transition-colors border-b border-overlay/[0.09] last:border-0"
               >
                 <CompetitionLogo logo={m.competition?.logo} size={18} className="shrink-0" />
                 <div className="flex-1 min-w-0">

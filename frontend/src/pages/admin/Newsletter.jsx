@@ -193,7 +193,7 @@ function ComposeModal({ activeCount, onClose, onSent }) {
                     filteredSubs.map((s) => (
                       <label
                         key={s.id}
-                        className="flex items-center gap-2.5 px-3 py-2 hover:bg-overlay/[0.03] cursor-pointer border-b border-overlay/[0.04] last:border-0"
+                        className="flex items-center gap-2.5 px-3 py-2 hover:bg-overlay/[0.03] cursor-pointer border-b border-overlay/[0.09] last:border-0"
                       >
                         <input
                           type="checkbox"
@@ -472,7 +472,7 @@ export default function AdminNewsletter() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-overlay/[0.04]">
+              <tbody className="divide-y divide-overlay/[0.09]">
                 {subscribers.map((s) => (
                   <tr key={s.id} className="hover:bg-overlay/[0.02] transition-colors">
                     <td className="px-4 py-2.5 text-sm text-ink-1 flex items-center gap-2">

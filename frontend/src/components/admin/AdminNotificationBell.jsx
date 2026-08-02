@@ -106,7 +106,7 @@ export default function AdminNotificationBell() {
                   <button
                     key={item.id}
                     onClick={() => handleClickItem(item)}
-                    className={`w-full flex items-start gap-3 px-4 py-3 text-left border-b border-overlay/[0.04] last:border-0 transition-colors hover:bg-overlay/[0.03] ${
+                    className={`w-full flex items-start gap-3 px-4 py-3 text-left border-b border-overlay/[0.09] last:border-0 transition-colors hover:bg-overlay/[0.03] ${
                       !item.isRead ? 'bg-primary-500/[0.03]' : ''
                     }`}
                   >

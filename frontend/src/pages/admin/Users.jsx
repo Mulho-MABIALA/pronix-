@@ -695,7 +695,7 @@ export default function AdminUsers() {
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-overlay/[0.04]">
+            <tbody className="divide-y divide-overlay/[0.09]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
                   <tr key={i} className="divide-x divide-overlay/[0.05]">{Array.from({ length: 11 }).map((_, j) => (

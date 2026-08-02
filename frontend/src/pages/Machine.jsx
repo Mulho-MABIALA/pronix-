@@ -975,7 +975,7 @@ export default function Machine() {
               <p className="text-ink-4 text-xs mt-1">{t('machine.tryLowerConfidence')}</p>
             </div>
           ) : (
-            <div className="card overflow-hidden divide-y divide-overlay/[0.04]">
+            <div className="card overflow-hidden divide-y divide-overlay/[0.09]">
               {ticket.map((row, idx) => {
                 const c = CONF_COLORS[row.conf];
                 return (

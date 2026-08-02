@@ -141,7 +141,7 @@ function PronoRow({ match, index }) {
   return (
     <Link
       to={`/matchs/${match.id}`}
-      className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] border-b border-overlay/[0.04] last:border-0 transition-colors animate-cascade-in"
+      className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] border-b border-overlay/[0.09] last:border-0 transition-colors animate-cascade-in"
       style={{ animationDelay: cascadeDelay ? `${cascadeDelay}ms` : undefined }}
     >
       {/* Heure / Score */}
@@ -572,7 +572,7 @@ export default function Pronostics() {
       })()}
 
       {/* Disclaimer */}
-      <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-surface-700/40 border border-overlay/[0.04]">
+      <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-surface-700/40 border border-overlay/[0.09]">
         <Info size={12} className="text-ink-4 shrink-0 mt-0.5" />
         <p className="text-xs text-ink-4 leading-relaxed">
           {t('pronostics.disclaimerAuto')}
@@ -612,7 +612,7 @@ export default function Pronostics() {
               {valueBets.map((m, i) => (
                 <PronoRow key={`vb-${m.id}`} match={m} index={i} />
               ))}
-              <p className="text-[9px] text-ink-5 px-3 py-2 border-t border-overlay/[0.04]">
+              <p className="text-[9px] text-ink-5 px-3 py-2 border-t border-overlay/[0.09]">
                 {ODDS_DISCLAIMER}
               </p>
             </div>

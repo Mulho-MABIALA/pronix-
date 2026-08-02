@@ -175,7 +175,7 @@ export default function TicketHistory() {
               </div>
             </div>
 
-            <div className="divide-y divide-overlay/[0.04]">
+            <div className="divide-y divide-overlay/[0.09]">
               {ticket.entries.map((e, idx) => {
                 const ls = LEG_STYLES[e.legResult] || LEG_PENDING_STYLE;
                 const LegIcon = ls.Icon || Clock;

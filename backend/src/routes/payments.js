@@ -5,10 +5,8 @@ const {
   initiateWavePayment, handleWaveWebhook,
   initiateCinetpayPayment, handleCinetpayWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
-  // GeniusPay — mis de côté (remplacé par PayDunya), import conservé pour réactivation future
   initiateGeniuspayPayment, handleGeniuspayWebhook,
-  initiatePaydunyaPayment, handlePaydunyaWebhook,
-  initiateTipsterPaydunyaPayment,
+  initiateTipsterGeniuspayPayment,
   verifyPayment,
 } = require('../controllers/paymentController');
 
@@ -25,20 +23,16 @@ const paymentLimit = rateLimit({
 router.post('/wave/webhook',      handleWaveWebhook);
 router.post('/cinetpay/webhook',  handleCinetpayWebhook);
 router.post('/fedapay/webhook',   handleFedapayWebhook);
-// GeniusPay — mis de côté (remplacé par PayDunya). Code conservé, route désactivée :
-// router.post('/geniuspay/webhook', handleGeniuspayWebhook);
-router.post('/paydunya/webhook',  handlePaydunyaWebhook);
+router.post('/geniuspay/webhook', handleGeniuspayWebhook);
 
 // Paiements initiés par l'utilisateur (authentifié)
 router.use(authenticate);
 router.post('/wave/init',      paymentLimit, blockIfSelfExcluded, initiateWavePayment);
 router.post('/cinetpay/init',  paymentLimit, blockIfSelfExcluded, initiateCinetpayPayment);
 router.post('/fedapay/init',   paymentLimit, blockIfSelfExcluded, initiateFedapayPayment);
-// GeniusPay — mis de côté (remplacé par PayDunya). Code conservé, route désactivée :
-// router.post('/geniuspay/init', paymentLimit, blockIfSelfExcluded, initiateGeniuspayPayment);
-router.post('/paydunya/init',  paymentLimit, blockIfSelfExcluded, initiatePaydunyaPayment);
-// Abonnement payant à un tipster (même provider PayDunya, webhook partagé)
-router.post('/tipster/paydunya/init', paymentLimit, blockIfSelfExcluded, initiateTipsterPaydunyaPayment);
+router.post('/geniuspay/init', paymentLimit, blockIfSelfExcluded, initiateGeniuspayPayment);
+// Abonnement payant à un tipster (même provider Geniuspay, webhook partagé)
+router.post('/tipster/geniuspay/init', paymentLimit, blockIfSelfExcluded, initiateTipsterGeniuspayPayment);
 router.get('/verify',          verifyPayment);
 
 module.exports = router;

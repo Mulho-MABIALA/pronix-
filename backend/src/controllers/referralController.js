@@ -15,7 +15,7 @@ function generateCode() {
 
 // ─── Récompenser le parrain quand son filleul active un abonnement payant ─────
 // Appelé depuis activateSubscription() (paymentController.js) après CHAQUE
-// paiement confirmé, tous providers confondus (Wave/CinetPay/FedaPay/PayDunya).
+// paiement confirmé, tous providers confondus (Wave/CinetPay/FedaPay/Geniuspay).
 // Idempotent : ne récompense qu'une seule fois par filleul (status PENDING → REWARDED).
 async function grantReferralReward(refereeId) {
   try {

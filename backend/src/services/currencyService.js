@@ -1,5 +1,5 @@
 // Conversion FCFA (XOF) → devises étrangères — à titre indicatif uniquement.
-// Le paiement réel reste toujours en FCFA via les moyens actuels (PayDunya, Wave, CinetPay, FedaPay, GeniusPay).
+// Le paiement réel reste toujours en FCFA via les moyens actuels (GeniusPay, Wave, CinetPay, FedaPay).
 //
 // Le XOF est arrimé (peg) fixe à l'EUR : 1 EUR = 655.957 XOF (Trésor français / zone UEMOA).
 // Pour les autres devises, on récupère les taux EUR→X via frankfurter.app (gratuit, sans clé, basé BCE),

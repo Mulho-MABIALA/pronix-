@@ -420,6 +420,8 @@
   "auth": {
     "email": "Email address",
     "password": "Password",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
     "username": "Username",
     "usernameLabel": "Username",
     "usernameHint": "3 to 30 characters, anything goes (letters, numbers, spaces, accents...)",

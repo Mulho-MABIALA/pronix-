@@ -1,21 +1,19 @@
 // Commentaires sur les pronostics (tips)
+const { z } = require('zod');
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 
 const MAX_LENGTH = 500;
 
+const addCommentSchema = z.object({
+  content: z.string().trim().min(1, 'Le commentaire ne peut pas être vide').max(MAX_LENGTH, `Commentaire trop long (max ${MAX_LENGTH} caractères)`),
+});
+
 // POST /api/comments/:tipId — ajouter un commentaire
 async function addComment(req, res, next) {
   try {
     const { tipId } = req.params;
-    const { content } = req.body;
-
-    if (!content?.trim()) {
-      throw new AppError('Le commentaire ne peut pas être vide', 400, 'EMPTY_COMMENT');
-    }
-    if (content.length > MAX_LENGTH) {
-      throw new AppError(`Commentaire trop long (max ${MAX_LENGTH} caractères)`, 400, 'COMMENT_TOO_LONG');
-    }
+    const { content } = addCommentSchema.parse(req.body);
 
     const tip = await prisma.tip.findUnique({
       where: { id: tipId },
@@ -27,7 +25,7 @@ async function addComment(req, res, next) {
       data: {
         tipId,
         userId: req.user.id,
-        content: content.trim(),
+        content,
       },
       include: {
         user: {

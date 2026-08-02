@@ -2,6 +2,7 @@
 // Réutilise le modèle TipCombo/TipComboEntry (créé pour l'ancienne feature
 // "Combinés publics", retirée du produit mais dont la table est restée en base :
 // c'est exactement la structure qu'il faut ici, aucune migration nécessaire.
+const { z } = require('zod');
 const prisma = require('../config/database');
 const { AppError } = require('../middleware/errorHandler');
 const { resolvePick } = require('../utils/pickResult');
@@ -9,6 +10,18 @@ const { getUserPlanCode } = require('../middleware/subscription');
 
 const MAX_ENTRIES = 20;
 const FREE_TICKET_DAILY_LIMIT = 3;
+
+const ticketEntrySchema = z.object({
+  matchId: z.string().uuid({ message: 'Sélection invalide' }),
+  prediction: z.string().min(1).max(100),
+  odds: z.coerce.number().min(1).max(1000).optional().default(1),
+});
+
+const saveTicketSchema = z.object({
+  entries: z.array(ticketEntrySchema).min(1, 'Le ticket doit contenir au moins une sélection').max(MAX_ENTRIES, `Maximum ${MAX_ENTRIES} sélections par ticket`),
+  totalOdds: z.coerce.number().min(1).optional(),
+  title: z.string().max(200).optional().nullable(),
+});
 
 function today() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -70,19 +83,7 @@ async function consumeTicketQuota(req, res, next) {
 // POST /api/tickets — enregistrer un ticket généré
 async function saveTicket(req, res, next) {
   try {
-    const { entries, totalOdds, title } = req.body;
-
-    if (!Array.isArray(entries) || entries.length === 0) {
-      throw new AppError('Le ticket doit contenir au moins une sélection', 400, 'EMPTY_TICKET');
-    }
-    if (entries.length > MAX_ENTRIES) {
-      throw new AppError(`Maximum ${MAX_ENTRIES} sélections par ticket`, 400, 'TICKET_TOO_LARGE');
-    }
-    for (const e of entries) {
-      if (!e || typeof e.matchId !== 'string' || typeof e.prediction !== 'string') {
-        throw new AppError('Sélection invalide', 400, 'INVALID_ENTRY');
-      }
-    }
+    const { entries, totalOdds, title } = saveTicketSchema.parse(req.body);
 
     const matchIds = [...new Set(entries.map((e) => e.matchId))];
     const existing = await prisma.match.findMany({
@@ -93,8 +94,8 @@ async function saveTicket(req, res, next) {
       throw new AppError('Un ou plusieurs matchs sont introuvables', 404, 'MATCH_NOT_FOUND');
     }
 
-    const computedTotalOdds = entries.reduce((acc, e) => acc * (parseFloat(e.odds) || 1), 1);
-    const finalTotalOdds = Number.isFinite(parseFloat(totalOdds)) ? parseFloat(totalOdds) : computedTotalOdds;
+    const computedTotalOdds = entries.reduce((acc, e) => acc * e.odds, 1);
+    const finalTotalOdds = totalOdds ?? computedTotalOdds;
 
     const combo = await prisma.tipCombo.create({
       data: {
@@ -105,7 +106,7 @@ async function saveTicket(req, res, next) {
           create: entries.map((e) => ({
             matchId: e.matchId,
             prediction: e.prediction,
-            odds: parseFloat(e.odds) || 1,
+            odds: e.odds,
           })),
         },
       },

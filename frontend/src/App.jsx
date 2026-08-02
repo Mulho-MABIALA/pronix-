@@ -44,7 +44,6 @@ const Newsletter = lazy(() => import('./pages/Newsletter'));
 const NewsletterUnsubscribe = lazy(() => import('./pages/NewsletterUnsubscribe'));
 const CompetitionStandings = lazy(() => import('./pages/CompetitionStandings'));
 const CompetitionPronostics = lazy(() => import('./pages/CompetitionPronostics'));
-const CoupeDuMonde2026 = lazy(() => import('./pages/CoupeDuMonde2026'));
 const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
 const BetTracker = lazy(() => import('./pages/BetTracker'));
 const TeamPage = lazy(() => import('./pages/TeamPage'));
@@ -165,7 +164,6 @@ export default function App() {
                 <Route path="/classements/:slug" element={<CompetitionStandings />} />
                 <Route path="/pronostics" element={<Pronostics />} />
                 <Route path="/pronostics/:slug" element={<CompetitionPronostics />} />
-                <Route path="/coupe-du-monde-2026" element={<CoupeDuMonde2026 />} />
                 <Route path="/outils/filtres" element={<Filtres />} />
                 <Route path="/outils/machine" element={<Machine />} />
                 <Route path="/outils/stats-ligues" element={<StatsLigues />} />

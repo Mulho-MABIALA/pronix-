@@ -29,7 +29,6 @@ router.get('/', async (req, res, next) => {
       url(`${BASE}/actualites`, 'daily', '0.7'),
       url(`${BASE}/classements`, 'daily', '0.7'),
       url(`${BASE}/abonnement`, 'monthly', '0.6'),
-      url(`${BASE}/coupe-du-monde-2026`, 'weekly', '0.8'),
       url(`${BASE}/cgu`, 'monthly', '0.3'),
       url(`${BASE}/politique-confidentialite`, 'monthly', '0.3'),
       url(`${BASE}/faq`, 'monthly', '0.4'),

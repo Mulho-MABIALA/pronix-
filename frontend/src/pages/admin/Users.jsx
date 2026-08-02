@@ -508,6 +508,70 @@ function ActivateModal({ user, onClose, onConfirm, loading }) {
   );
 }
 
+// ── Historique des comptes supprimés (self-service ou admin) ───────────────────
+function DeletedAccountsModal({ onClose }) {
+  const [page, setPage] = useState(1);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['admin-deleted-accounts', page],
+    queryFn: () => api.get('/admin/users/deleted', { params: { page, limit: 20 } }).then((r) => r.data),
+  });
+
+  const items = data?.data || [];
+
+  return (
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+      <div className="rounded-2xl border border-overlay/[0.11] p-6 max-w-lg w-full max-h-[85vh] flex flex-col" style={{ background: 'var(--color-card)' }}>
+        <div className="flex items-center justify-between mb-5 shrink-0">
+          <div className="flex items-center gap-2">
+            <Trash2 size={18} className="text-red-400" />
+            <h3 className="text-ink-1 font-bold text-base">Comptes supprimés</h3>
+            {data?.total !== undefined && <span className="text-xs text-ink-4 font-medium">({data.total})</span>}
+          </div>
+          <button onClick={onClose} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-overlay/[0.08] text-ink-3 transition-colors"><X size={15} /></button>
+        </div>
+
+        <div className="overflow-y-auto -mx-2 px-2 space-y-2">
+          {isLoading ? (
+            <p className="text-sm text-ink-4 text-center py-8">Chargement…</p>
+          ) : items.length === 0 ? (
+            <p className="text-sm text-ink-4 text-center py-8">Aucun compte supprimé pour l'instant.</p>
+          ) : (
+            items.map((d) => (
+              <div key={d.id} className="flex items-center justify-between gap-3 p-3 rounded-xl bg-overlay/[0.04] border border-overlay/[0.08]">
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-ink-1 truncate">{d.username}</p>
+                  <p className="text-[11px] text-ink-3 truncate">{d.email}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${d.reason === 'admin' ? 'bg-red-500/15 text-red-400' : 'bg-overlay/[0.06] text-ink-3'}`}>
+                    {d.reason === 'admin' ? 'Par admin' : 'Auto-suppression'}
+                  </span>
+                  <p className="text-[11px] text-ink-4 mt-1">{format(new Date(d.deletedAt), 'dd/MM/yyyy HH:mm', { locale: fr })}</p>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {data?.pages > 1 && (
+          <div className="flex items-center justify-between pt-4 mt-2 border-t border-overlay/[0.08] shrink-0">
+            <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}
+              className="flex items-center gap-1 text-xs font-medium text-ink-3 hover:text-ink-1 disabled:opacity-40 transition-colors">
+              <ChevronLeft size={14} /> Précédent
+            </button>
+            <span className="text-xs text-ink-4">Page {page} / {data.pages}</span>
+            <button onClick={() => setPage((p) => Math.min(data.pages, p + 1))} disabled={page >= data.pages}
+              className="flex items-center gap-1 text-xs font-medium text-ink-3 hover:text-ink-1 disabled:opacity-40 transition-colors">
+              Suivant <ChevronRight size={14} />
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ── Page principale ───────────────────────────────────────────────────────────
 const DATE_PRESETS = [
   { label: 'Tous', value: '' },
@@ -535,6 +599,7 @@ export default function AdminUsers() {
   const [page, setPage]             = useState(1);
   const [selectedUser, setSelectedUser] = useState(null);
   const [activateUser, setActivateUser] = useState(null);
+  const [showDeleted, setShowDeleted]   = useState(false);
 
   const sort         = ORDER_OPTIONS[sortIdx];
   const createdAfter = typeof DATE_PRESETS[datePreset].value === 'function'
@@ -582,10 +647,16 @@ export default function AdminUsers() {
           <h1 className="font-display font-bold text-2xl text-ink-1">Utilisateurs</h1>
           <p className="text-sm text-ink-4 mt-0.5">{pagination?.total !== undefined ? `${pagination.total} utilisateurs` : ''}</p>
         </div>
-        <a href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/users`} download
-          className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors shrink-0">
-          <Download size={13} /> Exporter CSV
-        </a>
+        <div className="flex items-center gap-2 shrink-0">
+          <button onClick={() => setShowDeleted(true)}
+            className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors">
+            <Trash2 size={13} /> Comptes supprimés
+          </button>
+          <a href={`${import.meta.env.VITE_API_URL || ''}/api/admin/export/users`} download
+            className="flex items-center gap-2 text-xs font-semibold px-3.5 py-2 rounded-xl bg-overlay/[0.05] border border-overlay/[0.11] text-ink-3 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors">
+            <Download size={13} /> Exporter CSV
+          </a>
+        </div>
       </div>
 
       {/* Stats bar */}
@@ -817,6 +888,9 @@ export default function AdminUsers() {
           onConfirm={(planCode, months) => activate.mutate({ userId: activateUser.id, planCode, months })}
         />
       )}
+
+      {/* Modal historique des comptes supprimés */}
+      {showDeleted && <DeletedAccountsModal onClose={() => setShowDeleted(false)} />}
     </div>
   );
 }

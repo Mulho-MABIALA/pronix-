@@ -835,3 +835,17 @@ model AdminNotification {
   @@index([createdAt])
   @@map("admin_notifications")
 }
+
+// Historique des comptes supprimés (self-service ou par un admin). La ligne User
+// disparaît définitivement (hard delete) — cette table garde une trace minimale
+// pour l'admin (qui, quand, par qui) sans dépendre du parsing d'AdminNotification.
+model DeletedAccount {
+  id        String   @id @default(uuid())
+  email     String
+  username  String
+  reason    String   @default("self") // "self" (l'utilisateur) | "admin" (suppression manuelle)
+  deletedAt DateTime @default(now())
+
+  @@index([deletedAt])
+  @@map("deleted_accounts")
+}

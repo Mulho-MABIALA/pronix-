@@ -26,6 +26,7 @@ const {
   activateUserSubscription,
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
   getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
+  getDeletedAccounts,
 } = require('../controllers/adminController');
 const { adminBroadcast, getPushStats } = require('../controllers/pushController');
 const {
@@ -47,6 +48,7 @@ router.patch('/activity/read-all', markAllActivityNotificationsRead);
 // Utilisateurs
 router.get('/users/stats',                         getUserStats);
 router.get('/users',                               getUsers);
+router.get('/users/deleted',                       getDeletedAccounts);
 router.patch('/users/:userId/status',              toggleUserStatus);
 router.delete('/users/:userId',                    deleteUser);
 router.patch('/users/:userId/role',                updateUserRole);

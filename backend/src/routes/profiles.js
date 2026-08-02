@@ -143,6 +143,17 @@ router.delete('/me', async (req, res, next) => {
 
     await prisma.user.delete({ where: { id: req.user.id } });
 
+    // Historique admin (table dédiée, indépendante du compte qui vient de disparaître)
+    prisma.deletedAccount.create({ data: { email, username, reason: 'self' } })
+      .catch((err) => console.error('[DeletedAccount] échec création:', err.message || err));
+
+    // Un compte supprimé ne doit plus recevoir la newsletter — best-effort, ne
+    // doit jamais faire échouer la suppression du compte elle-même.
+    prisma.newsletterSubscriber.updateMany({
+      where: { email: email.toLowerCase(), isActive: true },
+      data: { isActive: false, unsubscribedAt: new Date() },
+    }).catch((err) => console.error('[Newsletter] désinscription auto échouée:', err.message || err));
+
     notifyAdmin({
       type: 'ACCOUNT_DELETED',
       title: 'Compte supprimé',

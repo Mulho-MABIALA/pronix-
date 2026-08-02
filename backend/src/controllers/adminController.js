@@ -361,7 +361,21 @@ async function deleteUser(req, res, next) {
     if (req.user.id === userId) {
       throw new AppError('Impossible de supprimer votre propre compte admin', 400, 'CANNOT_DELETE_SELF');
     }
+
+    // On garde username/email avant suppression pour l'historique + la désinscription newsletter.
+    const target = await prisma.user.findUnique({ where: { id: userId }, select: { email: true, username: true } });
+    if (!target) throw new AppError('Utilisateur introuvable', 404, 'NOT_FOUND');
+
     await prisma.user.delete({ where: { id: userId } });
+
+    prisma.deletedAccount.create({ data: { email: target.email, username: target.username, reason: 'admin' } })
+      .catch((err) => console.error('[DeletedAccount] échec création:', err.message || err));
+
+    prisma.newsletterSubscriber.updateMany({
+      where: { email: target.email.toLowerCase(), isActive: true },
+      data: { isActive: false, unsubscribedAt: new Date() },
+    }).catch((err) => console.error('[Newsletter] désinscription auto échouée:', err.message || err));
+
     res.json({ success: true, message: 'Compte supprimé définitivement' });
   } catch (err) {
     if (err.code === 'P2025') {
@@ -1069,6 +1083,26 @@ async function markAllActivityNotificationsRead(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ── Historique des comptes supprimés (self-service ou admin) ────────────────
+async function getDeletedAccounts(req, res, next) {
+  try {
+    const { page = '1', limit = '20' } = req.query;
+    const take = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
+    const skip = (Math.max(1, parseInt(page, 10) || 1) - 1) * take;
+
+    const [total, items] = await prisma.$transaction([
+      prisma.deletedAccount.count(),
+      prisma.deletedAccount.findMany({
+        orderBy: { deletedAt: 'desc' },
+        skip,
+        take,
+      }),
+    ]);
+
+    res.json({ success: true, data: items, total, page: Number(page), pages: Math.ceil(total / take) });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getDashboard,
   getUsers, toggleUserStatus, deleteUser,
@@ -1095,4 +1129,5 @@ module.exports = {
   activateUserSubscription,
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
   getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
+  getDeletedAccounts,
 };

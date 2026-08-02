@@ -66,20 +66,28 @@ async function getDashboard(req, res, next) {
       }),
     ]);
 
-    // Revenus des 6 derniers mois
-    const revenueByMonth = [];
+    // Revenus des 6 derniers mois — 6 aggregate() indépendants lancés en
+    // parallèle au lieu d'attendre chacun l'un après l'autre (6 allers-retours
+    // DB séquentiels avant, contre 1 seul temps d'attente maintenant).
+    const monthRanges = [];
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const dNext = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-      const agg = await prisma.payment.aggregate({
-        where: { status: 'COMPLETED', createdAt: { gte: d, lt: dNext } },
-        _sum: { amount: true },
-      });
-      revenueByMonth.push({
-        month: d.toLocaleString('fr-FR', { month: 'short' }),
-        amount: agg._sum.amount || 0,
+      monthRanges.push({
+        d: new Date(now.getFullYear(), now.getMonth() - i, 1),
+        dNext: new Date(now.getFullYear(), now.getMonth() - i + 1, 1),
       });
     }
+    const revenueAggs = await Promise.all(
+      monthRanges.map(({ d, dNext }) =>
+        prisma.payment.aggregate({
+          where: { status: 'COMPLETED', createdAt: { gte: d, lt: dNext } },
+          _sum: { amount: true },
+        })
+      )
+    );
+    const revenueByMonth = monthRanges.map(({ d }, idx) => ({
+      month: d.toLocaleString('fr-FR', { month: 'short' }),
+      amount: revenueAggs[idx]._sum.amount || 0,
+    }));
 
     // Distribution des plans avec noms
     const plans = await prisma.plan.findMany({ select: { id: true, code: true } });

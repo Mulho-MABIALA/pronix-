@@ -81,13 +81,17 @@ const CONF_COLOR = {
   low:    { color: 'text-ink-3',    dot: 'bg-gray-500',    bar: 'bg-gray-600' },
 };
 
-function PronoRow({ match, index }) {
+function PronoRow({ match, index, oddsEnabled = true }) {
   const { t } = useTranslation();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
 
   const conf = CONF_COLOR[pred.confidence] || CONF_COLOR.low;
-  const { data: realOdds } = useOdds(match.id, { enabled: match.status === 'SCHEDULED' });
+  // oddsEnabled=false pour les lignes floutées par le paywall — inutile
+  // d'interroger GET /matches/:id/odds pour une donnée que l'utilisateur
+  // ne peut de toute façon pas voir (jusqu'à ~60-100 requêtes évitées par
+  // page pour un utilisateur gratuit).
+  const { data: realOdds } = useOdds(match.id, { enabled: oddsEnabled && match.status === 'SCHEDULED' });
 
   // Cascade au chargement — même logique que MatchCard.jsx
   const cascadeDelay = typeof index === 'number' ? Math.min(index * 40, 400) : 0;
@@ -229,7 +233,7 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
           return (
             <div key={match.id} className={`relative ${isBlurred ? 'select-none' : ''}`}>
               <div className={isBlurred ? 'blur-sm pointer-events-none' : ''}>
-                <PronoRow match={match} index={localIdx} />
+                <PronoRow match={match} index={localIdx} oddsEnabled={!isBlurred} />
               </div>
               {isBlurred && (
                 <div className="absolute inset-0 flex items-center justify-center gap-2 z-10

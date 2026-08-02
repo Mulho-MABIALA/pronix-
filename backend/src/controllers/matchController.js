@@ -38,9 +38,20 @@ async function getMatches(req, res, next) {
         const diffDays = Math.round((startDate - new Date()) / (1000 * 60 * 60 * 24));
         if (diffDays >= -1 && diffDays <= 7) {
           console.log(`[Matches] Sync à la volée pour ${targetDate}`);
-          await syncMatchesForDate(targetDate).catch((e) =>
+          const syncPromise = syncMatchesForDate(targetDate).catch((e) =>
             console.error('[Matches] Sync à la volée échouée:', e.message)
           );
+          // On attend au maximum 4s la sync (la plupart des jours ont peu de
+          // matchs et elle termine largement dans ce délai → réponse complète
+          // dès le premier chargement). Au-delà, on répond avec ce qu'on a
+          // (potentiellement vide) plutôt que de faire attendre l'utilisateur
+          // 10-20s+ — la sync continue en arrière-plan et la requête suivante
+          // (très probable quelques secondes après, vu le pattern de
+          // navigation) récupérera les données déjà synchronisées.
+          await Promise.race([
+            syncPromise,
+            new Promise((resolve) => setTimeout(resolve, 4000)),
+          ]);
         }
       }
     }

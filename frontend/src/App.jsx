@@ -165,7 +165,7 @@ export default function App() {
                 <Route path="/pronostics" element={<Pronostics />} />
                 <Route path="/pronostics/:slug" element={<CompetitionPronostics />} />
                 <Route path="/outils/filtres" element={<Filtres />} />
-                <Route path="/outils/machine" element={<Machine />} />
+                <Route path="/outils/machine" element={<ProtectedRoute><Machine /></ProtectedRoute>} />
                 <Route path="/outils/stats-ligues" element={<StatsLigues />} />
                 <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="/cgu" element={<CGU />} />

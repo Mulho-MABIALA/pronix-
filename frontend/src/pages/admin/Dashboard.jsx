@@ -7,7 +7,7 @@ import {
   RefreshCw, Brain, Zap, Check, X, Activity,
   ChevronRight, Clock, Wifi, BarChart3, CreditCard,
   UserPlus, Percent, Trophy, ShieldAlert, Sparkles,
-  MessageSquare, MessageCircle,
+  MessageSquare, MessageCircle, Eye, EyeOff,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -68,7 +68,7 @@ const KPI_THEMES = {
   },
 };
 
-function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'indigo', to }) {
+function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'indigo', to, sensitive = false, hidden = false, onToggleHidden }) {
   const t = KPI_THEMES[theme];
   const positive = trend > 0;
   const hasTrend = trend !== undefined && trend !== null && trend !== 0;
@@ -77,7 +77,9 @@ function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'i
   const numeric = Number(value);
   const hasNumeric = value !== undefined && value !== null && !Number.isNaN(numeric);
   const animatedValue = useCountUp(hasNumeric ? numeric : 0, 900);
-  const displayValue = hasNumeric ? `${fmt(animatedValue)}${suffix}` : (value ?? '–');
+  const masked = sensitive && hidden;
+  const displayValue = masked ? '•••••' : (hasNumeric ? `${fmt(animatedValue)}${suffix}` : (value ?? '–'));
+  const displaySub = masked && sub ? sub.replace(/[\d\s]+FCFA/gi, '••• FCFA') : sub;
 
   const inner = (
     <div
@@ -104,12 +106,24 @@ function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'i
         <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${t.icon}`}>
           <Icon size={18} />
         </div>
-        {hasTrend && (
-          <span className={`flex items-center gap-0.5 text-[11px] font-bold px-2 py-1 rounded-lg ${positive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
-            {positive ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
-            {Math.abs(trend)}%
-          </span>
-        )}
+        <div className="flex items-center gap-1.5">
+          {hasTrend && !masked && (
+            <span className={`flex items-center gap-0.5 text-[11px] font-bold px-2 py-1 rounded-lg ${positive ? 'bg-emerald-500/15 text-emerald-400' : 'bg-red-500/15 text-red-400'}`}>
+              {positive ? <ArrowUpRight size={11} /> : <ArrowDownRight size={11} />}
+              {Math.abs(trend)}%
+            </span>
+          )}
+          {sensitive && (
+            <button
+              type="button"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onToggleHidden?.(); }}
+              className="w-7 h-7 rounded-lg flex items-center justify-center text-ink-4 hover:text-ink-1 hover:bg-overlay/[0.08] transition-colors"
+              aria-label={hidden ? 'Afficher le montant' : 'Masquer le montant'}
+            >
+              {hidden ? <Eye size={14} /> : <EyeOff size={14} />}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* value */}
@@ -118,7 +132,7 @@ function KpiCard({ icon: Icon, label, value, suffix = '', sub, trend, theme = 'i
           {displayValue}
         </p>
         <p className="text-[12px] text-ink-3 font-medium mt-1.5">{label}</p>
-        {sub && <p className="text-[11px] text-ink-3 mt-0.5">{sub}</p>}
+        {displaySub && <p className="text-[11px] text-ink-3 mt-0.5">{displaySub}</p>}
       </div>
     </div>
   );
@@ -588,6 +602,16 @@ export default function AdminDashboard() {
     refetchInterval: 5 * 60 * 1000,
   });
 
+  // Masquage du MRR — pratique en partage d'écran, préférence retenue localement
+  const [hideMRR, setHideMRR] = useState(() => localStorage.getItem('admin_hide_mrr') === '1');
+  const toggleHideMRR = () => {
+    setHideMRR((prev) => {
+      const next = !prev;
+      localStorage.setItem('admin_hide_mrr', next ? '1' : '0');
+      return next;
+    });
+  };
+
   const d    = data?.data;
   const kpis = d?.kpis;
   const now  = new Date();
@@ -671,6 +695,9 @@ export default function AdminDashboard() {
             trend={kpis?.revenueGrowth}
             theme="orange"
             to="/admin/paiements"
+            sensitive
+            hidden={hideMRR}
+            onToggleHidden={toggleHideMRR}
           />
           <KpiCard
             icon={AlertTriangle}

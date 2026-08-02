@@ -40,11 +40,12 @@ const PAYMENT_METHODS = [
   },
 ];
 
-// Couleurs par plan
+// Couleurs par plan (le libellé du badge est traduit dans PricingCard, pas ici —
+// cet objet est défini hors composant donc sans accès à useTranslation)
 const PLAN_STYLE = {
-  FREE:     { ring: '', badge: null, btn: 'btn-secondary opacity-60 cursor-default justify-center' },
-  PREMIUM:  { ring: 'ring-1 ring-primary-500/50 border-primary-500/60', badge: '⭐ Recommandé', btn: 'btn-primary w-full' },
-  LIFETIME: { ring: 'ring-1 ring-amber-500/50 border-amber-500/60', badge: '🏆 Meilleure valeur', btn: 'w-full py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 transition-all active:scale-[0.98]' },
+  FREE:     { ring: '', badgeKey: null, btn: 'btn-secondary opacity-60 cursor-default justify-center' },
+  PREMIUM:  { ring: 'ring-1 ring-primary-500/50 border-primary-500/60', badgeKey: 'badgeRecommended', btn: 'btn-primary w-full' },
+  LIFETIME: { ring: 'ring-1 ring-amber-500/50 border-amber-500/60', badgeKey: 'badgeBestValue', btn: 'w-full py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 transition-all active:scale-[0.98]' },
 };
 
 function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
@@ -58,7 +59,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
     : billingCycle === 'WEEKLY'  ? plan.priceWeekly
     : plan.priceMonthly;
   const monthly    = !isLifetime && billingCycle === 'YEARLY' ? (plan.priceYearly / 12).toFixed(2) : null;
-  const unitLabel  = billingCycle === 'YEARLY' ? 'an' : billingCycle === 'WEEKLY' ? 'semaine' : 'mois';
+  const unitLabel  = billingCycle === 'YEARLY' ? t('subscription.unitYear') : billingCycle === 'WEEKLY' ? t('subscription.unitWeek') : t('subscription.unitMonth');
 
   // Halo animé discret sur les plans mis en avant, pour attirer l'oeil sans surcharger
   const glowClass = plan.code === 'PREMIUM' || plan.code === 'LIFETIME' ? 'animate-glow-pulse shine-auto' : '';
@@ -66,10 +67,10 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
   return (
     <div className={`bento-card flex flex-col gap-5 relative ${style.ring} ${glowClass}`}>
       {/* Badge */}
-      {style.badge && (
+      {style.badgeKey && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
           <span className="text-[11px] font-bold px-3 py-1 rounded-full bg-primary-500 text-white shadow-lg shadow-primary-500/30">
-            {style.badge}
+            {t(`subscription.${style.badgeKey}`)}
           </span>
         </div>
       )}
@@ -78,14 +79,14 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
       <div>
         <p className="text-xs font-bold uppercase tracking-widest text-ink-3 mb-1">{plan.displayName}</p>
         {isFree ? (
-          <p className="text-4xl font-display font-bold text-ink-1">Gratuit</p>
+          <p className="text-4xl font-display font-bold text-ink-1">{t('subscription.plans.free')}</p>
         ) : (
           <div className="flex items-end gap-1.5 flex-wrap">
             <span className="text-4xl font-display font-bold text-ink-1">
               {new Intl.NumberFormat('fr-FR').format(price)}
             </span>
             <span className="text-ink-3 pb-1 text-sm">
-              {' '}FCFA{isLifetime ? ' · paiement unique' : `/${unitLabel}`}
+              {' '}FCFA{isLifetime ? ` ${t('subscription.plans.lifetime')}` : `/${unitLabel}`}
             </span>
           </div>
         )}
@@ -175,8 +176,8 @@ function ConfirmPaymentModal({ plan, billingCycle, price, onCancel, onConfirm, l
 }
 
 export default function Subscription() {
-  usePageMeta('Abonnement Premium', 'Passez à Premium fpronix — pronostics IA, value bets, données temps réel. Paiement sécurisé via Wave, Orange Money, Carte bancaire.');
   const { t } = useTranslation();
+  usePageMeta(t('subscription.metaTitle'), t('subscription.metaDesc'));
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
   const [billingCycle, setBillingCycle] = useState('MONTHLY');
@@ -234,7 +235,7 @@ export default function Subscription() {
       const { data: res } = await api.post('/payments/paydunya/init', { planId: pendingPlan.id, billingCycle });
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
-      setError(err.response?.data?.message || 'Erreur lors de l\'initialisation du paiement');
+      setError(err.response?.data?.message || t('subscription.paymentError'));
       setPendingPlan(null);
     } finally {
       setLoading(false);

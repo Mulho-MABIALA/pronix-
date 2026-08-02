@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search, Zap, Brain } from 'lucide-react';
+import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search, Zap, Brain, Activity, ShieldCheck } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -148,10 +148,26 @@ export default function Home() {
               </span>
             </h1>
 
-            <p className="text-ink-2 text-sm md:text-base mb-8 max-w-lg mx-auto leading-relaxed"
+            <p className="text-ink-2 text-sm md:text-base mb-6 max-w-lg mx-auto leading-relaxed"
               style={{ textShadow: '0 1px 12px rgb(var(--surface-900-rgb) / 0.7)' }}>
               {t('home.hero.description')}
             </p>
+
+            {/* Bandeau "ce que tu obtiens" — rend concret ce que fait la plateforme */}
+            <div className="flex items-center justify-center gap-4 md:gap-6 flex-wrap mb-8 text-xs md:text-[13px] font-medium text-ink-2">
+              <span className="flex items-center gap-1.5">
+                <Activity size={14} className="text-primary-400 shrink-0" />
+                {t('home.hero.feature1')}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Brain size={14} className="text-primary-400 shrink-0" />
+                {t('home.hero.feature2')}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <ShieldCheck size={14} className="text-primary-400 shrink-0" />
+                {t('home.hero.feature3')}
+              </span>
+            </div>
 
             <div className="flex items-center justify-center gap-3 flex-wrap">
               <Link to="/inscription" className="btn-primary px-7 text-[15px] shadow-lg shadow-primary-500/20">

@@ -262,10 +262,8 @@ export default function Header() {
             </button>
           )}
 
-          {/* Langue : visible desktop + utilisateur connecté mobile ; caché mobile non-connecté */}
-          <div className={user ? 'block' : 'hidden md:block'}>
-            <LangSwitcher />
-          </div>
+          {/* Langue : toujours visible, connecté ou non, desktop et mobile */}
+          <LangSwitcher />
 
           {user ? (
             <>
@@ -290,7 +288,7 @@ export default function Header() {
           ) : (
             <div className="flex items-center gap-2 ml-1">
               <Link to="/connexion"
-                className="btn-secondary text-[13px] px-3 py-1.5"
+                className="btn-primary text-[13px] px-4 py-1.5 shadow-lg shadow-primary-500/20"
                 style={{ minHeight: 44 }}>
                 {t('nav.login')}
               </Link>

@@ -1,9 +1,11 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Mail, CheckCircle2 } from 'lucide-react';
 import api from '../services/api';
 
 export default function NewsletterUnsubscribe() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const email = searchParams.get('email') || '';
   const [status, setStatus] = useState('loading'); // loading | done | error
@@ -30,15 +32,15 @@ export default function NewsletterUnsubscribe() {
           )}
         </div>
         <h1 className="font-display font-bold text-xl text-ink-1">
-          {status === 'loading' && 'Désinscription en cours…'}
-          {status === 'done' && 'Tu es désinscrit(e)'}
-          {status === 'error' && 'Adresse introuvable'}
+          {status === 'loading' && t('newsletterUnsub.loading')}
+          {status === 'done' && t('newsletterUnsub.done')}
+          {status === 'error' && t('newsletterUnsub.error')}
         </h1>
         <p className="text-ink-3 text-sm">
-          {status === 'done' && "Tu ne recevras plus la newsletter fpronix. Tu peux te réinscrire à tout moment."}
-          {status === 'error' && "Impossible de traiter cette demande. Contacte le support si le problème persiste."}
+          {status === 'done' && t('newsletterUnsub.doneDesc')}
+          {status === 'error' && t('newsletterUnsub.errorDesc')}
         </p>
-        <Link to="/" className="btn-secondary w-full inline-block mt-2">Retour à l'accueil</Link>
+        <Link to="/" className="btn-secondary w-full inline-block mt-2">{t('newsletterUnsub.backHome')}</Link>
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import Disclaimer from '../components/layout/Disclaimer';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { COUNTRIES } from '../data/countries';
+import { PHONE_CODES, matchPhoneCode } from '../data/phoneCodes';
 
 const LANGUAGES = [
   { code: 'fr', label: '🇫🇷 Français' },
@@ -1122,6 +1123,83 @@ function SupportTicketsSection() {
   );
 }
 
+/* ─── Carte "numéro manquant" ────────────────────────────────────────────────
+   Affichée de façon proéminente en haut de la page tant que le profil n'a pas
+   de téléphone — c'est ce que la bannière (IncompleteProfileBanner) promet en
+   redirigeant ici : dire exactement quoi compléter, pas un formulaire caché. */
+function PhoneCompletionCard({ user, refreshUser }) {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const [code, setCode] = useState('+221');
+  const [number, setNumber] = useState('');
+  const [error, setError] = useState('');
+
+  const mutation = useMutation({
+    mutationFn: (phone) => api.patch('/profiles/me', { phone }),
+    onSuccess: async () => {
+      await refreshUser();
+      setNumber('');
+      setError('');
+      if (toast) toast(t('profile.phoneCard.successToast'), 'success');
+    },
+    onError: (err) => {
+      setError(err?.response?.data?.message || t('profile.phoneCard.genericError'));
+    },
+  });
+
+  // Ne s'affiche que si le numéro manque vraiment.
+  if (user?.profile?.phone) return null;
+
+  const digits = number.trim().replace(/\s+/g, '');
+  const canSubmit = digits.length >= 6;
+
+  const handleSubmit = () => {
+    if (!canSubmit) return;
+    mutation.mutate(`${code}${digits}`);
+  };
+
+  return (
+    <div className="flex flex-col gap-3 px-4 py-4 rounded-2xl bg-amber-500/10 border border-amber-500/25">
+      <div className="flex items-start gap-2.5">
+        <Phone size={16} className="text-amber-400 shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-semibold text-amber-200">{t('profile.phoneCard.title')}</p>
+          <p className="text-xs text-amber-200/70 mt-0.5 leading-relaxed">{t('profile.phoneCard.desc')}</p>
+        </div>
+      </div>
+      <div className="flex gap-2">
+        <select
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          className="input w-[110px] shrink-0 text-sm"
+          aria-label={t('profile.phoneLabel')}
+        >
+          {PHONE_CODES.map((c) => (
+            <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
+          ))}
+        </select>
+        <input
+          type="tel"
+          inputMode="numeric"
+          className="input flex-1"
+          value={number}
+          onChange={(e) => setNumber(e.target.value)}
+          placeholder={t('profile.phonePlaceholder')}
+          maxLength={15}
+        />
+      </div>
+      {error && <p className="text-xs text-red-400">{error}</p>}
+      <button
+        onClick={handleSubmit}
+        disabled={!canSubmit || mutation.isPending}
+        className="btn-primary w-full disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {mutation.isPending ? t('profile.saving') : t('profile.phoneCard.submitCta')}
+      </button>
+    </div>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════════════
    Page principale
 ══════════════════════════════════════════════════════════════════════════════ */
@@ -1140,13 +1218,24 @@ export default function Profile() {
   const initForm = () => ({
     displayName: user?.profile?.displayName || '',
     bio:         user?.profile?.bio         || '',
-    phone:       user?.profile?.phone       || '',
     avatar:      user?.profile?.avatar      || '',
     notifEmail:  user?.profile?.notifEmail  ?? true,
     notifSms:    user?.profile?.notifSms    ?? false,
   });
 
+  // Le numéro est toujours stocké avec son indicatif (ex: "+221771234567") —
+  // on le décompose pour l'édition afin de forcer le choix de l'indicatif.
+  const initPhoneParts = () => {
+    const existing = user?.profile?.phone || '';
+    const parsed = matchPhoneCode(existing);
+    return {
+      code:   parsed?.code || '+221',
+      number: parsed ? existing.slice(parsed.code.length) : '',
+    };
+  };
+
   const [form,          setForm]          = useState(initForm);
+  const [phoneParts,    setPhoneParts]    = useState(initPhoneParts);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const fileInputRef = useRef(null);
 
@@ -1197,10 +1286,16 @@ export default function Profile() {
     }
   };
 
-  const handleSave = () => updateProfile.mutate(form);
+  const handleSave = () => {
+    const digits = phoneParts.number.trim().replace(/\s+/g, '');
+    const payload = { ...form };
+    if (digits) payload.phone = `${phoneParts.code}${digits}`;
+    updateProfile.mutate(payload);
+  };
 
   const handleCancel = () => {
     setForm(initForm());
+    setPhoneParts(initPhoneParts());
     setAvatarPreview(null);
     setEditing(false);
   };
@@ -1343,14 +1438,27 @@ export default function Profile() {
               <label className="block text-xs font-semibold text-ink-4 mb-1.5 uppercase tracking-wider">
                 {t('profile.phoneLabel')}
               </label>
-              <input
-                type="tel"
-                className="input"
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                maxLength={30}
-                placeholder={t('profile.phonePlaceholder')}
-              />
+              <div className="flex gap-2">
+                <select
+                  value={phoneParts.code}
+                  onChange={(e) => setPhoneParts({ ...phoneParts, code: e.target.value })}
+                  className="input w-[110px] shrink-0 text-sm"
+                  aria-label={t('profile.phoneLabel')}
+                >
+                  {PHONE_CODES.map((c) => (
+                    <option key={c.code} value={c.code}>{c.flag} {c.code}</option>
+                  ))}
+                </select>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  className="input flex-1"
+                  value={phoneParts.number}
+                  onChange={(e) => setPhoneParts({ ...phoneParts, number: e.target.value })}
+                  maxLength={15}
+                  placeholder={t('profile.phonePlaceholder')}
+                />
+              </div>
               <p className="text-xs text-ink-4 mt-1">{t('profile.phoneHint')}</p>
             </div>
 
@@ -1391,13 +1499,16 @@ export default function Profile() {
           </div>
         ) : (
           <button
-            onClick={() => { setForm(initForm()); setEditing(true); }}
+            onClick={() => { setForm(initForm()); setPhoneParts(initPhoneParts()); setEditing(true); }}
             className="btn-primary w-full mt-4 flex items-center justify-center gap-2"
           >
             <Pencil size={14} /> {t('profile.editProfile')}
           </button>
         )}
       </section>
+
+      {/* ── Numéro manquant : proéminent, dit exactement quoi compléter ──────── */}
+      <PhoneCompletionCard user={user} refreshUser={refreshUser} />
 
       {/* ── Abonnement ────────────────────────────────────────────────────────── */}
       <Section title={t('profile.subscription')} icon={Crown} color="amber">

@@ -5,7 +5,7 @@ import {
   Crown, X, RefreshCw, Mail, Calendar, Target, TrendingUp, Shield,
   CheckCircle, XCircle, Copy, Gift, Clock, Users, CreditCard,
   MessageSquare, ArrowUpDown, StickyNote, Send, AlertTriangle,
-  ChevronDown, ExternalLink, Star, Trash2, Smartphone,
+  ChevronDown, ExternalLink, Star, Trash2, Smartphone, Phone,
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { fr } from 'date-fns/locale';
@@ -228,6 +228,20 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                     <Copy size={12} />
                   </button>
                 </div>
+              </div>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Phone size={14} className="text-ink-3" />
+                  {user.profile?.phone
+                    ? <span className="text-sm text-ink-2">{user.profile.phone}</span>
+                    : <span className="text-sm text-ink-4">Non renseigné</span>
+                  }
+                </div>
+                {user.profile?.phone && (
+                  <button onClick={() => copyText(user.profile.phone)} className="w-6 h-6 flex items-center justify-center rounded-md hover:bg-overlay/[0.08] text-ink-4 hover:text-ink-3">
+                    <Copy size={12} />
+                  </button>
+                )}
               </div>
               <div className="text-[11px] text-ink-4 flex items-center gap-1 pt-1">
                 <Calendar size={11} /> Inscrit le {format(new Date(user.createdAt), 'dd MMMM yyyy', { locale: fr })}
@@ -761,6 +775,7 @@ export default function AdminUsers() {
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Langue</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Devise</th>
                 <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Pays</th>
+                <th className="text-left px-4 py-3.5 font-semibold hidden xl:table-cell">Téléphone</th>
                 <th className="text-center px-4 py-3.5 font-semibold hidden lg:table-cell">App</th>
                 <th className="text-left px-4 py-3.5 font-semibold">Statut</th>
                 <th className="text-right px-5 py-3.5 font-semibold">Actions</th>
@@ -769,7 +784,7 @@ export default function AdminUsers() {
             <tbody className="divide-y divide-overlay/[0.09]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
-                  <tr key={i} className="divide-x divide-overlay/[0.05]">{Array.from({ length: 11 }).map((_, j) => (
+                  <tr key={i} className="divide-x divide-overlay/[0.05]">{Array.from({ length: 12 }).map((_, j) => (
                     <td key={j} className="px-5 py-4"><div className="h-4 skeleton rounded" /></td>
                   ))}</tr>
                 ))
@@ -811,6 +826,9 @@ export default function AdminUsers() {
                       </td>
                       <td className="px-4 py-3.5 hidden xl:table-cell">
                         <CountryBadge user={u} />
+                      </td>
+                      <td className="px-4 py-3.5 hidden xl:table-cell text-sm text-ink-3">
+                        {u.profile?.phone || <span className="text-ink-4">—</span>}
                       </td>
                       <td className="px-4 py-3.5 hidden lg:table-cell text-center">
                         {u.appInstalledAt ? (

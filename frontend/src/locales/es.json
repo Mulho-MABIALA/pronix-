@@ -565,6 +565,13 @@
     "phoneLabel": "Número de teléfono",
     "phonePlaceholder": "+221 77 123 45 67",
     "phoneHint": "Se usa para alertas SMS y para contactarte si es necesario.",
+    "phoneCard": {
+      "title": "Añade tu número de teléfono",
+      "desc": "Elige tu indicativo y luego escribe tu número — es obligatorio y nos permite contactarte y enviarte alertas por SMS.",
+      "submitCta": "Guardar mi número",
+      "successToast": "Número guardado",
+      "genericError": "Error al guardar el número"
+    },
     "notifications": "Notificaciones",
     "emailAlerts": "Alertas por correo",
     "smsAlerts": "Alertas por SMS",
@@ -1092,8 +1099,8 @@
     "error": "Error al enviar. Inténtalo más tarde."
   },
   "incompleteProfileBanner": {
-    "message": "Falta información en tu perfil.",
-    "cta": "Completar"
+    "message": "Falta tu número de teléfono en tu perfil.",
+    "cta": "Añadir mi número"
   },
   "bets": {
     "title": "Seguimiento de mis pronósticos",

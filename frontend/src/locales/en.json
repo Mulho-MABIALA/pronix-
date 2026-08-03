@@ -565,6 +565,13 @@
     "phoneLabel": "Phone number",
     "phonePlaceholder": "+221 77 123 45 67",
     "phoneHint": "Used for SMS alerts and to contact you if needed.",
+    "phoneCard": {
+      "title": "Add your phone number",
+      "desc": "Choose your country code then enter your number — it's required and lets us contact you and send SMS alerts.",
+      "submitCta": "Save my number",
+      "successToast": "Number saved",
+      "genericError": "Error saving the number"
+    },
     "notifications": "Notifications",
     "emailAlerts": "Email alerts",
     "smsAlerts": "SMS alerts",
@@ -1092,8 +1099,8 @@
     "error": "Error sending email. Please try again later."
   },
   "incompleteProfileBanner": {
-    "message": "Some information is missing from your profile.",
-    "cta": "Complete"
+    "message": "Your phone number is missing from your profile.",
+    "cta": "Add my number"
   },
   "bets": {
     "title": "My tips tracker",

@@ -19,7 +19,10 @@ router.patch('/me', async (req, res, next) => {
     const schema = z.object({
       displayName: z.string().max(50).optional(),
       bio: z.string().max(300).optional(),
-      phone: z.string().max(30).optional().nullable(),
+      // Le numéro doit toujours inclure son indicatif (ex: "+221771234567") —
+      // le frontend force le choix d'un indicatif dans un select dédié, on
+      // revalide le format ici pour ne jamais accepter un numéro sans le "+".
+      phone: z.string().regex(/^\+[1-9]\d{5,14}$/, 'Le numéro doit inclure l\'indicatif (ex: +221771234567)').optional().nullable(),
       // avatar : URL externe (Google) ou data:image base64 (upload local, max ~180 KB)
       avatar: z.string().max(250000).optional().nullable(),
       favoriteTeams: z.array(z.string()).max(10).optional(),

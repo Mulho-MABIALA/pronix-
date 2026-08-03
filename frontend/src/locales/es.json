@@ -997,7 +997,12 @@
       "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
       "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
       "btts": "BTTS✓", "nobtts": "BTTSx",
-      "ht1": "HT1", "htX": "HTX", "ht2": "HT2", "htover15": "HT+1.5", "htunder15": "HT-1.5"
+      "ht1": "HT1", "htX": "HTX", "ht2": "HT2", "htover15": "HT+1.5", "htunder15": "HT-1.5",
+      "h1m1": "Loc.-1", "h2m1": "Vis.-1",
+      "mb1_2plus": "Loc.2+", "mb2_2plus": "Vis.2+", "cleansheet1": "Loc.0enc.", "cleansheet2": "Vis.0enc.",
+      "totalpair": "Par", "totalimpair": "Impar",
+      "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS"
     },
     "marketGroups": {
       "resultats": {
@@ -1059,6 +1064,63 @@
           "ht2": { "label": "1T 2 — Visitante va ganando al descanso", "desc": "Gana si el equipo visitante va ganando al descanso." },
           "htover15": { "label": "1T +1.5 goles — Al menos 2 goles antes del descanso", "desc": "Gana si se marcan al menos 2 goles antes del descanso." },
           "htunder15": { "label": "1T -1.5 gol — Máximo 1 gol antes del descanso", "desc": "Gana si se marca 0 o 1 gol antes del descanso." }
+        }
+      },
+      "scoreexact": {
+        "label": "Resultado exacto",
+        "subtitle": "El marcador final exacto calculado como el más probable por nuestro modelo.",
+        "markets": {
+          "exactscore": { "label": "Resultado exacto más probable", "desc": "Gana solo si el marcador final coincide exactamente con el resultado más probable calculado para este partido." }
+        }
+      },
+      "handicap": {
+        "label": "Hándicap europeo",
+        "subtitle": "Un equipo debe ganar con al menos 2 goles de diferencia.",
+        "markets": {
+          "h1m1": { "label": "Local -1 — Gana con 2 goles de diferencia o más", "desc": "Gana si el equipo local gana con al menos 2 goles de diferencia (ej. 2-0, 3-1)." },
+          "h2m1": { "label": "Visitante -1 — Gana con 2 goles de diferencia o más", "desc": "Gana si el equipo visitante gana con al menos 2 goles de diferencia." }
+        }
+      },
+      "multibuts": {
+        "label": "Multi-goles",
+        "subtitle": "Un equipo marca varios goles, o gana sin encajar.",
+        "markets": {
+          "mb1_2plus": { "label": "Local marca 2 goles o más", "desc": "Gana si el equipo local marca al menos 2 goles en el partido, sin importar el resultado final." },
+          "mb2_2plus": { "label": "Visitante marca 2 goles o más", "desc": "Gana si el equipo visitante marca al menos 2 goles en el partido, sin importar el resultado final." },
+          "cleansheet1": { "label": "Local gana sin encajar", "desc": "Gana si el equipo local gana el partido sin que el visitante marque." },
+          "cleansheet2": { "label": "Visitante gana sin encajar", "desc": "Gana si el equipo visitante gana el partido sin que el local marque." }
+        }
+      },
+      "resulttotal": {
+        "label": "Resultado + Total de goles",
+        "subtitle": "Combina el resultado del partido y el número total de goles.",
+        "markets": {
+          "res1over25": { "label": "1 y Más de 2.5 goles", "desc": "Gana si el equipo local gana Y el partido tiene al menos 3 goles." },
+          "res1under25": { "label": "1 y Menos de 2.5 goles", "desc": "Gana si el equipo local gana Y el partido tiene 2 goles como máximo." },
+          "resXover25": { "label": "X y Más de 2.5 goles", "desc": "Gana si el partido termina en empate Y tiene al menos 3 goles." },
+          "resXunder25": { "label": "X y Menos de 2.5 goles", "desc": "Gana si el partido termina en empate Y tiene 2 goles como máximo." },
+          "res2over25": { "label": "2 y Más de 2.5 goles", "desc": "Gana si el equipo visitante gana Y el partido tiene al menos 3 goles." },
+          "res2under25": { "label": "2 y Menos de 2.5 goles", "desc": "Gana si el equipo visitante gana Y el partido tiene 2 goles como máximo." }
+        }
+      },
+      "resultbtts": {
+        "label": "Resultado + BTTS",
+        "subtitle": "Combina el resultado (o doble oportunidad) con ambos equipos marcando.",
+        "markets": {
+          "res1btts": { "label": "1 y BTTS Sí", "desc": "Gana si el equipo local gana Y ambos equipos marcan." },
+          "resXbtts": { "label": "X y BTTS Sí", "desc": "Gana si el partido termina en empate Y ambos equipos marcan." },
+          "res2btts": { "label": "2 y BTTS Sí", "desc": "Gana si el equipo visitante gana Y ambos equipos marcan." },
+          "dc1xbtts": { "label": "1X y BTTS Sí", "desc": "Gana si el local gana o hay empate Y ambos equipos marcan." },
+          "dcx2btts": { "label": "X2 y BTTS Sí", "desc": "Gana si hay empate o gana el visitante Y ambos equipos marcan." },
+          "dc12btts": { "label": "12 y BTTS Sí", "desc": "Gana si cualquiera de los dos equipos gana (sin empate) Y ambos equipos marcan." }
+        }
+      },
+      "totalpair": {
+        "label": "Total par/impar",
+        "subtitle": "¿El número total de goles del partido es par o impar?",
+        "markets": {
+          "totalpair": { "label": "Total par — 0, 2, 4 goles...", "desc": "Gana si el número total de goles del partido es par (0, 2, 4...)." },
+          "totalimpair": { "label": "Total impar — 1, 3, 5 goles...", "desc": "Gana si el número total de goles del partido es impar (1, 3, 5...)." }
         }
       }
     }

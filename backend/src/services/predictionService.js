@@ -269,6 +269,75 @@ function deriveHalfTimeMarkets(pred) {
   };
 }
 
+// ── Marchés buts avancés (handicap, multi-buts, score exact, combos) ──────────
+// Inspirés des marchés 1xbet demandés par l'équipe produit : handicap européen,
+// équipe marque 2+ buts, gagne sans encaisser, score exact, résultat+total,
+// résultat+BTTS, double chance+BTTS, total pair/impair. Même principe que
+// deriveHalfTimeMarkets ci-dessus : lambda implicite retrouvé depuis Over 2.5,
+// réparti entre les 2 équipes selon home/draw/away, puis grille de Poisson
+// complète (pas seulement le top 6 comme "scorelines") pour sommer les zones
+// de probabilité pertinentes. Fonctionne pour les 3 sources de pronostics
+// (stats, IA, fallback neutre) puisqu'elles exposent toutes home/draw/away/over25.
+function deriveGoalMarkets(pred) {
+  const home = pred.home ?? 33, draw = pred.draw ?? 34, away = pred.away ?? 33;
+  const lambdaTotal = impliedTotalLambda(pred.over25);
+  const lambdaHome = Math.max(0.2, lambdaTotal * ((home + draw / 2) / 100));
+  const lambdaAway = Math.max(0.2, lambdaTotal * ((away + draw / 2) / 100));
+
+  const MAXG = 7;
+  let exact = { score: '0-0', prob: 0 };
+  let h1m1 = 0, h2m1 = 0;           // victoire avec 2 buts d'écart ou plus (handicap -1)
+  let mb1 = 0, mb2 = 0;             // équipe marque 2 buts ou plus
+  let cs1 = 0, cs2 = 0;             // gagne sans encaisser (clean sheet + victoire)
+  let pairTotal = 0;                // total de buts pair (0, 2, 4...)
+  let res1o25 = 0, res1u25 = 0, resXo25 = 0, resXu25 = 0, res2o25 = 0, res2u25 = 0;
+  let res1btts = 0, resXbtts = 0, res2btts = 0;
+
+  for (let h = 0; h <= MAXG; h++) {
+    for (let a = 0; a <= MAXG; a++) {
+      const p = poisson(lambdaHome, h) * poisson(lambdaAway, a);
+      if (p > exact.prob) exact = { score: `${h}-${a}`, prob: p };
+
+      if (h - a >= 2) h1m1 += p;
+      if (a - h >= 2) h2m1 += p;
+      if (h >= 2) mb1 += p;
+      if (a >= 2) mb2 += p;
+      if (h > a && a === 0) cs1 += p;
+      if (a > h && h === 0) cs2 += p;
+      if ((h + a) % 2 === 0) pairTotal += p;
+
+      const isOver25 = (h + a) > 2.5;
+      const isBtts = h > 0 && a > 0;
+      if (h > a) {
+        if (isOver25) res1o25 += p; else res1u25 += p;
+        if (isBtts) res1btts += p;
+      } else if (h === a) {
+        if (isOver25) resXo25 += p; else resXu25 += p;
+        if (isBtts) resXbtts += p;
+      } else {
+        if (isOver25) res2o25 += p; else res2u25 += p;
+        if (isBtts) res2btts += p;
+      }
+    }
+  }
+
+  const pct = (x) => Math.max(1, Math.min(98, Math.round(x * 100)));
+
+  return {
+    exactScore: exact.score,
+    exactScoreProb: pct(exact.prob),
+    h1m1: pct(h1m1), h2m1: pct(h2m1),
+    mb1_2plus: pct(mb1), mb2_2plus: pct(mb2),
+    cleansheet1: pct(cs1), cleansheet2: pct(cs2),
+    totalpair: pct(pairTotal), totalimpair: pct(1 - pairTotal),
+    res1over25: pct(res1o25), res1under25: pct(res1u25),
+    resXover25: pct(resXo25), resXunder25: pct(resXu25),
+    res2over25: pct(res2o25), res2under25: pct(res2u25),
+    res1btts: pct(res1btts), resXbtts: pct(resXbtts), res2btts: pct(res2btts),
+    dc1xbtts: pct(res1btts + resXbtts), dcx2btts: pct(resXbtts + res2btts), dc12btts: pct(res1btts + res2btts),
+  };
+}
+
 async function calculateAndSavePredictions(matchId) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
@@ -319,9 +388,11 @@ async function calculateAndSavePredictions(matchId) {
     predictions = generateFallbackPrediction();
   }
 
-  // 4️⃣ Marchés mi-temps — dérivés du résultat final, quelle que soit la source
+  // 4️⃣ Marchés mi-temps + marchés buts avancés — dérivés du résultat final,
+  // quelle que soit la source (stats, IA, fallback neutre).
   if (predictions && predictions.home != null) {
     predictions = { ...predictions, ...deriveHalfTimeMarkets(predictions) };
+    predictions = { ...predictions, ...deriveGoalMarkets(predictions) };
   }
 
   await prisma.match.update({ where: { id: matchId }, data: { predictions } });
@@ -352,4 +423,4 @@ async function calculatePredictionsForDate(dateStr) {
   return matches.length;
 }
 
-module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets };
+module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets };

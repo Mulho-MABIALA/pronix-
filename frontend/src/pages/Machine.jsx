@@ -87,6 +87,12 @@ const MARKET_GROUPS = [
   { id: 'overunder',    emoji: '⚽', markets: ['over05', 'over15', 'over25', 'over35', 'over45', 'under15', 'under25', 'under35', 'under45'] },
   { id: 'btts',         emoji: '🥅', markets: ['btts', 'nobtts'] },
   { id: 'mitemps',      emoji: '⏱️', markets: ['ht1', 'htX', 'ht2', 'htover15', 'htunder15'] },
+  { id: 'scoreexact',   emoji: '🎯', markets: ['exactscore'] },
+  { id: 'handicap',     emoji: '📐', markets: ['h1m1', 'h2m1'] },
+  { id: 'multibuts',    emoji: '🔥', markets: ['mb1_2plus', 'mb2_2plus', 'cleansheet1', 'cleansheet2'] },
+  { id: 'resulttotal',  emoji: '➕', markets: ['res1over25', 'res1under25', 'resXover25', 'resXunder25', 'res2over25', 'res2under25'] },
+  { id: 'resultbtts',   emoji: '🧩', markets: ['res1btts', 'resXbtts', 'res2btts', 'dc1xbtts', 'dcx2btts', 'dc12btts'] },
+  { id: 'totalpair',    emoji: '🔢', markets: ['totalpair', 'totalimpair'] },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -97,6 +103,12 @@ const CONF_COLORS = {
 };
 function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
+
+  // Score exact : cas particulier, le "type" affiché est le score lui-même
+  // (ex. "2-1") et non une clé i18n fixe — géré à part du probMap ci-dessous.
+  if (market === 'exactscore') {
+    return { type: pred.exactScore ?? '0-0', prob: pred.exactScoreProb ?? 15 };
+  }
 
   // Valeurs de base
   const h  = pred.home  ?? 33;
@@ -149,6 +161,36 @@ function getProb(pred, market) {
     'ht2':       pred.htAway  ?? Math.round(a * 0.55),
     'htover15':  htOver15,
     'htunder15': pred.htUnder15 ?? (100 - htOver15),
+
+    // Handicap européen (victoire avec 2 buts d'écart ou plus)
+    'h1m1': pred.h1m1 ?? Math.round(h * 0.32),
+    'h2m1': pred.h2m1 ?? Math.round(a * 0.30),
+
+    // Multi-buts / gagne sans encaisser
+    'mb1_2plus':   pred.mb1_2plus   ?? Math.round(h * 0.50),
+    'mb2_2plus':   pred.mb2_2plus   ?? Math.round(a * 0.45),
+    'cleansheet1': pred.cleansheet1 ?? Math.round(h * 0.35),
+    'cleansheet2': pred.cleansheet2 ?? Math.round(a * 0.30),
+
+    // Total de buts pair / impair
+    'totalpair':   pred.totalpair   ?? 50,
+    'totalimpair': pred.totalimpair ?? 50,
+
+    // Résultat + Total buts (approximation par indépendance si absent)
+    'res1over25':  pred.res1over25  ?? Math.round(h * (o25 / 100)),
+    'res1under25': pred.res1under25 ?? Math.round(h * (1 - o25 / 100)),
+    'resXover25':  pred.resXover25  ?? Math.round(d * (o25 / 100)),
+    'resXunder25': pred.resXunder25 ?? Math.round(d * (1 - o25 / 100)),
+    'res2over25':  pred.res2over25  ?? Math.round(a * (o25 / 100)),
+    'res2under25': pred.res2under25 ?? Math.round(a * (1 - o25 / 100)),
+
+    // Résultat + BTTS / Double chance + BTTS
+    'res1btts':  pred.res1btts  ?? Math.round(h * (bt / 100)),
+    'resXbtts':  pred.resXbtts  ?? Math.round(d * (bt / 100)),
+    'res2btts':  pred.res2btts  ?? Math.round(a * (bt / 100)),
+    'dc1xbtts':  pred.dc1xbtts  ?? Math.round((h + d) * (bt / 100)),
+    'dcx2btts':  pred.dcx2btts  ?? Math.round((d + a) * (bt / 100)),
+    'dc12btts':  pred.dc12btts  ?? Math.round((h + a) * (bt / 100)),
   };
 
   const prob = probMap[market];

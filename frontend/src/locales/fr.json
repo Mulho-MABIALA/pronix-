@@ -997,7 +997,12 @@
       "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
       "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
       "btts": "BTTS✓", "nobtts": "BTTSx",
-      "ht1": "MT1", "htX": "MTX", "ht2": "MT2", "htover15": "MT+1.5", "htunder15": "MT-1.5"
+      "ht1": "MT1", "htX": "MTX", "ht2": "MT2", "htover15": "MT+1.5", "htunder15": "MT-1.5",
+      "h1m1": "Dom.-1", "h2m1": "Ext.-1",
+      "mb1_2plus": "Dom.2+", "mb2_2plus": "Ext.2+", "cleansheet1": "Dom.0enc.", "cleansheet2": "Ext.0enc.",
+      "totalpair": "Pair", "totalimpair": "Impair",
+      "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS"
     },
     "marketGroups": {
       "resultats": {
@@ -1059,6 +1064,63 @@
           "ht2": { "label": "MT 2 — Extérieur mène à la mi-temps", "desc": "Gagné si l'équipe extérieure mène au score à la mi-temps." },
           "htover15": { "label": "MT +1.5 buts — Au moins 2 buts à la pause", "desc": "Gagné si au moins 2 buts sont marqués avant la mi-temps." },
           "htunder15": { "label": "MT -1.5 but — Maximum 1 but à la pause", "desc": "Gagné si 0 ou 1 but est marqué avant la mi-temps." }
+        }
+      },
+      "scoreexact": {
+        "label": "Score exact",
+        "subtitle": "Le score final précis calculé comme le plus probable par notre modèle.",
+        "markets": {
+          "exactscore": { "label": "Score exact le plus probable", "desc": "Gagné uniquement si le score final correspond exactement au score le plus probable calculé pour ce match." }
+        }
+      },
+      "handicap": {
+        "label": "Handicap européen",
+        "subtitle": "Une équipe doit gagner avec au moins 2 buts d'écart.",
+        "markets": {
+          "h1m1": { "label": "Domicile -1 — Gagne avec 2 buts d'écart ou plus", "desc": "Gagné si l'équipe à domicile l'emporte avec au moins 2 buts d'écart (ex. 2-0, 3-1)." },
+          "h2m1": { "label": "Extérieur -1 — Gagne avec 2 buts d'écart ou plus", "desc": "Gagné si l'équipe extérieure l'emporte avec au moins 2 buts d'écart." }
+        }
+      },
+      "multibuts": {
+        "label": "Multi-buts",
+        "subtitle": "Une équipe marque plusieurs buts, ou gagne sans en encaisser.",
+        "markets": {
+          "mb1_2plus": { "label": "Domicile marque 2 buts ou plus", "desc": "Gagné si l'équipe à domicile marque au moins 2 buts dans le match, quel que soit le résultat final." },
+          "mb2_2plus": { "label": "Extérieur marque 2 buts ou plus", "desc": "Gagné si l'équipe extérieure marque au moins 2 buts dans le match, quel que soit le résultat final." },
+          "cleansheet1": { "label": "Domicile gagne sans encaisser", "desc": "Gagné si l'équipe à domicile remporte le match sans que l'extérieur ne marque." },
+          "cleansheet2": { "label": "Extérieur gagne sans encaisser", "desc": "Gagné si l'équipe extérieure remporte le match sans que le domicile ne marque." }
+        }
+      },
+      "resulttotal": {
+        "label": "Résultat + Total buts",
+        "subtitle": "Combine le résultat du match et le nombre total de buts.",
+        "markets": {
+          "res1over25": { "label": "1 & Plus de 2.5 buts", "desc": "Gagné si l'équipe à domicile gagne ET que le match compte au moins 3 buts." },
+          "res1under25": { "label": "1 & Moins de 2.5 buts", "desc": "Gagné si l'équipe à domicile gagne ET que le match compte 2 buts maximum." },
+          "resXover25": { "label": "X & Plus de 2.5 buts", "desc": "Gagné si le match se termine nul ET qu'il compte au moins 3 buts." },
+          "resXunder25": { "label": "X & Moins de 2.5 buts", "desc": "Gagné si le match se termine nul ET qu'il compte 2 buts maximum." },
+          "res2over25": { "label": "2 & Plus de 2.5 buts", "desc": "Gagné si l'équipe extérieure gagne ET que le match compte au moins 3 buts." },
+          "res2under25": { "label": "2 & Moins de 2.5 buts", "desc": "Gagné si l'équipe extérieure gagne ET que le match compte 2 buts maximum." }
+        }
+      },
+      "resultbtts": {
+        "label": "Résultat + BTTS",
+        "subtitle": "Combine le résultat (ou double chance) et les 2 équipes qui marquent.",
+        "markets": {
+          "res1btts": { "label": "1 & BTTS Oui", "desc": "Gagné si l'équipe à domicile gagne ET que les deux équipes marquent." },
+          "resXbtts": { "label": "X & BTTS Oui", "desc": "Gagné si le match se termine nul ET que les deux équipes marquent." },
+          "res2btts": { "label": "2 & BTTS Oui", "desc": "Gagné si l'équipe extérieure gagne ET que les deux équipes marquent." },
+          "dc1xbtts": { "label": "1X & BTTS Oui", "desc": "Gagné si domicile gagne ou match nul ET que les deux équipes marquent." },
+          "dcx2btts": { "label": "X2 & BTTS Oui", "desc": "Gagné si nul ou victoire extérieure ET que les deux équipes marquent." },
+          "dc12btts": { "label": "12 & BTTS Oui", "desc": "Gagné si l'une des deux équipes gagne (sans nul) ET que les deux équipes marquent." }
+        }
+      },
+      "totalpair": {
+        "label": "Total pair/impair",
+        "subtitle": "Le nombre total de buts du match est-il pair ou impair ?",
+        "markets": {
+          "totalpair": { "label": "Total pair — 0, 2, 4 buts...", "desc": "Gagné si le nombre total de buts du match est pair (0, 2, 4...)." },
+          "totalimpair": { "label": "Total impair — 1, 3, 5 buts...", "desc": "Gagné si le nombre total de buts du match est impair (1, 3, 5...)." }
         }
       }
     }

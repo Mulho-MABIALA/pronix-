@@ -997,7 +997,12 @@
       "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
       "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
       "btts": "BTTS✓", "nobtts": "BTTSx",
-      "ht1": "HT1", "htX": "HTX", "ht2": "HT2", "htover15": "HT+1.5", "htunder15": "HT-1.5"
+      "ht1": "HT1", "htX": "HTX", "ht2": "HT2", "htover15": "HT+1.5", "htunder15": "HT-1.5",
+      "h1m1": "Home-1", "h2m1": "Away-1",
+      "mb1_2plus": "Home2+", "mb2_2plus": "Away2+", "cleansheet1": "Home0con.", "cleansheet2": "Away0con.",
+      "totalpair": "Even", "totalimpair": "Odd",
+      "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS"
     },
     "marketGroups": {
       "resultats": {
@@ -1059,6 +1064,63 @@
           "ht2": { "label": "HT 2 — Away leads at half-time", "desc": "Won if the away team is ahead on the scoreboard at half-time." },
           "htover15": { "label": "HT Over 1.5 — At least 2 goals at the break", "desc": "Won if at least 2 goals are scored before half-time." },
           "htunder15": { "label": "HT Under 1.5 — Maximum 1 goal at the break", "desc": "Won if 0 or 1 goal is scored before half-time." }
+        }
+      },
+      "scoreexact": {
+        "label": "Correct score",
+        "subtitle": "The exact final score calculated as most likely by our model.",
+        "markets": {
+          "exactscore": { "label": "Most likely correct score", "desc": "Won only if the final score exactly matches the most likely score calculated for this match." }
+        }
+      },
+      "handicap": {
+        "label": "European handicap",
+        "subtitle": "A team must win by at least a 2-goal margin.",
+        "markets": {
+          "h1m1": { "label": "Home -1 — Wins by 2 goals or more", "desc": "Won if the home team wins by at least a 2-goal margin (e.g. 2-0, 3-1)." },
+          "h2m1": { "label": "Away -1 — Wins by 2 goals or more", "desc": "Won if the away team wins by at least a 2-goal margin." }
+        }
+      },
+      "multibuts": {
+        "label": "Multi-goals",
+        "subtitle": "A team scores several goals, or wins without conceding.",
+        "markets": {
+          "mb1_2plus": { "label": "Home scores 2 goals or more", "desc": "Won if the home team scores at least 2 goals in the match, regardless of the final result." },
+          "mb2_2plus": { "label": "Away scores 2 goals or more", "desc": "Won if the away team scores at least 2 goals in the match, regardless of the final result." },
+          "cleansheet1": { "label": "Home wins to nil", "desc": "Won if the home team wins the match without the away team scoring." },
+          "cleansheet2": { "label": "Away wins to nil", "desc": "Won if the away team wins the match without the home team scoring." }
+        }
+      },
+      "resulttotal": {
+        "label": "Result + Total goals",
+        "subtitle": "Combines the match result and the total number of goals.",
+        "markets": {
+          "res1over25": { "label": "1 & Over 2.5 goals", "desc": "Won if the home team wins AND the match has at least 3 goals." },
+          "res1under25": { "label": "1 & Under 2.5 goals", "desc": "Won if the home team wins AND the match has 2 goals or fewer." },
+          "resXover25": { "label": "X & Over 2.5 goals", "desc": "Won if the match ends in a draw AND has at least 3 goals." },
+          "resXunder25": { "label": "X & Under 2.5 goals", "desc": "Won if the match ends in a draw AND has 2 goals or fewer." },
+          "res2over25": { "label": "2 & Over 2.5 goals", "desc": "Won if the away team wins AND the match has at least 3 goals." },
+          "res2under25": { "label": "2 & Under 2.5 goals", "desc": "Won if the away team wins AND the match has 2 goals or fewer." }
+        }
+      },
+      "resultbtts": {
+        "label": "Result + BTTS",
+        "subtitle": "Combines the result (or double chance) with both teams scoring.",
+        "markets": {
+          "res1btts": { "label": "1 & BTTS Yes", "desc": "Won if the home team wins AND both teams score." },
+          "resXbtts": { "label": "X & BTTS Yes", "desc": "Won if the match ends in a draw AND both teams score." },
+          "res2btts": { "label": "2 & BTTS Yes", "desc": "Won if the away team wins AND both teams score." },
+          "dc1xbtts": { "label": "1X & BTTS Yes", "desc": "Won if home wins or draw AND both teams score." },
+          "dcx2btts": { "label": "X2 & BTTS Yes", "desc": "Won if draw or away win AND both teams score." },
+          "dc12btts": { "label": "12 & BTTS Yes", "desc": "Won if either team wins (no draw) AND both teams score." }
+        }
+      },
+      "totalpair": {
+        "label": "Odd/Even total",
+        "subtitle": "Is the total number of goals in the match even or odd?",
+        "markets": {
+          "totalpair": { "label": "Even total — 0, 2, 4 goals...", "desc": "Won if the total number of goals in the match is even (0, 2, 4...)." },
+          "totalimpair": { "label": "Odd total — 1, 3, 5 goals...", "desc": "Won if the total number of goals in the match is odd (1, 3, 5...)." }
         }
       }
     }

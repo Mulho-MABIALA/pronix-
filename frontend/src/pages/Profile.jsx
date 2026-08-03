@@ -22,10 +22,10 @@ import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { COUNTRIES } from '../data/countries';
 
 const LANGUAGES = [
-  { code: 'fr', label: 'Français' },
-  { code: 'en', label: 'English' },
-  { code: 'es', label: 'Español' },
-  { code: 'pt', label: 'Português' },
+  { code: 'fr', label: '🇫🇷 Français' },
+  { code: 'en', label: '🇬🇧 English' },
+  { code: 'es', label: '🇪🇸 Español' },
+  { code: 'pt', label: '🇵🇹 Português' },
 ];
 const CURRENCIES = ['FCFA', 'EUR', 'USD', 'GBP', 'BRL', 'MXN', 'CAD', 'ZAR'];
 

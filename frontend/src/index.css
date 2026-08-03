@@ -304,6 +304,27 @@
       0 8px 32px -6px rgba(0,0,0,0.18);
   }
 
+  /* ── Bulle du chat support : position selon le contexte ────────────
+     En app installée (PWA standalone), iOS ajoute son home indicator en
+     plus de la pastille de nav flottante — la bulle doit rester haute
+     pour ne pas se superposer. Dans un simple onglet de navigateur, ce
+     home indicator n'existe pas pour la page (il appartient au navigateur
+     lui-même) : la bulle peut donc descendre, plus proche de la nav,
+     pour matcher visuellement l'app installée. */
+  .chat-fab-position {
+    bottom: 5rem;
+  }
+  @media (display-mode: standalone) {
+    .chat-fab-position {
+      bottom: 7rem;
+    }
+  }
+  @media (min-width: 768px) {
+    .chat-fab-position {
+      bottom: 1.5rem;
+    }
+  }
+
   /* ── Buttons ────────────────────────────────────────────────────── */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 px-5 py-2.5

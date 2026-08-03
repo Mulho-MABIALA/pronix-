@@ -112,7 +112,7 @@ export default function SupportChat() {
       {!open && (
         <button
           onClick={() => setOpen(true)}
-          className="fixed bottom-28 right-4 md:bottom-6 z-50 w-14 h-14 rounded-full bg-primary-500 shadow-lg flex items-center justify-center hover:bg-primary-400 active:scale-95 transition-all"
+          className="fixed chat-fab-position right-4 z-50 w-14 h-14 rounded-full bg-primary-500 shadow-lg flex items-center justify-center hover:bg-primary-400 active:scale-95 transition-all"
           aria-label={t('supportChat.ariaLabel')}
         >
           <MessageCircle size={24} className="text-white" />
@@ -122,7 +122,7 @@ export default function SupportChat() {
 
       {/* Fenêtre de chat */}
       {open && (
-        <div className="fixed bottom-28 right-4 md:bottom-6 z-50 w-80 md:w-96 rounded-2xl border border-overlay/[0.08] shadow-2xl flex flex-col overflow-hidden"
+        <div className="fixed chat-fab-position right-4 z-50 w-80 md:w-96 rounded-2xl border border-overlay/[0.08] shadow-2xl flex flex-col overflow-hidden"
           style={{ background: 'rgb(var(--surface-900-rgb) / 0.98)', backdropFilter: 'blur(20px)', maxHeight: '70vh' }}>
 
           {/* Header */}

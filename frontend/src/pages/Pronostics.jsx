@@ -236,8 +236,7 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
                 <PronoRow match={match} index={localIdx} oddsEnabled={!isBlurred} />
               </div>
               {isBlurred && (
-                <div className="absolute inset-0 flex items-center justify-center gap-2 z-10
-                                bg-surface-800/75 backdrop-blur-[2px]">
+                <div className="glass-panel absolute inset-0 flex items-center justify-center gap-2 z-10 rounded-none">
                   <Lock size={14} className="text-primary-400 shrink-0" />
                   <p className="text-xs font-semibold text-ink-2 hidden sm:block">
                     {t('pronostics.freeLimitReached')}

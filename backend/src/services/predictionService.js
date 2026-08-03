@@ -14,6 +14,11 @@ function getTeamStats(matches, teamName) {
 
   let wins = 0, draws = 0, losses = 0;
   let totalGoals = 0, btts = 0, over25 = 0, over15 = 0, over35 = 0;
+  // Corners : capturés depuis 20260803140000_match_corners, uniquement pour les
+  // matchs terminés après ce déploiement — donc souvent null sur l'historique.
+  // On moyenne seulement sur les matchs où la donnée existe (cornerMatches),
+  // pas sur tout l'échantillon, sous peine de biaiser vers 0.
+  let cornersFor = 0, cornersAgainst = 0, cornerMatches = 0;
 
   for (const m of played) {
     const isHome = m.homeTeam === teamName;
@@ -30,6 +35,14 @@ function getTeamStats(matches, teamName) {
     if (gFor > gAgainst) wins++;
     else if (gFor === gAgainst) draws++;
     else losses++;
+
+    const cFor     = isHome ? m.homeCorners : m.awayCorners;
+    const cAgainst = isHome ? m.awayCorners : m.homeCorners;
+    if (cFor != null && cAgainst != null) {
+      cornersFor     += cFor;
+      cornersAgainst += cAgainst;
+      cornerMatches++;
+    }
   }
 
   const n = played.length;
@@ -43,6 +56,9 @@ function getTeamStats(matches, teamName) {
     over25Rate: over25 / n,
     over15Rate: over15 / n,
     sampleSize: n,
+    avgCornersFor:     cornerMatches ? cornersFor     / cornerMatches : null,
+    avgCornersAgainst: cornerMatches ? cornersAgainst / cornerMatches : null,
+    cornerSampleSize:  cornerMatches,
   };
 }
 
@@ -77,11 +93,62 @@ function calculateScorelines(lambdaHome, lambdaAway) {
     .slice(0, 6);
 }
 
+// ── Marchés corners ────────────────────────────────────────────────────────
+// Contrairement aux marchés buts (dérivés du même modèle 1X2/Over pour toutes
+// les sources), les corners n'ont pas d'équivalent "implicite" — ils dépendent
+// de la moyenne de corners réellement produits/concédés par chaque équipe,
+// disponible uniquement via calculateMatchPredictions (jamais pour l'IA ou le
+// fallback neutre, qui n'ont de toute façon pas assez d'historique de buts
+// pour espérer avoir assez d'historique de corners non plus).
+function deriveCornerMarkets(lambdaHomeCorners, lambdaAwayCorners) {
+  const lH = Math.max(1, Math.min(12, lambdaHomeCorners));
+  const lA = Math.max(1, Math.min(12, lambdaAwayCorners));
+  const MAXC = 18;
+
+  let corner1 = 0, cornerX = 0, corner2 = 0;
+  let over75 = 0, over85 = 0, over95 = 0, over105 = 0;
+  let handHome25 = 0, handAway25 = 0; // "handicap -2.5 corners" : 3 corners d'écart ou plus
+
+  for (let h = 0; h <= MAXC; h++) {
+    for (let a = 0; a <= MAXC; a++) {
+      const p = poisson(lH, h) * poisson(lA, a);
+      const totalC = h + a;
+
+      if (h > a) corner1 += p;
+      else if (h === a) cornerX += p;
+      else corner2 += p;
+
+      if (totalC > 7.5)  over75  += p;
+      if (totalC > 8.5)  over85  += p;
+      if (totalC > 9.5)  over95  += p;
+      if (totalC > 10.5) over105 += p;
+
+      if (h - a >= 3) handHome25 += p;
+      if (a - h >= 3) handAway25 += p;
+    }
+  }
+
+  const pct = (x) => Math.max(1, Math.min(98, Math.round(x * 100)));
+
+  return {
+    corner1: pct(corner1), cornerX: pct(cornerX), corner2: pct(corner2),
+    cornerOver75:  pct(over75),  cornerUnder75:  pct(1 - over75),
+    cornerOver85:  pct(over85),  cornerUnder85:  pct(1 - over85),
+    cornerOver95:  pct(over95),  cornerUnder95:  pct(1 - over95),
+    cornerOver105: pct(over105), cornerUnder105: pct(1 - over105),
+    cornerHandHome25: pct(handHome25),
+    cornerHandAway25: pct(handAway25),
+    avgCornersExpected: Math.round((lH + lA) * 10) / 10,
+    hasCornerData: true,
+  };
+}
+
 async function calculateMatchPredictions(match) {
   const fields = {
     select: {
       homeTeam: true, awayTeam: true,
       homeScore: true, awayScore: true,
+      homeCorners: true, awayCorners: true,
     },
   };
 
@@ -148,6 +215,17 @@ async function calculateMatchPredictions(match) {
   const bestPick = candidates[0];
   const confidence = bestPick.prob >= 72 ? 'high' : bestPick.prob >= 58 ? 'medium' : 'low';
 
+  // ── Marchés corners — uniquement si les 2 équipes ont assez de matchs avec
+  // données corners disponibles (voir getTeamStats). Sinon absent du résultat :
+  // le frontend affiche un repli neutre tant que l'historique ne s'est pas
+  // constitué (voir Machine.jsx getProb()).
+  let cornerMarkets = null;
+  if (hs.cornerSampleSize >= 3 && as.cornerSampleSize >= 3) {
+    const lambdaHomeCorners = (hs.avgCornersFor + as.avgCornersAgainst) / 2;
+    const lambdaAwayCorners = (as.avgCornersFor + hs.avgCornersAgainst) / 2;
+    cornerMarkets = deriveCornerMarkets(lambdaHomeCorners, lambdaAwayCorners);
+  }
+
   return {
     home, draw, away,
     over35, under35: 100 - over35,
@@ -159,6 +237,7 @@ async function calculateMatchPredictions(match) {
     allPicks: candidates.slice(0, 5),
     sampleSize: Math.min(hs.sampleSize, as.sampleSize),
     scorelines,
+    ...(cornerMarkets || {}),
   };
 }
 
@@ -423,4 +502,4 @@ async function calculatePredictionsForDate(dateStr) {
   return matches.length;
 }
 
-module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets };
+module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets, deriveCornerMarkets };

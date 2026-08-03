@@ -1002,7 +1002,10 @@
       "mb1_2plus": "Casa2+", "mb2_2plus": "Fora2+", "cleansheet1": "Casa0sof.", "cleansheet2": "Fora0sof.",
       "totalpair": "Par", "totalimpair": "Ímpar",
       "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
-      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS"
+      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
+      "corner1": "Esc.Casa", "cornerX": "Esc.Emp", "corner2": "Esc.Fora",
+      "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Casa-3", "cornerHandAway25": "CH Fora-3"
     },
     "marketGroups": {
       "resultats": {
@@ -1121,6 +1124,35 @@
         "markets": {
           "totalpair": { "label": "Total par — 0, 2, 4 gols...", "desc": "Ganha se o número total de gols da partida for par (0, 2, 4...)." },
           "totalimpair": { "label": "Total ímpar — 1, 3, 5 gols...", "desc": "Ganha se o número total de gols da partida for ímpar (1, 3, 5...)." }
+        }
+      },
+      "corners1x2": {
+        "label": "Escanteios — Time com mais",
+        "subtitle": "Qual time consegue mais escanteios na partida? Precisa de histórico de escanteios por time — fica mais confiável com o tempo.",
+        "markets": {
+          "corner1": { "label": "Casa — Mais escanteios", "desc": "Ganha se o time da casa conseguir mais escanteios que o visitante em toda a partida." },
+          "cornerX": { "label": "Empate — Mesmo número de escanteios", "desc": "Ganha se ambos os times conseguirem exatamente o mesmo número de escanteios." },
+          "corner2": { "label": "Fora — Mais escanteios", "desc": "Ganha se o time visitante conseguir mais escanteios que a casa em toda a partida." }
+        }
+      },
+      "cornerstotal": {
+        "label": "Total de escanteios",
+        "subtitle": "Aposte no número total de escanteios da partida.",
+        "markets": {
+          "cornerOver85": { "label": "Mais de 8.5 escanteios", "desc": "Ganha se a partida tiver pelo menos 9 escanteios no total." },
+          "cornerUnder85": { "label": "Menos de 8.5 escanteios", "desc": "Ganha se a partida tiver no máximo 8 escanteios no total." },
+          "cornerOver95": { "label": "Mais de 9.5 escanteios", "desc": "Ganha se a partida tiver pelo menos 10 escanteios no total." },
+          "cornerUnder95": { "label": "Menos de 9.5 escanteios", "desc": "Ganha se a partida tiver no máximo 9 escanteios no total." },
+          "cornerOver105": { "label": "Mais de 10.5 escanteios", "desc": "Ganha se a partida tiver pelo menos 11 escanteios no total." },
+          "cornerUnder105": { "label": "Menos de 10.5 escanteios", "desc": "Ganha se a partida tiver no máximo 10 escanteios no total." }
+        }
+      },
+      "cornershandicap": {
+        "label": "Handicap de escanteios",
+        "subtitle": "Um time precisa dominar claramente a disputa de escanteios (3 ou mais de diferença).",
+        "markets": {
+          "cornerHandHome25": { "label": "Casa -2.5 escanteios", "desc": "Ganha se o time da casa conseguir pelo menos 3 escanteios a mais que o visitante." },
+          "cornerHandAway25": { "label": "Fora -2.5 escanteios", "desc": "Ganha se o time visitante conseguir pelo menos 3 escanteios a mais que a casa." }
         }
       }
     }

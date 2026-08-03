@@ -1002,7 +1002,10 @@
       "mb1_2plus": "Dom.2+", "mb2_2plus": "Ext.2+", "cleansheet1": "Dom.0enc.", "cleansheet2": "Ext.0enc.",
       "totalpair": "Pair", "totalimpair": "Impair",
       "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
-      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS"
+      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
+      "corner1": "Corn.Dom", "cornerX": "Corn.Nul", "corner2": "Corn.Ext",
+      "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Dom-3", "cornerHandAway25": "CH Ext-3"
     },
     "marketGroups": {
       "resultats": {
@@ -1121,6 +1124,35 @@
         "markets": {
           "totalpair": { "label": "Total pair — 0, 2, 4 buts...", "desc": "Gagné si le nombre total de buts du match est pair (0, 2, 4...)." },
           "totalimpair": { "label": "Total impair — 1, 3, 5 buts...", "desc": "Gagné si le nombre total de buts du match est impair (1, 3, 5...)." }
+        }
+      },
+      "corners1x2": {
+        "label": "Corners — Équipe avec le plus",
+        "subtitle": "Quelle équipe obtient le plus de corners dans le match ? Nécessite un historique de corners par équipe — se fiabilise avec le temps.",
+        "markets": {
+          "corner1": { "label": "Domicile — Plus de corners", "desc": "Gagné si l'équipe à domicile obtient plus de corners que l'extérieur sur l'ensemble du match." },
+          "cornerX": { "label": "Égalité — Même nombre de corners", "desc": "Gagné si les deux équipes obtiennent exactement le même nombre de corners." },
+          "corner2": { "label": "Extérieur — Plus de corners", "desc": "Gagné si l'équipe extérieure obtient plus de corners que le domicile sur l'ensemble du match." }
+        }
+      },
+      "cornerstotal": {
+        "label": "Total corners",
+        "subtitle": "Parie sur le nombre total de corners du match.",
+        "markets": {
+          "cornerOver85": { "label": "Plus de 8.5 corners", "desc": "Gagné si le match compte au moins 9 corners au total." },
+          "cornerUnder85": { "label": "Moins de 8.5 corners", "desc": "Gagné si le match compte 8 corners maximum au total." },
+          "cornerOver95": { "label": "Plus de 9.5 corners", "desc": "Gagné si le match compte au moins 10 corners au total." },
+          "cornerUnder95": { "label": "Moins de 9.5 corners", "desc": "Gagné si le match compte 9 corners maximum au total." },
+          "cornerOver105": { "label": "Plus de 10.5 corners", "desc": "Gagné si le match compte au moins 11 corners au total." },
+          "cornerUnder105": { "label": "Moins de 10.5 corners", "desc": "Gagné si le match compte 10 corners maximum au total." }
+        }
+      },
+      "cornershandicap": {
+        "label": "Handicap corners",
+        "subtitle": "Une équipe doit dominer nettement la bataille des corners (3 d'écart ou plus).",
+        "markets": {
+          "cornerHandHome25": { "label": "Domicile -2.5 corners", "desc": "Gagné si l'équipe à domicile obtient au moins 3 corners de plus que l'extérieur." },
+          "cornerHandAway25": { "label": "Extérieur -2.5 corners", "desc": "Gagné si l'équipe extérieure obtient au moins 3 corners de plus que le domicile." }
         }
       }
     }

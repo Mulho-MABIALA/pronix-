@@ -93,6 +93,9 @@ const MARKET_GROUPS = [
   { id: 'resulttotal',  emoji: '➕', markets: ['res1over25', 'res1under25', 'resXover25', 'resXunder25', 'res2over25', 'res2under25'] },
   { id: 'resultbtts',   emoji: '🧩', markets: ['res1btts', 'resXbtts', 'res2btts', 'dc1xbtts', 'dcx2btts', 'dc12btts'] },
   { id: 'totalpair',    emoji: '🔢', markets: ['totalpair', 'totalimpair'] },
+  { id: 'corners1x2',      emoji: '🚩', markets: ['corner1', 'cornerX', 'corner2'] },
+  { id: 'cornerstotal',    emoji: '🚩', markets: ['cornerOver85', 'cornerUnder85', 'cornerOver95', 'cornerUnder95', 'cornerOver105', 'cornerUnder105'] },
+  { id: 'cornershandicap', emoji: '🚩', markets: ['cornerHandHome25', 'cornerHandAway25'] },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -191,6 +194,21 @@ function getProb(pred, market) {
     'dc1xbtts':  pred.dc1xbtts  ?? Math.round((h + d) * (bt / 100)),
     'dcx2btts':  pred.dcx2btts  ?? Math.round((d + a) * (bt / 100)),
     'dc12btts':  pred.dc12btts  ?? Math.round((h + a) * (bt / 100)),
+
+    // Marchés corners — repli neutre (priors génériques) tant que l'historique
+    // de corners par équipe n'est pas assez fourni (voir predictionService.js,
+    // hasCornerData n'est présent que si cornerSampleSize ≥ 3 des deux côtés).
+    'corner1':          pred.corner1          ?? 40,
+    'cornerX':          pred.cornerX          ?? 24,
+    'corner2':          pred.corner2          ?? 36,
+    'cornerOver85':     pred.cornerOver85     ?? 55,
+    'cornerUnder85':    pred.cornerUnder85    ?? 45,
+    'cornerOver95':     pred.cornerOver95     ?? 45,
+    'cornerUnder95':    pred.cornerUnder95    ?? 55,
+    'cornerOver105':    pred.cornerOver105    ?? 32,
+    'cornerUnder105':   pred.cornerUnder105   ?? 68,
+    'cornerHandHome25': pred.cornerHandHome25 ?? 22,
+    'cornerHandAway25': pred.cornerHandAway25 ?? 18,
   };
 
   const prob = probMap[market];

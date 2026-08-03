@@ -389,6 +389,12 @@ model Match {
   awayTeamLogo  String?
   homeScore     Int?
   awayScore     Int?
+  // Corners au coup de sifflet final — récupérés une seule fois à la bascule
+  // LIVE→FINISHED (voir cron/syncMatches.js) et jamais recalculés ensuite.
+  // Nullable : soit le match n'est pas encore terminé, soit l'API n'a pas
+  // fourni cette statistique pour ce match (championnats moins couverts).
+  homeCorners   Int?
+  awayCorners   Int?
   status        MatchStatus @default(SCHEDULED)
   minute        String?     // ex: "67'", "HT", "45+2'" — null si non commencé
   scheduledAt   DateTime

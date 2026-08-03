@@ -15,6 +15,7 @@ const FAMILY_COLORS = {
   multibuts:      { text: 'text-rose-400',    bg: 'bg-rose-500/10',   border: 'border-rose-500/20' },
   combo:          { text: 'text-lime-400',    bg: 'bg-lime-500/10',   border: 'border-lime-500/20' },
   exactscore:     { text: 'text-yellow-400',  bg: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
+  corners:        { text: 'text-orange-300',  bg: 'bg-orange-400/10', border: 'border-orange-400/20' },
 };
 const DEFAULT_COLOR = { text: 'text-ink-3', bg: 'bg-surface-700/50', border: 'border-overlay/[0.08]' };
 
@@ -30,6 +31,7 @@ export function getMarketFamily(type) {
   if (['mb1_2plus', 'mb2_2plus', 'cleansheet1', 'cleansheet2', 'totalpair', 'totalimpair'].includes(type)) return 'multibuts';
   if (type.startsWith('res') || type.startsWith('dc1x') || type.startsWith('dcx2') || type.startsWith('dc12')) return 'combo';
   if (/^\d+-\d+$/.test(type)) return 'exactscore'; // score exact, ex. "2-1"
+  if (type.startsWith('corner')) return 'corners';
   return null;
 }
 
@@ -52,6 +54,7 @@ const FAMILY_HEX = {
   multibuts:     '#fb7185',
   combo:         '#a3e635',
   exactscore:    '#facc15',
+  corners:       '#fdba74',
 };
 const DEFAULT_HEX = '#9a9fa6';
 

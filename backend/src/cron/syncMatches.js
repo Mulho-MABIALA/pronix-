@@ -28,6 +28,32 @@ function matchIconUrl(homeLogo, awayLogo) {
   return `/api/img-proxy/match-icon?${params.toString()}`;
 }
 
+// ─── Corners — capturés une seule fois à la fin du match ──────────────────────
+// Réutilise le même endpoint /fixtures/statistics que matchController.getMatchStats
+// (cache déjà en place via le champ `statistics`), mais appelé ici proactivement
+// à la bascule FINISHED plutôt qu'à la demande d'un visiteur — nécessaire pour
+// accumuler un historique de corners par équipe utilisable par predictionService
+// (marchés "Total corners", "Handicap corners"...). Fire-and-forget : un échec
+// ne doit jamais bloquer le reste du cycle de sync.
+async function captureCornerStats(matchId, externalId) {
+  try {
+    const stats = await footballApi.getFixtureStatistics(externalId);
+    if (!stats) return;
+
+    const corner = stats.find((s) => s.key === 'corner_kicks');
+    await prisma.match.update({
+      where: { id: matchId },
+      data: {
+        statistics:   stats, // cache — évite un second appel API si le visiteur ouvre la fiche match
+        homeCorners:  corner ? corner.home : undefined,
+        awayCorners:  corner ? corner.away : undefined,
+      },
+    });
+  } catch (err) {
+    console.error('[Cron syncLive] captureCornerStats:', err.message);
+  }
+}
+
 function evaluateTip(prediction, homeScore, awayScore) {
   if (homeScore === null || awayScore === null) return null;
   const total = homeScore + awayScore;
@@ -279,6 +305,9 @@ async function syncLiveMatches() {
 
         // Résumé post-match automatique (article de blog IA)
         generateMatchSummary(match.id).catch(() => {});
+
+        // Corners — capture unique pour alimenter l'historique des marchés corners
+        captureCornerStats(match.id, match.externalId).catch(() => {});
       }
     }
   } catch (err) {
@@ -337,4 +366,4 @@ function startSyncMatchesCron() {
   syncMatchesForDate(today).catch((e) => console.error('[Cron] Sync initiale:', e.message));
 }
 
-module.exports = { startSyncMatchesCron, syncMatchesForDate, cleanupStaleMatches };
+module.exports = { startSyncMatchesCron, syncMatchesForDate, cleanupStaleMatches, captureCornerStats };

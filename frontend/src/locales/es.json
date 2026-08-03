@@ -1002,7 +1002,10 @@
       "mb1_2plus": "Loc.2+", "mb2_2plus": "Vis.2+", "cleansheet1": "Loc.0enc.", "cleansheet2": "Vis.0enc.",
       "totalpair": "Par", "totalimpair": "Impar",
       "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
-      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS"
+      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
+      "corner1": "Corn.Loc", "cornerX": "Corn.Emp", "corner2": "Corn.Vis",
+      "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Loc-3", "cornerHandAway25": "CH Vis-3"
     },
     "marketGroups": {
       "resultats": {
@@ -1121,6 +1124,35 @@
         "markets": {
           "totalpair": { "label": "Total par — 0, 2, 4 goles...", "desc": "Gana si el número total de goles del partido es par (0, 2, 4...)." },
           "totalimpair": { "label": "Total impar — 1, 3, 5 goles...", "desc": "Gana si el número total de goles del partido es impar (1, 3, 5...)." }
+        }
+      },
+      "corners1x2": {
+        "label": "Córners — Equipo con más",
+        "subtitle": "¿Qué equipo consigue más córners en el partido? Requiere historial de córners por equipo — se vuelve más fiable con el tiempo.",
+        "markets": {
+          "corner1": { "label": "Local — Más córners", "desc": "Gana si el equipo local consigue más córners que el visitante en todo el partido." },
+          "cornerX": { "label": "Empate — Mismo número de córners", "desc": "Gana si ambos equipos consiguen exactamente el mismo número de córners." },
+          "corner2": { "label": "Visitante — Más córners", "desc": "Gana si el equipo visitante consigue más córners que el local en todo el partido." }
+        }
+      },
+      "cornerstotal": {
+        "label": "Total de córners",
+        "subtitle": "Apuesta al número total de córners del partido.",
+        "markets": {
+          "cornerOver85": { "label": "Más de 8.5 córners", "desc": "Gana si el partido tiene al menos 9 córners en total." },
+          "cornerUnder85": { "label": "Menos de 8.5 córners", "desc": "Gana si el partido tiene 8 córners como máximo en total." },
+          "cornerOver95": { "label": "Más de 9.5 córners", "desc": "Gana si el partido tiene al menos 10 córners en total." },
+          "cornerUnder95": { "label": "Menos de 9.5 córners", "desc": "Gana si el partido tiene 9 córners como máximo en total." },
+          "cornerOver105": { "label": "Más de 10.5 córners", "desc": "Gana si el partido tiene al menos 11 córners en total." },
+          "cornerUnder105": { "label": "Menos de 10.5 córners", "desc": "Gana si el partido tiene 10 córners como máximo en total." }
+        }
+      },
+      "cornershandicap": {
+        "label": "Hándicap de córners",
+        "subtitle": "Un equipo debe dominar claramente el conteo de córners (3 o más de diferencia).",
+        "markets": {
+          "cornerHandHome25": { "label": "Local -2.5 córners", "desc": "Gana si el equipo local consigue al menos 3 córners más que el visitante." },
+          "cornerHandAway25": { "label": "Visitante -2.5 córners", "desc": "Gana si el equipo visitante consigue al menos 3 córners más que el local." }
         }
       }
     }

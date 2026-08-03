@@ -95,6 +95,7 @@ model User {
   country       String?  // pays choisi à l'onboarding — code ISO 3166-1 alpha-2 (voir frontend/src/data/countries.js)
   ageConfirmedAt      DateTime? // horodatage de la confirmation "18 ans ou plus" à l'inscription (preuve de consentement)
   selfExclusionUntil  DateTime? // pause auto-imposée (jeu responsable) — bloque tickets + paiements tant que non expirée
+  currentChallenge    String?   // challenge WebAuthn en attente (registration ou login), écrasé à chaque ceremony
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -127,11 +128,34 @@ model User {
   oddsAlerts           OddsAlert[]
   weeklyStats          TipsterWeeklyStats[]
   supportTickets       SupportTicket[]
+  webauthnCredentials  WebAuthnCredential[]
 
   @@index([role])
   @@index([isActive])
   @@index([createdAt])
   @@map("users")
+}
+
+// ─── PASSKEYS / WEBAUTHN ────────────────────────────────────────────────────
+// Un utilisateur peut enregistrer plusieurs appareils (téléphone, ordinateur...).
+// counter sert à détecter le clonage d'une clé (anti-rejeu) — doit toujours
+// augmenter à chaque authentification, sinon on refuse la connexion.
+model WebAuthnCredential {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  credentialId String   @unique // ID de la credential encodé en base64url
+  publicKey    Bytes    // clé publique COSE, utilisée pour vérifier les signatures
+  counter      BigInt   @default(0)
+  deviceType   String?  // "singleDevice" | "multiDevice" (passkey synchronisée)
+  backedUp     Boolean  @default(false)
+  transports   String[] @default([]) // "internal" | "hybrid" | "usb" | "nfc" | "ble"
+  deviceName   String?  // nom affiché ("iPhone de Mulho") — déduit du user-agent à la création
+  createdAt    DateTime @default(now())
+  lastUsedAt   DateTime?
+
+  @@index([userId])
+  @@map("webauthn_credentials")
 }
 
 model Profile {

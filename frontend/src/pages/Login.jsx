@@ -1,18 +1,46 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleLogin } from '@react-oauth/google';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Fingerprint } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { hapticSuccess, hapticError } from '../utils/haptics';
 
 export default function Login() {
   const { t } = useTranslation();
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, loginWithPasskey } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [passkeySupported, setPasskeySupported] = useState(false);
+  const [passkeyLoading, setPasskeyLoading] = useState(false);
+
+  useEffect(() => {
+    import('@simplewebauthn/browser').then(({ browserSupportsWebAuthn }) => {
+      setPasskeySupported(browserSupportsWebAuthn());
+    }).catch(() => {});
+  }, []);
+
+  const handlePasskeyLogin = async () => {
+    setError('');
+    setPasskeyLoading(true);
+    try {
+      const user = await loginWithPasskey();
+      hapticSuccess();
+      navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
+    } catch (err) {
+      // L'utilisateur annule lui-même (bouton "Annuler" du prompt Face ID/empreinte)
+      // → pas d'erreur affichée, ce n'est pas un échec.
+      if (err?.name !== 'NotAllowedError') {
+        hapticError();
+        setError(err.response?.data?.message || t('auth.passkeyError'));
+      }
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
 
   const handleGoogleSuccess = async (credential) => {
     setError('');
@@ -54,6 +82,25 @@ export default function Login() {
           <h1 className="font-display font-bold text-2xl text-ink-1 mt-2">{t('auth.loginTitle')}</h1>
           <p className="text-ink-3 text-sm mt-1">{t('auth.loginSubtitle')}</p>
         </div>
+
+        {passkeySupported && (
+          <>
+            <button
+              type="button"
+              onClick={handlePasskeyLogin}
+              disabled={passkeyLoading}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl border border-primary-500/30 bg-primary-500/10 text-primary-300 font-semibold text-sm hover:bg-primary-500/15 active:scale-[0.98] transition-all disabled:opacity-50"
+            >
+              <Fingerprint size={18} />
+              {passkeyLoading ? '…' : t('auth.passkeyLoginCta')}
+            </button>
+            <div className="relative flex items-center gap-3">
+              <div className="flex-grow border-t border-surface-600" />
+              <span className="text-xs text-ink-3 shrink-0">{t('common.or')}</span>
+              <div className="flex-grow border-t border-surface-600" />
+            </div>
+          </>
+        )}
 
         <form onSubmit={handleSubmit} className="bento-card space-y-4" noValidate>
           {error && (

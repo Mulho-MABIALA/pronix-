@@ -54,6 +54,19 @@ export function AuthProvider({ children }) {
     return data.data.user;
   };
 
+  // Connexion biométrique (passkey) — "usernameless" : le navigateur propose
+  // directement les passkeys enregistrées pour ce domaine, aucun email requis.
+  const loginWithPasskey = async () => {
+    const { startAuthentication } = await import('@simplewebauthn/browser');
+    const { data: optData } = await api.post('/auth/webauthn/login-options');
+    const { options, challengeId } = optData.data;
+    const authResponse = await startAuthentication({ optionsJSON: options });
+    const { data } = await api.post('/auth/webauthn/login-verify', { challengeId, response: authResponse });
+    setUser(data.data.user);
+    applyAccountLanguage(data.data.user);
+    return data.data.user;
+  };
+
   const logout = async () => {
     try { await api.post('/auth/logout'); } catch {}
     setUser(null);
@@ -75,7 +88,7 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, logout, refreshUser, userPlan, isPremium, hasPaidPlan, trialActive, trialDaysLeft, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, loginWithPasskey, logout, refreshUser, userPlan, isPremium, hasPaidPlan, trialActive, trialDaysLeft, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

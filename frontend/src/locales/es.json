@@ -450,6 +450,8 @@
     "loginCta": "Iniciar sesión",
     "registerCta": "Crear mi cuenta",
     "googleLogin": "Continuar con Google",
+    "passkeyLoginCta": "Iniciar sesión con Face ID / huella",
+    "passkeyError": "No se pudo iniciar sesión con la passkey. Intenta de nuevo o usa tu contraseña.",
     "noAccount": "¿Aún no tienes cuenta?",
     "hasAccount": "¿Ya tienes cuenta?",
     "registerLink": "Registrarse",
@@ -555,6 +557,19 @@
     "avatarUploadError": "Error al subir la foto. Inténtalo de nuevo.",
     "memberSince": "Miembro desde {{date}}",
     "lastLogin": "última conexión el {{date}}",
+    "passkeys": {
+      "title": "Conexión biométrica",
+      "desc": "Conéctate con Face ID, Touch ID o tu huella digital — sin contraseña en este dispositivo.",
+      "none": "Ningún dispositivo registrado todavía.",
+      "unnamedDevice": "Dispositivo",
+      "addedOn": "Añadido el {{date}}",
+      "addCta": "Añadir este dispositivo",
+      "remove": "Quitar",
+      "added": "Passkey añadida con éxito",
+      "addError": "No se pudo añadir esta passkey. Intenta de nuevo.",
+      "removed": "Passkey eliminada",
+      "removeError": "No se pudo eliminar esta passkey. Intenta de nuevo."
+    },
     "preferences": {
       "title": "País, idioma y moneda",
       "language": "Idioma",

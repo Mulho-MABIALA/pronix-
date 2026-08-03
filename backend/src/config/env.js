@@ -44,6 +44,11 @@ const envSchema = z.object({
   RESEND_API_KEY: z.string().optional(),     // Resend — https://resend.com (3000 mails/mois gratuit)
   VAPID_PUBLIC_KEY: z.string().optional(),
   VAPID_PRIVATE_KEY: z.string().optional(),
+  WEBAUTHN_RP_NAME: z.string().default('Fpronix'),
+  // Domaine racine des passkeys (WebAuthn "Relying Party ID"). Doit correspondre
+  // exactement au domaine servi au navigateur — pas de https://, pas de port.
+  // Si absent, dérivé automatiquement du hostname de FRONTEND_URL au démarrage.
+  WEBAUTHN_RP_ID: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -52,6 +57,16 @@ if (!parsed.success) {
   console.error('❌ Variables d\'environnement invalides:');
   console.error(parsed.error.flatten().fieldErrors);
   process.exit(1);
+}
+
+// Dérive le RP ID des passkeys depuis FRONTEND_URL si non défini explicitement
+// (ex: FRONTEND_URL=https://fpronix.com → RP ID "fpronix.com").
+if (!parsed.data.WEBAUTHN_RP_ID) {
+  try {
+    parsed.data.WEBAUTHN_RP_ID = new URL(parsed.data.FRONTEND_URL).hostname;
+  } catch {
+    parsed.data.WEBAUTHN_RP_ID = 'localhost';
+  }
 }
 
 module.exports = parsed.data;

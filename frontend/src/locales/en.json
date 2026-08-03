@@ -450,6 +450,8 @@
     "loginCta": "Log in",
     "registerCta": "Create my account",
     "googleLogin": "Continue with Google",
+    "passkeyLoginCta": "Log in with Face ID / fingerprint",
+    "passkeyError": "Passkey sign-in failed. Try again or use your password.",
     "noAccount": "Don't have an account?",
     "hasAccount": "Already have an account?",
     "registerLink": "Sign up",
@@ -555,6 +557,19 @@
     "avatarUploadError": "Error uploading the photo. Please try again.",
     "memberSince": "Member since {{date}}",
     "lastLogin": "last login on {{date}}",
+    "passkeys": {
+      "title": "Biometric sign-in",
+      "desc": "Sign in with Face ID, Touch ID, or your fingerprint — no password needed on this device.",
+      "none": "No device registered yet.",
+      "unnamedDevice": "Device",
+      "addedOn": "Added on {{date}}",
+      "addCta": "Add this device",
+      "remove": "Remove",
+      "added": "Passkey added successfully",
+      "addError": "Couldn't add this passkey. Try again.",
+      "removed": "Passkey removed",
+      "removeError": "Couldn't remove this passkey. Try again."
+    },
     "preferences": {
       "title": "Country, language & currency",
       "language": "Language",

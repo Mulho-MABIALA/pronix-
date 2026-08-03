@@ -450,6 +450,8 @@
     "loginCta": "Entrar",
     "registerCta": "Criar minha conta",
     "googleLogin": "Continuar com o Google",
+    "passkeyLoginCta": "Entrar com Face ID / digital",
+    "passkeyError": "Não foi possível entrar com a passkey. Tente novamente ou use sua senha.",
     "noAccount": "Ainda não tem conta?",
     "hasAccount": "Já tem conta?",
     "registerLink": "Cadastrar-se",
@@ -555,6 +557,19 @@
     "avatarUploadError": "Erro ao enviar a foto. Tente novamente.",
     "memberSince": "Membro desde {{date}}",
     "lastLogin": "último acesso em {{date}}",
+    "passkeys": {
+      "title": "Login biométrico",
+      "desc": "Entre com Face ID, Touch ID ou sua digital — sem senha neste aparelho.",
+      "none": "Nenhum aparelho registrado ainda.",
+      "unnamedDevice": "Aparelho",
+      "addedOn": "Adicionado em {{date}}",
+      "addCta": "Adicionar este aparelho",
+      "remove": "Remover",
+      "added": "Passkey adicionada com sucesso",
+      "addError": "Não foi possível adicionar esta passkey. Tente novamente.",
+      "removed": "Passkey removida",
+      "removeError": "Não foi possível remover esta passkey. Tente novamente."
+    },
     "preferences": {
       "title": "País, idioma e moeda",
       "language": "Idioma",

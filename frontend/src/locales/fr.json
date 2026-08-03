@@ -450,6 +450,8 @@
     "loginCta": "Se connecter",
     "registerCta": "Créer mon compte",
     "googleLogin": "Continuer avec Google",
+    "passkeyLoginCta": "Se connecter avec Face ID / empreinte",
+    "passkeyError": "Connexion par passkey impossible. Réessaie ou utilise ton mot de passe.",
     "noAccount": "Pas encore de compte ?",
     "hasAccount": "Déjà un compte ?",
     "registerLink": "S'inscrire",
@@ -555,6 +557,19 @@
     "avatarUploadError": "Erreur lors de l'upload de la photo. Réessaie.",
     "memberSince": "Membre depuis {{date}}",
     "lastLogin": "dernière connexion le {{date}}",
+    "passkeys": {
+      "title": "Connexion biométrique",
+      "desc": "Connecte-toi avec Face ID, Touch ID ou ton empreinte digitale — plus besoin de mot de passe sur cet appareil.",
+      "none": "Aucun appareil enregistré.",
+      "unnamedDevice": "Appareil",
+      "addedOn": "Ajouté le {{date}}",
+      "addCta": "Ajouter cet appareil",
+      "remove": "Retirer",
+      "added": "Passkey ajoutée avec succès",
+      "addError": "Impossible d'ajouter cette passkey. Réessaie.",
+      "removed": "Passkey retirée",
+      "removeError": "Impossible de retirer cette passkey. Réessaie."
+    },
     "preferences": {
       "title": "Pays, langue & devise",
       "language": "Langue",

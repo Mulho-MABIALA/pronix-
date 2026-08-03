@@ -8,10 +8,12 @@ import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
   MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle, PauseCircle,
+  Fingerprint,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { hapticSuccess } from '../utils/haptics';
 import { PlanBadge } from '../components/ui/Badge';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -413,6 +415,108 @@ function PreferencesSection() {
           </button>
         )}
       </div>
+    </Section>
+  );
+}
+
+// Déduit un nom d'appareil lisible depuis le user-agent, pour que la liste
+// des passkeys soit compréhensible ("iPhone", "Android", "Mac"...) sans
+// demander à l'utilisateur de nommer lui-même son appareil.
+function guessDeviceName() {
+  const ua = navigator.userAgent || '';
+  if (/iPhone/.test(ua)) return 'iPhone';
+  if (/iPad/.test(ua)) return 'iPad';
+  if (/Android/.test(ua)) return 'Android';
+  if (/Macintosh/.test(ua)) return 'Mac';
+  if (/Windows/.test(ua)) return 'Windows';
+  return 'Appareil';
+}
+
+/* ─── Section passkeys : connexion biométrique (Face ID / empreinte) ────────
+   N'apparaît que si le navigateur supporte WebAuthn. Permet d'ajouter un
+   appareil (registration) et de gérer/retirer les appareils déjà enregistrés. */
+function PasskeysSection() {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const qc = useQueryClient();
+  const [registering, setRegistering] = useState(false);
+  const [passkeySupported, setPasskeySupported] = useState(false);
+
+  useEffect(() => {
+    import('@simplewebauthn/browser').then(({ browserSupportsWebAuthn }) => {
+      setPasskeySupported(browserSupportsWebAuthn());
+    }).catch(() => {});
+  }, []);
+
+  const { data: devices, isLoading } = useQuery({
+    queryKey: ['webauthn-devices'],
+    queryFn: () => api.get('/auth/webauthn/devices').then((r) => r.data.data),
+    enabled: passkeySupported,
+  });
+
+  const removeDevice = useMutation({
+    mutationFn: (id) => api.delete(`/auth/webauthn/devices/${id}`),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['webauthn-devices'] });
+      if (toast) toast(t('profile.passkeys.removed'), 'success');
+    },
+    onError: () => { if (toast) toast(t('profile.passkeys.removeError'), 'error'); },
+  });
+
+  const registerPasskey = async () => {
+    setRegistering(true);
+    try {
+      const { startRegistration } = await import('@simplewebauthn/browser');
+      const { data: optData } = await api.post('/auth/webauthn/registration-options');
+      const regResponse = await startRegistration({ optionsJSON: optData.data });
+      await api.post('/auth/webauthn/registration-verify', { response: regResponse, deviceName: guessDeviceName() });
+      hapticSuccess();
+      qc.invalidateQueries({ queryKey: ['webauthn-devices'] });
+      if (toast) toast(t('profile.passkeys.added'), 'success');
+    } catch (err) {
+      if (err?.name !== 'NotAllowedError') {
+        if (toast) toast(err.response?.data?.message || t('profile.passkeys.addError'), 'error');
+      }
+    } finally {
+      setRegistering(false);
+    }
+  };
+
+  if (!passkeySupported) return null;
+
+  return (
+    <Section title={t('profile.passkeys.title')} icon={Fingerprint} color="blue">
+      <p className="text-xs text-ink-3 mb-3">{t('profile.passkeys.desc')}</p>
+
+      {isLoading ? (
+        <div className="h-10 bg-surface-700 rounded-lg animate-pulse mb-3" />
+      ) : devices?.length > 0 ? (
+        <div className="space-y-1 mb-3">
+          {devices.map((d) => (
+            <div key={d.id} className="flex items-center justify-between py-2 border-b border-overlay/[0.05] last:border-0">
+              <div className="min-w-0">
+                <p className="text-sm text-ink-2 truncate">{d.deviceName || t('profile.passkeys.unnamedDevice')}</p>
+                <p className="text-xs text-ink-4">
+                  {t('profile.passkeys.addedOn', { date: format(new Date(d.createdAt), 'd MMM yyyy') })}
+                </p>
+              </div>
+              <button
+                onClick={() => removeDevice.mutate(d.id)}
+                disabled={removeDevice.isPending}
+                className="text-xs text-red-400 hover:text-red-300 font-medium shrink-0 ml-2 disabled:opacity-50"
+              >
+                {t('profile.passkeys.remove')}
+              </button>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-xs text-ink-4 mb-3">{t('profile.passkeys.none')}</p>
+      )}
+
+      <button onClick={registerPasskey} disabled={registering} className="btn-secondary w-full py-2.5 text-sm disabled:opacity-50">
+        {registering ? t('profile.saving') : t('profile.passkeys.addCta')}
+      </button>
     </Section>
   );
 }
@@ -1249,6 +1353,9 @@ export default function Profile() {
           </div>
         </div>
       </Section>
+
+      {/* ── Passkeys / connexion biométrique ─────────────────────────────────── */}
+      <PasskeysSection />
 
       {/* ── Jeu responsable : pause auto-imposée ──────────────────────────────── */}
       <SelfExclusionSection />

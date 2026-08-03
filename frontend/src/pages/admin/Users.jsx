@@ -184,6 +184,12 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                     ? `App installée · ${format(new Date(user.appInstalledAt), 'dd MMM yyyy', { locale: fr })}`
                     : 'App non installée'}
                 </span>
+                {user.selfExclusionUntil && new Date(user.selfExclusionUntil) > new Date() && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400">
+                    <AlertTriangle size={10} />
+                    Pause jeu responsable jusqu'au {format(new Date(user.selfExclusionUntil), 'dd MMM yyyy', { locale: fr })}
+                  </span>
+                )}
               </div>
             </div>
           </div>
@@ -854,6 +860,12 @@ export default function AdminUsers() {
                           {u.isActive ? <UserCheck size={11} /> : <UserX size={11} />}
                           {u.isActive ? 'Actif' : 'Suspendu'}
                         </span>
+                        {u.selfExclusionUntil && new Date(u.selfExclusionUntil) > new Date() && (
+                          <span className="mt-1 flex items-center gap-1 text-[10px] font-semibold text-amber-400">
+                            <AlertTriangle size={9} />
+                            En pause
+                          </span>
+                        )}
                       </td>
                       <td className="px-5 py-3.5 text-right" onClick={e => e.stopPropagation()}>
                         <button onClick={() => setActivateUser(u)}

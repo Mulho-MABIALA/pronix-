@@ -1,11 +1,14 @@
 const { Router } = require('express');
 const { z } = require('zod');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const prisma = require('../config/database');
+const env = require('../config/env');
 const { authenticate } = require('../middleware/auth');
 const { AppError } = require('../middleware/errorHandler');
 const { REFRESH_COOKIE, clearAuthCookies } = require('../config/cookies');
 const { notifyAdmin } = require('../services/adminNotificationService');
+const { sendEmailVerification } = require('../services/emailService');
 
 const router = Router();
 router.use(authenticate);
@@ -87,6 +90,86 @@ router.patch('/me/preferences', async (req, res, next) => {
         ...(country && { country }),
       },
     });
+    const { password: _, ...userSafe } = user;
+    res.json({ success: true, data: userSafe });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Changer le mot de passe (utilisateur déjà authentifié — différent du flow
+// "mot de passe oublié" qui passe par un email). Si le compte n'a pas encore
+// de mot de passe (créé via Google), aucune vérification de l'ancien n'est
+// exigée — même logique que la suppression de compte ci-dessous.
+router.patch('/me/password', async (req, res, next) => {
+  try {
+    const schema = z.object({
+      currentPassword: z.string().optional(),
+      newPassword: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(100),
+    });
+    const { currentPassword, newPassword } = schema.parse(req.body);
+
+    if (req.user.password) {
+      if (!currentPassword) {
+        throw new AppError('Mot de passe actuel requis', 400, 'PASSWORD_REQUIRED');
+      }
+      const isValid = await bcrypt.compare(currentPassword, req.user.password);
+      if (!isValid) {
+        throw new AppError('Mot de passe actuel incorrect', 401, 'INVALID_PASSWORD');
+      }
+    }
+
+    const hashed = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS);
+    await prisma.user.update({ where: { id: req.user.id }, data: { password: hashed } });
+
+    res.json({ success: true, message: 'Mot de passe mis à jour' });
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Changer l'adresse email (utilisateur déjà authentifié). Repasse
+// emailVerified à false et renvoie un lien de vérification vers la nouvelle
+// adresse — jamais vers l'ancienne, qui n'appartient plus au compte.
+router.patch('/me/email', async (req, res, next) => {
+  try {
+    const schema = z.object({
+      newEmail: z.string().email('Adresse email invalide'),
+      currentPassword: z.string().optional(),
+    });
+    const { newEmail, currentPassword } = schema.parse(req.body);
+    const emailLower = newEmail.toLowerCase().trim();
+
+    if (emailLower === req.user.email.toLowerCase()) {
+      throw new AppError('C\'est déjà ton adresse actuelle', 400, 'SAME_EMAIL');
+    }
+
+    if (req.user.password) {
+      if (!currentPassword) {
+        throw new AppError('Mot de passe requis pour changer d\'email', 400, 'PASSWORD_REQUIRED');
+      }
+      const isValid = await bcrypt.compare(currentPassword, req.user.password);
+      if (!isValid) {
+        throw new AppError('Mot de passe incorrect', 401, 'INVALID_PASSWORD');
+      }
+    }
+
+    const existing = await prisma.user.findUnique({ where: { email: emailLower } });
+    if (existing && existing.id !== req.user.id) {
+      throw new AppError('Cette adresse email est déjà utilisée', 409, 'EMAIL_TAKEN');
+    }
+
+    const user = await prisma.user.update({
+      where: { id: req.user.id },
+      data: { email: emailLower, emailVerified: false },
+    });
+
+    // Best-effort : un échec d'envoi ne doit pas annuler le changement d'email.
+    const token = crypto.randomBytes(32).toString('hex');
+    prisma.emailVerification.create({
+      data: { userId: user.id, token, expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+    }).then(() => sendEmailVerification(user, token)).catch((err) => console.error('[EmailVerification] échec envoi:', err.message || err));
+
     const { password: _, ...userSafe } = user;
     res.json({ success: true, data: userSafe });
   } catch (err) {

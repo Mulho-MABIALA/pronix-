@@ -411,7 +411,10 @@ async function googleAuth(req, res, next) {
 // ─── Profil de l'utilisateur connecté ────────────────────────────────────────
 async function me(req, res) {
   const { password: _, ...userSafe } = req.user;
-  res.json({ success: true, data: userSafe });
+  // Le hash n'est jamais renvoyé, mais le frontend a besoin de savoir si un
+  // mot de passe existe (compte Google pur vs compte avec mot de passe défini)
+  // pour savoir si l'ancien mot de passe doit être demandé avant d'en changer.
+  res.json({ success: true, data: { ...userSafe, hasPassword: !!_ } });
 }
 
 // ─── Marquer l'app comme installée (PWA) ─────────────────────────────────────

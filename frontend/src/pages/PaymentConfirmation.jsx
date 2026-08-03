@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle, XCircle, Loader } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
+import { hapticImpact } from '../utils/haptics';
 
 const MAX_ATTEMPTS = 12;  // 12 × 2s = 24 secondes max
 const POLL_INTERVAL = 2000;
@@ -62,6 +63,11 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
       clearTimeout(timerRef.current);
     };
   }, [ref, mock, refreshUser]);
+
+  // Moment fort — paiement confirmé, un seul déclenchement par arrivée à 'success'.
+  useEffect(() => {
+    if (status === 'success') hapticImpact();
+  }, [status]);
 
   if (status === 'loading') {
     return (

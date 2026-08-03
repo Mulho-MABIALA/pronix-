@@ -17,7 +17,9 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
-import { addRecentlyViewed } from '../utils/recentlyViewed';
+import { addRecentlyViewed, getRecentlyViewed } from '../utils/recentlyViewed';
+import { hasSeenHint } from '../utils/featureDiscovery';
+import FeatureHint from '../components/ui/FeatureHint';
 import { StandingsTable } from './Standings';
 
 // ── Scénarios de score probable ──────────────────────────────────────────────
@@ -540,9 +542,15 @@ export default function MatchDetail() {
   const match = data?.data;
   const tips  = tipsData?.data || [];
 
-  // Historique de consultation — enregistré côté client dès que le match est chargé
+  // Historique de consultation — enregistré côté client dès que le match est chargé.
+  // Sert aussi à l'onboarding progressif : le hint Comparateur n'apparaît
+  // qu'après plusieurs matchs consultés, pas dès l'inscription.
+  const [viewedMatchCount, setViewedMatchCount] = useState(0);
   useEffect(() => {
-    if (match) addRecentlyViewed(match);
+    if (match) {
+      addRecentlyViewed(match);
+      setViewedMatchCount(getRecentlyViewed().length);
+    }
   }, [match?.id]);
 
   const isFinishedOrLive = match && ['FINISHED', 'LIVE'].includes(match.status);
@@ -701,6 +709,22 @@ export default function MatchDetail() {
 
       {/* ── Scénarios de score ────────────────────────────────────────── */}
       <ScorelineSection match={match} />
+
+      {/* Onboarding progressif — révélé après plusieurs matchs consultés,
+          pas balancé dès l'inscription. */}
+      {viewedMatchCount >= 3 && !hasSeenHint('comparateur-after-views') && (
+        <div className="px-4">
+          <FeatureHint
+            hintKey="comparateur-after-views"
+            icon={ArrowLeftRight}
+            color="fuchsia"
+            title={t('matchDetail.comparateurHintTitle')}
+            description={t('matchDetail.comparateurHintDesc')}
+            to="/comparateur"
+            ctaLabel={t('matchDetail.comparateurHintCta')}
+          />
+        </div>
+      )}
 
       {/* ── Chat IA ───────────────────────────────────────────────────── */}
       {match.status === 'SCHEDULED' && (

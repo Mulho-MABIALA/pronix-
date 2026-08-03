@@ -85,6 +85,9 @@
     },
     "liveMatches": "Partidas ao vivo",
     "todayMatches": "Partidas de hoje",
+    "personalized": {
+      "title": "Seus palpites de hoje"
+    },
     "recentlyViewed": {
       "title": "Vistos recentemente",
       "noDate": "Data a confirmar"
@@ -94,6 +97,7 @@
       "generatorTitle": "Gerador de bilhete IA",
       "generatorDesc": "Crie um bilhete otimizado em 30 segundos de acordo com seu perfil de risco.",
       "generatorCta": "Gerar um bilhete",
+      "replayYesterday": "Refazer como ontem",
       "coachTitle": "Coach Pessoal IA",
       "coachDesc": "Conselhos de IA baseados nos seus próprios palpites e no seu ROI.",
       "coachCta": "Ver meu coach",
@@ -284,6 +288,9 @@
     "tabEvents": "Eventos",
     "tabTips": "Palpites",
     "tabForm": "Forma e H2H",
+    "comparateurHintTitle": "Compare dois times lado a lado",
+    "comparateurHintDesc": "Estatísticas, forma recente e confrontos diretos, tudo em um só lugar.",
+    "comparateurHintCta": "Experimentar o Comparador",
     "tabStandings": "Classificação",
     "viewFullStandings": "Ver a classificação completa",
     "statsNotAvailable": "Estatísticas não disponíveis para esta partida",
@@ -863,6 +870,9 @@
     "saved": "Salvo",
     "regenerate": "Regenerar",
     "ticketSaved": "Bilhete salvo",
+    "coachHintTitle": "Vá mais longe com o Coach IA",
+    "coachHintDesc": "Analisa suas apostas passadas e recebe conselhos personalizados para melhorar.",
+    "coachHintCta": "Descobrir o Coach IA",
     "ticketSaveError": "Não foi possível salvar o bilhete. Tente novamente.",
     "ticketDeleteError": "Não foi possível excluir o bilhete. Tente novamente.",
     "deleteTicket": "Excluir o bilhete",

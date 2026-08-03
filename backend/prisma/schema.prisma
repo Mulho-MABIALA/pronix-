@@ -619,6 +619,11 @@ model TipCombo {
   totalOdds Float           @default(1)
   isPremium Boolean         @default(false)
   result    String?         // WIN | LOSS | PENDING
+  // Snapshot des réglages du générateur (nbPicks, marketGroup, market, minConf,
+  // dateOpt, leagues) au moment de la génération — permet le raccourci "Refaire
+  // comme hier" (1-tap) sans reconfigurer manuellement le générateur. Null pour
+  // les tickets sauvegardés avant l'ajout de ce champ.
+  settings  Json?
   createdAt DateTime        @default(now())
   updatedAt DateTime        @updatedAt
   entries   TipComboEntry[]

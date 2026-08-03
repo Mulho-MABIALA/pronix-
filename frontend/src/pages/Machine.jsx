@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles, Search, X } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles, Search, X, Brain } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -15,6 +15,9 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
 import { drawTicketCanvas } from '../utils/ticketCanvas';
 import { useCountUp } from '../hooks/useCountUp';
+import { hapticSuccess, hapticImpact, hapticError } from '../utils/haptics';
+import { incrementUsageCounter, getUsageCounter } from '../utils/featureDiscovery';
+import FeatureHint from '../components/ui/FeatureHint';
 
 // ─── Templates prédéfinis ──────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -183,6 +186,7 @@ export default function Machine() {
   const { user, isPremium } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
   const [view, setView]               = useState('generator'); // 'generator' | 'history'
   const [nbPicks, setNbPicks]         = useState(5);
@@ -203,6 +207,9 @@ export default function Machine() {
   // Empêche qu'un même ticket soit enregistré plusieurs fois en historique :
   // repasse à false dès qu'un nouveau ticket est (re)généré.
   const [ticketSaved, setTicketSaved] = useState(false);
+  // Onboarding progressif — compteur de tickets sauvegardés, sert à révéler
+  // le hint Coach IA au bon moment plutôt qu'à l'inscription.
+  const [savedTicketCount, setSavedTicketCount] = useState(() => getUsageCounter('tickets_saved'));
   // État visuel du petit bouton icône "régénérer" (générateTicket est async :
   // consomme le quota côté serveur avant de reconstruire le ticket).
   const [regenerating, setRegenerating] = useState(false);
@@ -266,6 +273,43 @@ export default function Machine() {
   const [quotaError, setQuotaError] = useState('');
   const quotaExhausted = !!user && !isPremium && quotaQ.data && !quotaQ.data.unlimited && quotaQ.data.used >= quotaQ.data.limit;
 
+  // ── Raccourci "Refaire comme hier" (1-tap depuis la home) ──────────────
+  // La home navigue ici avec navigate('/outils/machine', { state: { replaySettings } }).
+  // On applique les réglages du dernier ticket sauvegardé puis on génère
+  // automatiquement, sans que l'utilisateur ait à retoucher les filtres.
+  const replaySettings = location.state?.replaySettings || null;
+  const appliedReplayRef = useRef(false);
+
+  useEffect(() => {
+    if (!replaySettings) return;
+    setNbPicks(replaySettings.nbPicks ?? 5);
+    setMarketGroup(replaySettings.marketGroup ?? 'resultats');
+    setMarket(replaySettings.market ?? 'auto');
+    setMinConf(replaySettings.minConf ?? 'medium');
+    setDateOpt(replaySettings.dateOpt ?? 'today');
+    setLeagues(replaySettings.leagues ?? []);
+    appliedReplayRef.current = true;
+    // Nettoie le state de navigation — un retour arrière ne doit pas rejouer.
+    navigate(location.pathname, { replace: true, state: null });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!appliedReplayRef.current || isLoading) return;
+    // Un aller-retour de render est nécessaire après les setState ci-dessus
+    // avant que ces variables ne reflètent bien les réglages rejoués — tant
+    // que ce n'est pas le cas, on ne déclenche pas encore la génération
+    // (sinon on génèrerait avec les valeurs par défaut restées en mémoire).
+    if (replaySettings && (
+      market !== (replaySettings.market ?? 'auto') ||
+      dateOpt !== (replaySettings.dateOpt ?? 'today') ||
+      nbPicks !== (replaySettings.nbPicks ?? 5)
+    )) return;
+    appliedReplayRef.current = false;
+    generateTicket();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoading, market, minConf, leagues, dateOpt, nbPicks, marketGroup]);
+
   // Mots-clés identifiant les matchs amicaux
   const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club friendly', 'test match'];
 
@@ -327,6 +371,7 @@ export default function Machine() {
         queryClient.invalidateQueries(['ticket-quota']);
         if (!data.data.allowed) {
           setQuotaError(t('machine.ticketQuotaExceededDesc', { limit: data.data.limit }));
+          hapticError();
           return;
         }
       } catch (err) {
@@ -334,6 +379,7 @@ export default function Machine() {
         // aux autres erreurs réseau où on laisse passer la génération sans compteur à jour.
         if (err.response?.data?.code === 'SELF_EXCLUDED') {
           setQuotaError(err.response.data.message);
+          hapticError();
           return;
         }
       }
@@ -346,6 +392,7 @@ export default function Machine() {
     }
     setTicket(candidates.slice(0, nbPicks));
     setTicketSaved(false); // un ticket (re)généré n'a pas encore été enregistré
+    hapticImpact();
   }
 
   // Wrapper du petit bouton icône "régénérer" — generateTicket() est async
@@ -417,12 +464,20 @@ export default function Machine() {
         prediction: row.pick.type,
         odds: row.odd,
       }));
-      return api.post('/tickets', { entries, totalOdds }).then((r) => r.data);
+      // Snapshot des réglages actuels du générateur — sert au raccourci
+      // "Refaire comme hier" (1-tap) depuis la home.
+      const settings = { nbPicks, marketGroup, market, minConf, dateOpt, leagues };
+      return api.post('/tickets', { entries, totalOdds, settings }).then((r) => r.data);
     },
     onSuccess: () => {
       toast(t('machine.ticketSaved'), 'success');
+      hapticSuccess();
       setTicketSaved(true);
       queryClient.invalidateQueries({ queryKey: ['ticket-history'] });
+      queryClient.invalidateQueries({ queryKey: ['ticket-last'] });
+      // Onboarding progressif : le Coach IA n'est révélé qu'après un usage
+      // réel du générateur (2 tickets sauvegardés), pas dès l'inscription.
+      setSavedTicketCount(incrementUsageCounter('tickets_saved'));
     },
     onError: (err) => {
       toast(err?.response?.data?.message || t('machine.ticketSaveError'), 'error');
@@ -474,7 +529,7 @@ export default function Machine() {
       </div>
 
       {view === 'history' ? (
-        <TicketHistory />
+        <TicketHistory onCreateNew={() => setView('generator')} />
       ) : (
       <>
       {/* Paramètres */}
@@ -925,6 +980,20 @@ export default function Machine() {
               </button>
             </div>
           </div>
+
+          {/* Onboarding progressif — révélé après 2 tickets sauvegardés,
+              pas balancé dès l'inscription. */}
+          {ticketSaved && savedTicketCount >= 2 && (
+            <FeatureHint
+              hintKey="coach-ia-after-tickets"
+              icon={Brain}
+              color="pink"
+              title={t('machine.coachHintTitle')}
+              description={t('machine.coachHintDesc')}
+              to="/mes-paris"
+              ctaLabel={t('machine.coachHintCta')}
+            />
+          )}
 
           {/* ── Simulation de mise ────────────────────────────────────── */}
           {totalOdds && ticket.length > 0 && (

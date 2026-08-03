@@ -85,6 +85,9 @@
     },
     "liveMatches": "Live matches",
     "todayMatches": "Today's matches",
+    "personalized": {
+      "title": "Your picks for today"
+    },
     "recentlyViewed": {
       "title": "Recently viewed",
       "noDate": "Date coming"
@@ -94,6 +97,7 @@
       "generatorTitle": "AI ticket generator",
       "generatorDesc": "Build an optimized betting ticket in 30 seconds based on your risk profile.",
       "generatorCta": "Generate a ticket",
+      "replayYesterday": "Redo like yesterday",
       "coachTitle": "Personal AI Coach",
       "coachDesc": "AI advice based on your own picks and ROI.",
       "coachCta": "See my coach",
@@ -284,6 +288,9 @@
     "tabEvents": "Events",
     "tabTips": "Picks",
     "tabForm": "Form & H2H",
+    "comparateurHintTitle": "Compare two teams side by side",
+    "comparateurHintDesc": "Stats, recent form and head-to-head — all in one glance.",
+    "comparateurHintCta": "Try the Comparator",
     "tabStandings": "Standings",
     "viewFullStandings": "View full standings",
     "statsNotAvailable": "Statistics not available for this match",
@@ -863,6 +870,9 @@
     "saved": "Saved",
     "regenerate": "Regenerate",
     "ticketSaved": "Ticket saved",
+    "coachHintTitle": "Go further with the AI Coach",
+    "coachHintDesc": "Analyzes your past bets and gives you personalized advice to improve.",
+    "coachHintCta": "Discover the AI Coach",
     "ticketSaveError": "Couldn't save the ticket. Please try again.",
     "ticketDeleteError": "Couldn't delete the ticket. Please try again.",
     "deleteTicket": "Delete ticket",

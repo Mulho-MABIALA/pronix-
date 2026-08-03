@@ -797,7 +797,18 @@ function SupportTicketsSection() {
       {isLoading ? (
         <div className="h-16 bg-surface-700/40 rounded-xl animate-pulse" />
       ) : tickets.length === 0 ? (
-        !showNew && <p className="text-xs text-ink-3">{t('profile.tickets.noTickets')}</p>
+        !showNew && (
+          <div className="text-center py-6">
+            <MessageCircle size={22} className="mx-auto text-ink-4 mb-2" />
+            <p className="text-xs text-ink-3 mb-3">{t('profile.tickets.noTickets')}</p>
+            <button
+              onClick={() => setShowNew(true)}
+              className="text-[12px] font-semibold text-primary-400 hover:text-primary-300 transition-colors"
+            >
+              {t('profile.tickets.newTicket')}
+            </button>
+          </div>
+        )
       ) : (
         <div className="space-y-2">
           {tickets.map((ticket) => <TicketCard key={ticket.id} ticket={ticket} onReply={reply} />)}

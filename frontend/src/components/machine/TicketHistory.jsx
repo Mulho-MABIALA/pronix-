@@ -25,7 +25,7 @@ const LEG_STYLES = {
 };
 const LEG_PENDING_STYLE = { color: 'text-ink-3', bg: 'bg-overlay/[0.03] border-overlay/[0.06]' };
 
-export default function TicketHistory() {
+export default function TicketHistory({ onCreateNew }) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const toast = useToast();
@@ -107,6 +107,11 @@ export default function TicketHistory() {
           <Ticket size={28} className="mx-auto text-ink-4 mb-2" />
           <p className="text-ink-3 text-sm">{t('machine.noSavedTickets')}</p>
           <p className="text-ink-4 text-xs mt-1">{t('machine.noSavedTicketsDesc')}</p>
+          {onCreateNew && (
+            <button onClick={onCreateNew} className="btn-primary mt-4 text-sm">
+              {t('machine.generateBtn')}
+            </button>
+          )}
         </div>
       </div>
     );

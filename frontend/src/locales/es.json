@@ -85,6 +85,9 @@
     },
     "liveMatches": "Partidos en directo",
     "todayMatches": "Partidos de hoy",
+    "personalized": {
+      "title": "Tus pronósticos de hoy"
+    },
     "recentlyViewed": {
       "title": "Vistos recientemente",
       "noDate": "Fecha por confirmar"
@@ -94,6 +97,7 @@
       "generatorTitle": "Generador de tickets IA",
       "generatorDesc": "Crea un ticket optimizado en 30 segundos según tu perfil de riesgo.",
       "generatorCta": "Generar un ticket",
+      "replayYesterday": "Repetir como ayer",
       "coachTitle": "Coach Personal IA",
       "coachDesc": "Consejos de IA basados en tus propios pronósticos y tu ROI.",
       "coachCta": "Ver mi coach",
@@ -284,6 +288,9 @@
     "tabEvents": "Eventos",
     "tabTips": "Pronósticos",
     "tabForm": "Forma y H2H",
+    "comparateurHintTitle": "Compara dos equipos lado a lado",
+    "comparateurHintDesc": "Estadísticas, forma reciente y enfrentamientos directos, todo de un vistazo.",
+    "comparateurHintCta": "Probar el Comparador",
     "tabStandings": "Clasificación",
     "viewFullStandings": "Ver la clasificación completa",
     "statsNotAvailable": "Estadísticas no disponibles para este partido",
@@ -863,6 +870,9 @@
     "saved": "Guardado",
     "regenerate": "Regenerar",
     "ticketSaved": "Ticket guardado",
+    "coachHintTitle": "Ve más lejos con el Coach IA",
+    "coachHintDesc": "Analiza tus apuestas pasadas y recibe consejos personalizados para mejorar.",
+    "coachHintCta": "Descubrir el Coach IA",
     "ticketSaveError": "No se pudo guardar el ticket. Inténtalo de nuevo.",
     "ticketDeleteError": "No se pudo eliminar el ticket. Inténtalo de nuevo.",
     "deleteTicket": "Eliminar el ticket",

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search, Zap, Brain, Activity, ShieldCheck } from 'lucide-react';
+import { ChevronRight, Sparkles, Calendar, Crown, Wand2, Search, Zap, Brain, Activity, ShieldCheck, RefreshCw } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -14,6 +14,9 @@ import SearchBar from '../components/ui/SearchBar';
 import { SkeletonMatchCard, SkeletonTipsterRow } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { getRecentlyViewed, removeRecentlyViewed } from '../utils/recentlyViewed';
+import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
+import { getOdd, isValueBet } from '../utils/mockOdds';
+import CompetitionLogo from '../components/ui/CompetitionLogo';
 
 // ── Vus récemment — historique client (localStorage) ────────────────────────
 function RecentlyViewedRow({ m }) {
@@ -49,7 +52,24 @@ export default function Home() {
   const { t } = useTranslation();
   usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
   const { user, isPremium } = useAuth();
+  const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
+
+  // Dernier ticket sauvegardé — sert au raccourci "Refaire comme hier" (1-tap).
+  // Endpoint volontairement léger (pas d'include match) : safe à appeler à
+  // chaque visite de la home sans peser sur le temps de chargement.
+  const lastTicketQ = useQuery({
+    queryKey: ['ticket-last'],
+    queryFn: () => api.get('/tickets/last').then((r) => r.data.data),
+    enabled: !!user,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  function replayLastTicket() {
+    if (!lastTicketQ.data?.settings) return;
+    navigate('/outils/machine', { state: { replaySettings: lastTicketQ.data.settings } });
+  }
+
   const [recentMatches, setRecentMatches] = useState(() => {
     // Un match déjà FINISHED au moment de la consultation ne doit jamais
     // s'afficher dans "Vus récemment" — on le filtre dès la lecture initiale
@@ -62,6 +82,37 @@ export default function Home() {
     return stillRelevant;
   });
   const today = format(new Date(), 'yyyy-MM-dd');
+
+  // ── "Vos pronostics du jour" — personnalisation ─────────────────────────
+  // Championnats favoris choisis à l'onboarding/Profil (liste bien alimentée,
+  // contrairement à favoriteTeams qui n'a aucune UI pour être renseigné à ce
+  // jour — on ne bâtit donc la personnalisation que sur un signal réellement
+  // fiable). Requête dédiée, activée uniquement si l'utilisateur a des
+  // championnats favoris : pas de coût réseau supplémentaire pour les autres.
+  const favoriteLeagueIds = user?.profile?.favoriteLeagues || [];
+  const hasFavoriteLeagues = favoriteLeagueIds.length > 0;
+
+  const personalizedQ = useQuery({
+    queryKey: ['home-personalized-picks', today],
+    queryFn: () => api.get(`/matches?date=${today}&limit=150`).then((r) => r.data),
+    enabled: !!user && hasFavoriteLeagues,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const personalizedPicks = (() => {
+    if (!hasFavoriteLeagues || !personalizedQ.data) return [];
+    const all = personalizedQ.data.data || [];
+    return all
+      .filter((m) => m.status === 'SCHEDULED' && m.predictions?.bestPick)
+      .filter((m) => favoriteLeagueIds.includes(String(m.competition?.externalId)))
+      .map((m) => {
+        const pick = m.predictions.bestPick;
+        const odd = getOdd(pick.prob, `${m.id}-${pick.type}`);
+        return { match: m, pick, odd, value: isValueBet(pick.prob, odd) };
+      })
+      .sort((a, b) => (b.pick.prob || 0) - (a.pick.prob || 0))
+      .slice(0, 4);
+  })();
 
   // Un match "vu récemment" ne doit pas non plus rester affiché une fois qu'il
   // devient terminé APRÈS la consultation — on revérifie son statut réel côté
@@ -210,6 +261,20 @@ export default function Home() {
             <span className="w-1 h-4 rounded-full bg-orange-400 shrink-0" />
             <span className="truncate">{t('home.aiHub.title')}</span>
           </h2>
+
+          {/* Raccourci 1-tap — rejoue les réglages du dernier ticket généré
+              directement sur des matchs d'aujourd'hui, sans repasser par les
+              filtres du générateur. */}
+          {lastTicketQ.data?.settings && (
+            <button
+              onClick={replayLastTicket}
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 mb-3 px-4 py-2.5 rounded-xl border border-orange-500/25 bg-orange-500/10 text-orange-300 text-sm font-semibold hover:bg-orange-500/15 active:scale-[0.98] transition-all"
+            >
+              <RefreshCw size={14} />
+              {t('home.aiHub.replayYesterday')}
+            </button>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Link
               to="/outils/machine"
@@ -266,6 +331,40 @@ export default function Home() {
           </h2>
           <div className="flex gap-3 overflow-x-auto overscroll-contain pb-1 -mx-4 px-4 scrollbar-hide">
             {recentMatches.map((m) => <RecentlyViewedRow key={m.id} m={m} />)}
+          </div>
+        </section>
+      )}
+
+      {/* ── Vos pronostics du jour — personnalisé championnats favoris ──── */}
+      {hasFavoriteLeagues && personalizedPicks.length > 0 && (
+        <section>
+          <h2 className="section-title flex items-center gap-2 mb-3">
+            <span className="w-1 h-4 rounded-full bg-emerald-400 shrink-0" />
+            <span className="truncate">{t('home.personalized.title')}</span>
+          </h2>
+          <div className="card overflow-hidden divide-y divide-overlay/[0.09]">
+            {personalizedPicks.map(({ match, pick, odd, value }) => (
+              <Link
+                key={match.id}
+                to={`/matchs/${match.id}`}
+                className="flex items-center gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] transition-colors"
+              >
+                <CompetitionLogo logo={match.competition?.logo} size={20} />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-ink-4 truncate">{match.competition?.name}</p>
+                  <p className="text-sm text-ink-1 truncate">
+                    {match.homeTeam} <span className="text-ink-4">vs</span> {match.awayTeam}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {value && <ValueBetBadge edge={null} />}
+                  <span className="text-xs font-semibold text-emerald-400 tabular-nums">
+                    {t(`pronostics.pickShort.${pick.type}`, { defaultValue: pick.label })}
+                  </span>
+                  <OddsChip odd={odd} />
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
       )}

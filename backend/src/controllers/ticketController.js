@@ -21,6 +21,9 @@ const saveTicketSchema = z.object({
   entries: z.array(ticketEntrySchema).min(1, 'Le ticket doit contenir au moins une sélection').max(MAX_ENTRIES, `Maximum ${MAX_ENTRIES} sélections par ticket`),
   totalOdds: z.coerce.number().min(1).optional(),
   title: z.string().max(200).optional().nullable(),
+  // Snapshot des réglages du générateur — simple passthrough JSON, la forme
+  // exacte est un détail du frontend (Machine.jsx), pas contractuelle côté API.
+  settings: z.record(z.any()).optional().nullable(),
 });
 
 function today() {
@@ -83,7 +86,7 @@ async function consumeTicketQuota(req, res, next) {
 // POST /api/tickets — enregistrer un ticket généré
 async function saveTicket(req, res, next) {
   try {
-    const { entries, totalOdds, title } = saveTicketSchema.parse(req.body);
+    const { entries, totalOdds, title, settings } = saveTicketSchema.parse(req.body);
 
     const matchIds = [...new Set(entries.map((e) => e.matchId))];
     const existing = await prisma.match.findMany({
@@ -102,6 +105,7 @@ async function saveTicket(req, res, next) {
         userId: req.user.id,
         title: title || null,
         totalOdds: Math.round(finalTotalOdds * 100) / 100,
+        settings: settings || undefined,
         entries: {
           create: entries.map((e) => ({
             matchId: e.matchId,
@@ -178,6 +182,21 @@ async function getTicketHistory(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// GET /api/tickets/last — dernier ticket sauvegardé (settings uniquement,
+// pas d'include match) : sert au raccourci "Refaire comme hier" sur la home,
+// volontairement léger pour ne pas répéter la requête lourde de /history
+// à chaque visite de la home d'un utilisateur connecté.
+async function getLastTicketSettings(req, res, next) {
+  try {
+    const combo = await prisma.tipCombo.findFirst({
+      where: { userId: req.user.id },
+      orderBy: { createdAt: 'desc' },
+      select: { id: true, createdAt: true, settings: true },
+    });
+    res.json({ success: true, data: combo && combo.settings ? combo : null });
+  } catch (err) { next(err); }
+}
+
 // DELETE /api/tickets/:id
 async function deleteTicket(req, res, next) {
   try {
@@ -190,4 +209,4 @@ async function deleteTicket(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { saveTicket, getTicketHistory, deleteTicket, getTicketQuota, consumeTicketQuota };
+module.exports = { saveTicket, getTicketHistory, getLastTicketSettings, deleteTicket, getTicketQuota, consumeTicketQuota };

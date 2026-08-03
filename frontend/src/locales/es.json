@@ -1428,9 +1428,11 @@
     "title": "Preguntas frecuentes",
     "noAnswer": "¿No encuentras tu respuesta?",
     "contactUs": "Contáctanos",
+    "or": "o",
     "otherQuestions": "¿Tienes otras preguntas?",
     "respondWithin24h": "Nuestro equipo responde en 24 horas.",
     "sendEmail": "Enviar un correo",
+    "sendWhatsapp": "Escríbenos por WhatsApp",
     "searchPlaceholder": "Buscar una pregunta...",
     "clearSearch": "Borrar búsqueda",
     "noResults": "Sin resultados para «{{query}}».",
@@ -1446,7 +1448,7 @@
       "general": {
         "whatIsFpronix": {
           "q": "¿Qué es fpronix?",
-          "a": "fpronix es una plataforma de estadísticas y pronósticos de fútbol. Te permite seguir los partidos en tiempo real, consultar análisis de tipsters y usar herramientas de apoyo a la decisión basadas en datos."
+          "a": "fpronix va mucho más allá de las simples estadísticas: es un ecosistema completo dedicado al fútbol. Encontrarás pronósticos generados por IA a partir de datos reales (forma de los equipos, enfrentamientos directos, cuotas), un generador de tickets personalizables con guardado, historial y opción de compartir, un coach de IA que analiza tus apuestas para ayudarte a mejorar, un mercado de tipsters con perfiles públicos y suscripciones, análisis de IA en vivo durante los partidos, un comparador de equipos, un blog generado automáticamente después de cada partido, y una página de transparencia pública que muestra nuestra tasa de acierto real. Todo disponible en varios idiomas y monedas."
         },
         "sportsBetting": {
           "q": "¿fpronix ofrece apuestas deportivas?",

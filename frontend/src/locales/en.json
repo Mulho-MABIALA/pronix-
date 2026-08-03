@@ -1428,9 +1428,11 @@
     "title": "Frequently asked questions",
     "noAnswer": "Can't find your answer?",
     "contactUs": "Contact us",
+    "or": "or",
     "otherQuestions": "Have other questions?",
     "respondWithin24h": "Our team responds within 24h.",
     "sendEmail": "Send an email",
+    "sendWhatsapp": "Message us on WhatsApp",
     "searchPlaceholder": "Search a question...",
     "clearSearch": "Clear search",
     "noResults": "No results for \"{{query}}\".",
@@ -1446,7 +1448,7 @@
       "general": {
         "whatIsFpronix": {
           "q": "What is fpronix?",
-          "a": "fpronix is a football statistics and predictions platform. It lets you follow matches in real time, check tipster analyses, and use data-driven decision-support tools."
+          "a": "fpronix is much more than a stats platform: it's a complete football ecosystem. You'll find AI-generated predictions built from real data (team form, head-to-head history, odds), a customizable ticket generator with save, history and sharing, an AI coach that analyzes your bets to help you improve, a tipster marketplace with public profiles and subscriptions, live AI analysis during matches, a team comparator, an auto-generated blog after every match, and a public transparency page showing our real success rate. It's all available in multiple languages and currencies."
         },
         "sportsBetting": {
           "q": "Does fpronix offer sports betting?",

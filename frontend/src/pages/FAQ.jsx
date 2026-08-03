@@ -1,6 +1,11 @@
 import { useMemo, useState } from 'react';
-import { ChevronDown, Search, HelpCircle, CreditCard, Calendar, Trophy, Bell, Wrench, X } from 'lucide-react';
+import { ChevronDown, Search, HelpCircle, CreditCard, Calendar, Trophy, Bell, Wrench, X, Mail, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+// Même convention de contact que Profile.jsx (ContactSection) : email + WhatsApp
+// en parallèle, car mailto: seul ne fonctionne pas sans client mail configuré.
+const SUPPORT_EMAIL = 'support@fpronix.com';
+const SUPPORT_WHATSAPP_LINK = 'https://wa.me/221787308706';
 
 const FAQ_STRUCTURE = [
   { id: 'general',       items: ['whatIsFpronix', 'sportsBetting', 'whoCanUse'] },
@@ -95,7 +100,9 @@ export default function FAQ() {
           <h1 className="font-display font-bold text-2xl text-ink-1">{t('faq.title')}</h1>
           <p className="text-sm text-ink-3 mt-1">
             {t('faq.noAnswer')}{' '}
-            <a href="mailto:support@fpronix.com" className="text-primary-400 underline">{t('faq.contactUs')}</a>
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="text-primary-400 underline">{t('faq.contactUs')}</a>
+            {' '}{t('faq.or')}{' '}
+            <a href={SUPPORT_WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="text-primary-400 underline">WhatsApp</a>
           </p>
         </div>
 
@@ -154,12 +161,24 @@ export default function FAQ() {
       <div className="card p-6 text-center space-y-2">
         <p className="text-ink-3 font-medium text-sm">{t('faq.otherQuestions')}</p>
         <p className="text-ink-3 text-sm">{t('faq.respondWithin24h')}</p>
-        <a
-          href="mailto:support@fpronix.com"
-          className="btn-primary mt-2 inline-flex"
-        >
-          {t('faq.sendEmail')}
-        </a>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-2 mt-2">
+          <a
+            href={SUPPORT_WHATSAPP_LINK}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-primary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+          >
+            <MessageCircle size={16} />
+            {t('faq.sendWhatsapp')}
+          </a>
+          <a
+            href={`mailto:${SUPPORT_EMAIL}`}
+            className="btn-secondary inline-flex items-center justify-center gap-2 w-full sm:w-auto"
+          >
+            <Mail size={16} />
+            {t('faq.sendEmail')}
+          </a>
+        </div>
       </div>
     </div>
   );

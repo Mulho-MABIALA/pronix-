@@ -10,6 +10,7 @@ import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
+import AiBadge from '../components/ui/AiBadge';
 
 const MARKET_KEYS = ['all', '1', 'X', '2', '1X', 'X2', 'over25', 'over15', 'btts'];
 const CONF_KEYS = ['all', 'high', 'medium', 'low'];
@@ -405,7 +406,8 @@ export default function Filtres() {
                   </div>
                   {pred ? (
                     <>
-                      <div className={`shrink-0 text-center px-3 py-1.5 rounded-lg border ${CONF_COLORS[pred.confidence]}`}>
+                      <div className={`relative shrink-0 text-center px-3 py-1.5 rounded-lg border ${CONF_COLORS[pred.confidence]}`}>
+                        {pred.aiGenerated && <AiBadge size="xs" className="absolute -top-1.5 -right-1.5" />}
                         <span className="block text-sm font-bold">{pred.bestPick.prob}%</span>
                         <span className={`block text-[10px] font-bold ${getPickColor(pred.bestPick.type).text}`}>{t(`filtersPage.pickLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.type })}</span>
                       </div>

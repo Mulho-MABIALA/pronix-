@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow, isPast, startOfDay } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import {
-  TrendingUp, Search, Bot, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy, SlidersHorizontal,
+  TrendingUp, Search, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy, SlidersHorizontal,
 } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -14,6 +14,7 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import InfoTooltip from '../components/ui/InfoTooltip';
+import AiBadge from '../components/ui/AiBadge';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { useAuth } from '../context/AuthContext';
@@ -171,11 +172,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
         <div className="flex items-center gap-1.5 mb-0.5">
           <TeamLogo logo={match.homeTeamLogo} teamId={match.homeTeamId} name={match.homeTeam} size={15} />
           <span className="text-[13px] font-semibold text-ink-2 truncate">{match.homeTeam}</span>
-          {pred.aiGenerated && (
-            <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[8px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
-              <Bot size={7} />IA
-            </span>
-          )}
+          {pred.aiGenerated && <AiBadge size="xs" />}
         </div>
         <div className="flex items-center gap-1.5">
           <TeamLogo logo={match.awayTeamLogo} teamId={match.awayTeamId} name={match.awayTeam} size={15} />

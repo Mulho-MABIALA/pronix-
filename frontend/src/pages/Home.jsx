@@ -18,6 +18,7 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
+import AiBadge from '../components/ui/AiBadge';
 
 // ── Vus récemment — historique client (localStorage) ────────────────────────
 function RecentlyViewedRow({ m }) {
@@ -261,6 +262,7 @@ export default function Home() {
           <h2 className="section-title flex items-center gap-2 mb-3">
             <span className="w-1 h-4 rounded-full bg-orange-400 shrink-0" />
             <span className="truncate">{t('home.aiHub.title')}</span>
+            <AiBadge size="md" />
           </h2>
 
           {/* Raccourci 1-tap — rejoue les réglages du dernier ticket généré
@@ -358,6 +360,7 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
+                  {match.predictions?.aiGenerated && <AiBadge size="xs" />}
                   {value && <ValueBetBadge edge={null} />}
                   <span className={`text-xs font-bold tabular-nums ${getPickColor(pick.type).text}`}>
                     {t(`pronostics.pickShort.${pick.type}`, { defaultValue: pick.label })}

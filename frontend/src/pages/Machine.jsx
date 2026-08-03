@@ -19,6 +19,7 @@ import { useCountUp } from '../hooks/useCountUp';
 import { hapticSuccess, hapticImpact, hapticError } from '../utils/haptics';
 import { incrementUsageCounter, getUsageCounter } from '../utils/featureDiscovery';
 import FeatureHint from '../components/ui/FeatureHint';
+import AiBadge from '../components/ui/AiBadge';
 
 // ─── Templates prédéfinis ──────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -836,9 +837,7 @@ export default function Machine() {
                                   <p className={`text-xs font-medium truncate ${pinned ? 'text-ink-2' : 'text-ink-4'}`}>
                                     {c.match.homeTeam}
                                   </p>
-                                  {c.match.predictions?.aiGenerated && (
-                                    <span className="shrink-0 text-[8px] font-bold text-violet-400 bg-violet-500/10 px-1 rounded">IA</span>
-                                  )}
+                                  {c.match.predictions?.aiGenerated && <AiBadge size="xs" />}
                                 </div>
                                 <div className="flex items-center gap-1.5 min-w-0">
                                   <TeamLogo logo={c.match.awayTeamLogo} teamId={c.match.awayTeamId} name={c.match.awayTeam} size={16} />
@@ -1059,11 +1058,7 @@ export default function Machine() {
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={row.match.homeTeamLogo} teamId={row.match.homeTeamId} name={row.match.homeTeam} size={16} />
                         <p className="text-sm font-medium text-ink-2 truncate">{row.match.homeTeam}</p>
-                        {row.match.predictions?.aiGenerated && (
-                          <span className="shrink-0 inline-flex items-center gap-0.5 px-1 py-0.5 rounded text-[9px] font-bold bg-violet-500/15 text-violet-400 border border-violet-500/20">
-                            <Bot size={8} />IA
-                          </span>
-                        )}
+                        {row.match.predictions?.aiGenerated && <AiBadge />}
                       </div>
                       <div className="flex items-center gap-1.5 min-w-0">
                         <TeamLogo logo={row.match.awayTeamLogo} teamId={row.match.awayTeamId} name={row.match.awayTeam} size={16} />

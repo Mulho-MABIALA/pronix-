@@ -6,6 +6,7 @@ import { Zap } from 'lucide-react';
 import { getOdd, isValueBet, formatOdd } from '../../utils/mockOdds';
 import { getPickColor } from '../../utils/marketColors';
 import MatchReminderButton from './MatchReminderButton';
+import AiBadge from '../ui/AiBadge';
 import api from '../../services/api';
 
 function WhatsAppIcon({ className }) {
@@ -170,7 +171,8 @@ export default function MatchCard({ match, index }) {
         const odd = getOdd(pred.bestPick.prob, oddKey);
         const value = isValueBet(pred.bestPick.prob, odd);
         return (
-          <div className={`shrink-0 text-center rounded-lg px-2.5 py-1.5 min-w-[58px] ${CONF_BG[pred.confidence]}`}>
+          <div className={`relative shrink-0 text-center rounded-lg px-2.5 py-1.5 min-w-[58px] ${CONF_BG[pred.confidence]}`}>
+            {pred.aiGenerated && <AiBadge size="xs" className="absolute -top-1.5 -right-1.5" />}
             <span className={`block text-sm font-bold tabular-nums ${CONF_COLOR[pred.confidence]}`}>
               {pred.bestPick.prob}%
             </span>

@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Radio, Zap, TrendingUp, TrendingDown, Minus, Loader2 } from 'lucide-react';
 import api from '../../services/api';
+import AiBadge from '../ui/AiBadge';
 
 const MOMENTUM_ICONS = { HOME: TrendingUp, AWAY: TrendingDown, BALANCED: Minus };
 const MOMENTUM_COLORS = { HOME: 'text-primary-400', AWAY: 'text-red-400', BALANCED: 'text-ink-4' };
@@ -40,7 +41,10 @@ export default function LiveAnalysis({ matchId }) {
             <Radio size={13} className="text-live-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-ink-1">{t('liveAnalysis.title')}</p>
+            <p className="text-sm font-semibold text-ink-1 flex items-center gap-1.5">
+              {t('liveAnalysis.title')}
+              <AiBadge />
+            </p>
             {data.minute && (
               <p className="text-[10px] text-live-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-live-500 animate-pulse inline-block" />

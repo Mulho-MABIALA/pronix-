@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Brain, TrendingUp, TrendingDown, Star, AlertCircle, Loader2, Lock } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import AiBadge from '../ui/AiBadge';
 
 const PRED_KEYS = {
   HOME_WIN: 'HOME_WIN', AWAY_WIN: 'AWAY_WIN', DRAW: 'DRAW',
@@ -78,7 +79,10 @@ export default function CoachPanel() {
           <Brain size={16} className="text-primary-400" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-ink-1">{t('coachPanel.title')}</p>
+          <p className="text-sm font-semibold text-ink-1 flex items-center gap-1.5">
+            {t('coachPanel.title')}
+            <AiBadge />
+          </p>
           <p className="text-xs text-ink-3">{t('coachPanel.analysisOfLastBets', { count: stats.total })}</p>
         </div>
       </div>

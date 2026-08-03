@@ -9,6 +9,7 @@ const {
 const {
   registrationOptions, registrationVerify,
   loginOptions, loginVerify,
+  adminStepUpOptions, adminStepUpVerify,
   listDevices, deleteDevice,
 } = require('../controllers/webauthnController');
 
@@ -40,6 +41,9 @@ router.post('/webauthn/registration-verify', authenticate, registrationVerify);
 // Connexion : usernameless — pas d'email, le navigateur propose les passkeys du domaine.
 router.post('/webauthn/login-options', authLimit, loginOptions);
 router.post('/webauthn/login-verify', authLimit, loginVerify);
+// Step-up admin : confirmation passkey après mot de passe (voir login()).
+router.post('/webauthn/admin-step-up-options', authLimit, adminStepUpOptions);
+router.post('/webauthn/admin-step-up-verify', authLimit, adminStepUpVerify);
 // Gestion des appareils enregistrés (page Profil).
 router.get('/webauthn/devices', authenticate, listDevices);
 router.delete('/webauthn/devices/:id', authenticate, deleteDevice);

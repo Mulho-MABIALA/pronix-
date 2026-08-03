@@ -27,6 +27,8 @@ const {
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
   getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
   getDeletedAccounts,
+  refundPayment,
+  getAuditLog,
 } = require('../controllers/adminController');
 const { adminBroadcast, getPushStats } = require('../controllers/pushController');
 const {
@@ -63,11 +65,15 @@ router.get('/users/:userId/referrals',             getUserReferrals);
 router.get('/reports', getReports);
 router.patch('/reports/:reportId/resolve', resolveReport);
 
+// Journal d'audit admin (traçabilité des actions sensibles)
+router.get('/audit-log', getAuditLog);
+
 router.get('/competitions', getAdminCompetitions);
 router.patch('/competitions/:competitionId/display', toggleCompetitionDisplay);
 
 router.get('/tipsters', getAdminTipsters);
 router.get('/payments', getAdminPayments);
+router.patch('/payments/:paymentId/refund', refundPayment);
 router.get('/finances', getAdminFinances);
 router.post('/expenses', createExpense);
 router.delete('/expenses/:id', deleteExpense);

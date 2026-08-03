@@ -34,8 +34,29 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { loadUser(); }, [loadUser]);
 
+  // Connexion mot de passe. Cas particulier : un compte ADMIN avec passkey déjà
+  // enregistrée ne reçoit pas de session directement — le serveur renvoie
+  // code:'PASSKEY_REQUIRED' + un jeton d'étape à confirmer via
+  // loginWithPasskeyStepUp() (voir Login.jsx).
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
+    if (data.code === 'PASSKEY_REQUIRED') {
+      return { requiresPasskey: true, stepUpToken: data.data.stepUpToken };
+    }
+    setUser(data.data.user);
+    applyAccountLanguage(data.data.user);
+    return { user: data.data.user };
+  };
+
+  // Confirmation biométrique après mot de passe (comptes ADMIN protégés).
+  // Contrairement à loginWithPasskey(), restreinte aux passkeys du compte déjà
+  // identifié par mot de passe (allowCredentials côté serveur).
+  const loginWithPasskeyStepUp = async (stepUpToken) => {
+    const { startAuthentication } = await import('@simplewebauthn/browser');
+    const { data: optData } = await api.post('/auth/webauthn/admin-step-up-options', { stepUpToken });
+    const { options, challengeId } = optData.data;
+    const authResponse = await startAuthentication({ optionsJSON: options });
+    const { data } = await api.post('/auth/webauthn/admin-step-up-verify', { stepUpToken, challengeId, response: authResponse });
     setUser(data.data.user);
     applyAccountLanguage(data.data.user);
     return data.data.user;
@@ -88,7 +109,7 @@ export function AuthProvider({ children }) {
   const isAdmin = user?.role === 'ADMIN';
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, loginWithPasskey, logout, refreshUser, userPlan, isPremium, hasPaidPlan, trialActive, trialDaysLeft, isAdmin }}>
+    <AuthContext.Provider value={{ user, loading, login, register, loginWithGoogle, loginWithPasskey, loginWithPasskeyStepUp, logout, refreshUser, userPlan, isPremium, hasPaidPlan, trialActive, trialDaysLeft, isAdmin }}>
       {children}
     </AuthContext.Provider>
   );

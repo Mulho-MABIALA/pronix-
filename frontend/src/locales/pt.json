@@ -1721,7 +1721,8 @@
       "community": "Comunidade",
       "data": "Dados",
       "content": "Conteúdo",
-      "intelligence": "Inteligência"
+      "intelligence": "Inteligência",
+      "security": "Segurança"
     },
     "items": {
       "dashboard": "Dashboard",
@@ -1737,7 +1738,8 @@
       "newsletter": "Newsletter",
       "blogSeo": "Blog SEO",
       "aiAgents": "Agentes IA",
-      "notifications": "Notificações"
+      "notifications": "Notificações",
+      "auditLog": "Registro de auditoria"
     },
     "viewSite": "Ver o site",
     "logout": "Sair",

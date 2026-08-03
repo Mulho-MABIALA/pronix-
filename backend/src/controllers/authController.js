@@ -63,6 +63,16 @@ function generateAccessToken(userId) {
   });
 }
 
+// Jeton d'étape intermédiaire (step-up) : émis quand un compte ADMIN vient de
+// réussir l'étape mot de passe mais doit encore confirmer via passkey avant
+// qu'une vraie session ne soit ouverte. Courte durée de vie, usage unique
+// côté flux (consommé par webauthnController.adminStepUpVerify), signé avec
+// le même secret que les access tokens mais un "purpose" dédié pour ne pas
+// pouvoir être confondu avec un vrai access token.
+function generateStepUpToken(userId) {
+  return jwt.sign({ sub: userId, purpose: 'admin_step_up' }, env.JWT_ACCESS_SECRET, { expiresIn: '5m' });
+}
+
 function generateRefreshToken() {
   return crypto.randomBytes(64).toString('hex');
 }
@@ -183,6 +193,23 @@ async function login(req, res, next) {
       throw new AppError('Email ou mot de passe incorrect', 401, 'INVALID_CREDENTIALS');
     }
 
+    // Sécurité renforcée pour les comptes ADMIN : si une passkey est déjà
+    // enregistrée, le mot de passe seul ne suffit pas à ouvrir une session —
+    // on exige une confirmation biométrique (voir webauthnController
+    // adminStepUpOptions/Verify). Aucune session n'est ouverte à ce stade, on
+    // renvoie juste un jeton d'étape de courte durée.
+    let adminPasskeyCount = 0;
+    if (user.role === 'ADMIN') {
+      adminPasskeyCount = await prisma.webAuthnCredential.count({ where: { userId: user.id } });
+      if (adminPasskeyCount > 0) {
+        return res.json({
+          success: true,
+          code: 'PASSKEY_REQUIRED',
+          data: { stepUpToken: generateStepUpToken(user.id) },
+        });
+      }
+    }
+
     const accessToken = generateAccessToken(user.id);
     const refreshTokenValue = generateRefreshToken();
     const refreshExpiresAt = getRefreshExpiryDate();
@@ -198,7 +225,13 @@ async function login(req, res, next) {
     const { password: _, ...userSafe } = user;
     res.json({
       success: true,
-      data: { user: userSafe },
+      data: {
+        user: {
+          ...userSafe,
+          // Nudge frontend : admin sans passkey enregistrée → proposer d'en ajouter une.
+          requiresPasskeySetup: user.role === 'ADMIN' && adminPasskeyCount === 0,
+        },
+      },
     });
   } catch (err) {
     next(err);

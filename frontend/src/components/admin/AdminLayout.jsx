@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 import { NavLink, Link, Outlet, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone, Mail, UserCircle,
+  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone, Mail, UserCircle, ScrollText, Fingerprint,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import api from '../../services/api';
 
 const SIDEBAR_COLLAPSE_KEY = 'admin-sidebar-collapsed';
 
@@ -48,6 +50,12 @@ const NAV_GROUPS = [
     items: [
       { to: '/admin/agents',         itemKey: 'aiAgents',     Icon: Bot },
       { to: '/admin/notifications',  itemKey: 'notifications', Icon: Bell },
+    ],
+  },
+  {
+    groupKey: 'security',
+    items: [
+      { to: '/admin/journal-audit', itemKey: 'auditLog', Icon: ScrollText },
     ],
   },
 ];
@@ -189,6 +197,36 @@ function SidebarContent({ onClose, collapsed }) {
   );
 }
 
+// Nudge : un compte ADMIN sans passkey enregistrée n'est protégé que par le
+// mot de passe (pas de step-up biométrique à la connexion, voir
+// authController.login()). On l'invite à en ajouter une depuis son profil.
+function PasskeyNudgeBanner() {
+  const [dismissed, setDismissed] = useState(false);
+  const { data: devices } = useQuery({
+    queryKey: ['admin-passkey-nudge'],
+    queryFn: () => api.get('/auth/webauthn/devices').then((r) => r.data.data),
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  if (dismissed || devices === undefined || devices.length > 0) return null;
+
+  return (
+    <div className="flex items-center gap-3 mb-5 px-4 py-3 rounded-xl border border-amber-500/25 bg-amber-500/10">
+      <Fingerprint size={18} className="text-amber-400 shrink-0" />
+      <p className="flex-1 text-[13px] text-ink-2">
+        <span className="font-semibold">Sécurise ton accès admin</span> — ajoute une passkey (Face ID / empreinte) pour protéger ce compte contre le vol de mot de passe.
+      </p>
+      <Link to="/admin/profil" className="shrink-0 text-[12px] font-semibold text-amber-400 hover:text-amber-300 transition-colors">
+        Ajouter →
+      </Link>
+      <button onClick={() => setDismissed(true)} className="shrink-0 text-ink-4 hover:text-ink-1 transition-colors" aria-label="Fermer">
+        <X size={14} />
+      </button>
+    </div>
+  );
+}
+
 export default function AdminLayout() {
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -251,6 +289,7 @@ export default function AdminLayout() {
 
         {/* Contenu */}
         <main className="flex-1 p-5 md:p-7 lg:p-8">
+          <PasskeyNudgeBanner />
           <Outlet />
         </main>
 

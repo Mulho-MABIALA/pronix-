@@ -136,12 +136,26 @@ async function verifyRegistration(user, response, deviceName) {
 }
 
 // ─── Authentification (login usernameless) ─────────────────────────────────
-async function getAuthenticationOptions() {
+// userId optionnel : utilisé par le step-up admin (voir adminStepUpOptions)
+// pour restreindre le prompt aux seules passkeys du compte déjà identifié par
+// mot de passe — plutôt que de proposer toutes les passkeys du domaine.
+async function getAuthenticationOptions(userId = null) {
+  let allowCredentials;
+  if (userId) {
+    const creds = await prisma.webAuthnCredential.findMany({
+      where: { userId },
+      select: { credentialId: true, transports: true },
+    });
+    allowCredentials = creds.map((c) => ({ id: c.credentialId, transports: c.transports }));
+  }
+
   const options = await generateAuthenticationOptions({
     rpID,
     userVerification: 'preferred',
-    // allowCredentials volontairement omis : le navigateur propose toutes les
-    // passkeys "discoverable" enregistrées pour ce domaine (login usernameless)
+    // allowCredentials omis (undefined) : le navigateur propose toutes les
+    // passkeys "discoverable" du domaine (login usernameless classique).
+    // Fourni : restreint aux passkeys du compte (step-up admin).
+    allowCredentials,
   });
 
   const challengeId = await storeLoginChallenge(options.challenge);

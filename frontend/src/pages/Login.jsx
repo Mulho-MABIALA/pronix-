@@ -8,7 +8,7 @@ import { hapticSuccess, hapticError } from '../utils/haptics';
 
 export default function Login() {
   const { t } = useTranslation();
-  const { login, loginWithGoogle, loginWithPasskey } = useAuth();
+  const { login, loginWithGoogle, loginWithPasskey, loginWithPasskeyStepUp } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
@@ -59,13 +59,38 @@ export default function Login() {
     }
   };
 
+  // Compte ADMIN protégé par passkey : le mot de passe seul renvoie
+  // requiresPasskey — il faut confirmer via empreinte/Face ID avant que la
+  // session ne soit ouverte (voir AuthContext.loginWithPasskeyStepUp).
+  const handleAdminStepUp = async (stepUpToken) => {
+    setError('');
+    setPasskeyLoading(true);
+    try {
+      await loginWithPasskeyStepUp(stepUpToken);
+      hapticSuccess();
+      navigate('/admin');
+    } catch (err) {
+      if (err?.name !== 'NotAllowedError') {
+        hapticError();
+        setError(err.response?.data?.message || t('auth.passkeyError'));
+      }
+    } finally {
+      setPasskeyLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const user = await login(form.email, form.password);
-      navigate(user.profile?.onboardingDone === false ? '/onboarding' : '/');
+      const result = await login(form.email, form.password);
+      if (result.requiresPasskey) {
+        setLoading(false);
+        await handleAdminStepUp(result.stepUpToken);
+        return;
+      }
+      navigate(result.user.profile?.onboardingDone === false ? '/onboarding' : '/');
     } catch (err) {
       setError(err.response?.data?.message || t('errors.serverError'));
     } finally {
@@ -106,6 +131,13 @@ export default function Login() {
           {error && (
             <div role="alert" className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3">
               {error}
+            </div>
+          )}
+
+          {passkeyLoading && (
+            <div className="flex items-center gap-2 bg-primary-500/10 border border-primary-500/30 text-primary-300 text-sm rounded-xl px-4 py-3">
+              <Fingerprint size={16} className="shrink-0" />
+              Confirmez avec Face ID / empreinte pour terminer la connexion
             </div>
           )}
 
@@ -157,7 +189,7 @@ export default function Login() {
             </div>
           </div>
 
-          <button type="submit" disabled={loading} className="btn-primary w-full">
+          <button type="submit" disabled={loading || passkeyLoading} className="btn-primary w-full">
             {loading ? '…' : t('auth.loginCta')}
           </button>
         </form>

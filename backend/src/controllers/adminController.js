@@ -4,6 +4,7 @@ const { AppError } = require('../middleware/errorHandler');
 const { calculatePredictionsForDate } = require('../services/predictionService');
 const { syncMatchesForDate } = require('../cron/syncMatches');
 const { notifyUser } = require('./pushController');
+const { logAdminAction } = require('../services/auditLogService');
 
 // ─── Tableau de bord ──────────────────────────────────────────────────────────
 async function getDashboard(req, res, next) {
@@ -255,6 +256,10 @@ async function updateUserRole(req, res, next) {
     const { userId } = req.params;
     const { role } = z.object({ role: z.enum(['USER', 'ADMIN']) }).parse(req.body);
     await prisma.user.update({ where: { id: userId }, data: { role } });
+    logAdminAction({
+      admin: req.user, action: 'USER_ROLE_CHANGED', targetType: 'User', targetId: userId,
+      details: `Nouveau rôle : ${role}`,
+    });
     res.json({ success: true, message: `Rôle mis à jour : ${role}` });
   } catch (err) { next(err); }
 }
@@ -265,6 +270,9 @@ async function cancelUserSubscription(req, res, next) {
     await prisma.subscription.updateMany({
       where: { userId, status: 'ACTIVE' },
       data: { status: 'CANCELLED', endsAt: new Date() },
+    });
+    logAdminAction({
+      admin: req.user, action: 'SUBSCRIPTION_CANCELLED', targetType: 'User', targetId: userId,
     });
     res.json({ success: true, message: 'Abonnement annulé' });
   } catch (err) { next(err); }
@@ -350,6 +358,13 @@ async function toggleUserStatus(req, res, next) {
     const { userId } = req.params;
     const { isActive } = z.object({ isActive: z.boolean() }).parse(req.body);
     const user = await prisma.user.update({ where: { id: userId }, data: { isActive } });
+    logAdminAction({
+      admin: req.user,
+      action: isActive ? 'USER_REACTIVATED' : 'USER_SUSPENDED',
+      targetType: 'User',
+      targetId: userId,
+      details: `${user.email} (@${user.username})`,
+    });
     const { password: _, ...userSafe } = user;
     res.json({ success: true, message: `Compte ${isActive ? 'activé' : 'désactivé'}`, data: userSafe });
   } catch (err) {
@@ -375,6 +390,14 @@ async function deleteUser(req, res, next) {
     if (!target) throw new AppError('Utilisateur introuvable', 404, 'NOT_FOUND');
 
     await prisma.user.delete({ where: { id: userId } });
+
+    logAdminAction({
+      admin: req.user,
+      action: 'USER_DELETED',
+      targetType: 'User',
+      targetId: userId,
+      details: `${target.email} (@${target.username})`,
+    });
 
     prisma.deletedAccount.create({ data: { email: target.email, username: target.username, reason: 'admin' } })
       .catch((err) => console.error('[DeletedAccount] échec création:', err.message || err));
@@ -453,6 +476,10 @@ async function resolveReport(req, res, next) {
     if (suspendUser) ops.push(prisma.user.update({ where: { id: report.tip.userId }, data: { isActive: false } }));
 
     await prisma.$transaction(ops);
+    logAdminAction({
+      admin: req.user, action: 'REPORT_RESOLVED', targetType: 'Report', targetId: reportId,
+      details: `Statut : ${status}${hideTip ? ' · pronostic masqué' : ''}${suspendUser ? ' · utilisateur suspendu' : ''}`,
+    });
     res.json({ success: true, message: 'Signalement traité' });
   } catch (err) {
     next(err);
@@ -909,6 +936,7 @@ async function deleteAdminTip(req, res, next) {
   try {
     const { tipId } = req.params;
     await prisma.tip.delete({ where: { id: tipId } });
+    logAdminAction({ admin: req.user, action: 'TIP_DELETED', targetType: 'Tip', targetId: tipId });
     res.json({ success: true, message: 'Pronostic supprimé' });
   } catch (err) { next(err); }
 }
@@ -918,6 +946,9 @@ async function toggleTipVisibility(req, res, next) {
     const { tipId } = req.params;
     const { isVisible } = z.object({ isVisible: z.boolean() }).parse(req.body);
     await prisma.tip.update({ where: { id: tipId }, data: { isVisible } });
+    logAdminAction({
+      admin: req.user, action: isVisible ? 'TIP_SHOWN' : 'TIP_HIDDEN', targetType: 'Tip', targetId: tipId,
+    });
     res.json({ success: true, message: isVisible ? 'Pronostic affiché' : 'Pronostic masqué' });
   } catch (err) { next(err); }
 }
@@ -961,6 +992,7 @@ async function deleteAdminComment(req, res, next) {
   try {
     const { commentId } = req.params;
     await prisma.tipComment.delete({ where: { id: commentId } });
+    logAdminAction({ admin: req.user, action: 'COMMENT_DELETED', targetType: 'TipComment', targetId: commentId });
     res.json({ success: true, message: 'Commentaire supprimé' });
   } catch (err) { next(err); }
 }
@@ -986,6 +1018,11 @@ async function activateUserSubscription(req, res, next) {
       where: { userId },
       update: { planId: plan.id, status: 'ACTIVE', endsAt },
       create: { userId, planId: plan.id, status: 'ACTIVE', endsAt },
+    });
+
+    logAdminAction({
+      admin: req.user, action: 'SUBSCRIPTION_ACTIVATED_MANUALLY', targetType: 'User', targetId: userId,
+      details: `${planCode} · ${months} mois · jusqu'au ${endsAt.toLocaleDateString('fr-FR')}`,
     });
 
     res.json({ success: true, message: `Abonnement ${planCode} activé jusqu'au ${endsAt.toLocaleDateString('fr-FR')}` });
@@ -1111,6 +1148,69 @@ async function getDeletedAccounts(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ── Remboursement manuel d'un paiement ───────────────────────────────────────
+// Le provider (Geniuspay) ne gère pas de webhook de remboursement automatique
+// pour l'instant — cette action sert à corriger le statut à la main après un
+// remboursement traité manuellement (virement, litige) hors de la plateforme.
+// N'annule PAS l'abonnement lié automatiquement : à faire séparément si besoin
+// (bouton "Annuler l'abonnement" déjà existant sur la fiche utilisateur).
+async function refundPayment(req, res, next) {
+  try {
+    const { paymentId } = req.params;
+    const { reason } = z.object({ reason: z.string().max(500).optional() }).parse(req.body);
+
+    const payment = await prisma.payment.findUnique({ where: { id: paymentId } });
+    if (!payment) throw new AppError('Paiement introuvable', 404, 'NOT_FOUND');
+    if (payment.status !== 'COMPLETED') {
+      throw new AppError('Seul un paiement complété peut être marqué comme remboursé', 400, 'INVALID_STATUS');
+    }
+
+    const updated = await prisma.payment.update({
+      where: { id: paymentId },
+      data: { status: 'REFUNDED', metadata: { ...(payment.metadata || {}), refundReason: reason || null, refundedBy: req.user.email, refundedAt: new Date().toISOString() } },
+    });
+
+    logAdminAction({
+      admin: req.user,
+      action: 'PAYMENT_REFUNDED',
+      targetType: 'Payment',
+      targetId: paymentId,
+      details: `${payment.amount} ${payment.currency}${reason ? ` · Raison : ${reason}` : ''}`,
+    });
+
+    res.json({ success: true, message: 'Paiement marqué comme remboursé', data: updated });
+  } catch (err) { next(err); }
+}
+
+// ── Journal d'audit admin ────────────────────────────────────────────────────
+async function getAuditLog(req, res, next) {
+  try {
+    const schema = z.object({
+      page:   z.string().default('1').transform(Number),
+      limit:  z.string().default('30').transform(Number),
+      action: z.string().optional(),
+      search: z.string().optional(), // recherche libre sur l'email admin
+    });
+    const { page, limit, action, search } = schema.parse(req.query);
+
+    const where = {};
+    if (action) where.action = action;
+    if (search) where.adminEmail = { contains: search, mode: 'insensitive' };
+
+    const [total, items] = await prisma.$transaction([
+      prisma.adminAuditLog.count({ where }),
+      prisma.adminAuditLog.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: items, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
 module.exports = {
   getDashboard,
   getUsers, toggleUserStatus, deleteUser,
@@ -1138,4 +1238,6 @@ module.exports = {
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
   getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
   getDeletedAccounts,
+  refundPayment,
+  getAuditLog,
 };

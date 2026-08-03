@@ -129,6 +129,7 @@ model User {
   weeklyStats          TipsterWeeklyStats[]
   supportTickets       SupportTicket[]
   webauthnCredentials  WebAuthnCredential[]
+  adminAuditLogs       AdminAuditLog[]       @relation("AdminAuditLogAuthor")
 
   @@index([role])
   @@index([isActive])
@@ -887,6 +888,28 @@ model AdminNotification {
   @@index([isRead])
   @@index([createdAt])
   @@map("admin_notifications")
+}
+
+// Journal d'audit des actions admin — traçabilité en cas de litige ou
+// d'incident (qui a suspendu/supprimé un compte, activé un abonnement à la
+// main, remboursé un paiement, etc.). adminEmail est un instantané pris au
+// moment de l'action : il survit même si le compte admin est supprimé
+// ensuite (adminId passe alors à null via onDelete: SetNull).
+model AdminAuditLog {
+  id         String   @id @default(uuid())
+  adminId    String?
+  admin      User?    @relation("AdminAuditLogAuthor", fields: [adminId], references: [id], onDelete: SetNull)
+  adminEmail String
+  action     String   // ex: "USER_SUSPENDED", "USER_REACTIVATED", "USER_DELETED", "PAYMENT_REFUNDED"...
+  targetType String?  // ex: "User", "Payment", "Report", "Tip", "Comment"
+  targetId   String?
+  details    String?  @db.Text
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
 }
 
 // Historique des comptes supprimés (self-service ou par un admin). La ligne User

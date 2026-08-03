@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Clock, Download } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { ChevronLeft, ChevronRight, CheckCircle, XCircle, Clock, Download, RotateCcw, RefreshCw } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import api from '../../services/api';
@@ -13,8 +13,11 @@ const STATUS = {
 };
 
 export default function AdminPayments() {
+  const qc = useQueryClient();
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
+  const [refundTarget, setRefundTarget] = useState(null); // paiement en cours de remboursement
+  const [refundReason, setRefundReason] = useState('');
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-payments', statusFilter, page],
@@ -26,6 +29,15 @@ export default function AdminPayments() {
   const payments = data?.data || [];
   const pagination = data?.pagination;
   const totalAmount = payments.filter(p => p.status === 'COMPLETED').reduce((s, p) => s + p.amount, 0);
+
+  const refundPayment = useMutation({
+    mutationFn: ({ id, reason }) => api.patch(`/admin/payments/${id}/refund`, { reason: reason || undefined }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['admin-payments'] });
+      setRefundTarget(null);
+      setRefundReason('');
+    },
+  });
 
   return (
     <div className="space-y-5 max-w-7xl">
@@ -73,13 +85,14 @@ export default function AdminPayments() {
                 <th className="text-left px-4 py-3.5 font-medium">Méthode</th>
                 <th className="text-left px-4 py-3.5 font-medium">Statut</th>
                 <th className="text-left px-5 py-3.5 font-medium hidden lg:table-cell">Date</th>
+                <th className="text-right px-5 py-3.5 font-medium"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-overlay/[0.09]">
               {isLoading
                 ? Array.from({ length: 8 }).map((_, i) => (
                   <tr key={i} className="divide-x divide-overlay/[0.05]">
-                    {Array.from({ length: 5 }).map((_, j) => (
+                    {Array.from({ length: 6 }).map((_, j) => (
                       <td key={j} className="px-5 py-4">
                         <div className="h-4 skeleton rounded" />
                       </td>
@@ -123,6 +136,17 @@ export default function AdminPayments() {
                       <td className="px-5 py-4 hidden lg:table-cell text-xs text-ink-3">
                         {format(new Date(p.createdAt), 'dd MMM yyyy, HH:mm', { locale: fr })}
                       </td>
+                      <td className="px-5 py-4 text-right">
+                        {p.status === 'COMPLETED' && (
+                          <button
+                            onClick={() => setRefundTarget(p)}
+                            className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1.5 rounded-lg border border-overlay/[0.11] text-ink-3 hover:text-amber-400 hover:border-amber-500/30 transition-colors"
+                          >
+                            <RotateCcw size={11} />
+                            Rembourser
+                          </button>
+                        )}
+                      </td>
                     </tr>
                   );
                 })
@@ -147,6 +171,50 @@ export default function AdminPayments() {
           </div>
         )}
       </div>
+
+      {/* Modal confirmation remboursement */}
+      {refundTarget && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div
+            className="rounded-2xl border border-overlay/[0.11] p-6 max-w-sm w-full"
+            style={{ background: 'var(--color-card)' }}
+          >
+            <div className="w-12 h-12 rounded-xl bg-amber-500/15 flex items-center justify-center mx-auto mb-4">
+              <RotateCcw size={22} className="text-amber-400" />
+            </div>
+            <h3 className="text-ink-1 font-bold text-lg text-center">Marquer comme remboursé ?</h3>
+            <p className="text-ink-4 text-sm text-center mt-2">
+              {refundTarget.amount.toLocaleString('fr-FR')} FCFA — {refundTarget.user?.profile?.displayName || refundTarget.user?.username}
+            </p>
+            <p className="text-ink-4 text-xs text-center mt-1">
+              Ceci marque le paiement comme remboursé. L'abonnement lié n'est pas annulé automatiquement.
+            </p>
+            <textarea
+              value={refundReason}
+              onChange={(e) => setRefundReason(e.target.value)}
+              placeholder="Raison (optionnel)"
+              rows={2}
+              className="input w-full mt-4 text-sm resize-none"
+            />
+            <div className="flex gap-3 mt-5">
+              <button
+                onClick={() => { setRefundTarget(null); setRefundReason(''); }}
+                className="btn-secondary flex-1"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={() => refundPayment.mutate({ id: refundTarget.id, reason: refundReason })}
+                disabled={refundPayment.isPending}
+                className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-white font-semibold text-sm rounded-lg transition-all disabled:opacity-40"
+              >
+                {refundPayment.isPending ? <RefreshCw size={14} className="animate-spin" /> : <RotateCcw size={14} />}
+                Rembourser
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

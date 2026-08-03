@@ -186,17 +186,17 @@ export default function BottomNav() {
     <>
       <ExplorerDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} />
 
-      <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 border-t border-overlay/[0.06]"
-        style={{
-          background: 'rgb(var(--surface-900-rgb) / 0.97)',
-          backdropFilter: 'blur(16px)',
-          /* Étend le fond derrière l'indicateur home d'iPhone */
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        }}
-        aria-label={t('bottomNav.mobileNavLabel')}
+      {/* Wrapper plein-largeur non-cliquable : ne sert qu'à centrer la
+          pastille et gérer la marge de sécurité iPhone (home indicator) —
+          seule la pastille elle-même (pointer-events-auto) est cliquable. */}
+      <div
+        className="md:hidden fixed left-0 right-0 z-50 flex justify-center px-3 pointer-events-none"
+        style={{ bottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.6rem)' }}
       >
-        <div className="flex items-center justify-around h-16 px-2">
+        <nav
+          className="glass-nav pointer-events-auto flex items-center justify-around gap-1 h-16 px-2 w-full max-w-md rounded-[28px]"
+          aria-label={t('bottomNav.mobileNavLabel')}
+        >
           {NAV_ITEMS.map(({ to, label, Icon, end }) => (
             <NavLink
               key={to}
@@ -233,8 +233,8 @@ export default function BottomNav() {
             </div>
             <span className="text-[11px] font-semibold tracking-wide">{t('nav.explorer')}</span>
           </button>
-        </div>
-      </nav>
+        </nav>
+      </div>
     </>
   );
 }

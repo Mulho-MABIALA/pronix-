@@ -16,8 +16,9 @@ export default function Layout() {
       <Header />
       <TrialBanner />
       <EmailVerifyBanner />
-      {/* pb-28 mobile (7rem) couvre nav 64px + safe-area iPhone ~34px + marge */}
-      <main className="flex-1 pb-28 md:pb-0">
+      {/* pb-32 mobile (8rem) couvre la pastille flottante (64px + 0.6rem d'écart
+          au bord) + safe-area iPhone ~34px + marge de respiration */}
+      <main className="flex-1 pb-32 md:pb-0">
         <Outlet />
       </main>
       <Disclaimer />

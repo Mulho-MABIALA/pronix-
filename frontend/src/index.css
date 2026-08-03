@@ -93,9 +93,20 @@
 
 @layer components {
 
-  /* ── Cards ─────────────────────────────────────────────────────── */
+  /* ── Cards — verre liquide ─────────────────────────────────────────
+     Étendu à TOUTES les cartes (.card / .bento-card, donc client + admin
+     puisque .bento-card en est un simple alias) suite à la demande
+     explicite de généraliser l'effet, après l'avoir d'abord testé sur
+     le seul voile paywall. Contrairement à .glass-panel (paywall), pas de
+     backdrop-filter ici : cet effet tourne sur des dizaines de cartes par
+     page (dashboard admin, listes, formulaires) — un blur GPU par carte
+     serait bien plus coûteux à faire défiler sur les mobiles d'entrée de
+     gamme que sur un unique voile ponctuel. Le rendu "verre" vient donc
+     du dégradé translucide + du liseré de lumière (inset highlight),
+     sans le coût de rendu du flou. Le reflet au survol existant
+     (shine-sweep) est conservé tel quel plus bas. */
   .card {
-    background-color: var(--color-card);
+    background: linear-gradient(135deg, rgb(var(--surface-700-rgb) / 0.6), rgb(var(--surface-800-rgb) / 0.4));
     border: 1px solid var(--color-border);
     @apply rounded-xl;
     /* transition ciblée (au lieu de transition-all) : un audit PageSpeed a
@@ -103,10 +114,11 @@
        pour rien puisque seules border-color et box-shadow changent réellement
        au survol — ça allège le travail du thread principal pendant l'animation. */
     transition: border-color 200ms, box-shadow 200ms, background-color 150ms;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.4);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 2px 4px rgba(0,0,0,0.4), 0 8px 24px -6px rgba(0,0,0,0.4);
   }
   html.light .card {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+    background: linear-gradient(135deg, rgb(255 255 255 / 0.75), rgb(255 255 255 / 0.5));
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
   }
 
   .card-p {
@@ -264,6 +276,32 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .glass-panel::before { animation: none; }
+  }
+
+  /* ── Liquid Glass — barre de navigation mobile (façon iPhone) ───────
+     La tab bar iOS 26 "Liquid Glass" flotte au-dessus du contenu au lieu
+     de border-à-border : ici la pastille arrondie translucide, posée à
+     distance des bords, laisse deviner le contenu qui défile dessous.
+     Contrairement à .glass-panel, PAS de reflet animé en boucle : cet
+     élément reste monté sur toutes les pages en permanence, un sweep
+     perpétuel ajouterait un coût d'animation constant pour un gain visuel
+     minime sur un élément qu'on ne fixe jamais longtemps. */
+  .glass-nav {
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    background: rgb(var(--surface-800-rgb) / 0.55);
+    border: 1px solid rgb(255 255 255 / 0.14);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.18),
+      inset 0 -1px 0 rgb(0 0 0 / 0.12),
+      0 8px 32px -6px rgba(0,0,0,0.55);
+  }
+  html.light .glass-nav {
+    background: rgb(255 255 255 / 0.65);
+    border-color: rgb(255 255 255 / 0.7);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.8),
+      0 8px 32px -6px rgba(0,0,0,0.18);
   }
 
   /* ── Buttons ────────────────────────────────────────────────────── */

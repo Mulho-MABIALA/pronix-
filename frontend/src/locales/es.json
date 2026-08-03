@@ -1409,6 +1409,9 @@
     "otherQuestions": "¿Tienes otras preguntas?",
     "respondWithin24h": "Nuestro equipo responde en 24 horas.",
     "sendEmail": "Enviar un correo",
+    "searchPlaceholder": "Buscar una pregunta...",
+    "clearSearch": "Borrar búsqueda",
+    "noResults": "Sin resultados para «{{query}}».",
     "categories": {
       "general": "General",
       "account": "Cuenta y suscripción",

@@ -158,6 +158,21 @@ model WebAuthnCredential {
   @@map("webauthn_credentials")
 }
 
+// Challenge de connexion passkey (utilisateur PAS encore authentifié, donc pas
+// de ligne User où l'accrocher). Le backend tourne en cluster PM2 (plusieurs
+// process) : un stockage en mémoire ne survivrait pas si la requête suivante
+// atterrit sur un autre process — d'où une table partagée via Postgres, avec
+// expiration courte et suppression après usage (voir webauthnService.js).
+model WebAuthnChallenge {
+  id        String   @id @default(uuid())
+  challenge String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("webauthn_challenges")
+}
+
 model Profile {
   id              String   @id @default(uuid())
   userId          String   @unique

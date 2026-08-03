@@ -8,12 +8,14 @@
 //      empreinte/Face ID). L'identité est retrouvée via la credential utilisée,
 //      pas via un identifiant saisi.
 //
-// L'app tourne sur une seule instance PM2 sans session middleware/Redis : le
-// challenge de LOGIN (utilisateur anonyme) est donc gardé en mémoire ici,
-// avec une expiration courte. Le challenge de REGISTRATION (utilisateur
-// authentifié) est lui stocké sur User.currentChallenge, comme pour les flows
-// email existants (vérification, reset mot de passe).
-const crypto = require('crypto');
+// Le backend tourne en cluster PM2 (plusieurs process derrière le même port) :
+// le challenge de LOGIN (utilisateur anonyme, donc pas de ligne User où
+// l'accrocher) est stocké dans la table WebAuthnChallenge (Postgres, partagée
+// entre tous les process) plutôt qu'en mémoire — sinon la requête de
+// vérification pourrait atterrir sur un autre process que celle qui a généré
+// le challenge et échouer à tort ("session expirée"). Le challenge de
+// REGISTRATION (utilisateur authentifié) est lui stocké sur User.currentChallenge,
+// comme pour les flows email existants (vérification, reset mot de passe).
 const {
   generateRegistrationOptions,
   verifyRegistrationResponse,
@@ -30,29 +32,28 @@ const rpID = env.WEBAUTHN_RP_ID;
 const origin = env.FRONTEND_URL;
 
 // ─── Challenges de connexion (utilisateur anonyme) ─────────────────────────
-const loginChallenges = new Map(); // challengeId -> { challenge, expiresAt }
 const LOGIN_CHALLENGE_TTL_MS = 2 * 60 * 1000;
 
-function pruneExpiredLoginChallenges() {
-  const now = Date.now();
-  for (const [id, entry] of loginChallenges) {
-    if (entry.expiresAt < now) loginChallenges.delete(id);
+async function storeLoginChallenge(challenge) {
+  // Nettoyage opportuniste des challenges expirés (pas de cron dédié : cette
+  // table reste petite et se vide au fil des connexions).
+  prisma.webAuthnChallenge.deleteMany({ where: { expiresAt: { lt: new Date() } } }).catch(() => {});
+
+  const row = await prisma.webAuthnChallenge.create({
+    data: { challenge, expiresAt: new Date(Date.now() + LOGIN_CHALLENGE_TTL_MS) },
+  });
+  return row.id;
+}
+
+async function consumeLoginChallenge(challengeId) {
+  let row;
+  try {
+    row = await prisma.webAuthnChallenge.delete({ where: { id: challengeId } }); // usage unique
+  } catch {
+    return null; // déjà consommé ou jamais existé
   }
-}
-
-function storeLoginChallenge(challenge) {
-  pruneExpiredLoginChallenges();
-  const challengeId = crypto.randomBytes(24).toString('hex');
-  loginChallenges.set(challengeId, { challenge, expiresAt: Date.now() + LOGIN_CHALLENGE_TTL_MS });
-  return challengeId;
-}
-
-function consumeLoginChallenge(challengeId) {
-  const entry = loginChallenges.get(challengeId);
-  if (!entry) return null;
-  loginChallenges.delete(challengeId); // usage unique
-  if (entry.expiresAt < Date.now()) return null;
-  return entry.challenge;
+  if (row.expiresAt < new Date()) return null;
+  return row.challenge;
 }
 
 // ─── Enregistrement d'une passkey (utilisateur connecté) ───────────────────
@@ -143,12 +144,12 @@ async function getAuthenticationOptions() {
     // passkeys "discoverable" enregistrées pour ce domaine (login usernameless)
   });
 
-  const challengeId = storeLoginChallenge(options.challenge);
+  const challengeId = await storeLoginChallenge(options.challenge);
   return { options, challengeId };
 }
 
 async function verifyAuthentication(challengeId, response) {
-  const expectedChallenge = consumeLoginChallenge(challengeId);
+  const expectedChallenge = await consumeLoginChallenge(challengeId);
   if (!expectedChallenge) {
     throw new AppError('Session de connexion expirée, réessayez', 400, 'CHALLENGE_EXPIRED');
   }

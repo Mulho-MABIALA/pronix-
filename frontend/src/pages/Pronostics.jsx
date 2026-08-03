@@ -12,6 +12,7 @@ import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import { getPickColor } from '../utils/marketColors';
 import InfoTooltip from '../components/ui/InfoTooltip';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
@@ -98,6 +99,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
 
   const pickType  = pred.bestPick.type;
   const pickLabel = t(`pronostics.pickShort.${pickType}`, { defaultValue: pred.bestPick.label });
+  const pickColor = getPickColor(pickType);
   const col       = pickType === '2' ? 'away' : pickType === 'X' ? 'draw' : 'home';
   const realOdd   = realOdds?.best?.[col] ?? null;
   const isReal    = !!realOdd;
@@ -180,8 +182,9 @@ function PronoRow({ match, index, oddsEnabled = true }) {
           <span className="text-[13px] text-ink-3 truncate">{match.awayTeam}</span>
         </div>
         {/* Market visible sur mobile seulement */}
-        <p className="text-xs text-ink-4 mt-0.5 sm:hidden leading-tight">
-          {pred.bestPick.market ? `${pred.bestPick.market} · ` : ''}{pickLabel}
+        <p className="text-xs mt-0.5 sm:hidden leading-tight">
+          {pred.bestPick.market && <span className="text-ink-4">{pred.bestPick.market} · </span>}
+          <span className={`font-semibold ${pickColor.text}`}>{pickLabel}</span>
         </p>
       </div>
 
@@ -198,7 +201,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
       {/* Pick (desktop) */}
       <div className="shrink-0 w-28 hidden sm:block text-right">
         <p className="text-xs text-ink-4 leading-tight">{pred.bestPick.market}</p>
-        <p className="text-[12px] font-semibold text-ink-3 leading-tight">{pickLabel}</p>
+        <p className={`text-[12px] font-bold leading-tight ${pickColor.text}`}>{pickLabel}</p>
       </div>
 
       {/* Cote + value badge */}

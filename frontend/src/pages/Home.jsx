@@ -16,6 +16,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { getRecentlyViewed, removeRecentlyViewed } from '../utils/recentlyViewed';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet } from '../utils/mockOdds';
+import { getPickColor } from '../utils/marketColors';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 
 // ── Vus récemment — historique client (localStorage) ────────────────────────
@@ -358,7 +359,7 @@ export default function Home() {
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
                   {value && <ValueBetBadge edge={null} />}
-                  <span className="text-xs font-semibold text-emerald-400 tabular-nums">
+                  <span className={`text-xs font-bold tabular-nums ${getPickColor(pick.type).text}`}>
                     {t(`pronostics.pickShort.${pick.type}`, { defaultValue: pick.label })}
                   </span>
                   <OddsChip odd={odd} />

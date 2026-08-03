@@ -15,6 +15,7 @@ import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import Alert from '../components/ui/Alert';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
+import { getPickColor } from '../utils/marketColors';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { addRecentlyViewed, getRecentlyViewed } from '../utils/recentlyViewed';
@@ -224,7 +225,7 @@ function OddsAndValueSection({ match, realOdds, isPremium }) {
       <div className="flex items-center justify-between px-3 py-2.5 rounded-lg border bg-primary-500/5 border-primary-500/15">
         <div className="min-w-0">
           <p className="text-xs text-ink-3">{t('matchDetail.recommendedPick')}</p>
-          <p className="text-sm font-semibold text-ink-1 mt-0.5 truncate">
+          <p className={`text-sm font-bold mt-0.5 truncate ${getPickColor(pred.bestPick.type).text}`}>
             {t(`matchDetail.pickMarketLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.market || pred.bestPick.label })}
           </p>
         </div>

@@ -13,6 +13,7 @@ import CompetitionLogo from '../components/ui/CompetitionLogo';
 import TicketHistory from '../components/machine/TicketHistory';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import { getPickColor } from '../utils/marketColors';
 import { drawTicketCanvas } from '../utils/ticketCanvas';
 import { useCountUp } from '../hooks/useCountUp';
 import { hapticSuccess, hapticImpact, hapticError } from '../utils/haptics';
@@ -1073,7 +1074,7 @@ export default function Machine() {
                       </p>
                     </div>
                     <div className={`shrink-0 text-center px-2.5 py-1 rounded-lg border ${c.bg}`}>
-                      <span className={`block text-xs font-bold ${c.text}`}>{t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type })}</span>
+                      <span className={`block text-xs font-bold ${getPickColor(row.pick.type).text}`}>{t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type })}</span>
                       <span className={`block text-[10px] font-semibold ${c.text}`}>{row.pick.prob}%</span>
                     </div>
                     <div className="shrink-0 flex flex-col items-center gap-1">

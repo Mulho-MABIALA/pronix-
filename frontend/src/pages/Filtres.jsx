@@ -9,6 +9,7 @@ import { SkeletonMatchCard } from '../components/ui/SkeletonLoader';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOdd, isValueBet, getValueEdge } from '../utils/mockOdds';
+import { getPickColor } from '../utils/marketColors';
 
 const MARKET_KEYS = ['all', '1', 'X', '2', '1X', 'X2', 'over25', 'over15', 'btts'];
 const CONF_KEYS = ['all', 'high', 'medium', 'low'];
@@ -406,7 +407,7 @@ export default function Filtres() {
                     <>
                       <div className={`shrink-0 text-center px-3 py-1.5 rounded-lg border ${CONF_COLORS[pred.confidence]}`}>
                         <span className="block text-sm font-bold">{pred.bestPick.prob}%</span>
-                        <span className="block text-[10px] font-semibold">{t(`filtersPage.pickLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.type })}</span>
+                        <span className={`block text-[10px] font-bold ${getPickColor(pred.bestPick.type).text}`}>{t(`filtersPage.pickLabels.${pred.bestPick.type}`, { defaultValue: pred.bestPick.type })}</span>
                       </div>
                       <div className="shrink-0 flex flex-col items-center gap-1">
                         <OddsChip odd={odd} />

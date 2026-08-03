@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { Zap } from 'lucide-react';
 import { getOdd, isValueBet, formatOdd } from '../../utils/mockOdds';
+import { getPickColor } from '../../utils/marketColors';
 import MatchReminderButton from './MatchReminderButton';
 import api from '../../services/api';
 
@@ -173,7 +174,7 @@ export default function MatchCard({ match, index }) {
             <span className={`block text-sm font-bold tabular-nums ${CONF_COLOR[pred.confidence]}`}>
               {pred.bestPick.prob}%
             </span>
-            <span className="block text-[11px] text-ink-3 leading-tight whitespace-nowrap mt-0.5 font-semibold uppercase tracking-wide">
+            <span className={`block text-[11px] leading-tight whitespace-nowrap mt-0.5 font-bold uppercase tracking-wide ${getPickColor(pred.bestPick.type).text}`}>
               {pred.bestPick.type === 'over25' ? 'O2.5' :
                pred.bestPick.type === 'over15' ? 'O1.5' :
                pred.bestPick.type === 'btts'   ? 'BTTS' :

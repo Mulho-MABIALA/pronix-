@@ -565,6 +565,28 @@
     "setPassword": "Set a password",
     "password": "Password",
     "editPassword": "Edit",
+    "changeEmail": {
+      "editCta": "Edit",
+      "newEmailPlaceholder": "New email address",
+      "currentPasswordConfirmPlaceholder": "Current password (confirm)",
+      "submitCta": "Change email",
+      "sendingCta": "Sending...",
+      "successToast": "Email updated — check your inbox to confirm it",
+      "genericError": "Error changing email"
+    },
+    "changePassword": {
+      "title": "Change password",
+      "setTitle": "Set a password",
+      "currentPlaceholder": "Current password",
+      "newPlaceholder": "New password (min. 8 characters)",
+      "confirmPlaceholder": "Confirm new password",
+      "tooShortError": "Minimum 8 characters",
+      "mismatchError": "Passwords don't match",
+      "submitCta": "Save",
+      "savingCta": "Saving...",
+      "successToast": "Password updated",
+      "genericError": "Error changing password"
+    },
     "logoutBtn": "Log out",
     "avatarUploadError": "Error uploading the photo. Please try again.",
     "memberSince": "Member since {{date}}",

@@ -565,6 +565,28 @@
     "setPassword": "Définir un mot de passe",
     "password": "Mot de passe",
     "editPassword": "Modifier",
+    "changeEmail": {
+      "editCta": "Modifier",
+      "newEmailPlaceholder": "Nouvelle adresse email",
+      "currentPasswordConfirmPlaceholder": "Mot de passe actuel (confirmation)",
+      "submitCta": "Changer l'email",
+      "sendingCta": "Envoi...",
+      "successToast": "Email mis à jour — vérifie ta boîte mail pour la confirmer",
+      "genericError": "Erreur lors du changement d'email"
+    },
+    "changePassword": {
+      "title": "Changer le mot de passe",
+      "setTitle": "Définir un mot de passe",
+      "currentPlaceholder": "Mot de passe actuel",
+      "newPlaceholder": "Nouveau mot de passe (8 caractères min.)",
+      "confirmPlaceholder": "Confirmer le nouveau mot de passe",
+      "tooShortError": "8 caractères minimum",
+      "mismatchError": "Les mots de passe ne correspondent pas",
+      "submitCta": "Enregistrer",
+      "savingCta": "Sauvegarde...",
+      "successToast": "Mot de passe mis à jour",
+      "genericError": "Erreur lors du changement de mot de passe"
+    },
     "logoutBtn": "Se déconnecter",
     "avatarUploadError": "Erreur lors de l'upload de la photo. Réessaie.",
     "memberSince": "Membre depuis {{date}}",

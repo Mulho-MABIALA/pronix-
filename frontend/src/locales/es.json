@@ -565,6 +565,28 @@
     "setPassword": "Definir una contraseña",
     "password": "Contraseña",
     "editPassword": "Modificar",
+    "changeEmail": {
+      "editCta": "Modificar",
+      "newEmailPlaceholder": "Nueva dirección de correo",
+      "currentPasswordConfirmPlaceholder": "Contraseña actual (confirmación)",
+      "submitCta": "Cambiar el correo",
+      "sendingCta": "Enviando...",
+      "successToast": "Correo actualizado — revisa tu bandeja para confirmarlo",
+      "genericError": "Error al cambiar el correo"
+    },
+    "changePassword": {
+      "title": "Cambiar contraseña",
+      "setTitle": "Definir una contraseña",
+      "currentPlaceholder": "Contraseña actual",
+      "newPlaceholder": "Nueva contraseña (mín. 8 caracteres)",
+      "confirmPlaceholder": "Confirmar nueva contraseña",
+      "tooShortError": "Mínimo 8 caracteres",
+      "mismatchError": "Las contraseñas no coinciden",
+      "submitCta": "Guardar",
+      "savingCta": "Guardando...",
+      "successToast": "Contraseña actualizada",
+      "genericError": "Error al cambiar la contraseña"
+    },
     "logoutBtn": "Cerrar sesión",
     "avatarUploadError": "Error al subir la foto. Inténtalo de nuevo.",
     "memberSince": "Miembro desde {{date}}",

@@ -68,6 +68,7 @@ const AdminCommentaires = lazy(() => import('./pages/admin/AdminCommentaires'));
 const AdminBlog = lazy(() => import('./pages/admin/Blog'));
 const AdminPartners = lazy(() => import('./pages/admin/Partners'));
 const AdminNewsletter = lazy(() => import('./pages/admin/Newsletter'));
+const AdminProfile = lazy(() => import('./pages/admin/AdminProfile'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -201,6 +202,7 @@ export default function App() {
                 <Route path="/admin/commentaires" element={<AdminCommentaires />} />
                 <Route path="/admin/partenaires" element={<AdminPartners />} />
                 <Route path="/admin/newsletter" element={<AdminNewsletter />} />
+                <Route path="/admin/profil" element={<AdminProfile />} />
               </Route>
 
               {/* Routes auth (sans layout) */}

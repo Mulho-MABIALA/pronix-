@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { Flag, Crown, Users, Loader2, Heart, HeartOff, MessageCircle, Send, ChevronDown, ChevronUp, TrendingUp, Save, Power } from 'lucide-react';
+import { Flag, Crown, Users, Loader2, Heart, HeartOff, MessageCircle, Send, ChevronDown, ChevronUp, TrendingUp, Save, Power, Share2 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { TipsterBadge, ResultBadge } from '../components/ui/Badge';
@@ -338,6 +338,17 @@ export default function TipsterProfile() {
   const roi = stats?.totalTips > 0 ? estimateTipsterROI(stats.successRate, userId) : null;
   const weeklyChartData = weeklyData?.data || inlineWeekly || [];
 
+  // Partage WhatsApp du profil — mécanique de croissance : les tipsters ont
+  // intérêt à montrer leur classement à leur propre audience (voir
+  // STRATEGIE-MARKETING.md § Référral, mécanique 2 "Programme tipster").
+  const shareText = `🏆 ${displayName} sur fpronix${
+    stats?.totalTips > 0 ? `\n📊 ${stats.successRate?.toFixed(0)}% de réussite sur ${stats.totalTips} pronostics` : ''
+  }\n\n👉 fpronix.com/tipsters/${userId}`;
+
+  const handleShareProfile = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener');
+  };
+
   return (
     <div className="max-w-2xl mx-auto px-4 py-6 space-y-6 animate-fade-in">
 
@@ -361,7 +372,15 @@ export default function TipsterProfile() {
             </p>
           </div>
 
-          {/* Follow + Favorite buttons */}
+          {/* Partager le profil + Follow/Favorite */}
+          <div className="flex flex-col gap-2 shrink-0">
+            <button
+              onClick={handleShareProfile}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-primary-500/15 text-primary-400 hover:bg-primary-500/25 transition-colors"
+              aria-label={t('tipsterProfile.shareProfile')}
+            >
+              <Share2 size={12} /> {t('tipsterProfile.shareProfile')}
+            </button>
           {!isOwn && (
             <div className="flex flex-col gap-2 shrink-0">
               {user ? (
@@ -394,6 +413,7 @@ export default function TipsterProfile() {
               )}
             </div>
           )}
+          </div>
         </div>
       </section>
 

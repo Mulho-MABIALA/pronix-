@@ -748,6 +748,7 @@
     }
   },
   "tipsterProfile": {
+    "shareProfile": "Compartilhar meu perfil",
     "predLabels": {
       "HOME_WIN": "1 — Casa",
       "DRAW": "X — Empate",
@@ -1658,6 +1659,7 @@
     },
     "items": {
       "dashboard": "Dashboard",
+      "profile": "Meu perfil",
       "users": "Usuários",
       "tipsters": "Tipsters",
       "reports": "Denúncias",

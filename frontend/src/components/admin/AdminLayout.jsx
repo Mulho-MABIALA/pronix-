@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
-  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone, Mail,
+  ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone, Mail, UserCircle,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -15,6 +15,7 @@ const NAV_GROUPS = [
     groupKey: 'overview',
     items: [
       { to: '/admin', itemKey: 'dashboard', Icon: LayoutDashboard, end: true },
+      { to: '/admin/profil', itemKey: 'profile', Icon: UserCircle },
     ],
   },
   {
@@ -149,11 +150,13 @@ function SidebarContent({ onClose, collapsed }) {
 
         {collapsed ? (
           <div className="flex flex-col items-center gap-2 pt-1.5">
-            <div
+            <Link
+              to="/admin/profil"
+              onClick={onClose}
               title={user?.username}
-              className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0">
+              className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0 hover:border-primary-500/40 transition-colors">
               {user?.username?.charAt(0).toUpperCase()}
-            </div>
+            </Link>
             <button
               onClick={() => { logout(); navigate('/connexion'); }}
               className="p-1.5 rounded-lg text-overlay/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"
@@ -164,13 +167,15 @@ function SidebarContent({ onClose, collapsed }) {
           </div>
         ) : (
           <div className="flex items-center gap-2.5 px-3 py-2 mt-0.5 rounded-xl">
-            <div className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0">
-              {user?.username?.charAt(0).toUpperCase()}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[12px] font-semibold text-overlay/90 truncate leading-tight">{user?.username}</p>
-              <p className="text-[10px] text-overlay/55 truncate mt-0.5">{user?.email}</p>
-            </div>
+            <Link to="/admin/profil" onClick={onClose} className="flex items-center gap-2.5 flex-1 min-w-0 group">
+              <div className="w-7 h-7 rounded-full bg-primary-500/20 border border-primary-500/20 flex items-center justify-center text-primary-300 text-[11px] font-bold shrink-0 group-hover:border-primary-500/40 transition-colors">
+                {user?.username?.charAt(0).toUpperCase()}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-semibold text-overlay/90 truncate leading-tight group-hover:text-ink-1 transition-colors">{user?.username}</p>
+                <p className="text-[10px] text-overlay/55 truncate mt-0.5">{user?.email}</p>
+              </div>
+            </Link>
             <button
               onClick={() => { logout(); navigate('/connexion'); }}
               className="p-1.5 rounded-lg text-overlay/30 hover:text-red-400 hover:bg-red-500/[0.1] transition-colors shrink-0"

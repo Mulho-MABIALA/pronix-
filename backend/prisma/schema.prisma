@@ -180,6 +180,7 @@ model Profile {
   displayName     String?
   bio             String?
   avatar          String?
+  phone           String?
   favoriteTeams   String[] @default([])
   favoriteLeagues String[] @default([])
   notifEmail      Boolean  @default(true)

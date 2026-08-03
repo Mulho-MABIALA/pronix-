@@ -8,7 +8,7 @@ import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
   MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle, PauseCircle,
-  Fingerprint, KeyRound,
+  Fingerprint, KeyRound, Phone,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -1140,6 +1140,7 @@ export default function Profile() {
   const initForm = () => ({
     displayName: user?.profile?.displayName || '',
     bio:         user?.profile?.bio         || '',
+    phone:       user?.profile?.phone       || '',
     avatar:      user?.profile?.avatar      || '',
     notifEmail:  user?.profile?.notifEmail  ?? true,
     notifSms:    user?.profile?.notifSms    ?? false,
@@ -1255,6 +1256,11 @@ export default function Profile() {
             </div>
             <p className="text-ink-3 text-sm mt-0.5">@{user?.username}</p>
             <p className="text-ink-4 text-xs mt-0.5 truncate">{user?.email}</p>
+            {user?.profile?.phone && !editing && (
+              <p className="text-ink-4 text-xs mt-0.5 truncate flex items-center gap-1">
+                <Phone size={11} className="shrink-0" /> {user.profile.phone}
+              </p>
+            )}
 
             {/* Membre depuis / dernière connexion */}
             {user?.createdAt && (
@@ -1331,6 +1337,21 @@ export default function Profile() {
               <p className="text-right text-xs text-ink-4 mt-0.5">
                 {form.bio.length}/300
               </p>
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-ink-4 mb-1.5 uppercase tracking-wider">
+                {t('profile.phoneLabel')}
+              </label>
+              <input
+                type="tel"
+                className="input"
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                maxLength={30}
+                placeholder={t('profile.phonePlaceholder')}
+              />
+              <p className="text-xs text-ink-4 mt-1">{t('profile.phoneHint')}</p>
             </div>
 
             <div className="space-y-3 pt-1">

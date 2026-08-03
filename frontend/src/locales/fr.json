@@ -502,6 +502,31 @@
   "onboarding": {
     "title": "Personnalisez votre flux",
     "subtitle": "Sélectionnez les compétitions qui vous intéressent",
+    "introTitle": "Bienvenue sur fpronix",
+    "introSubtitle": "Avant de commencer, voici tout ce que tu vas pouvoir faire :",
+    "introNext": "Suivant",
+    "introFeatures": {
+      "aiPredictions": {
+        "title": "Pronostics générés par IA",
+        "desc": "Des pronostics calculés à partir de données réelles : forme des équipes, confrontations directes, cotes."
+      },
+      "ticketGenerator": {
+        "title": "Générateur de tickets",
+        "desc": "Compose ton ticket personnalisé, sauvegarde-le, consulte ton historique et partage-le."
+      },
+      "aiCoach": {
+        "title": "Coach IA",
+        "desc": "Analyse tes paris passés et t'aide à progresser."
+      },
+      "tipsterMarketplace": {
+        "title": "Marketplace de tipsters",
+        "desc": "Suis les meilleurs tipsters, consulte leurs classements et abonne-toi à leurs pronostics."
+      },
+      "transparency": {
+        "title": "Transparence totale",
+        "desc": "Notre taux de réussite réel est public, sur une page dédiée."
+      }
+    },
     "exampleTitle": "Un exemple concret",
     "exampleDesc": "Voici un vrai pronostic généré aujourd'hui par notre algorithme — tu auras accès à des dizaines comme ça chaque jour.",
     "start": "Continuer",
@@ -537,6 +562,9 @@
     "displayNamePlaceholder": "Ton nom public",
     "bioLabel": "Bio",
     "bioPlaceholder": "Parle-toi un peu... équipe favorite, style de jeu...",
+    "phoneLabel": "Numéro de téléphone",
+    "phonePlaceholder": "+221 77 123 45 67",
+    "phoneHint": "Utilisé pour les alertes SMS et te contacter si besoin.",
     "notifications": "Notifications",
     "emailAlerts": "Alertes par email",
     "smsAlerts": "Alertes SMS",
@@ -1062,6 +1090,10 @@
     "sent": "Email de vérification envoyé ! Vérifie ta boîte mail.",
     "checkInbox": "Vérifie ta boîte mail pour confirmer ton adresse.",
     "error": "Erreur lors de l'envoi. Réessaie plus tard."
+  },
+  "incompleteProfileBanner": {
+    "message": "Il manque des informations dans ton profil.",
+    "cta": "Compléter"
   },
   "bets": {
     "title": "Suivi de mes pronostics",

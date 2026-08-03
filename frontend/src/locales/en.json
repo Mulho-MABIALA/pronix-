@@ -502,6 +502,31 @@
   "onboarding": {
     "title": "Customize your feed",
     "subtitle": "Select the competitions you're interested in",
+    "introTitle": "Welcome to fpronix",
+    "introSubtitle": "Before you start, here's everything you'll be able to do:",
+    "introNext": "Next",
+    "introFeatures": {
+      "aiPredictions": {
+        "title": "AI-generated predictions",
+        "desc": "Predictions computed from real data: team form, head-to-head history, odds."
+      },
+      "ticketGenerator": {
+        "title": "Ticket generator",
+        "desc": "Build your own custom ticket, save it, check your history and share it."
+      },
+      "aiCoach": {
+        "title": "AI coach",
+        "desc": "Analyzes your past bets and helps you improve."
+      },
+      "tipsterMarketplace": {
+        "title": "Tipster marketplace",
+        "desc": "Follow the best tipsters, check their rankings and subscribe to their picks."
+      },
+      "transparency": {
+        "title": "Full transparency",
+        "desc": "Our real success rate is public, on a dedicated page."
+      }
+    },
     "exampleTitle": "A real example",
     "exampleDesc": "Here's a real prediction generated today by our algorithm — you'll get dozens like this every day.",
     "start": "Continue",
@@ -537,6 +562,9 @@
     "displayNamePlaceholder": "Your public name",
     "bioLabel": "Bio",
     "bioPlaceholder": "Tell us a bit about yourself... favorite team, playing style...",
+    "phoneLabel": "Phone number",
+    "phonePlaceholder": "+221 77 123 45 67",
+    "phoneHint": "Used for SMS alerts and to contact you if needed.",
     "notifications": "Notifications",
     "emailAlerts": "Email alerts",
     "smsAlerts": "SMS alerts",
@@ -1062,6 +1090,10 @@
     "sent": "Verification email sent! Check your inbox.",
     "checkInbox": "Check your inbox to confirm your email address.",
     "error": "Error sending email. Please try again later."
+  },
+  "incompleteProfileBanner": {
+    "message": "Some information is missing from your profile.",
+    "cta": "Complete"
   },
   "bets": {
     "title": "My tips tracker",

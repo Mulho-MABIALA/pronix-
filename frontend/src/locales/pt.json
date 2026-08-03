@@ -502,6 +502,31 @@
   "onboarding": {
     "title": "Personalize seu feed",
     "subtitle": "Selecione as competições que te interessam",
+    "introTitle": "Bem-vindo ao fpronix",
+    "introSubtitle": "Antes de começar, veja tudo o que você poderá fazer:",
+    "introNext": "Próximo",
+    "introFeatures": {
+      "aiPredictions": {
+        "title": "Palpites gerados por IA",
+        "desc": "Palpites calculados a partir de dados reais: forma das equipes, confrontos diretos, odds."
+      },
+      "ticketGenerator": {
+        "title": "Gerador de bilhetes",
+        "desc": "Monte seu bilhete personalizado, salve-o, consulte seu histórico e compartilhe."
+      },
+      "aiCoach": {
+        "title": "Coach de IA",
+        "desc": "Analisa suas apostas passadas e te ajuda a evoluir."
+      },
+      "tipsterMarketplace": {
+        "title": "Marketplace de tipsters",
+        "desc": "Siga os melhores tipsters, veja seus rankings e assine seus palpites."
+      },
+      "transparency": {
+        "title": "Transparência total",
+        "desc": "Nossa taxa de acerto real é pública, em uma página dedicada."
+      }
+    },
     "exampleTitle": "Um exemplo real",
     "exampleDesc": "Aqui está um palpite real gerado hoje pelo nosso algoritmo — você terá dezenas como este todos os dias.",
     "start": "Continuar",
@@ -537,6 +562,9 @@
     "displayNamePlaceholder": "Seu nome público",
     "bioLabel": "Bio",
     "bioPlaceholder": "Fale um pouco sobre você... time favorito, estilo de jogo...",
+    "phoneLabel": "Número de telefone",
+    "phonePlaceholder": "+221 77 123 45 67",
+    "phoneHint": "Usado para alertas por SMS e para entrar em contato se necessário.",
     "notifications": "Notificações",
     "emailAlerts": "Alertas por e-mail",
     "smsAlerts": "Alertas por SMS",
@@ -1062,6 +1090,10 @@
     "sent": "E-mail de verificação enviado! Confira sua caixa de entrada.",
     "checkInbox": "Confira sua caixa de entrada para confirmar seu endereço.",
     "error": "Erro ao enviar. Tente novamente mais tarde."
+  },
+  "incompleteProfileBanner": {
+    "message": "Falta informação no seu perfil.",
+    "cta": "Completar"
   },
   "bets": {
     "title": "Acompanhamento dos meus palpites",

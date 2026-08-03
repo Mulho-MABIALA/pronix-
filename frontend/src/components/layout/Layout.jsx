@@ -4,6 +4,7 @@ import BottomNav from './BottomNav';
 import Disclaimer from './Disclaimer';
 import PWABanner from '../ui/PWABanner';
 import EmailVerifyBanner from '../ui/EmailVerifyBanner';
+import IncompleteProfileBanner from '../ui/IncompleteProfileBanner';
 import TrialBanner from '../ui/TrialBanner';
 import SupportChat from '../ai/SupportChat';
 import { useSwipeBack } from '../../hooks/useSwipeBack';
@@ -16,6 +17,7 @@ export default function Layout() {
       <Header />
       <TrialBanner />
       <EmailVerifyBanner />
+      <IncompleteProfileBanner />
       {/* pb-32 mobile (8rem) couvre la pastille flottante (64px + 0.6rem d'écart
           au bord) + safe-area iPhone ~34px + marge de respiration */}
       <main className="flex-1 pb-32 md:pb-0">

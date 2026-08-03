@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Zap, Search, Check } from 'lucide-react';
+import { Zap, Search, Check, Sparkles, Ticket, MessageCircle, Trophy, ShieldCheck, ArrowRight } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
@@ -30,11 +30,22 @@ const CURRENCY_OPTIONS = [
 
 const SUPPORTED_LANGS = ['fr', 'en', 'es', 'pt'];
 
+// Écran d'intro (étape 0) — explique ce que fpronix propose réellement avant
+// de plonger dans le choix des championnats/préférences.
+const INTRO_FEATURES = [
+  { Icon: Sparkles,      key: 'aiPredictions' },
+  { Icon: Ticket,        key: 'ticketGenerator' },
+  { Icon: MessageCircle, key: 'aiCoach' },
+  { Icon: Trophy,        key: 'tipsterMarketplace' },
+  { Icon: ShieldCheck,   key: 'transparency' },
+];
+
 export default function Onboarding() {
   const { t, i18n } = useTranslation();
   const { refreshUser } = useAuth();
   const { currency: detectedCurrency } = useCurrency();
   const navigate = useNavigate();
+  const [step, setStep] = useState(0);
   const [selected, setSelected] = useState([]);
   const [leagueSearch, setLeagueSearch] = useState('');
   const [loading, setLoading] = useState(false);
@@ -89,6 +100,40 @@ export default function Onboarding() {
       setLoading(false);
     }
   };
+
+  // Étape 0 : écran d'intro "c'est quoi fpronix" — s'affiche juste après
+  // l'inscription, avant de demander les championnats/préférences.
+  if (step === 0) {
+    return (
+      <div className="min-h-dvh bg-surface-900 flex items-center justify-center px-4 py-12">
+        <div className="w-full max-w-md space-y-6 animate-slide-up">
+          <div className="text-center">
+            <img src="/logo-circle.png" alt="fpronix" className="w-16 h-16 mx-auto rounded-full" />
+            <h1 className="font-display font-bold text-2xl text-ink-1 mt-3">{t('onboarding.introTitle')}</h1>
+            <p className="text-ink-4 mt-2 text-sm">{t('onboarding.introSubtitle')}</p>
+          </div>
+
+          <div className="bento-card p-4 space-y-3.5">
+            {INTRO_FEATURES.map(({ Icon, key }) => (
+              <div key={key} className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary-500/15 flex items-center justify-center shrink-0">
+                  <Icon size={16} className="text-primary-400" />
+                </div>
+                <div className="min-w-0 pt-1">
+                  <p className="text-sm font-semibold text-ink-1">{t(`onboarding.introFeatures.${key}.title`)}</p>
+                  <p className="text-xs text-ink-4 mt-0.5 leading-relaxed">{t(`onboarding.introFeatures.${key}.desc`)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <button onClick={() => setStep(1)} className="btn-primary w-full flex items-center justify-center gap-2">
+            {t('onboarding.introNext')} <ArrowRight size={16} />
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-dvh bg-surface-900 flex items-center justify-center px-4 py-12">

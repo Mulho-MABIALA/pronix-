@@ -19,6 +19,7 @@ router.patch('/me', async (req, res, next) => {
     const schema = z.object({
       displayName: z.string().max(50).optional(),
       bio: z.string().max(300).optional(),
+      phone: z.string().max(30).optional().nullable(),
       // avatar : URL externe (Google) ou data:image base64 (upload local, max ~180 KB)
       avatar: z.string().max(250000).optional().nullable(),
       favoriteTeams: z.array(z.string()).max(10).optional(),

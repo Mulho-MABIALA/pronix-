@@ -191,7 +191,17 @@
       "over15": "Plus de 1.5",
       "btts": "BTTS Oui",
       "1X": "Double 1X",
-      "X2": "Double X2"
+      "X2": "Double X2",
+      "12": "Dom. ou Ext.",
+      "under25": "Moins de 2.5",
+      "nobtts": "BTTS Non",
+      "over35": "Plus de 3.5"
+    },
+    "marketNames": {
+      "1X2": "1X2",
+      "Over/Under": "Total buts",
+      "BTTS": "BTTS",
+      "Double chance": "Double chance"
     },
     "confidenceLevels": {
       "high": "Élevée",
@@ -269,8 +279,10 @@
     "oddsInfoDisclaimer": "Cotes fournies à titre informatif — pas un conseil de pari.",
     "pickMarketLabels": {
       "1": "Victoire domicile", "X": "Match nul", "2": "Victoire extérieur",
-      "1X": "Double chance 1X", "X2": "Double chance X2",
-      "over25": "Plus de 2.5 buts", "over15": "Plus de 1.5 buts", "btts": "Les 2 équipes marquent"
+      "1X": "Double chance 1X", "X2": "Double chance X2", "12": "Domicile ou Extérieur",
+      "over25": "Plus de 2.5 buts", "over15": "Plus de 1.5 buts", "over35": "Plus de 3.5 buts",
+      "under25": "Moins de 2.5 buts",
+      "btts": "Les 2 équipes marquent", "nobtts": "Une équipe ne marque pas"
     },
     "predictions": {
       "HOME_WIN": "1 — Victoire domicile",
@@ -696,7 +708,8 @@
     },
     "pickLabels": {
       "1": "Domicile", "X": "Nul", "2": "Extérieur",
-      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2"
+      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2",
+      "12": "12", "under25": "U2.5", "nobtts": "BTTS Non", "over35": "O3.5"
     },
     "aiSectionTitle": "Affiner sur nos pronostics IA",
     "advancedSectionTitle": "Filtres statistiques avancés",
@@ -925,7 +938,8 @@
       "dnb1": "DNB1", "dnb2": "DNB2",
       "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
       "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
-      "btts": "BTTS✓", "nobtts": "BTTSx"
+      "btts": "BTTS✓", "nobtts": "BTTSx",
+      "ht1": "MT1", "htX": "MTX", "ht2": "MT2", "htover15": "MT+1.5", "htunder15": "MT-1.5"
     },
     "marketGroups": {
       "resultats": {

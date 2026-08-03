@@ -183,7 +183,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
         </div>
         {/* Market visible sur mobile seulement */}
         <p className="text-xs mt-0.5 sm:hidden leading-tight">
-          {pred.bestPick.market && <span className="text-ink-4">{pred.bestPick.market} · </span>}
+          {pred.bestPick.market && <span className="text-ink-4">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })} · </span>}
           <span className={`font-semibold ${pickColor.text}`}>{pickLabel}</span>
         </p>
       </div>
@@ -200,7 +200,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
 
       {/* Pick (desktop) */}
       <div className="shrink-0 w-28 hidden sm:block text-right">
-        <p className="text-xs text-ink-4 leading-tight">{pred.bestPick.market}</p>
+        <p className="text-xs text-ink-4 leading-tight">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })}</p>
         <p className={`text-[12px] font-bold leading-tight ${pickColor.text}`}>{pickLabel}</p>
       </div>
 

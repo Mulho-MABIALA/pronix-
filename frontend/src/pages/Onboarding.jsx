@@ -128,7 +128,7 @@ export default function Onboarding() {
                           {m.homeTeam} – {m.awayTeam}
                         </p>
                         <p className="text-[11px] text-ink-4 truncate">
-                          {pick.market ? `${pick.market} · ` : ''}{pickLabel}
+                          {pick.market ? `${t(`pronostics.marketNames.${pick.market}`, { defaultValue: pick.market })} · ` : ''}{pickLabel}
                         </p>
                       </div>
                       <span className="text-xs font-bold text-primary-400 shrink-0">{pick.prob}%</span>

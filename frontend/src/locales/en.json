@@ -191,7 +191,17 @@
       "over15": "Over 1.5",
       "btts": "BTTS Yes",
       "1X": "Double 1X",
-      "X2": "Double X2"
+      "X2": "Double X2",
+      "12": "Home or Away",
+      "under25": "Under 2.5",
+      "nobtts": "BTTS No",
+      "over35": "Over 3.5"
+    },
+    "marketNames": {
+      "1X2": "1X2",
+      "Over/Under": "Over/Under",
+      "BTTS": "BTTS",
+      "Double chance": "Double Chance"
     },
     "confidenceLevels": {
       "high": "High",
@@ -269,8 +279,10 @@
     "oddsInfoDisclaimer": "Odds provided for information only — not betting advice.",
     "pickMarketLabels": {
       "1": "Home win", "X": "Draw", "2": "Away win",
-      "1X": "Double chance 1X", "X2": "Double chance X2",
-      "over25": "Over 2.5 goals", "over15": "Over 1.5 goals", "btts": "Both teams to score"
+      "1X": "Double chance 1X", "X2": "Double chance X2", "12": "Home or Away",
+      "over25": "Over 2.5 goals", "over15": "Over 1.5 goals", "over35": "Over 3.5 goals",
+      "under25": "Under 2.5 goals",
+      "btts": "Both teams to score", "nobtts": "Not both teams to score"
     },
     "predictions": {
       "HOME_WIN": "1 — Home win",
@@ -696,7 +708,8 @@
     },
     "pickLabels": {
       "1": "Home", "X": "Draw", "2": "Away",
-      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2"
+      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2",
+      "12": "12", "under25": "U2.5", "nobtts": "BTTS No", "over35": "O3.5"
     },
     "aiSectionTitle": "Refine on our AI tips",
     "advancedSectionTitle": "Advanced statistical filters",
@@ -925,7 +938,8 @@
       "dnb1": "DNB1", "dnb2": "DNB2",
       "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
       "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
-      "btts": "BTTS✓", "nobtts": "BTTSx"
+      "btts": "BTTS✓", "nobtts": "BTTSx",
+      "ht1": "HT1", "htX": "HTX", "ht2": "HT2", "htover15": "HT+1.5", "htunder15": "HT-1.5"
     },
     "marketGroups": {
       "resultats": {

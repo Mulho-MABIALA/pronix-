@@ -585,10 +585,10 @@ export default function Pronostics() {
       <div className="flex items-center gap-1">
         <button
           onClick={() => setTabOffset((o) => o - 1)}
-          className="p-1.5 rounded-lg text-ink-3 hover:text-ink-2 hover:bg-overlay/[0.05] shrink-0 transition-colors"
+          className="p-1.5 rounded-full bg-select-500/15 border border-select-500/30 text-select-400 hover:bg-select-500/25 hover:border-select-500/50 shrink-0 transition-colors"
           title={t('pronostics.prevDays')}
         >
-          <ChevronLeft size={16} />
+          <ChevronLeft size={18} />
         </button>
 
         <div className="flex gap-1.5 overflow-x-auto scrollbar-hide flex-1">
@@ -614,10 +614,10 @@ export default function Pronostics() {
 
         <button
           onClick={() => setTabOffset((o) => o + 1)}
-          className="p-1.5 rounded-lg text-ink-3 hover:text-ink-2 hover:bg-overlay/[0.05] shrink-0 transition-colors"
+          className="p-1.5 rounded-full bg-select-500/15 border border-select-500/30 text-select-400 hover:bg-select-500/25 hover:border-select-500/50 shrink-0 transition-colors"
           title={t('pronostics.nextDays')}
         >
-          <ChevronRight size={16} />
+          <ChevronRight size={18} />
         </button>
       </div>
 

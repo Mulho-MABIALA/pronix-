@@ -399,7 +399,34 @@
     "stats": {
       "tipsters": "Tipsters activos",
       "pronostics": "Pronósticos publicados",
-      "successRate": "Tasa de acierto media"
+      "successRate": "Tasa de acierto media",
+      "viewFull": "Ver el balance completo y verificable",
+      "updatedAt": "Actualizado {{date}}"
+    },
+    "diff": {
+      "title": "¿Por qué pagar en lugar de quedarte en un grupo gratuito?",
+      "subtitle": "Lo que fpronix hace y los canales gratuitos de Telegram/WhatsApp no pueden.",
+      "proof": {
+        "title": "Un balance que no se puede falsear",
+        "desc": "Cada pronóstico publicado se compara con el resultado real y queda visible públicamente, ganado o perdido. Sin mensajes borrados, sin cifras inventadas.",
+        "link": "Ver el balance completo"
+      },
+      "reason": {
+        "title": "Un razonamiento, no solo un número",
+        "desc": "Forma reciente, enfrentamientos directos, lesiones, alineaciones probables — la IA explica por qué. No recibes solo \"1 al 65%\" sin justificación."
+      },
+      "live": {
+        "title": "El partido no termina en el descanso",
+        "desc": "Córners, próximo gol, marcador exacto — las probabilidades se recalculan en vivo mientras se juega el partido."
+      },
+      "tools": {
+        "title": "Herramientas, no solo mensajes",
+        "desc": "Registro de apuestas con tu propia tasa de acierto, comparador de equipos, ranking de tipsters con su balance real — no un flujo que tienes que ordenar tú mismo."
+      },
+      "serious": {
+        "title": "La seriedad ante todo",
+        "desc": "Autoexclusión, recursos de ayuda, ninguna promesa de ganancia garantizada — fpronix está hecho para durar, no para vender un sueño."
+      }
     },
     "billing": {
       "weekly": "Semanal",
@@ -439,7 +466,9 @@
       "q3": "¿Cómo cancelo mi suscripción?",
       "a3": "Desde tu perfil, en cualquier momento, con un clic. Tu acceso permanece activo hasta el final del período pagado — sin reembolso prorrateado.",
       "q4": "¿Qué medios de pago se aceptan?",
-      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money y tarjeta bancaria Visa/Mastercard — vía GeniusPay, plataforma certificada."
+      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money y tarjeta bancaria Visa/Mastercard — vía GeniusPay, plataforma certificada.",
+      "q5": "¿Por qué pagar si hay grupos de pronósticos gratuitos?",
+      "a5": "Porque un grupo gratuito no prueba nada: nadie verifica si realmente acierta, y los mensajes fallidos simplemente desaparecen. En fpronix, el balance de cada pronóstico es público y no se puede falsear — eso es lo que pagas: la prueba, no solo el tip."
     },
     "disclaimer": "fpronix no garantiza ninguna ganancia. Los pronósticos se ofrecen únicamente con fines informativos. Juega de forma responsable —",
     "disclaimerLink": "ayuda para jugadores"

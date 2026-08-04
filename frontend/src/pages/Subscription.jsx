@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
-import { Shield, Lock, RefreshCw, Check, Star, Users, TrendingUp, Zap, AlertTriangle } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { format } from 'date-fns';
+import { fr, enUS } from 'date-fns/locale';
+import {
+  Shield, Lock, RefreshCw, Check, Star, Users, TrendingUp, Zap, AlertTriangle,
+  ShieldCheck, MessageCircle, Radio, HeartHandshake, ArrowRight,
+} from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -176,7 +181,8 @@ function ConfirmPaymentModal({ plan, billingCycle, price, onCancel, onConfirm, l
 }
 
 export default function Subscription() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   usePageMeta(t('subscription.metaTitle'), t('subscription.metaDesc'));
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
@@ -191,10 +197,15 @@ export default function Subscription() {
     { icon: Shield,    label: t('subscription.trust.noCommit') },
   ];
 
-  const STATS = [
-    { value: '500+', label: t('subscription.stats.tipsters') },
-    { value: '10K+', label: t('subscription.stats.pronostics') },
-    { value: '68%',  label: t('subscription.stats.successRate') },
+  // Ce qui différencie fpronix d'un groupe Telegram/WhatsApp gratuit — la
+  // vraie raison de payer, pas juste "plus de pronostics". Chaque item
+  // pointe vers quelque chose de concret et déjà construit dans l'app.
+  const DIFF_ITEMS = [
+    { icon: ShieldCheck,    title: t('subscription.diff.proof.title'),  desc: t('subscription.diff.proof.desc'),  link: '/transparence', linkLabel: t('subscription.diff.proof.link') },
+    { icon: MessageCircle,  title: t('subscription.diff.reason.title'), desc: t('subscription.diff.reason.desc') },
+    { icon: Radio,          title: t('subscription.diff.live.title'),   desc: t('subscription.diff.live.desc') },
+    { icon: TrendingUp,     title: t('subscription.diff.tools.title'),  desc: t('subscription.diff.tools.desc') },
+    { icon: HeartHandshake, title: t('subscription.diff.serious.title'), desc: t('subscription.diff.serious.desc') },
   ];
 
   const FAQ_ITEMS = [
@@ -202,6 +213,7 @@ export default function Subscription() {
     { q: t('subscription.faq.q2'), a: t('subscription.faq.a2') },
     { q: t('subscription.faq.q3'), a: t('subscription.faq.a3') },
     { q: t('subscription.faq.q4'), a: t('subscription.faq.a4') },
+    { q: t('subscription.faq.q5'), a: t('subscription.faq.a5') },
   ];
 
   const { data } = useQuery({
@@ -209,6 +221,17 @@ export default function Subscription() {
     queryFn: () => api.get('/subscriptions/plans').then((r) => r.data),
     staleTime: Infinity,
   });
+
+  // Bilan public réel (même source que /transparence) — remplace les
+  // chiffres marketing arrondis par des chiffres vérifiables, mis à jour
+  // automatiquement à chaque match terminé. C'est la preuve, pas juste
+  // l'argument.
+  const { data: transparencyRes, isLoading: statsLoading } = useQuery({
+    queryKey: ['transparency-stats'],
+    queryFn: () => api.get('/transparency').then((r) => r.data),
+    staleTime: 15 * 60 * 1000,
+  });
+  const trStats = transparencyRes?.data;
 
   // Afficher FREE + PREMIUM + LIFETIME
   const allPlans    = data?.data || [];
@@ -259,14 +282,64 @@ export default function Subscription() {
         </p>
       </div>
 
-      {/* Statistiques de confiance */}
-      <div className="grid grid-cols-3 gap-4">
-        {STATS.map(({ value, label }) => (
-          <div key={label} className="bento-card text-center py-4">
-            <p className="text-2xl font-display font-bold text-primary-400">{value}</p>
-            <p className="text-xs text-ink-3 mt-1">{label}</p>
+      {/* Différenciation — pourquoi payer plutôt que rester sur un groupe gratuit */}
+      <section className="space-y-4">
+        <div className="text-center space-y-1.5">
+          <h2 className="font-display font-bold text-xl text-ink-1">{t('subscription.diff.title')}</h2>
+          <p className="text-ink-4 text-sm max-w-md mx-auto">{t('subscription.diff.subtitle')}</p>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {DIFF_ITEMS.map(({ icon: Icon, title, desc, link, linkLabel }) => (
+            <div key={title} className="bento-card flex items-start gap-3">
+              <div className="w-9 h-9 rounded-lg bg-primary-500/15 text-primary-400 flex items-center justify-center shrink-0">
+                <Icon size={17} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-ink-1">{title}</p>
+                <p className="text-xs text-ink-3 mt-1 leading-relaxed">{desc}</p>
+                {link && (
+                  <Link to={link} className="inline-flex items-center gap-1 text-xs font-semibold text-primary-400 hover:text-primary-300 mt-2">
+                    {linkLabel} <ArrowRight size={12} />
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Bilan réel et vérifiable — mêmes chiffres que /transparence, pas des
+          nombres marketing arrondis. Affiche un tiret discret pendant le
+          chargement plutôt qu'une fausse valeur. */}
+      <div className="space-y-2">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bento-card text-center py-4">
+            <p className="text-2xl font-display font-bold text-primary-400">
+              {statsLoading ? '—' : `${trStats?.ai?.successRate ?? 0}%`}
+            </p>
+            <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.successRate')}</p>
           </div>
-        ))}
+          <div className="bento-card text-center py-4">
+            <p className="text-2xl font-display font-bold text-primary-400">
+              {statsLoading ? '—' : new Intl.NumberFormat('fr-FR').format((trStats?.ai?.totalPicks ?? 0) + (trStats?.tipsters?.totalPicks ?? 0))}
+            </p>
+            <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.pronostics')}</p>
+          </div>
+          <div className="bento-card text-center py-4">
+            <p className="text-2xl font-display font-bold text-primary-400">
+              {statsLoading ? '—' : (trStats?.tipsters?.activeTipsters ?? 0)}
+            </p>
+            <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.tipsters')}</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-center gap-3 text-[11px] text-ink-4">
+          <Link to="/transparence" className="inline-flex items-center gap-1 font-semibold text-primary-400 hover:text-primary-300">
+            {t('subscription.stats.viewFull')} <ArrowRight size={11} />
+          </Link>
+          {trStats?.generatedAt && (
+            <span>{t('subscription.stats.updatedAt', { date: format(new Date(trStats.generatedAt), 'd MMM, HH:mm', { locale: dateLocale }) })}</span>
+          )}
+        </div>
       </div>
 
       {/* Cycle de facturation */}

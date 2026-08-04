@@ -399,7 +399,34 @@
     "stats": {
       "tipsters": "Active tipsters",
       "pronostics": "Published tips",
-      "successRate": "Average success rate"
+      "successRate": "Average success rate",
+      "viewFull": "See the full, verifiable track record",
+      "updatedAt": "Updated {{date}}"
+    },
+    "diff": {
+      "title": "Why pay instead of sticking with a free group?",
+      "subtitle": "What fpronix does that free Telegram/WhatsApp channels can't.",
+      "proof": {
+        "title": "A track record that can't be faked",
+        "desc": "Every published pick is checked against the real result and stays public, win or loss. No deleted messages, no made-up numbers.",
+        "link": "See the full track record"
+      },
+      "reason": {
+        "title": "A reason, not just a number",
+        "desc": "Recent form, head-to-head history, injuries, likely lineups — the AI explains why. You don't just get \"1 at 65%\" with no justification."
+      },
+      "live": {
+        "title": "The match doesn't stop at half-time",
+        "desc": "Corners, next goal, exact score — probabilities recalculate live while the match is being played."
+      },
+      "tools": {
+        "title": "Tools, not just messages",
+        "desc": "A bet tracker with your own success rate, a team comparator, a tipster leaderboard with real track records — not a feed you have to sort through yourself."
+      },
+      "serious": {
+        "title": "Seriousness first",
+        "desc": "Self-exclusion, help resources, no guaranteed-win promises — fpronix is built to last, not to sell a dream."
+      }
     },
     "billing": {
       "weekly": "Weekly",
@@ -439,7 +466,9 @@
       "q3": "How do I cancel my subscription?",
       "a3": "From your profile, at any time, with one click. Your access remains active until the end of the paid period — no prorated refund.",
       "q4": "What payment methods are accepted?",
-      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money, and Visa/Mastercard — via GeniusPay, a certified platform."
+      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money, and Visa/Mastercard — via GeniusPay, a certified platform.",
+      "q5": "Why pay when there are free prediction groups?",
+      "a5": "Because a free group proves nothing — no one checks if it actually wins, and failed picks just disappear. On fpronix, every pick's track record is public and can't be faked — that's what you're paying for: proof, not just a tip."
     },
     "disclaimer": "fpronix guarantees no winnings. Predictions are provided for informational purposes only. Bet responsibly —",
     "disclaimerLink": "player support"

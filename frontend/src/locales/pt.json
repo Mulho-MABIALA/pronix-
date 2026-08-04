@@ -399,7 +399,34 @@
     "stats": {
       "tipsters": "Tipsters ativos",
       "pronostics": "Palpites publicados",
-      "successRate": "Taxa de acerto média"
+      "successRate": "Taxa de acerto média",
+      "viewFull": "Ver o histórico completo e verificável",
+      "updatedAt": "Atualizado em {{date}}"
+    },
+    "diff": {
+      "title": "Por que pagar em vez de ficar num grupo gratuito?",
+      "subtitle": "O que a fpronix faz que os canais gratuitos do Telegram/WhatsApp não conseguem.",
+      "proof": {
+        "title": "Um histórico que não pode ser falsificado",
+        "desc": "Cada palpite publicado é comparado com o resultado real e permanece público, vitória ou derrota. Sem mensagens apagadas, sem números inventados.",
+        "link": "Ver o histórico completo"
+      },
+      "reason": {
+        "title": "Um raciocínio, não só um número",
+        "desc": "Forma recente, confrontos diretos, lesões, escalações prováveis — a IA explica o porquê. Você não recebe só \"1 a 65%\" sem justificativa."
+      },
+      "live": {
+        "title": "O jogo não para no intervalo",
+        "desc": "Escanteios, próximo gol, placar exato — as probabilidades são recalculadas ao vivo enquanto o jogo acontece."
+      },
+      "tools": {
+        "title": "Ferramentas, não só mensagens",
+        "desc": "Carteira de apostas com sua própria taxa de acerto, comparador de equipes, ranking de tipsters com histórico real — não um feed que você precisa organizar sozinho."
+      },
+      "serious": {
+        "title": "Seriedade em primeiro lugar",
+        "desc": "Autoexclusão, recursos de ajuda, nenhuma promessa de ganho garantido — a fpronix é feita para durar, não para vender um sonho."
+      }
     },
     "billing": {
       "weekly": "Semanal",
@@ -439,7 +466,9 @@
       "q3": "Como cancelo minha assinatura?",
       "a3": "No seu perfil, a qualquer momento, com um clique. Seu acesso permanece ativo até o fim do período pago — sem reembolso proporcional.",
       "q4": "Quais formas de pagamento são aceitas?",
-      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money e cartão Visa/Mastercard — via GeniusPay, plataforma certificada."
+      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money e cartão Visa/Mastercard — via GeniusPay, plataforma certificada.",
+      "q5": "Por que pagar se existem grupos de palpites gratuitos?",
+      "a5": "Porque um grupo gratuito não prova nada: ninguém verifica se ele realmente acerta, e os palpites errados simplesmente somem. Na fpronix, o histórico de cada palpite é público e não pode ser falsificado — é isso que você paga: a prova, não só o palpite."
     },
     "disclaimer": "fpronix não garante nenhum ganho. Os palpites são fornecidos apenas para fins informativos. Jogue com responsabilidade —",
     "disclaimerLink": "ajuda ao jogador"

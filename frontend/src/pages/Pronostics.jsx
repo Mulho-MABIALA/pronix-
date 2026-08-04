@@ -1,11 +1,11 @@
 import { useState, useMemo, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { format, subDays, addDays, isToday, isYesterday, isTomorrow, isPast, startOfDay } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import {
-  TrendingUp, Search, Lock, Zap, ChevronLeft, ChevronRight, Info, CheckCircle2, XCircle, Trophy, SlidersHorizontal,
+  TrendingUp, Search, Lock, Zap, ChevronLeft, ChevronRight, ChevronDown, Info, CheckCircle2, XCircle, Trophy, SlidersHorizontal,
 } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
@@ -19,6 +19,37 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { useLiveMarkets } from '../hooks/useLiveMarkets';
 import { useAuth } from '../context/AuthContext';
+import { bestPickInGroup, bestLivePickInGroup } from '../utils/markets';
+
+// Marchés regroupés par catégorie pour les nouveaux filtres Pronostics — même
+// principe que le sélecteur de Machine.jsx (utils/markets.js), mais ici on
+// affiche/filtre par CATÉGORIE plutôt que par marché précis (une page de
+// consultation n'a pas besoin d'un niveau de détail aussi fin que le
+// générateur). "corners" exige un historique réel (requireRealCornerData) —
+// pas de repli neutre sur cette page, contrairement à Machine.jsx.
+const CATEGORY_MARKETS = {
+  scoreexact: ['exactscore'],
+  handicap: ['h1m1', 'h2m1'],
+  multibuts: ['mb1_2plus', 'mb2_2plus', 'cleansheet1', 'cleansheet2'],
+  corners: ['corner1', 'cornerX', 'corner2', 'cornerOver85', 'cornerUnder85', 'cornerOver95', 'cornerUnder95', 'cornerOver105', 'cornerUnder105', 'cornerHandHome25', 'cornerHandAway25'],
+};
+const LIVE_CATEGORY_MARKETS = ['live1', 'liveX', 'live2', 'liveOver05', 'liveUnder05', 'liveOver15', 'liveUnder15', 'liveOver25', 'liveUnder25', 'liveOver35', 'liveUnder35', 'liveCornerOver75', 'liveCornerUnder75', 'liveCornerOver85', 'liveCornerUnder85', 'liveCornerOver95', 'liveCornerUnder95', 'liveCornerOver105', 'liveCornerUnder105'];
+
+// Groupes affichés dans le panneau "Voir tous les picks" par match (repli du
+// "Les deux" demandé : filtre par catégorie + vue étendue par match). Labels
+// réutilisés depuis machine.marketGroups.*.label (déjà traduits en 4 langues,
+// pas de nouvelle clé i18n nécessaire pour ce panneau).
+const ALL_PICKS_GROUPS = [
+  { id: 'resultats',    markets: ['1', 'X', '2'] },
+  { id: 'doublechance', markets: ['1X', 'X2', '12'] },
+  { id: 'overunder',    markets: ['over15', 'over25', 'over35', 'under25'] },
+  { id: 'btts',         markets: ['btts', 'nobtts'] },
+  { id: 'mitemps',      markets: ['ht1', 'htX', 'ht2'] },
+  { id: 'scoreexact',   markets: CATEGORY_MARKETS.scoreexact },
+  { id: 'handicap',     markets: CATEGORY_MARKETS.handicap },
+  { id: 'multibuts',    markets: CATEGORY_MARKETS.multibuts },
+  { id: 'corners',      markets: CATEGORY_MARKETS.corners, requireRealCornerData: true },
+];
 
 // Meilleure issue live (1X2) à partir de /matches/:id/live-markets — pour
 // afficher un pick "à l'instant T" à la place du pick pré-match statique
@@ -34,7 +65,7 @@ function bestLiveOutcome(liveData) {
 
 // ─── Constantes ────────────────────────────────────────────────────────────────
 
-const MARKET_KEYS = ['all', '1X2', 'btts', 'goals', 'dc'];
+const MARKET_KEYS = ['all', '1X2', 'btts', 'goals', 'dc', 'scoreexact', 'handicap', 'multibuts', 'corners', 'live'];
 const MARKET_TYPES = {
   all: null, '1X2': ['1', 'X', '2'], btts: ['btts'], goals: ['over25', 'over15'], dc: ['1X', 'X2'],
 };
@@ -43,14 +74,51 @@ const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club 
 const isFriendlyMatch = (m) =>
   FRIENDLY_KEYWORDS.some((kw) => (m.competition?.name || '').toLowerCase().includes(kw));
 
-// Vérifie si un pick s'est réalisé au vu du score final
-function pickIsCorrect(pt, h, a) {
-  return (
-    (pt === '1'      && h > a)  || (pt === 'X'  && h === a) || (pt === '2'  && a > h)  ||
-    (pt === '1X'     && h >= a) || (pt === 'X2' && a >= h)  ||
-    (pt === 'over25' && h + a > 2.5) || (pt === 'over15' && h + a > 1.5) ||
-    (pt === 'btts'   && h > 0 && a > 0)
-  );
+// Vérifie si un pick s'est réalisé au vu du score final (et des corners
+// finaux du match le cas échéant, pour les marchés corners). Retourne null
+// (pas boolean) pour un type inconnu ou une donnée manquante — évite
+// d'afficher une croix rouge trompeuse quand on ne peut pas vraiment savoir.
+function pickIsCorrect(pt, h, a, match) {
+  if (pt === '1') return h > a;
+  if (pt === 'X') return h === a;
+  if (pt === '2') return a > h;
+  if (pt === '1X') return h >= a;
+  if (pt === 'X2') return a >= h;
+  if (pt === '12') return h !== a;
+  if (pt === 'over05') return h + a > 0.5;
+  if (pt === 'over15') return h + a > 1.5;
+  if (pt === 'over25') return h + a > 2.5;
+  if (pt === 'over35') return h + a > 3.5;
+  if (pt === 'under15') return h + a <= 1.5;
+  if (pt === 'under25') return h + a <= 2.5;
+  if (pt === 'under35') return h + a <= 3.5;
+  if (pt === 'btts') return h > 0 && a > 0;
+  if (pt === 'nobtts') return h === 0 || a === 0;
+  if (pt === 'h1m1') return h - a >= 2;
+  if (pt === 'h2m1') return a - h >= 2;
+  if (pt === 'mb1_2plus') return h >= 2;
+  if (pt === 'mb2_2plus') return a >= 2;
+  if (pt === 'cleansheet1') return h > a && a === 0;
+  if (pt === 'cleansheet2') return a > h && h === 0;
+  if (pt === 'totalpair') return (h + a) % 2 === 0;
+  if (pt === 'totalimpair') return (h + a) % 2 === 1;
+  if (/^\d+-\d+$/.test(pt)) return pt === `${h}-${a}`; // score exact (pré-match ou live)
+  if (pt.startsWith('corner')) {
+    const hc = match?.homeCorners, ac = match?.awayCorners;
+    if (hc == null || ac == null) return null;
+    if (pt === 'corner1') return hc > ac;
+    if (pt === 'cornerX') return hc === ac;
+    if (pt === 'corner2') return ac > hc;
+    if (pt === 'cornerOver85')  return hc + ac > 8.5;
+    if (pt === 'cornerUnder85') return hc + ac <= 8.5;
+    if (pt === 'cornerOver95')  return hc + ac > 9.5;
+    if (pt === 'cornerUnder95') return hc + ac <= 9.5;
+    if (pt === 'cornerOver105')  return hc + ac > 10.5;
+    if (pt === 'cornerUnder105') return hc + ac <= 10.5;
+    if (pt === 'cornerHandHome25') return hc - ac >= 3;
+    if (pt === 'cornerHandAway25') return ac - hc >= 3;
+  }
+  return null;
 }
 
 // Calcule {correct, total, pct} sur une liste de matchs terminés
@@ -59,7 +127,7 @@ function buildBilan(list) {
   for (const m of list) {
     const pt = m.predictions?.bestPick?.type;
     if (!pt) continue;
-    if (pickIsCorrect(pt, m.homeScore, m.awayScore)) correct++;
+    if (pickIsCorrect(pt, m.homeScore, m.awayScore, m)) correct++;
   }
   const total = list.length;
   return { correct, total, pct: total ? Math.round((correct / total) * 100) : 0 };
@@ -96,11 +164,22 @@ const CONF_COLOR = {
   low:    { color: 'text-ink-3',    dot: 'bg-gray-500',    bar: 'bg-gray-600' },
 };
 
-function PronoRow({ match, index, oddsEnabled = true }) {
+function PronoRow({ match, index, oddsEnabled = true, activeMarket = 'all' }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { isPremium } = useAuth();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
+
+  // Panneau "Voir tous les picks" — replié par défaut, calculé seulement à
+  // l'ouverture pour ne pas alourdir le rendu de la liste (une centaine de
+  // lignes par jour).
+  const [expanded, setExpanded] = useState(false);
+  const allPicks = expanded
+    ? ALL_PICKS_GROUPS
+        .map((g) => ({ id: g.id, pick: bestPickInGroup(pred, g.markets, { requireRealCornerData: g.requireRealCornerData }) }))
+        .filter((g) => g.pick)
+    : [];
 
   const conf = CONF_COLOR[pred.confidence] || CONF_COLOR.low;
   // oddsEnabled=false pour les lignes floutées par le paywall — inutile
@@ -117,15 +196,31 @@ function PronoRow({ match, index, oddsEnabled = true }) {
   // Cascade au chargement — même logique que MatchCard.jsx
   const cascadeDelay = typeof index === 'number' ? Math.min(index * 40, 400) : 0;
 
-  const pickType  = pred.bestPick.type;
-  const pickLabel = t(`pronostics.pickShort.${pickType}`, { defaultValue: pred.bestPick.label });
+  // Filtre catégorie actif (scoreexact/handicap/multibuts/corners) : on affiche
+  // le meilleur pick DE CETTE CATÉGORIE plutôt que le bestPick global du match
+  // (quasi jamais un de ces marchés, structurellement moins probables qu'un
+  // simple 1X2/Over-Under). "corners" exige un historique réel — les matchs
+  // sans donnée réelle ont déjà été exclus par le filtre filteredMatches.
+  const categoryMarkets = CATEGORY_MARKETS[activeMarket];
+  const categoryPick = categoryMarkets
+    ? bestPickInGroup(pred, categoryMarkets, { requireRealCornerData: activeMarket === 'corners' })
+    : null;
+  const isCategoryPick = !!categoryPick;
+  const effectivePick = categoryPick || pred.bestPick;
+
+  const pickType  = effectivePick.type;
+  const pickLabel = isCategoryPick
+    ? (/^\d+-\d+$/.test(pickType) ? pickType : t(`pronostics.pickShort.${pickType}`, { defaultValue: pickType }))
+    : t(`pronostics.pickShort.${pickType}`, { defaultValue: pred.bestPick.label });
   const pickColor = getPickColor(pickType);
   const col       = pickType === '2' ? 'away' : pickType === 'X' ? 'draw' : 'home';
-  const realOdd   = realOdds?.best?.[col] ?? null;
+  // Cotes réelles indisponibles pour les picks de catégorie (exact score,
+  // handicap, corners...) — pas de correspondance directe home/draw/away.
+  const realOdd   = !isCategoryPick ? (realOdds?.best?.[col] ?? null) : null;
   const isReal    = !!realOdd;
-  const odd       = realOdd ?? getOdd(pred.bestPick.prob, `${match.id}-${pickType}`);
-  const edge      = getValueEdge(pred.bestPick.prob, odd);
-  const value     = isValueBet(pred.bestPick.prob, odd);
+  const odd       = realOdd ?? getOdd(effectivePick.prob, `${match.id}-${pickType}`);
+  const edge      = getValueEdge(effectivePick.prob, odd);
+  const value     = isValueBet(effectivePick.prob, odd);
 
   // Infère le vrai statut : si l'heure est passée depuis +2h, le match est terminé même si la DB dit SCHEDULED/LIVE
   const kickoff       = new Date(match.scheduledAt);
@@ -138,7 +233,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
   // Résultat pour matchs terminés
   let resultCorrect = null;
   if (isFinished && match.homeScore !== null) {
-    resultCorrect = pickIsCorrect(pickType, match.homeScore, match.awayScore);
+    resultCorrect = pickIsCorrect(pickType, match.homeScore, match.awayScore, match);
   }
 
   const timeStr = match.status === 'FINISHED' && match.homeScore !== null
@@ -151,7 +246,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
 
   // Flash vert bref quand le score change pendant un match en direct —
   // même logique que MatchCard.jsx, isolée sur le bloc heure/score pour
-  // éviter la collision avec animate-cascade-in sur le <Link> parent.
+  // éviter la collision avec animate-cascade-in sur le conteneur parent.
   const prevScoreRef = useRef(`${match.homeScore}-${match.awayScore}`);
   const [scoreFlash, setScoreFlash] = useState(false);
   useEffect(() => {
@@ -166,10 +261,12 @@ function PronoRow({ match, index, oddsEnabled = true }) {
   }, [match.homeScore, match.awayScore, isLive]);
 
   return (
-    <Link
-      to={`/matchs/${match.id}`}
-      className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] border-b border-overlay/[0.09] last:border-0 transition-colors animate-cascade-in"
-      style={{ animationDelay: cascadeDelay ? `${cascadeDelay}ms` : undefined }}
+    <div className="border-b border-overlay/[0.09] last:border-0 animate-cascade-in" style={{ animationDelay: cascadeDelay ? `${cascadeDelay}ms` : undefined }}>
+    <div
+      role="link" tabIndex={0}
+      onClick={() => navigate(`/matchs/${match.id}`)}
+      onKeyDown={(e) => { if (e.key === 'Enter') navigate(`/matchs/${match.id}`); }}
+      className="flex items-center gap-2 sm:gap-3 px-3 py-2.5 hover:bg-overlay/[0.03] transition-colors cursor-pointer"
     >
       {/* Heure / Score */}
       <div className={`w-10 shrink-0 text-center rounded-md ${scoreFlash ? 'animate-flash' : ''}`}>
@@ -207,6 +304,11 @@ function PronoRow({ match, index, oddsEnabled = true }) {
                 {t(`pronostics.pickShort.${LIVE_TYPE_TO_PICKSHORT[liveBest.type]}`)} {liveBest.prob}%
               </span>
             </>
+          ) : isCategoryPick ? (
+            <>
+              <span className="text-ink-4">{t(`pronostics.marketFilters.${activeMarket}`)} · </span>
+              <span className={`font-semibold ${pickColor.text}`}>{pickLabel}</span>
+            </>
           ) : (
             <>
               {pred.bestPick.market && <span className="text-ink-4">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })} · </span>}
@@ -218,7 +320,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
 
       {/* Prob % + indicateur résultat */}
       <div className="shrink-0 w-10 text-right">
-        <span className={`text-[13px] font-bold ${conf.color}`}>{pred.bestPick.prob}%</span>
+        <span className={`text-[13px] font-bold ${conf.color}`}>{effectivePick.prob}%</span>
         {resultCorrect !== null && (
           <span className={`block text-[11px] font-bold ${resultCorrect ? 'text-primary-400' : 'text-red-400'}`}>
             {resultCorrect ? '✓' : '✗'}
@@ -235,6 +337,11 @@ function PronoRow({ match, index, oddsEnabled = true }) {
               {t(`pronostics.pickShort.${LIVE_TYPE_TO_PICKSHORT[liveBest.type]}`)} · {liveBest.prob}%
             </p>
           </>
+        ) : isCategoryPick ? (
+          <>
+            <p className="text-xs text-ink-4 leading-tight">{t(`pronostics.marketFilters.${activeMarket}`)}</p>
+            <p className={`text-[12px] font-bold leading-tight ${pickColor.text}`}>{pickLabel}</p>
+          </>
         ) : (
           <>
             <p className="text-xs text-ink-4 leading-tight">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })}</p>
@@ -248,13 +355,41 @@ function PronoRow({ match, index, oddsEnabled = true }) {
         <OddsChip odd={odd} isReal={isReal} />
         {value && <ValueBetBadge edge={edge} />}
       </div>
-    </Link>
+
+      {/* Voir tous les picks — repli du choix "Les deux" (filtre + vue étendue) */}
+      <button
+        type="button"
+        onClick={(e) => { e.stopPropagation(); setExpanded((v) => !v); }}
+        title={t('pronostics.allPicks')}
+        className="shrink-0 p-1 -mr-1 rounded-md text-ink-4 hover:text-ink-2 hover:bg-overlay/[0.06] transition-colors"
+      >
+        <ChevronDown size={14} className={`transition-transform ${expanded ? 'rotate-180' : ''}`} />
+      </button>
+    </div>
+
+    {expanded && (
+      <div className="px-3 pb-3 pt-0.5 flex flex-wrap gap-1.5">
+        {allPicks.length === 0 ? (
+          <p className="text-[11px] text-ink-4">{t('pronostics.noOtherPicks')}</p>
+        ) : (
+          allPicks.map(({ id, pick }) => (
+            <div key={id} className={`px-2 py-1 rounded-lg border text-[11px] ${getPickColor(pick.type).border} ${getPickColor(pick.type).bg}`}>
+              <span className="text-ink-4">{t(`machine.marketGroups.${id}.label`)} · </span>
+              <span className={`font-semibold ${getPickColor(pick.type).text}`}>
+                {/^\d+-\d+$/.test(pick.type) ? pick.type : t(`pronostics.pickShort.${pick.type}`, { defaultValue: pick.type })} {pick.prob}%
+              </span>
+            </div>
+          ))
+        )}
+      </div>
+    )}
+    </div>
   );
 }
 
 // ─── CompetitionGroup ──────────────────────────────────────────────────────────
 
-function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
+function CompetitionGroup({ name, logo, items, isPremium, globalIndex, activeMarket }) {
   const { t } = useTranslation();
   return (
     <div className="bento-card overflow-hidden p-0">
@@ -275,7 +410,7 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex }) {
           return (
             <div key={match.id} className={`relative ${isBlurred ? 'select-none' : ''}`}>
               <div className={isBlurred ? 'blur-sm pointer-events-none' : ''}>
-                <PronoRow match={match} index={localIdx} oddsEnabled={!isBlurred} />
+                <PronoRow match={match} index={localIdx} oddsEnabled={!isBlurred} activeMarket={activeMarket} />
               </div>
               {isBlurred && (
                 <div className="glass-panel absolute inset-0 flex items-center justify-center gap-2 z-10 rounded-none">
@@ -376,7 +511,12 @@ export default function Pronostics() {
       }
 
       // Filtre marché
-      if (activeMarket !== 'all') {
+      if (activeMarket === 'live') {
+        if (m.status !== 'LIVE') return false;
+      } else if (CATEGORY_MARKETS[activeMarket]) {
+        const pick = bestPickInGroup(m.predictions, CATEGORY_MARKETS[activeMarket], { requireRealCornerData: activeMarket === 'corners' });
+        if (!pick) return false;
+      } else if (activeMarket !== 'all') {
         const types = MARKET_TYPES[activeMarket];
         if (types && !types.includes(m.predictions.bestPick.type)) return false;
       }
@@ -655,7 +795,7 @@ export default function Pronostics() {
                 <span className="text-[10px] text-amber-500 shrink-0">{valueBets.length}</span>
               </div>
               {valueBets.map((m, i) => (
-                <PronoRow key={`vb-${m.id}`} match={m} index={i} />
+                <PronoRow key={`vb-${m.id}`} match={m} index={i} activeMarket={activeMarket} />
               ))}
               <p className="text-[9px] text-ink-5 px-3 py-2 border-t border-overlay/[0.09]">
                 {ODDS_DISCLAIMER}
@@ -681,6 +821,7 @@ export default function Pronostics() {
               items={items}
               isPremium={isPremium}
               globalIndex={startIdx}
+              activeMarket={activeMarket}
             />
           ))}
 

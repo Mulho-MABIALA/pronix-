@@ -198,6 +198,8 @@
       "over35": "Mais de 3.5"
     },
     "liveLabel": "Ao vivo",
+    "allPicks": "Ver todos os palpites",
+    "noOtherPicks": "Nenhum outro mercado disponível para este jogo.",
     "marketNames": {
       "1X2": "1X2",
       "Over/Under": "Mais/Menos",
@@ -214,7 +216,12 @@
       "oneXTwo": "1X2",
       "btts": "BTTS",
       "goals": "Número de gols",
-      "doubleChance": "Dupla chance"
+      "doubleChance": "Dupla chance",
+      "scoreexact": "Placar exato",
+      "handicap": "Handicap",
+      "multibuts": "Multi-gols",
+      "corners": "Escanteios",
+      "live": "🔴 Ao vivo"
     },
     "filtersToggle": "Filtros",
     "marketGlossary": "1X2: vitória do mandante (1), empate (X) ou vitória do visitante (2).\nBTTS: os dois times marcam.\nDupla chance: combina dois resultados (ex. 1X = mandante ou empate).\nValue: a cota oferecida é considerada melhor que a probabilidade real estimada.",

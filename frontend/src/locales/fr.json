@@ -198,6 +198,8 @@
       "over35": "Plus de 3.5"
     },
     "liveLabel": "Direct",
+    "allPicks": "Voir tous les picks",
+    "noOtherPicks": "Aucun autre marché disponible pour ce match.",
     "marketNames": {
       "1X2": "1X2",
       "Over/Under": "Total buts",
@@ -214,7 +216,12 @@
       "oneXTwo": "1X2",
       "btts": "BTTS",
       "goals": "Nombre de buts",
-      "doubleChance": "Double chance"
+      "doubleChance": "Double chance",
+      "scoreexact": "Score exact",
+      "handicap": "Handicap",
+      "multibuts": "Multi-buts",
+      "corners": "Corners",
+      "live": "🔴 En direct"
     },
     "filtersToggle": "Filtres",
     "marketGlossary": "1X2 : victoire domicile (1), nul (X) ou victoire extérieure (2).\nBTTS : les deux équipes marquent.\nDouble chance : combine deux issues (ex. 1X = domicile ou nul).\nValue : la cote proposée est jugée meilleure que la probabilité réelle estimée.",

@@ -198,6 +198,8 @@
       "over35": "Más de 3.5"
     },
     "liveLabel": "En directo",
+    "allPicks": "Ver todos los picks",
+    "noOtherPicks": "Ningún otro mercado disponible para este partido.",
     "marketNames": {
       "1X2": "1X2",
       "Over/Under": "Más/Menos",
@@ -214,7 +216,12 @@
       "oneXTwo": "1X2",
       "btts": "BTTS",
       "goals": "Número de goles",
-      "doubleChance": "Doble oportunidad"
+      "doubleChance": "Doble oportunidad",
+      "scoreexact": "Resultado exacto",
+      "handicap": "Hándicap",
+      "multibuts": "Multi-goles",
+      "corners": "Córners",
+      "live": "🔴 En directo"
     },
     "filtersToggle": "Filtros",
     "marketGlossary": "1X2: victoria local (1), empate (X) o victoria visitante (2).\nBTTS: ambos equipos marcan.\nDoble oportunidad: combina dos resultados (ej. 1X = local o empate).\nValue: la cuota ofrecida se considera mejor que la probabilidad real estimada.",

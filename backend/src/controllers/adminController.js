@@ -6,6 +6,18 @@ const { syncMatchesForDate } = require('../cron/syncMatches');
 const { notifyUser } = require('./pushController');
 const { logAdminAction } = require('../services/auditLogService');
 
+// Échappe le HTML avant injection dans un email — évite qu'un nom
+// d'utilisateur ou un message contenant des caractères HTML ne casse le
+// rendu de l'email ou n'injecte du balisage non désiré.
+function escapeHtml(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 // ─── Tableau de bord ──────────────────────────────────────────────────────────
 async function getDashboard(req, res, next) {
   try {
@@ -240,8 +252,8 @@ async function sendEmailToUser(req, res, next) {
       subject,
       html: `<div style="font-family:sans-serif;max-width:600px;margin:0 auto">
         <h2 style="color:#6366f1">Message de l'équipe fpronix</h2>
-        <p>Bonjour ${user.username},</p>
-        <div style="white-space:pre-wrap">${message}</div>
+        <p>Bonjour ${escapeHtml(user.username)},</p>
+        <div style="white-space:pre-wrap">${escapeHtml(message)}</div>
         <hr style="margin:24px 0">
         <p style="color:#888;font-size:12px">fpronix.com — L'équipe support</p>
       </div>`,

@@ -21,6 +21,7 @@ import { incrementUsageCounter, getUsageCounter } from '../utils/featureDiscover
 import FeatureHint from '../components/ui/FeatureHint';
 import AiBadge from '../components/ui/AiBadge';
 import { MARKET_GROUPS, LIVE_MARKET_GROUPS, getProb, getLiveProb } from '../utils/markets';
+import { competitionLabel } from '../utils/competitionLabel';
 
 // ─── Templates prédéfinis ──────────────────────────────────────────────────────
 const TEMPLATES = [
@@ -878,7 +879,7 @@ export default function Machine() {
                                   </p>
                                 </div>
                                 <p className="text-xs text-ink-4">
-                                  {c.match.competition?.name} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
+                                  {competitionLabel(c.match.competition)} · {format(new Date(c.match.scheduledAt), 'dd/MM HH:mm')}
                                 </p>
                               </div>
 
@@ -1097,7 +1098,7 @@ export default function Machine() {
                         <p className="text-sm font-medium text-ink-2 truncate">{row.match.awayTeam}</p>
                       </div>
                       <p className="text-xs text-ink-4">
-                        {row.match.competition?.name} · {format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}
+                        {competitionLabel(row.match.competition)} · {format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}
                       </p>
                     </div>
                     <div className={`shrink-0 text-center px-2.5 py-1 rounded-lg border ${c.bg}`}>

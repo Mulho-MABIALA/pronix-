@@ -2,6 +2,7 @@ import { format } from 'date-fns';
 import api from '../services/api';
 import { formatOdd } from './mockOdds';
 import { getPickHexColor } from './marketColors';
+import { competitionLabel } from './competitionLabel';
 
 // Passe une URL de logo externe (media.api-sports.io) par notre proxy same-origin
 // pour éviter de "tainted" le canvas (sinon canvas.toBlob() plante silencieusement
@@ -212,11 +213,13 @@ export async function drawTicketCanvas(rows, totalOdds, t) {
     ctx.font = 'bold 13px system-ui';
     ctx.fillText(fitText(ctx, row.match.awayTeam, maxNameWidth), textX, y + 56);
 
-    // Compétition + heure
+    // Compétition (+ pays si ce n'est pas une grande compétition connue,
+    // ex. "First League (Arménie)") + heure — tronqué pour ne pas passer
+    // sous le badge pick à droite.
     ctx.fillStyle = '#7a7f86';
     ctx.font = '10px system-ui';
     ctx.fillText(
-      `${row.match.competition?.name || ''} · ${format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}`,
+      fitText(ctx, `${competitionLabel(row.match.competition)} · ${format(new Date(row.match.scheduledAt), 'dd/MM HH:mm')}`, maxNameWidth),
       34, y + 78
     );
 

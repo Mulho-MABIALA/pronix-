@@ -21,6 +21,7 @@ import Disclaimer from '../components/layout/Disclaimer';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { COUNTRIES } from '../data/countries';
 import { PHONE_CODES, matchPhoneCode } from '../data/phoneCodes';
+import PasswordField from '../components/ui/PasswordField';
 
 const LANGUAGES = [
   { code: 'fr', label: '🇫🇷 Français' },
@@ -594,9 +595,7 @@ function ChangeEmailRow({ user, refreshUser }) {
         autoComplete="email"
       />
       {user?.hasPassword && (
-        <input
-          type="password"
-          className="input w-full text-sm"
+        <PasswordField
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           placeholder={t('profile.changeEmail.currentPasswordConfirmPlaceholder')}
@@ -679,26 +678,20 @@ function ChangePasswordRow({ user }) {
         </button>
       </div>
       {user?.hasPassword && (
-        <input
-          type="password"
-          className="input w-full text-sm"
+        <PasswordField
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           placeholder={t('profile.changePassword.currentPlaceholder')}
           autoComplete="current-password"
         />
       )}
-      <input
-        type="password"
-        className="input w-full text-sm"
+      <PasswordField
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
         placeholder={t('profile.changePassword.newPlaceholder')}
         autoComplete="new-password"
       />
-      <input
-        type="password"
-        className="input w-full text-sm"
+      <PasswordField
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         placeholder={t('profile.changePassword.confirmPlaceholder')}
@@ -846,8 +839,7 @@ function DeleteAccountModal({ requiresPassword, onClose }) {
         {requiresPassword && (
           <div>
             <label className="block text-xs font-medium text-ink-3 mb-1.5">{t('profile.password')}</label>
-            <input
-              type="password"
+            <PasswordField
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="input w-full"

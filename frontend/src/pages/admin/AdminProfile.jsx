@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
-  Camera, Check, Pencil, Shield, Mail, Fingerprint, LogOut, KeyRound, X,
+  Camera, Check, Pencil, Shield, Mail, Fingerprint, LogOut, KeyRound, X, Eye, EyeOff,
 } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -178,6 +178,32 @@ function PasskeysSection() {
    Exige le mot de passe actuel si le compte en a un (voir hasPassword côté
    /auth/me). Repasse emailVerified à false côté backend et envoie un nouveau
    lien de vérification vers la nouvelle adresse. */
+/* ─── Champ mot de passe avec bouton œil pour afficher/masquer la saisie ── */
+function PasswordField({ value, onChange, placeholder, autoComplete }) {
+  const [show, setShow] = useState(false);
+  return (
+    <div className="relative">
+      <input
+        type={show ? 'text' : 'password'}
+        className="input w-full text-sm pr-10"
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+      />
+      <button
+        type="button"
+        onClick={() => setShow((v) => !v)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-ink-4 hover:text-ink-2 transition-colors"
+        aria-label={show ? 'Masquer le mot de passe' : 'Afficher le mot de passe'}
+        tabIndex={-1}
+      >
+        {show ? <EyeOff size={16} /> : <Eye size={16} />}
+      </button>
+    </div>
+  );
+}
+
 function ChangeEmailRow({ user, refreshUser }) {
   const toast = useToast();
   const [editing, setEditing] = useState(false);
@@ -245,9 +271,7 @@ function ChangeEmailRow({ user, refreshUser }) {
         autoComplete="email"
       />
       {user?.hasPassword && (
-        <input
-          type="password"
-          className="input w-full text-sm"
+        <PasswordField
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           placeholder="Mot de passe actuel (confirmation)"
@@ -329,26 +353,20 @@ function ChangePasswordRow({ user }) {
         </button>
       </div>
       {user?.hasPassword && (
-        <input
-          type="password"
-          className="input w-full text-sm"
+        <PasswordField
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
           placeholder="Mot de passe actuel"
           autoComplete="current-password"
         />
       )}
-      <input
-        type="password"
-        className="input w-full text-sm"
+      <PasswordField
         value={newPassword}
         onChange={(e) => setNewPassword(e.target.value)}
         placeholder="Nouveau mot de passe (8 caractères min.)"
         autoComplete="new-password"
       />
-      <input
-        type="password"
-        className="input w-full text-sm"
+      <PasswordField
         value={confirmPassword}
         onChange={(e) => setConfirmPassword(e.target.value)}
         placeholder="Confirmer le nouveau mot de passe"

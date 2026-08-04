@@ -40,3 +40,15 @@ export function competitionLabel(competition) {
   }
   return `${competition.name} (${competition.country})`;
 }
+
+// Variante "décomposée" pour pouvoir styler le pays différemment du nom
+// (couleur d'accent, pour qu'il attire l'œil sur les championnats peu
+// connus). `country` vaut null pour les grandes compétitions — dans ce cas
+// rien à afficher en plus du nom.
+export function competitionLabelParts(competition) {
+  if (!competition?.name) return { name: '', country: null };
+  if (!competition.country || isMajorCompetition(competition.name, competition.country)) {
+    return { name: competition.name, country: null };
+  }
+  return { name: competition.name, country: competition.country };
+}

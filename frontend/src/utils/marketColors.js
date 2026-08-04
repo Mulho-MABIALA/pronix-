@@ -32,6 +32,11 @@ export function getMarketFamily(type) {
   if (type.startsWith('res') || type.startsWith('dc1x') || type.startsWith('dcx2') || type.startsWith('dc12')) return 'combo';
   if (/^\d+-\d+$/.test(type)) return 'exactscore'; // score exact, ex. "2-1"
   if (type.startsWith('corner')) return 'corners';
+  // Marchés live (Machine.jsx mode "Direct" / Pronostics.jsx matchs en cours) —
+  // mêmes familles de couleur que leurs équivalents pré-match, préfixées "live".
+  if (['live1', 'liveX', 'live2'].includes(type)) return '1x2';
+  if (type.startsWith('liveOver') || type.startsWith('liveUnder')) return 'overunder';
+  if (type.startsWith('liveCorner')) return 'corners';
   return null;
 }
 

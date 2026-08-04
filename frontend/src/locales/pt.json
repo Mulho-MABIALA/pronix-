@@ -197,6 +197,7 @@
       "nobtts": "BTTS Não",
       "over35": "Mais de 3.5"
     },
+    "liveLabel": "Ao vivo",
     "marketNames": {
       "1X2": "1X2",
       "Over/Under": "Mais/Menos",
@@ -910,6 +911,8 @@
     "customizeManually": "Personalizar manualmente →",
     "selectionsCount": "Número de seleções",
     "market": "Mercado",
+    "liveMode": "🔴 Ao vivo",
+    "liveModeHint": "Gera um bilhete a partir das partidas em andamento e seus mercados ao vivo (recalculados em tempo real).",
     "confHigh": "🟢 Alta",
     "confMedium": "🟡 Média",
     "confAll": "⚪ Todas",
@@ -1005,7 +1008,12 @@
       "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
       "corner1": "Esc.Casa", "cornerX": "Esc.Emp", "corner2": "Esc.Fora",
       "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
-      "cornerHandHome25": "CH Casa-3", "cornerHandAway25": "CH Fora-3"
+      "cornerHandHome25": "CH Casa-3", "cornerHandAway25": "CH Fora-3",
+      "live1": "🔴Casa", "liveX": "🔴Emp.", "live2": "🔴Fora",
+      "liveOver05": "🔴O0.5", "liveUnder05": "🔴U0.5", "liveOver15": "🔴O1.5", "liveUnder15": "🔴U1.5",
+      "liveOver25": "🔴O2.5", "liveUnder25": "🔴U2.5", "liveOver35": "🔴O3.5", "liveUnder35": "🔴U3.5",
+      "liveCornerOver75": "🔴CO7.5", "liveCornerUnder75": "🔴CU7.5", "liveCornerOver85": "🔴CO8.5", "liveCornerUnder85": "🔴CU8.5",
+      "liveCornerOver95": "🔴CO9.5", "liveCornerUnder95": "🔴CU9.5", "liveCornerOver105": "🔴CO10.5", "liveCornerUnder105": "🔴CU10.5"
     },
     "marketGroups": {
       "resultats": {
@@ -1153,6 +1161,50 @@
         "markets": {
           "cornerHandHome25": { "label": "Casa -2.5 escanteios", "desc": "Ganha se o time da casa conseguir pelo menos 3 escanteios a mais que o visitante." },
           "cornerHandAway25": { "label": "Fora -2.5 escanteios", "desc": "Ganha se o time visitante conseguir pelo menos 3 escanteios a mais que a casa." }
+        }
+      },
+      "liveresultats": {
+        "label": "🔴 Resultado ao vivo",
+        "subtitle": "Resultado final provável, recalculado a partir do placar e do tempo restante.",
+        "markets": {
+          "live1": { "label": "1 — Casa vence (ao vivo)", "desc": "Recalculado continuamente a partir do placar atual e do tempo de jogo restante." },
+          "liveX": { "label": "X — Empate (ao vivo)", "desc": "Recalculado continuamente a partir do placar atual e do tempo de jogo restante." },
+          "live2": { "label": "2 — Fora vence (ao vivo)", "desc": "Recalculado continuamente a partir do placar atual e do tempo de jogo restante." }
+        }
+      },
+      "liveoverunder": {
+        "label": "🔴 Total de gols ao vivo",
+        "subtitle": "Total de gols ao final da partida, recalculado a partir do placar atual.",
+        "markets": {
+          "liveOver05": { "label": "Mais de 0.5 gol (ao vivo)", "desc": "Ganha assim que mais um gol é marcado na partida." },
+          "liveUnder05": { "label": "Menos de 0.5 gol (ao vivo)", "desc": "Ganha se nenhum gol adicional for marcado." },
+          "liveOver15": { "label": "Mais de 1.5 gols (ao vivo)", "desc": "Probabilidade recalculada a partir do placar atual." },
+          "liveUnder15": { "label": "Menos de 1.5 gol (ao vivo)", "desc": "Probabilidade recalculada a partir do placar atual." },
+          "liveOver25": { "label": "Mais de 2.5 gols (ao vivo)", "desc": "Probabilidade recalculada a partir do placar atual." },
+          "liveUnder25": { "label": "Menos de 2.5 gols (ao vivo)", "desc": "Probabilidade recalculada a partir do placar atual." },
+          "liveOver35": { "label": "Mais de 3.5 gols (ao vivo)", "desc": "Probabilidade recalculada a partir do placar atual." },
+          "liveUnder35": { "label": "Menos de 3.5 gols (ao vivo)", "desc": "Probabilidade recalculada a partir do placar atual." }
+        }
+      },
+      "livescoreexact": {
+        "label": "🔴 Placar exato ao vivo",
+        "subtitle": "Placar final mais provável a partir de agora.",
+        "markets": {
+          "livescoreexact": { "label": "Placar exato mais provável (ao vivo)", "desc": "Recalculado continuamente a partir do placar atual e do tempo restante." }
+        }
+      },
+      "livecorners": {
+        "label": "🔴 Escanteios ao vivo",
+        "subtitle": "Total de escanteios ao final da partida, recalculado a partir da contagem atual. Disponível apenas se o rastreamento de escanteios ao vivo estiver ativado para esta partida.",
+        "markets": {
+          "liveCornerOver75": { "label": "Mais de 7.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerUnder75": { "label": "Menos de 7.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerOver85": { "label": "Mais de 8.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerUnder85": { "label": "Menos de 8.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerOver95": { "label": "Mais de 9.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerUnder95": { "label": "Menos de 9.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerOver105": { "label": "Mais de 10.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." },
+          "liveCornerUnder105": { "label": "Menos de 10.5 escanteios (ao vivo)", "desc": "Probabilidade recalculada a partir dos escanteios já disputados." }
         }
       }
     }

@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueries } from '@tanstack/react-query';
 import { format, addDays } from 'date-fns';
 import { useTranslation } from 'react-i18next';
-import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles, Search, X, Brain } from 'lucide-react';
+import { Zap, Copy, Check, RefreshCw, Share2, Download, ChevronDown, ChevronUp, Trophy, ListFilter, Bot, Save, History, Sparkles, Search, X, Brain, Radio, Lock } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import api from '../services/api';
@@ -96,6 +96,18 @@ const MARKET_GROUPS = [
   { id: 'corners1x2',      emoji: '🚩', markets: ['corner1', 'cornerX', 'corner2'] },
   { id: 'cornerstotal',    emoji: '🚩', markets: ['cornerOver85', 'cornerUnder85', 'cornerOver95', 'cornerUnder95', 'cornerOver105', 'cornerUnder105'] },
   { id: 'cornershandicap', emoji: '🚩', markets: ['cornerHandHome25', 'cornerHandAway25'] },
+];
+
+// ─── Marchés LIVE (matchs en cours, mode "Direct") ─────────────────────────
+// Contrairement à MARKET_GROUPS, les valeurs ne viennent pas de m.predictions
+// (calculées une fois avant le match) mais de /matches/:id/live-markets
+// (recalculées à la demande, cf. predictionService.deriveLiveMarkets côté
+// backend). Réservé Premium — voir isPremium plus bas.
+const LIVE_MARKET_GROUPS = [
+  { id: 'liveresultats',  emoji: '🔴', markets: ['live1', 'liveX', 'live2'] },
+  { id: 'liveoverunder',  emoji: '⚽', markets: ['liveOver05', 'liveOver15', 'liveOver25', 'liveOver35', 'liveUnder05', 'liveUnder15', 'liveUnder25', 'liveUnder35'] },
+  { id: 'livescoreexact', emoji: '🎯', markets: ['livescoreexact'] },
+  { id: 'livecorners',    emoji: '🚩', markets: ['liveCornerOver75', 'liveCornerUnder75', 'liveCornerOver85', 'liveCornerUnder85', 'liveCornerOver95', 'liveCornerUnder95', 'liveCornerOver105', 'liveCornerUnder105'] },
 ];
 
 const CONF_THRESHOLDS = { high: 72, medium: 58, low: 0 };
@@ -216,6 +228,25 @@ function getProb(pred, market) {
   return { type: market, prob };
 }
 
+// Équivalent de getProb() pour le mode Direct — lit directement la réponse
+// de /matches/:id/live-markets (les noms de champs y sont déjà alignés sur
+// les clés de marché : live1, liveOver25, liveCornerOver85...), donc pas
+// besoin d'un probMap comme getProb(). Retourne null si la donnée n'existe
+// pas encore (requête en cours) ou si les corners live ne sont pas dispo
+// pour ce match (hasLiveCornerData: false) — le match sera alors simplement
+// exclu des candidats pour ce marché, comme le fait getProb() ailleurs.
+function getLiveProb(liveData, market) {
+  if (!liveData) return null;
+  if (market === 'livescoreexact') {
+    if (liveData.liveExactScore == null) return null;
+    return { type: liveData.liveExactScore, prob: liveData.liveExactScoreProb };
+  }
+  if (market.startsWith('liveCorner') && !liveData.hasLiveCornerData) return null;
+  const prob = liveData[market];
+  if (prob == null) return null;
+  return { type: market, prob };
+}
+
 function getConfidence(prob) {
   if (prob >= 72) return 'high';
   if (prob >= 58) return 'medium';
@@ -266,6 +297,10 @@ export default function Machine() {
   const [mise, setMise]               = useState('');
   const [activeTemplate, setActiveTemplate] = useState(null);
   const [excludeFriendly, setExcludeFriendly] = useState(true);
+  // Mode "Direct" — bascule le générateur sur les matchs LIVE et les marchés
+  // live (1X2/over-under/score exact/corners recalculés en temps réel) au
+  // lieu des matchs à venir + marchés pré-match. Réservé Premium.
+  const [liveMode, setLiveMode] = useState(false);
   // Empêche qu'un même ticket soit enregistré plusieurs fois en historique :
   // repasse à false dès qu'un nouveau ticket est (re)généré.
   const [ticketSaved, setTicketSaved] = useState(false);
@@ -287,7 +322,27 @@ export default function Machine() {
     setLeagues(c.leagues);
     setPinnedMatchIds(new Set());
     setActiveTemplate(tpl.id);
+    setLiveMode(false); // les templates sont pré-match, un template annule le mode Direct
     setTicket(null);
+  }
+
+  // Bascule le mode Direct — reset marché/groupe vers un défaut live/pré-match
+  // cohérent (sinon "market" garderait une clé de l'autre univers, ex. 'over25'
+  // en mode Direct, qui ne matchera jamais rien dans getLiveProb).
+  function toggleLiveMode() {
+    setLiveMode((prev) => {
+      const next = !prev;
+      if (next) {
+        setMarketGroup('liveresultats');
+        setMarket('live1');
+      } else {
+        setMarketGroup('resultats');
+        setMarket('auto');
+      }
+      setPinnedMatchIds(new Set());
+      setTicket(null);
+      return next;
+    });
   }
 
   // Calcul de la plage de dates selon le preset choisi
@@ -306,13 +361,37 @@ export default function Machine() {
     return { dateFrom, dateTo };
   }
 
-  const { dateFrom, dateTo } = getDateRange(dateOpt);
+  // En mode Direct, la plage de dates des presets n'a pas de sens (les matchs
+  // en cours sont forcément "aujourd'hui") — on force la requête sur le jour
+  // même, quel que soit le preset affiché avant la bascule.
+  const { dateFrom, dateTo } = getDateRange(liveMode ? 'today' : dateOpt);
 
   const rangeQ = useQuery({
     queryKey: ['machine-range', dateFrom, dateTo],
     queryFn:  () => api.get(`/matches?dateFrom=${dateFrom}&dateTo=${dateTo}&limit=500`).then((r) => r.data),
     staleTime: 5 * 60 * 1000,
   });
+
+  // ── Mode Direct : marchés live par match ────────────────────────────────
+  // Contrairement au reste de la page (predictions embarquées dans la liste
+  // /matches), les marchés live doivent être récupérés un par un via
+  // /matches/:id/live-markets (voir predictionService.deriveLiveMarkets côté
+  // backend — rien n'est stocké, tout est recalculé à la demande). On ne
+  // lance ces requêtes que pour les matchs réellement LIVE, et seulement en
+  // mode Direct + compte Premium (l'endpoint est de toute façon 403 sinon).
+  const liveMatchesRaw = liveMode ? (rangeQ.data?.data || []).filter((m) => m.status === 'LIVE') : [];
+  const liveMarketsResults = useQueries({
+    queries: liveMatchesRaw.map((m) => ({
+      queryKey: ['live-markets', m.id],
+      queryFn:  () => api.get(`/matches/${m.id}/live-markets`).then((r) => r.data.data),
+      enabled: liveMode && isPremium,
+      refetchInterval: 25_000,
+      staleTime: 20_000,
+      retry: false,
+    })),
+  });
+  const liveDataMap = {};
+  liveMatchesRaw.forEach((m, i) => { liveDataMap[m.id] = liveMarketsResults[i]?.data; });
 
   // Championnats affichés — liste complète (avec logos) au lieu d'une sélection figée
   const competitionsQ = useQuery({
@@ -376,8 +455,36 @@ export default function Machine() {
   const FRIENDLY_KEYWORDS = ['friendly', 'friendlies', 'amical', 'amicaux', 'club friendly', 'test match'];
 
   // ── Candidats filtrés (avant sélection manuelle et limite nbPicks) ─────────
+  // Mode Direct : matchs LIVE + marchés live (liveDataMap, un fetch par match
+  // en cours). Mode normal : matchs SCHEDULED + marchés pré-match (m.predictions,
+  // déjà embarqués dans la réponse de la liste). Les deux branches partagent
+  // ensuite exactement la même logique de tri/cote/confiance.
   const availableCandidates = (() => {
     const allMatches = rangeQ.data?.data || [];
+
+    if (liveMode) {
+      return allMatches
+        .filter((m) => {
+          if (m.status !== 'LIVE') return false;
+          const liveData = liveDataMap[m.id];
+          if (excludeFriendly) {
+            const compName = (m.competition?.name || '').toLowerCase();
+            if (FRIENDLY_KEYWORDS.some((kw) => compName.includes(kw))) return false;
+          }
+          const pick = getLiveProb(liveData, market);
+          if (!pick) return false;
+          if (pick.prob < CONF_THRESHOLDS[minConf]) return false;
+          if (leagues.length > 0 && !leagues.includes(String(m.competition?.externalId))) return false;
+          return true;
+        })
+        .map((m) => {
+          const pick = getLiveProb(liveDataMap[m.id], market);
+          const odd  = getOdd(pick.prob, `${m.id}-${pick.type}`);
+          return { match: m, pick, conf: getConfidence(pick.prob), odd, value: isValueBet(pick.prob, odd) };
+        })
+        .sort((a, b) => b.pick.prob - a.pick.prob);
+    }
+
     return allMatches
       .filter((m) => {
         if (m.status !== 'SCHEDULED') return false;
@@ -634,10 +741,10 @@ export default function Machine() {
         {/* ── 3. Marché — sélecteur 2 niveaux (catégorie → marché) ─── */}
         <StepSection n={3} title={t('machine.market')}>
           <div className="space-y-2">
-          {/* Niveau 1 : catégories */}
+          {/* Niveau 1 : catégories — groupes live en mode Direct, pré-match sinon */}
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
-              {MARKET_GROUPS.map((g) => (
+              {(liveMode ? LIVE_MARKET_GROUPS : MARKET_GROUPS).map((g) => (
                 <button key={g.id}
                   onClick={() => {
                     setMarketGroup(g.id);
@@ -656,7 +763,7 @@ export default function Machine() {
           </div>
 
           {/* Niveau 2 : marchés de la catégorie avec description */}
-          {MARKET_GROUPS.filter((g) => g.id === marketGroup).map((g) => (
+          {(liveMode ? LIVE_MARKET_GROUPS : MARKET_GROUPS).filter((g) => g.id === marketGroup).map((g) => (
             <div key={g.id} className="space-y-1.5">
               <p className="text-xs text-ink-4 leading-snug">{t(`machine.marketGroups.${g.id}.subtitle`)}</p>
               <div className="grid grid-cols-1 gap-1.5">
@@ -704,7 +811,26 @@ export default function Machine() {
         <StepSection n={5} title={t('machine.filters.dateRange')}>
           <div className="overflow-x-auto scrollbar-hide">
             <div className="flex gap-2 min-w-max">
-              {DATE_PRESETS.map((o) => (
+              {/* "Direct" — matchs LIVE + marchés live, Premium uniquement. Fait
+                  partie du même axe que les presets de date (maintenant vs à venir). */}
+              {isPremium ? (
+                <button onClick={toggleLiveMode}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap flex items-center gap-1 ${
+                    liveMode
+                      ? 'bg-live-500/15 text-live-400 border-live-500/30'
+                      : 'text-ink-3 border-overlay/[0.06] hover:text-ink-2'
+                  }`}>
+                  <Radio size={11} className={liveMode ? 'animate-pulse' : ''} />
+                  {t('machine.liveMode')}
+                </button>
+              ) : (
+                <Link to="/abonnement"
+                  className="px-3 py-1.5 rounded-full text-xs font-semibold border border-overlay/[0.06] text-ink-4 whitespace-nowrap flex items-center gap-1 hover:text-ink-3 transition-colors">
+                  <Lock size={11} />
+                  {t('machine.liveMode')}
+                </Link>
+              )}
+              {!liveMode && DATE_PRESETS.map((o) => (
                 <button key={o.value} onClick={() => { setDateOpt(o.value); setTicket(null); }}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors whitespace-nowrap ${
                     dateOpt === o.value
@@ -716,6 +842,9 @@ export default function Machine() {
               ))}
             </div>
           </div>
+          {liveMode && (
+            <p className="text-xs text-ink-4 mt-1.5">{t('machine.liveModeHint')}</p>
+          )}
         </StepSection>
 
         {/* ── 6. Championnat ───────────────────────────────────────── */}

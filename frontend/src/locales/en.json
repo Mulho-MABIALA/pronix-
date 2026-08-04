@@ -197,6 +197,7 @@
       "nobtts": "BTTS No",
       "over35": "Over 3.5"
     },
+    "liveLabel": "Live",
     "marketNames": {
       "1X2": "1X2",
       "Over/Under": "Over/Under",
@@ -910,6 +911,8 @@
     "customizeManually": "Customize manually →",
     "selectionsCount": "Number of selections",
     "market": "Market",
+    "liveMode": "🔴 Live",
+    "liveModeHint": "Build a ticket from matches currently in progress and their live markets (recalculated in real time).",
     "confHigh": "🟢 High",
     "confMedium": "🟡 Medium",
     "confAll": "⚪ All",
@@ -1005,7 +1008,12 @@
       "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
       "corner1": "Corn.Home", "cornerX": "Corn.Draw", "corner2": "Corn.Away",
       "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
-      "cornerHandHome25": "CH Home-3", "cornerHandAway25": "CH Away-3"
+      "cornerHandHome25": "CH Home-3", "cornerHandAway25": "CH Away-3",
+      "live1": "🔴Home", "liveX": "🔴Draw", "live2": "🔴Away",
+      "liveOver05": "🔴O0.5", "liveUnder05": "🔴U0.5", "liveOver15": "🔴O1.5", "liveUnder15": "🔴U1.5",
+      "liveOver25": "🔴O2.5", "liveUnder25": "🔴U2.5", "liveOver35": "🔴O3.5", "liveUnder35": "🔴U3.5",
+      "liveCornerOver75": "🔴CO7.5", "liveCornerUnder75": "🔴CU7.5", "liveCornerOver85": "🔴CO8.5", "liveCornerUnder85": "🔴CU8.5",
+      "liveCornerOver95": "🔴CO9.5", "liveCornerUnder95": "🔴CU9.5", "liveCornerOver105": "🔴CO10.5", "liveCornerUnder105": "🔴CU10.5"
     },
     "marketGroups": {
       "resultats": {
@@ -1153,6 +1161,50 @@
         "markets": {
           "cornerHandHome25": { "label": "Home -2.5 corners", "desc": "Won if the home team gets at least 3 more corners than the away team." },
           "cornerHandAway25": { "label": "Away -2.5 corners", "desc": "Won if the away team gets at least 3 more corners than the home team." }
+        }
+      },
+      "liveresultats": {
+        "label": "🔴 Live result",
+        "subtitle": "Likely final result, recalculated from the current score and time remaining.",
+        "markets": {
+          "live1": { "label": "1 — Home wins (live)", "desc": "Recalculated continuously from the current score and time left to play." },
+          "liveX": { "label": "X — Draw (live)", "desc": "Recalculated continuously from the current score and time left to play." },
+          "live2": { "label": "2 — Away wins (live)", "desc": "Recalculated continuously from the current score and time left to play." }
+        }
+      },
+      "liveoverunder": {
+        "label": "🔴 Live total goals",
+        "subtitle": "Total goals by full time, recalculated from the current score.",
+        "markets": {
+          "liveOver05": { "label": "Over 0.5 goal (live)", "desc": "Won as soon as one more goal is scored in the match." },
+          "liveUnder05": { "label": "Under 0.5 goal (live)", "desc": "Won if no further goal is scored." },
+          "liveOver15": { "label": "Over 1.5 goals (live)", "desc": "Probability recalculated from the current score." },
+          "liveUnder15": { "label": "Under 1.5 goals (live)", "desc": "Probability recalculated from the current score." },
+          "liveOver25": { "label": "Over 2.5 goals (live)", "desc": "Probability recalculated from the current score." },
+          "liveUnder25": { "label": "Under 2.5 goals (live)", "desc": "Probability recalculated from the current score." },
+          "liveOver35": { "label": "Over 3.5 goals (live)", "desc": "Probability recalculated from the current score." },
+          "liveUnder35": { "label": "Under 3.5 goals (live)", "desc": "Probability recalculated from the current score." }
+        }
+      },
+      "livescoreexact": {
+        "label": "🔴 Live exact score",
+        "subtitle": "Most likely final score from this point on.",
+        "markets": {
+          "livescoreexact": { "label": "Most likely exact score (live)", "desc": "Continuously recalculated from the current score and time remaining." }
+        }
+      },
+      "livecorners": {
+        "label": "🔴 Live corners",
+        "subtitle": "Total corners by full time, recalculated from the current count. Only available if live corner tracking is enabled for this match.",
+        "markets": {
+          "liveCornerOver75": { "label": "Over 7.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerUnder75": { "label": "Under 7.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerOver85": { "label": "Over 8.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerUnder85": { "label": "Under 8.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerOver95": { "label": "Over 9.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerUnder95": { "label": "Under 9.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerOver105": { "label": "Over 10.5 corners (live)", "desc": "Probability recalculated from the corners already played." },
+          "liveCornerUnder105": { "label": "Under 10.5 corners (live)", "desc": "Probability recalculated from the corners already played." }
         }
       }
     }

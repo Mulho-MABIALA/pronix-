@@ -197,6 +197,7 @@
       "nobtts": "BTTS Non",
       "over35": "Plus de 3.5"
     },
+    "liveLabel": "Direct",
     "marketNames": {
       "1X2": "1X2",
       "Over/Under": "Total buts",
@@ -910,6 +911,8 @@
     "customizeManually": "Personnaliser manuellement →",
     "selectionsCount": "Nombre de sélections",
     "market": "Marché",
+    "liveMode": "🔴 Direct",
+    "liveModeHint": "Génère un ticket à partir des matchs en cours et de leurs marchés live (recalculés en temps réel).",
     "confHigh": "🟢 Élevée",
     "confMedium": "🟡 Moyenne",
     "confAll": "⚪ Toutes",
@@ -1005,7 +1008,12 @@
       "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
       "corner1": "Corn.Dom", "cornerX": "Corn.Nul", "corner2": "Corn.Ext",
       "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
-      "cornerHandHome25": "CH Dom-3", "cornerHandAway25": "CH Ext-3"
+      "cornerHandHome25": "CH Dom-3", "cornerHandAway25": "CH Ext-3",
+      "live1": "🔴Dom.", "liveX": "🔴Nul", "live2": "🔴Ext.",
+      "liveOver05": "🔴O0.5", "liveUnder05": "🔴U0.5", "liveOver15": "🔴O1.5", "liveUnder15": "🔴U1.5",
+      "liveOver25": "🔴O2.5", "liveUnder25": "🔴U2.5", "liveOver35": "🔴O3.5", "liveUnder35": "🔴U3.5",
+      "liveCornerOver75": "🔴CO7.5", "liveCornerUnder75": "🔴CU7.5", "liveCornerOver85": "🔴CO8.5", "liveCornerUnder85": "🔴CU8.5",
+      "liveCornerOver95": "🔴CO9.5", "liveCornerUnder95": "🔴CU9.5", "liveCornerOver105": "🔴CO10.5", "liveCornerUnder105": "🔴CU10.5"
     },
     "marketGroups": {
       "resultats": {
@@ -1153,6 +1161,50 @@
         "markets": {
           "cornerHandHome25": { "label": "Domicile -2.5 corners", "desc": "Gagné si l'équipe à domicile obtient au moins 3 corners de plus que l'extérieur." },
           "cornerHandAway25": { "label": "Extérieur -2.5 corners", "desc": "Gagné si l'équipe extérieure obtient au moins 3 corners de plus que le domicile." }
+        }
+      },
+      "liveresultats": {
+        "label": "🔴 Résultat live",
+        "subtitle": "Résultat final probable, recalculé à partir du score et du temps restant.",
+        "markets": {
+          "live1": { "label": "1 — Domicile gagne (live)", "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant." },
+          "liveX": { "label": "X — Match nul (live)", "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant." },
+          "live2": { "label": "2 — Extérieur gagne (live)", "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant." }
+        }
+      },
+      "liveoverunder": {
+        "label": "🔴 Total buts live",
+        "subtitle": "Nombre total de buts en fin de match, recalculé depuis le score actuel.",
+        "markets": {
+          "liveOver05": { "label": "Plus de 0.5 but (live)", "desc": "Gagné dès qu'1 but de plus est marqué dans le match." },
+          "liveUnder05": { "label": "Moins de 0.5 but (live)", "desc": "Gagné si aucun but supplémentaire n'est marqué." },
+          "liveOver15": { "label": "Plus de 1.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
+          "liveUnder15": { "label": "Moins de 1.5 but (live)", "desc": "Probabilité recalculée depuis le score actuel." },
+          "liveOver25": { "label": "Plus de 2.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
+          "liveUnder25": { "label": "Moins de 2.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
+          "liveOver35": { "label": "Plus de 3.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
+          "liveUnder35": { "label": "Moins de 3.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." }
+        }
+      },
+      "livescoreexact": {
+        "label": "🔴 Score exact live",
+        "subtitle": "Score final le plus probable à partir de maintenant.",
+        "markets": {
+          "livescoreexact": { "label": "Score exact le plus probable (live)", "desc": "Recalculé en continu à partir du score actuel et du temps restant." }
+        }
+      },
+      "livecorners": {
+        "label": "🔴 Corners live",
+        "subtitle": "Total corners en fin de match, recalculé depuis le compte actuel. Disponible seulement si le suivi corners live est activé pour ce match.",
+        "markets": {
+          "liveCornerOver75": { "label": "Plus de 7.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerUnder75": { "label": "Moins de 7.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerOver85": { "label": "Plus de 8.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerUnder85": { "label": "Moins de 8.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerOver95": { "label": "Plus de 9.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerUnder95": { "label": "Moins de 9.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerOver105": { "label": "Plus de 10.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
+          "liveCornerUnder105": { "label": "Moins de 10.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." }
         }
       }
     }

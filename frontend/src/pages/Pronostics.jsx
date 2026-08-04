@@ -17,7 +17,20 @@ import InfoTooltip from '../components/ui/InfoTooltip';
 import AiBadge from '../components/ui/AiBadge';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
+import { useLiveMarkets } from '../hooks/useLiveMarkets';
 import { useAuth } from '../context/AuthContext';
+
+// Meilleure issue live (1X2) à partir de /matches/:id/live-markets — pour
+// afficher un pick "à l'instant T" à la place du pick pré-match statique
+// pendant qu'un match est en cours. Réutilise les libellés pronostics.pickShort
+// existants (1/X/2) : live1/liveX/live2 sont juste leurs équivalents recalculés.
+const LIVE_TYPE_TO_PICKSHORT = { live1: '1', liveX: 'X', live2: '2' };
+function bestLiveOutcome(liveData) {
+  if (!liveData || liveData.live1 == null) return null;
+  const options = [['live1', liveData.live1], ['liveX', liveData.liveX], ['live2', liveData.live2]];
+  const [type, prob] = options.reduce((best, cur) => (cur[1] > best[1] ? cur : best));
+  return { type, prob };
+}
 
 // ─── Constantes ────────────────────────────────────────────────────────────────
 
@@ -85,6 +98,7 @@ const CONF_COLOR = {
 
 function PronoRow({ match, index, oddsEnabled = true }) {
   const { t } = useTranslation();
+  const { isPremium } = useAuth();
   const pred = match.predictions;
   if (!pred?.bestPick) return null;
 
@@ -94,6 +108,11 @@ function PronoRow({ match, index, oddsEnabled = true }) {
   // ne peut de toute façon pas voir (jusqu'à ~60-100 requêtes évitées par
   // page pour un utilisateur gratuit).
   const { data: realOdds } = useOdds(match.id, { enabled: oddsEnabled && match.status === 'SCHEDULED' });
+
+  // Marchés live — seulement pour les matchs LIVE, Premium (l'endpoint est
+  // 403 sinon), et pas pour les lignes floutées par le paywall. Remplace le
+  // pick pré-match affiché par le résultat 1X2 recalculé à l'instant T.
+  const { data: liveData } = useLiveMarkets(match.id, { enabled: oddsEnabled && isPremium && match.status === 'LIVE' });
 
   // Cascade au chargement — même logique que MatchCard.jsx
   const cascadeDelay = typeof index === 'number' ? Math.min(index * 40, 400) : 0;
@@ -114,6 +133,7 @@ function PronoRow({ match, index, oddsEnabled = true }) {
   const isFinished    = match.status === 'FINISHED' || (reallyPast && match.status !== 'LIVE');
   const isLive        = match.status === 'LIVE' && !reallyPast;
   const isPastNoScore = reallyPast && match.homeScore === null; // terminé mais pas de score dispo
+  const liveBest       = isLive ? bestLiveOutcome(liveData) : null;
 
   // Résultat pour matchs terminés
   let resultCorrect = null;
@@ -180,8 +200,19 @@ function PronoRow({ match, index, oddsEnabled = true }) {
         </div>
         {/* Market visible sur mobile seulement */}
         <p className="text-xs mt-0.5 sm:hidden leading-tight">
-          {pred.bestPick.market && <span className="text-ink-4">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })} · </span>}
-          <span className={`font-semibold ${pickColor.text}`}>{pickLabel}</span>
+          {liveBest ? (
+            <>
+              <span className="text-live-400 font-semibold">🔴 {t('pronostics.liveLabel')} · </span>
+              <span className={`font-semibold ${getPickColor(liveBest.type).text}`}>
+                {t(`pronostics.pickShort.${LIVE_TYPE_TO_PICKSHORT[liveBest.type]}`)} {liveBest.prob}%
+              </span>
+            </>
+          ) : (
+            <>
+              {pred.bestPick.market && <span className="text-ink-4">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })} · </span>}
+              <span className={`font-semibold ${pickColor.text}`}>{pickLabel}</span>
+            </>
+          )}
         </p>
       </div>
 
@@ -197,8 +228,19 @@ function PronoRow({ match, index, oddsEnabled = true }) {
 
       {/* Pick (desktop) */}
       <div className="shrink-0 w-28 hidden sm:block text-right">
-        <p className="text-xs text-ink-4 leading-tight">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })}</p>
-        <p className={`text-[12px] font-bold leading-tight ${pickColor.text}`}>{pickLabel}</p>
+        {liveBest ? (
+          <>
+            <p className="text-xs text-live-400 leading-tight font-semibold">🔴 {t('pronostics.liveLabel')}</p>
+            <p className={`text-[12px] font-bold leading-tight ${getPickColor(liveBest.type).text}`}>
+              {t(`pronostics.pickShort.${LIVE_TYPE_TO_PICKSHORT[liveBest.type]}`)} · {liveBest.prob}%
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="text-xs text-ink-4 leading-tight">{t(`pronostics.marketNames.${pred.bestPick.market}`, { defaultValue: pred.bestPick.market })}</p>
+            <p className={`text-[12px] font-bold leading-tight ${pickColor.text}`}>{pickLabel}</p>
+          </>
+        )}
       </div>
 
       {/* Cote + value badge */}

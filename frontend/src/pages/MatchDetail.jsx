@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square, Loader2 } from 'lucide-react';
 import ChatIA from '../components/match/ChatIA';
 import LiveAnalysis from '../components/match/LiveAnalysis';
+import LiveMarkets from '../components/match/LiveMarkets';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { MatchStatusBadge, ResultBadge } from '../components/ui/Badge';
@@ -734,18 +735,21 @@ export default function MatchDetail() {
         </div>
       )}
 
-      {/* ── Analyse IA Live (Premium) ───────────────────────────────── */}
+      {/* ── Marchés live + Analyse IA Live (Premium) ──────────────────── */}
       {match.status === 'LIVE' && (
-        <div className="px-4">
+        <div className="px-4 space-y-3">
           {isPremium ? (
-            <LiveAnalysis matchId={match.id} />
+            <>
+              <LiveMarkets matchId={match.id} homeTeam={match.homeTeam} awayTeam={match.awayTeam} />
+              <LiveAnalysis matchId={match.id} />
+            </>
           ) : (
             <Link to="/abonnement" className="card border-dashed border-surface-600 p-4 flex items-center gap-3 hover:border-primary-500/40 transition-colors">
               <div className="w-9 h-9 rounded-lg bg-live-500/15 flex items-center justify-center shrink-0">
                 <Lock size={16} className="text-live-400" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-ink-1">{t('liveAnalysis.title')}</p>
+                <p className="text-sm font-semibold text-ink-1">{t('liveMarkets.title')}</p>
                 <p className="text-xs text-ink-4">{t('matchDetail.premiumDataDesc')}</p>
               </div>
             </Link>

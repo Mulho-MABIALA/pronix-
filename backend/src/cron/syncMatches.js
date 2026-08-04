@@ -4,6 +4,7 @@ const prisma = require('../config/database');
 const footballApi = require('../services/footballApi');
 const { broadcastNotification, notifyUser } = require('../controllers/pushController');
 const { calculatePredictionsForDate } = require('../services/predictionService');
+const env = require('../config/env');
 const { generateMatchSummary } = require('../services/matchSummaryService');
 
 // ─── Évaluation d'un pronostic vs score final ─────────────────────────────────
@@ -28,13 +29,17 @@ function matchIconUrl(homeLogo, awayLogo) {
   return `/api/img-proxy/match-icon?${params.toString()}`;
 }
 
-// ─── Corners — capturés une seule fois à la fin du match ──────────────────────
+// ─── Corners — capturés en fin de match, et pendant le direct si activé ───────
 // Réutilise le même endpoint /fixtures/statistics que matchController.getMatchStats
-// (cache déjà en place via le champ `statistics`), mais appelé ici proactivement
-// à la bascule FINISHED plutôt qu'à la demande d'un visiteur — nécessaire pour
-// accumuler un historique de corners par équipe utilisable par predictionService
-// (marchés "Total corners", "Handicap corners"...). Fire-and-forget : un échec
-// ne doit jamais bloquer le reste du cycle de sync.
+// (cache déjà en place via le champ `statistics`), appelé ici proactivement
+// plutôt qu'à la demande d'un visiteur — nécessaire pour accumuler un historique
+// de corners par équipe utilisable par predictionService (marchés "Total
+// corners", "Handicap corners"...). Toujours appelé à la bascule FINISHED.
+// Si LIVE_CORNERS_POLLING=true (plan API upgradé), également appelé à chaque
+// cycle de polling pour les matchs LIVE — homeCorners/awayCorners refléteront
+// alors le compte de corners "à l'instant T", réutilisé par deriveLiveMarkets
+// pour les marchés corners live. Fire-and-forget : un échec ne doit jamais
+// bloquer le reste du cycle de sync.
 async function captureCornerStats(matchId, externalId) {
   try {
     const stats = await footballApi.getFixtureStatistics(externalId);
@@ -284,6 +289,13 @@ async function syncLiveMatches() {
           tag:   `live-${match.id}`,
           icon:  matchIconUrl(match.homeTeamLogo, match.awayTeamLogo),
         }).catch(() => {});
+      }
+
+      // Corners live — coûte 1 requête API par match LIVE à chaque cycle,
+      // donc désactivé par défaut (LIVE_CORNERS_POLLING=false tant que le
+      // plan API n'a pas été mis à niveau, cf. config/env.js).
+      if (nowLive && env.LIVE_CORNERS_POLLING) {
+        captureCornerStats(match.id, match.externalId).catch(() => {});
       }
 
       // Fin de match : LIVE → FINISHED

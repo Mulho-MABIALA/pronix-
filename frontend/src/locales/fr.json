@@ -1266,6 +1266,14 @@
       "BALANCED": "Match équilibré"
     }
   },
+  "liveMarkets": {
+    "title": "Marchés live",
+    "result1x2": "Résultat final (1X2)",
+    "draw": "Nul",
+    "totalGoals": "Total buts",
+    "exactScore": "Score exact probable",
+    "corners": "Corners"
+  },
   "coachPanel": {
     "bettorScore": "score pronostiqueur",
     "analyzingHistory": "Analyse de votre historique en cours…",

@@ -1266,6 +1266,14 @@
       "BALANCED": "Balanced match"
     }
   },
+  "liveMarkets": {
+    "title": "Live markets",
+    "result1x2": "Final result (1X2)",
+    "draw": "Draw",
+    "totalGoals": "Total goals",
+    "exactScore": "Likely exact score",
+    "corners": "Corners"
+  },
   "coachPanel": {
     "bettorScore": "tipster score",
     "analyzingHistory": "Analyzing your history…",

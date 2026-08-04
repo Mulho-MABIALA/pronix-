@@ -1266,6 +1266,14 @@
       "BALANCED": "Partida equilibrada"
     }
   },
+  "liveMarkets": {
+    "title": "Mercados ao vivo",
+    "result1x2": "Resultado final (1X2)",
+    "draw": "Empate",
+    "totalGoals": "Total de gols",
+    "exactScore": "Placar exato provável",
+    "corners": "Escanteios"
+  },
   "coachPanel": {
     "bettorScore": "pontuação palpiteiro",
     "analyzingHistory": "Analisando seu histórico…",

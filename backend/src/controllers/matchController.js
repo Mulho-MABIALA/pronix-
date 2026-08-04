@@ -4,6 +4,7 @@ const { AppError } = require('../middleware/errorHandler');
 const { syncMatchesForDate } = require('../cron/syncMatches');
 const footballApi = require('../services/footballApi');
 const oddsService = require('../services/oddsService');
+const { deriveLiveMarkets } = require('../services/predictionService');
 
 // ─── Liste des matchs ──────────────────────────────────────────────────────────
 async function getMatches(req, res, next) {
@@ -480,6 +481,40 @@ async function getMatchStats(req, res, next) {
   }
 }
 
+// Marchés live (1X2/over-under/score exact/corners recalculés minute par
+// minute) — rien n'est stocké, on recalcule à chaque requête depuis les
+// prédictions pré-match déjà en base + l'état courant du match (score/minute/
+// corners, tenus à jour par cron/syncMatches.js). Le front poll cet endpoint
+// toutes les ~20-30s pendant qu'un match est LIVE (voir LiveMarkets.jsx).
+async function getLiveMarkets(req, res, next) {
+  try {
+    const match = await prisma.match.findUnique({
+      where: { id: req.params.id },
+      select: {
+        id: true, status: true, homeScore: true, awayScore: true, minute: true,
+        homeCorners: true, awayCorners: true, predictions: true,
+      },
+    });
+    if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
+
+    if (match.status !== 'LIVE') {
+      return res.json({ success: true, data: null });
+    }
+
+    const live = deriveLiveMarkets(match.predictions, {
+      homeScore:   match.homeScore,
+      awayScore:   match.awayScore,
+      minute:      match.minute,
+      homeCorners: match.homeCorners,
+      awayCorners: match.awayCorners,
+    });
+
+    res.json({ success: true, data: live });
+  } catch (err) {
+    next(err);
+  }
+}
+
 // Génère des stats plausibles basées sur le score (fallback si API ne répond pas)
 function generateMockStats(match) {
   const h = match.homeScore;
@@ -799,4 +834,4 @@ async function getMatchEvents(req, res, next) {
   } catch (err) { next(err); }
 }
 
-module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent };
+module.exports = { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent, getLiveMarkets };

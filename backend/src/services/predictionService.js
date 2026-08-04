@@ -417,6 +417,150 @@ function deriveGoalMarkets(pred) {
   };
 }
 
+// ── Marchés live (minute par minute) ───────────────────────────────────────
+// Contrairement aux marchés ci-dessus, rien n'est stocké : deriveLiveMarkets
+// recalcule à la demande (appelé par le contrôleur à chaque requête du front,
+// qui poll toutes les ~20-30s pendant un match LIVE) à partir de deux choses
+// déjà en base : les prédictions pré-match (home/draw/away/over25 + éventuel
+// corner1/cornerX/corner2/cornerOver85/hasCornerData) et l'état courant du
+// match (score/minute/corners, tenus à jour par cron/syncMatches.js). Le
+// score déjà acquis est fixé, seul le "reste à jouer" est modélisé par une
+// loi de Poisson dont le lambda pré-match est réduit au prorata du temps
+// restant — approximation standard des cotes live, volontairement simple
+// (pas de prise en compte de la dynamique du match en cours, cartons rouges,
+// etc.) mais cohérente avec le reste du moteur de pronostics.
+
+// "67'", "45+2'", "90+4'", "HT" → minutes écoulées. Le temps additionnel est
+// ignoré pour le calcul du temps restant (seule la base 45/90 compte) —
+// approximation suffisante ici. Retourne null si le match n'est pas en cours
+// ou si la minute n'est pas encore connue.
+function parseElapsedMinutes(minuteStr) {
+  if (!minuteStr) return null;
+  if (minuteStr === 'HT') return 45;
+  const m = String(minuteStr).match(/(\d+)/);
+  if (!m) return null;
+  return Math.min(120, parseInt(m[1], 10));
+}
+
+// Même principe que impliedTotalLambda (buts), mais pour les corners : retrouve
+// le lambda total de corners implicite depuis le marché "Over 8.5 corners"
+// déjà stocké dans les prédictions pré-match, par recherche binaire sur la
+// grille de Poisson (0 à 8 corners = "under"). Évite de stocker séparément
+// lambdaHomeCorners/lambdaAwayCorners — on réutilise ce qui existe déjà.
+function impliedTotalCornerLambda(over85Pct) {
+  const target = Math.max(0.02, Math.min(0.98, (over85Pct ?? 50) / 100));
+  let lo = 3, hi = 16;
+  for (let i = 0; i < 30; i++) {
+    const mid = (lo + hi) / 2;
+    let pUnder = 0;
+    for (let k = 0; k <= 8; k++) pUnder += poisson(mid, k);
+    if (1 - pUnder > target) hi = mid; else lo = mid;
+  }
+  return (lo + hi) / 2;
+}
+
+// pred  : predictions pré-match déjà stockées en base (Match.predictions).
+// state : { homeScore, awayScore, minute, homeCorners, awayCorners } tirés
+//         de Match au moment de la requête (valeurs live courantes).
+// Retourne null si le match n'a pas de minute exploitable (pas LIVE) ou pas
+// de prédictions pré-match utilisables.
+function deriveLiveMarkets(pred, state) {
+  const elapsed = parseElapsedMinutes(state?.minute);
+  if (elapsed == null || !pred || pred.home == null) return null;
+
+  // Fraction du match restant à jouer — base 90 min, plancher à 2% pour
+  // garder une petite probabilité même en toute fin de match.
+  const remainingFraction = Math.max(0.02, Math.min(1, (90 - elapsed) / 90));
+
+  const curHome = state.homeScore ?? 0;
+  const curAway = state.awayScore ?? 0;
+
+  const home = pred.home ?? 33, draw = pred.draw ?? 34, away = pred.away ?? 33;
+  const lambdaTotal = impliedTotalLambda(pred.over25);
+  const lambdaHomePrematch = Math.max(0.2, lambdaTotal * ((home + draw / 2) / 100));
+  const lambdaAwayPrematch = Math.max(0.2, lambdaTotal * ((away + draw / 2) / 100));
+  const remLambdaHome = Math.max(0.05, lambdaHomePrematch * remainingFraction);
+  const remLambdaAway = Math.max(0.05, lambdaAwayPrematch * remainingFraction);
+
+  const MAXG = 6;
+  let live1 = 0, liveX = 0, live2 = 0;
+  let over05 = 0, over15 = 0, over25 = 0, over35 = 0;
+  let exact = { score: `${curHome}-${curAway}`, prob: 0 };
+
+  for (let h = 0; h <= MAXG; h++) {
+    for (let a = 0; a <= MAXG; a++) {
+      const p = poisson(remLambdaHome, h) * poisson(remLambdaAway, a);
+      const finalHome = curHome + h;
+      const finalAway = curAway + a;
+      const finalTotal = finalHome + finalAway;
+
+      if (finalHome > finalAway) live1 += p;
+      else if (finalHome === finalAway) liveX += p;
+      else live2 += p;
+
+      if (finalTotal > 0.5) over05 += p;
+      if (finalTotal > 1.5) over15 += p;
+      if (finalTotal > 2.5) over25 += p;
+      if (finalTotal > 3.5) over35 += p;
+
+      if (p > exact.prob) exact = { score: `${finalHome}-${finalAway}`, prob: p };
+    }
+  }
+
+  const pct = (x) => Math.max(1, Math.min(98, Math.round(x * 100)));
+
+  const result = {
+    minute: state.minute,
+    currentScore: `${curHome}-${curAway}`,
+    live1: pct(live1), liveX: pct(liveX), live2: pct(live2),
+    liveOver05: pct(over05), liveUnder05: pct(1 - over05),
+    liveOver15: pct(over15), liveUnder15: pct(1 - over15),
+    liveOver25: pct(over25), liveUnder25: pct(1 - over25),
+    liveOver35: pct(over35), liveUnder35: pct(1 - over35),
+    liveExactScore: exact.score,
+    liveExactScoreProb: pct(exact.prob),
+    hasLiveCornerData: false,
+  };
+
+  // Corners live — seulement si le match a des marchés corners fiables
+  // pré-match (hasCornerData, source stats-based avec échantillon suffisant)
+  // ET qu'un compte de corners actuel est disponible (LIVE_CORNERS_POLLING
+  // activé côté cron, cf. cron/syncMatches.js).
+  if (pred.hasCornerData && state.homeCorners != null && state.awayCorners != null) {
+    const lambdaTotalCorners = impliedTotalCornerLambda(pred.cornerOver85);
+    const corner1 = pred.corner1 ?? 33, cornerX = pred.cornerX ?? 33, corner2 = pred.corner2 ?? 33;
+    const lambdaHomeCorners = Math.max(0.5, lambdaTotalCorners * ((corner1 + cornerX / 2) / 100));
+    const lambdaAwayCorners = Math.max(0.5, lambdaTotalCorners * ((corner2 + cornerX / 2) / 100));
+    const remLambdaHomeC = Math.max(0.1, lambdaHomeCorners * remainingFraction);
+    const remLambdaAwayC = Math.max(0.1, lambdaAwayCorners * remainingFraction);
+
+    const curHomeC = state.homeCorners;
+    const curAwayC = state.awayCorners;
+    const MAXC = 12;
+    let cOver75 = 0, cOver85 = 0, cOver95 = 0, cOver105 = 0;
+
+    for (let h = 0; h <= MAXC; h++) {
+      for (let a = 0; a <= MAXC; a++) {
+        const p = poisson(remLambdaHomeC, h) * poisson(remLambdaAwayC, a);
+        const finalTotal = curHomeC + curAwayC + h + a;
+        if (finalTotal > 7.5)  cOver75  += p;
+        if (finalTotal > 8.5)  cOver85  += p;
+        if (finalTotal > 9.5)  cOver95  += p;
+        if (finalTotal > 10.5) cOver105 += p;
+      }
+    }
+
+    result.currentCorners = `${curHomeC}-${curAwayC}`;
+    result.liveCornerOver75  = pct(cOver75);  result.liveCornerUnder75  = pct(1 - cOver75);
+    result.liveCornerOver85  = pct(cOver85);  result.liveCornerUnder85  = pct(1 - cOver85);
+    result.liveCornerOver95  = pct(cOver95);  result.liveCornerUnder95  = pct(1 - cOver95);
+    result.liveCornerOver105 = pct(cOver105); result.liveCornerUnder105 = pct(1 - cOver105);
+    result.hasLiveCornerData = true;
+  }
+
+  return result;
+}
+
 async function calculateAndSavePredictions(matchId) {
   const match = await prisma.match.findUnique({
     where: { id: matchId },
@@ -502,4 +646,4 @@ async function calculatePredictionsForDate(dateStr) {
   return matches.length;
 }
 
-module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets, deriveCornerMarkets };
+module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets, deriveCornerMarkets, deriveLiveMarkets };

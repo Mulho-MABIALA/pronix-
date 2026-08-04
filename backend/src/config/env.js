@@ -16,6 +16,12 @@ const envSchema = z.object({
   FOOTBALL_API_KEY: z.string().optional(),
   FOOTBALL_API_HOST: z.string().default('v3.football.api-sports.io'),
   FOOTBALL_API_BASE_URL: z.string().default('https://v3.football.api-sports.io'),
+  // Marchés live (corners) : interroge /fixtures/statistics à CHAQUE cycle de
+  // polling live (toutes les 2 min, cf. cron/syncMatches.js) pour tous les
+  // matchs LIVE, au lieu d'une seule fois en fin de match. Coût : 1 requête
+  // API supplémentaire par match en direct par cycle — désactivé par défaut
+  // pour ne pas exploser le quota tant que le plan API n'a pas été mis à niveau.
+  LIVE_CORNERS_POLLING: z.string().default('false').transform((v) => v === 'true'),
   WAVE_API_KEY: z.string().optional(),
   WAVE_BASE_URL: z.string().default('https://api.wave.com/v1'),
   WAVE_WEBHOOK_SECRET: z.string().optional(),

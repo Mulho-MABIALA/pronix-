@@ -1,7 +1,7 @@
 const { Router } = require('express');
 const { authenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
-const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent } = require('../controllers/matchController');
+const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent, getLiveMarkets } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
 const { setReminder, deleteReminder } = require('../controllers/remindersController');
 const { requirePlan } = require('../middleware/subscription');
@@ -60,6 +60,11 @@ router.post('/:id/chat', authenticate, attachPlan, async (req, res) => {
     return res.status(status).json({ success: false, message: err.message });
   }
 });
+
+// Marchés live (1X2/over-under/score exact/corners recalculés minute par
+// minute) — Premium, aucun coût IA mais calcul + polling front à limiter
+// aux abonnés (même logique de gating que live-analysis ci-dessous).
+router.get('/:id/live-markets', authenticate, requirePlan('PREMIUM'), getLiveMarkets);
 
 // Analyse IA live — Premium (coût IA, cachée 5 min)
 router.get('/:id/live-analysis', authenticate, requirePlan('PREMIUM'), async (req, res, next) => {

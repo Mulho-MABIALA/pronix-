@@ -545,7 +545,11 @@
     "introFeatures": {
       "aiPredictions": {
         "title": "Pronostics générés par IA",
-        "desc": "Des pronostics calculés à partir de données réelles : forme des équipes, confrontations directes, cotes."
+        "desc": "Calculés à partir de données réelles — avec l'explication du pourquoi, pas juste un chiffre."
+      },
+      "liveMarkets": {
+        "title": "Marchés en direct",
+        "desc": "Corners, prochain but, score exact — recalculés en temps réel pendant le match."
       },
       "ticketGenerator": {
         "title": "Générateur de tickets",
@@ -1985,7 +1989,7 @@
   "trialBanner": {
     "lastDay": "Dernier jour de ton essai gratuit !",
     "daysLeft": "Ton essai gratuit se termine dans {{count}} jours",
-    "suffix": "garde l'accès aux pronos illimités, stats et analyses IA",
+    "suffix": "garde le bilan vérifié, les marchés en direct et les pronostics illimités",
     "goPremium": "Passer Premium"
   },
   "header": {

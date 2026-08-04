@@ -545,7 +545,11 @@
     "introFeatures": {
       "aiPredictions": {
         "title": "AI-generated predictions",
-        "desc": "Predictions computed from real data: team form, head-to-head history, odds."
+        "desc": "Computed from real data — with an explanation of why, not just a number."
+      },
+      "liveMarkets": {
+        "title": "Live markets",
+        "desc": "Corners, next goal, exact score — recalculated in real time while the match is on."
       },
       "ticketGenerator": {
         "title": "Ticket generator",
@@ -1985,7 +1989,7 @@
   "trialBanner": {
     "lastDay": "Last day of your free trial!",
     "daysLeft": "Your free trial ends in {{count}} days",
-    "suffix": "keep access to unlimited picks, stats and AI analysis",
+    "suffix": "keep the verified track record, live markets and unlimited picks",
     "goPremium": "Go Premium"
   },
   "header": {

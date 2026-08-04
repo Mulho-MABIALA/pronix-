@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import { format } from 'date-fns';
-import { Zap, Search, Check, Sparkles, Ticket, MessageCircle, Trophy, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Zap, Search, Check, Sparkles, Ticket, MessageCircle, Trophy, ShieldCheck, ArrowRight, Radio } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
@@ -34,6 +34,7 @@ const SUPPORTED_LANGS = ['fr', 'en', 'es', 'pt'];
 // de plonger dans le choix des championnats/préférences.
 const INTRO_FEATURES = [
   { Icon: Sparkles,      key: 'aiPredictions' },
+  { Icon: Radio,         key: 'liveMarkets' },
   { Icon: Ticket,        key: 'ticketGenerator' },
   { Icon: MessageCircle, key: 'aiCoach' },
   { Icon: Trophy,        key: 'tipsterMarketplace' },

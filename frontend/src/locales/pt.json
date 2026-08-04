@@ -545,7 +545,11 @@
     "introFeatures": {
       "aiPredictions": {
         "title": "Palpites gerados por IA",
-        "desc": "Palpites calculados a partir de dados reais: forma das equipes, confrontos diretos, odds."
+        "desc": "Calculados com dados reais — com a explicação do porquê, não só um número."
+      },
+      "liveMarkets": {
+        "title": "Mercados ao vivo",
+        "desc": "Escanteios, próximo gol, placar exato — recalculados em tempo real durante o jogo."
       },
       "ticketGenerator": {
         "title": "Gerador de bilhetes",
@@ -1985,7 +1989,7 @@
   "trialBanner": {
     "lastDay": "Último dia do seu teste grátis!",
     "daysLeft": "Seu teste grátis termina em {{count}} dias",
-    "suffix": "mantenha o acesso a palpites ilimitados, stats e análises de IA",
+    "suffix": "mantenha o histórico verificado, os mercados ao vivo e os palpites ilimitados",
     "goPremium": "Assinar Premium"
   },
   "header": {

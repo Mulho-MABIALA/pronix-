@@ -53,6 +53,10 @@ npm run dev
 
 ---
 
+
+cd /var/www/pronix/backend && npm audit fix
+cd /var/www/pronix/frontend && npm audit fix
+
 ## Variables d'environnement (`backend/.env`)
 
 ```env

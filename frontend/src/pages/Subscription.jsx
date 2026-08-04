@@ -327,9 +327,9 @@ export default function Subscription() {
           </div>
           <div className="bento-card text-center py-4">
             <p className="text-2xl font-display font-bold text-primary-400">
-              {statsLoading ? '—' : (trStats?.tipsters?.activeTipsters ?? 0)}
+              {statsLoading ? '—' : (trStats?.ai?.periodDays ?? 90)}
             </p>
-            <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.tipsters')}</p>
+            <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.days')}</p>
           </div>
         </div>
         <div className="flex items-center justify-center gap-3 text-[11px] text-ink-4">

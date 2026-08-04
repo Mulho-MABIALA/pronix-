@@ -398,6 +398,7 @@
     "paymentError": "Erreur lors de l'initialisation du paiement",
     "stats": {
       "tipsters": "Tipsters actifs",
+      "days": "Jours de suivi en continu",
       "pronostics": "Pronostics publiés",
       "successRate": "Taux de réussite moyen",
       "viewFull": "Voir le bilan complet et vérifiable",

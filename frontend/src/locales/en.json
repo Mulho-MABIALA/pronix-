@@ -398,6 +398,7 @@
     "paymentError": "Error while initiating payment",
     "stats": {
       "tipsters": "Active tipsters",
+      "days": "Days tracked continuously",
       "pronostics": "Published tips",
       "successRate": "Average success rate",
       "viewFull": "See the full, verifiable track record",

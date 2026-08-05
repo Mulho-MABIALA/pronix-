@@ -6,3 +6,4 @@ build/
 *.log
 .DS_Store
 IDENTIFIANTS-HETZNER.md
+"backend/data/push-subscriptions.json" 

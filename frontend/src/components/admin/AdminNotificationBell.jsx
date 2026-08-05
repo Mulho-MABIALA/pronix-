@@ -23,6 +23,7 @@ export default function AdminNotificationBell() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [open, setOpen] = useState(false);
+  const [hiddenIds, setHiddenIds] = useState([]);
   const ref = useRef(null);
 
   const { data } = useQuery({
@@ -31,7 +32,10 @@ export default function AdminNotificationBell() {
     refetchInterval: 30_000,
   });
 
-  const items = data?.data || [];
+  // Une fois cliquée, une notification est traitée : on la retire de la
+  // liste tout de suite (côté client) plutôt que de juste la griser — c'est
+  // ce que l'admin attend d'une notif "vue".
+  const items = (data?.data || []).filter((i) => !hiddenIds.includes(i.id));
   const unreadCount = data?.unreadCount || 0;
 
   const markReadMutation = useMutation({
@@ -52,6 +56,7 @@ export default function AdminNotificationBell() {
   }, [open]);
 
   const handleClickItem = (item) => {
+    setHiddenIds((prev) => [...prev, item.id]);
     if (!item.isRead) markReadMutation.mutate(item.id);
     setOpen(false);
     if (item.link) navigate(item.link);

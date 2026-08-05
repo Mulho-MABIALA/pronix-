@@ -106,12 +106,18 @@ export default function Comparateur() {
   const [team1, setTeam1] = useState(null);
   const [team2, setTeam2] = useState(null);
 
-  // Pré-remplissage depuis un lien "Comparer" (ex: TeamPage) via ?team1Id=&team1Name=&team1Logo=
+  // Pré-remplissage depuis un lien "Comparer" (ex: TeamPage, MatchDetail) via
+  // ?team1Id=&team1Name=&team1Logo=&team2Id=&team2Name=&team2Logo=
   useEffect(() => {
-    const id = searchParams.get('team1Id');
-    const name = searchParams.get('team1Name');
-    if (id && name) {
-      setTeam1({ id, name, logo: searchParams.get('team1Logo') || null });
+    const id1 = searchParams.get('team1Id');
+    const name1 = searchParams.get('team1Name');
+    if (id1 && name1) {
+      setTeam1({ id: id1, name: name1, logo: searchParams.get('team1Logo') || null });
+    }
+    const id2 = searchParams.get('team2Id');
+    const name2 = searchParams.get('team2Name');
+    if (id2 && name2) {
+      setTeam2({ id: id2, name: name2, logo: searchParams.get('team2Logo') || null });
     }
   }, [searchParams]);
 

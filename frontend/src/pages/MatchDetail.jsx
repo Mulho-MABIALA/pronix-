@@ -722,7 +722,10 @@ export default function MatchDetail() {
             color="fuchsia"
             title={t('matchDetail.comparateurHintTitle')}
             description={t('matchDetail.comparateurHintDesc')}
-            to="/comparateur"
+            to={`/comparateur?${new URLSearchParams({
+              team1Id: match.homeTeamId, team1Name: match.homeTeam, team1Logo: match.homeTeamLogo || '',
+              team2Id: match.awayTeamId, team2Name: match.awayTeam, team2Logo: match.awayTeamLogo || '',
+            }).toString()}`}
             ctaLabel={t('matchDetail.comparateurHintCta')}
           />
         </div>

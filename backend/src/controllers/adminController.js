@@ -223,16 +223,22 @@ async function getUserStats(req, res, next) {
   try {
     const firstOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
     const lastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    // "En ligne" = activité (login ou renouvellement de session) dans les 15
+    // dernières minutes — ça correspond à la durée de vie de l'access token
+    // (voir JWT_ACCESS_EXPIRES_IN), donc tant qu'un utilisateur utilise l'app,
+    // son lastLoginAt est réactualisé au moins une fois par fenêtre de 15 min.
+    const onlineThreshold = new Date(Date.now() - 15 * 60 * 1000);
 
-    const [total, newThisMonth, newThisWeek, suspended, activeSubscriptions] = await prisma.$transaction([
+    const [total, newThisMonth, newThisWeek, suspended, activeSubscriptions, online] = await prisma.$transaction([
       prisma.user.count(),
       prisma.user.count({ where: { createdAt: { gte: firstOfMonth } } }),
       prisma.user.count({ where: { createdAt: { gte: lastWeek } } }),
       prisma.user.count({ where: { isActive: false } }),
       prisma.subscription.count({ where: { status: 'ACTIVE' } }),
+      prisma.user.count({ where: { lastLoginAt: { gte: onlineThreshold } } }),
     ]);
 
-    res.json({ success: true, data: { total, newThisMonth, newThisWeek, suspended, activeSubscriptions } });
+    res.json({ success: true, data: { total, newThisMonth, newThisWeek, suspended, activeSubscriptions, online } });
   } catch (err) { next(err); }
 }
 

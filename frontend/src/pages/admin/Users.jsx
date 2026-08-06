@@ -62,7 +62,7 @@ function UserAvatar({ user, size = 'sm' }) {
     : <div className={`${dim} rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 font-bold shrink-0`}>{letter}</div>;
 }
 
-function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
+function StatCard({ label, value, icon: Icon, color = 'text-primary-400', sub }) {
   return (
     <div className="rounded-xl border border-overlay/[0.09] p-4 flex items-center gap-3 shine-subtle"
       style={{ background: 'var(--color-card)', boxShadow: 'inset 0 1px 0 rgb(var(--overlay-rgb) / 0.06)' }}>
@@ -73,6 +73,12 @@ function StatCard({ label, value, icon: Icon, color = 'text-primary-400' }) {
       <div>
         <p className="text-xl font-bold text-ink-1 leading-none">{value ?? '—'}</p>
         <p className="text-[11px] text-ink-3 mt-0.5">{label}</p>
+        {sub != null && (
+          <p className="text-[10px] text-emerald-400 font-semibold mt-1 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            {sub}
+          </p>
+        )}
       </div>
     </div>
   );
@@ -681,7 +687,8 @@ export default function AdminUsers() {
 
       {/* Stats bar */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-        <StatCard label="Total utilisateurs"    value={statsData?.total}               icon={Users}       color="text-primary-400" />
+        <StatCard label="Total utilisateurs"    value={statsData?.total}               icon={Users}       color="text-primary-400"
+          sub={statsData?.online != null ? `${statsData.online} en ligne` : undefined} />
         <StatCard label="Nouveaux ce mois"      value={statsData?.newThisMonth}         icon={Calendar}    color="text-emerald-400" />
         <StatCard label="Cette semaine"         value={statsData?.newThisWeek}          icon={TrendingUp}  color="text-cyan-400" />
         <StatCard label="Abonnés actifs"        value={statsData?.activeSubscriptions}  icon={Crown}       color="text-amber-400" />

@@ -125,6 +125,7 @@ async function register(req, res, next) {
         language,
         currency: currency || null,
         ageConfirmedAt: new Date(),
+        lastLoginAt: new Date(),
         trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
         profile: { create: {} },
         subscription: {
@@ -385,10 +386,13 @@ async function googleAuth(req, res, next) {
       if (!user.isActive) {
         throw new AppError('Compte désactivé', 403, 'ACCOUNT_DISABLED');
       }
-      // Lier le googleId si ce n'est pas encore fait
-      if (!user.googleId) {
-        await prisma.user.update({ where: { id: user.id }, data: { googleId } });
-      }
+      // Lier le googleId si ce n'est pas encore fait, et dans tous les cas
+      // mettre à jour lastLoginAt — sinon "Dernier login" reste vide pour
+      // tout compte connecté via Google (bug : jamais mis à jour ici avant).
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: new Date(), ...(user.googleId ? {} : { googleId }) },
+      });
     } else {
       // Créer un nouveau compte via Google — jeu responsable : la case 18+ doit
       // avoir été cochée côté client avant l'appel (voir Register.jsx).
@@ -405,6 +409,7 @@ async function googleAuth(req, res, next) {
           googleId,
           username,
           ageConfirmedAt: new Date(),
+          lastLoginAt: new Date(),
           trialEndsAt: getTrialEndDate(), // essai Premium 7 jours
           profile: { create: { displayName: name || username, avatar: picture } },
           subscription: { create: { planId: freePlan.id, status: 'ACTIVE' } },

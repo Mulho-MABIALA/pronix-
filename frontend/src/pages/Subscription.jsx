@@ -12,37 +12,66 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 
+// Logos dessinés en local (SVG inline, couleurs officielles de chaque marque)
+// — pas de dépendance à un service externe (Clearbit ne renvoyait plus rien
+// en production, laissant les badges de paiement vides).
+function WaveIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="12" fill="#1DC8CD" />
+      <path d="M4 13c1.2 0 1.2-3 2.4-3s1.2 3 2.4 3 1.2-3 2.4-3 1.2 3 2.4 3 1.2-3 2.4-3 1.2 3 2.4 3" stroke="#fff" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+function OrangeMoneyIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="12" fill="#FF7900" />
+      <text x="12" y="16" textAnchor="middle" fontSize="12" fontWeight="800" fontFamily="Arial, sans-serif" fill="#fff">O</text>
+    </svg>
+  );
+}
+function AirtelMoneyIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="12" fill="#ED1C24" />
+      <path d="M6.5 15c2-5.5 9-5.5 11 0" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none" />
+    </svg>
+  );
+}
+function MtnIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="12" fill="#FFCB05" />
+      <text x="12" y="15.5" textAnchor="middle" fontSize="7.5" fontWeight="900" fontFamily="Arial, sans-serif" fill="#000">MTN</text>
+    </svg>
+  );
+}
+function VisaIcon() {
+  return (
+    <svg width="24" height="18" viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="24" rx="4" fill="#fff" />
+      <text x="18" y="17" textAnchor="middle" fontSize="11" fontWeight="900" fontStyle="italic" fontFamily="Arial, sans-serif" fill="#1A1F71">VISA</text>
+    </svg>
+  );
+}
+function MastercardIcon() {
+  return (
+    <svg width="24" height="18" viewBox="0 0 36 24" xmlns="http://www.w3.org/2000/svg">
+      <rect width="36" height="24" rx="4" fill="#fff" />
+      <circle cx="15" cy="12" r="7" fill="#EB001B" />
+      <circle cx="23" cy="12" r="7" fill="#F79E1B" fillOpacity="0.9" />
+    </svg>
+  );
+}
+
 const PAYMENT_METHODS = [
-  {
-    name: 'Wave',
-    logo: 'https://logo.clearbit.com/wave.com',
-    bg: 'bg-[#1ebcd5]/10',
-  },
-  {
-    name: 'Orange Money',
-    logo: 'https://logo.clearbit.com/orange.com',
-    bg: 'bg-orange-500/10',
-  },
-  {
-    name: 'Airtel Money',
-    logo: 'https://logo.clearbit.com/airtel.com',
-    bg: 'bg-red-500/10',
-  },
-  {
-    name: 'MTN',
-    logo: 'https://logo.clearbit.com/mtn.com',
-    bg: 'bg-yellow-400/10',
-  },
-  {
-    name: 'Visa',
-    logo: 'https://logo.clearbit.com/visa.com',
-    bg: 'bg-blue-600/10',
-  },
-  {
-    name: 'Mastercard',
-    logo: 'https://logo.clearbit.com/mastercard.com',
-    bg: 'bg-red-500/10',
-  },
+  { name: 'Wave',         Icon: WaveIcon,        bg: 'bg-[#1DC8CD]/10' },
+  { name: 'Orange Money', Icon: OrangeMoneyIcon, bg: 'bg-[#FF7900]/10' },
+  { name: 'Airtel Money', Icon: AirtelMoneyIcon, bg: 'bg-[#ED1C24]/10' },
+  { name: 'MTN',          Icon: MtnIcon,         bg: 'bg-[#FFCB05]/10' },
+  { name: 'Visa',         Icon: VisaIcon,        bg: 'bg-[#1A1F71]/10' },
+  { name: 'Mastercard',   Icon: MastercardIcon,  bg: 'bg-overlay/[0.05]' },
 ];
 
 // Couleurs par plan (le libellé du badge est traduit dans PricingCard, pas ici —
@@ -441,18 +470,13 @@ export default function Subscription() {
           <p className="text-sm font-semibold text-ink-2">{t('subscription.payment.title')}</p>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
-          {PAYMENT_METHODS.map((m) => (
+          {PAYMENT_METHODS.map(({ name, Icon, bg }) => (
             <div
-              key={m.name}
-              className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-overlay/[0.07] ${m.bg}`}
+              key={name}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-overlay/[0.07] ${bg}`}
             >
-              <img
-                src={m.logo}
-                alt={m.name}
-                className="h-5 w-5 object-contain rounded"
-                onError={(e) => { e.currentTarget.style.display = 'none'; }}
-              />
-              <span className="text-xs text-ink-2 font-medium">{m.name}</span>
+              <Icon />
+              <span className="text-xs text-ink-2 font-medium">{name}</span>
             </div>
           ))}
         </div>

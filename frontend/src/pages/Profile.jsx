@@ -360,7 +360,7 @@ function FavoriteLeaguesSection() {
    l'onboarding sinon). Endpoint dédié /profiles/me/preferences, séparé de
    /me/onboarding qui touche aussi favoriteLeagues/favoriteTeams. ─── */
 function PreferencesSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, refreshUser } = useAuth();
   const toast = useToast();
   const [language, setLanguage] = useState(user?.language || 'fr');
@@ -388,7 +388,18 @@ function PreferencesSection() {
       <div className="space-y-3">
         <div>
           <label className="block text-xs font-medium text-ink-3 mb-1.5">{t('profile.preferences.language')}</label>
-          <select value={language} onChange={(e) => setLanguage(e.target.value)} className="input w-full">
+          <select
+            value={language}
+            onChange={(e) => {
+              const code = e.target.value;
+              setLanguage(code);
+              // Traduction immédiate de l'interface — pas besoin d'attendre
+              // "Enregistrer" pour voir l'effet (le clic sur Enregistrer ne
+              // fait ensuite que persister ce choix sur le compte).
+              i18n.changeLanguage(code);
+            }}
+            className="input w-full"
+          >
             {LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.label}</option>)}
           </select>
         </div>

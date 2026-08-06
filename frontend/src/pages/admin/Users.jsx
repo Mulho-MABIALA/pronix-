@@ -7,7 +7,7 @@ import {
   MessageSquare, ArrowUpDown, StickyNote, Send, AlertTriangle,
   ChevronDown, ExternalLink, Star, Trash2, Smartphone, Phone,
 } from 'lucide-react';
-import { format, formatDistanceToNow } from 'date-fns';
+import { format, formatDistanceToNow, differenceInDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import api from '../../services/api';
@@ -50,6 +50,21 @@ function CountryBadge({ user }) {
       <span>{country.label}</span>
     </span>
   );
+}
+
+// appInstalledAt est réécrit à chaque ouverture de l'app en mode standalone
+// (throttlé à 1x/jour, voir usePWAInstall.js) — donc si la date n'avance plus
+// depuis longtemps, c'est le signal le plus fiable disponible côté web qu'un
+// utilisateur a désinstallé l'app (aucun événement navigateur ne prévient
+// directement d'une désinstallation).
+const APP_STALE_DAYS = 14;
+function appInstallStatus(user) {
+  if (!user.appInstalledAt) return { label: 'App non installée', stale: false, none: true };
+  const days = differenceInDays(new Date(), new Date(user.appInstalledAt));
+  if (days > APP_STALE_DAYS) {
+    return { label: `Probablement désinstallée · vue il y a ${days} j`, stale: true, none: false };
+  }
+  return { label: `App installée · ${format(new Date(user.appInstalledAt), 'dd MMM yyyy', { locale: fr })}`, stale: false, none: false };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -182,14 +197,17 @@ function UserDetailModal({ user, onClose, onActivate, qc }) {
                     <Clock size={10} /> {formatDistanceToNow(new Date(user.lastLoginAt), { locale: fr, addSuffix: true })}
                   </span>
                 )}
-                <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
-                  user.appInstalledAt ? 'bg-primary-500/15 text-primary-400' : 'bg-overlay/[0.05] text-ink-3'
-                }`}>
-                  <Smartphone size={10} />
-                  {user.appInstalledAt
-                    ? `App installée · ${format(new Date(user.appInstalledAt), 'dd MMM yyyy', { locale: fr })}`
-                    : 'App non installée'}
-                </span>
+                {(() => {
+                  const st = appInstallStatus(user);
+                  return (
+                    <span className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md ${
+                      st.stale ? 'bg-amber-500/15 text-amber-400' : st.none ? 'bg-overlay/[0.05] text-ink-3' : 'bg-primary-500/15 text-primary-400'
+                    }`}>
+                      <Smartphone size={10} />
+                      {st.label}
+                    </span>
+                  );
+                })()}
                 {user.selfExclusionUntil && new Date(user.selfExclusionUntil) > new Date() && (
                   <span className="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-400">
                     <AlertTriangle size={10} />
@@ -844,21 +862,23 @@ export default function AdminUsers() {
                         {u.profile?.phone || <span className="text-ink-4">—</span>}
                       </td>
                       <td className="px-4 py-3.5 hidden lg:table-cell text-center">
-                        {u.appInstalledAt ? (
-                          <span
-                            className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-primary-500/15 text-primary-400 border border-primary-500/20"
-                            title={`App installée le ${format(new Date(u.appInstalledAt), 'dd MMM yyyy', { locale: fr })}`}
-                          >
-                            <Smartphone size={12} />
-                          </span>
-                        ) : (
-                          <span
-                            className="inline-flex items-center justify-center w-6 h-6 rounded-lg bg-overlay/[0.03] text-ink-4 border border-overlay/[0.06]"
-                            title="Application non installée"
-                          >
-                            <Smartphone size={12} />
-                          </span>
-                        )}
+                        {(() => {
+                          const st = appInstallStatus(u);
+                          return (
+                            <span
+                              className={`inline-flex items-center justify-center w-6 h-6 rounded-lg border ${
+                                st.stale
+                                  ? 'bg-amber-500/15 text-amber-400 border-amber-500/20'
+                                  : st.none
+                                  ? 'bg-overlay/[0.03] text-ink-4 border-overlay/[0.06]'
+                                  : 'bg-primary-500/15 text-primary-400 border-primary-500/20'
+                              }`}
+                              title={st.label}
+                            >
+                              <Smartphone size={12} />
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-4 py-3.5">
                         <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-lg ${

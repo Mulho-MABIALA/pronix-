@@ -15,7 +15,12 @@ function notify() {
   _listeners.forEach((fn) => fn(_deferredPrompt));
 }
 
-const INSTALLED_FLAG = 'fpronix_app_installed_reported';
+// Clé de throttle — date (YYYY-MM-DD) du dernier signalement, pas un simple
+// flag "déjà fait une fois" : contrairement à un flag booléen, ça permet de
+// re-signaler après une désinstallation/réinstallation (même si le
+// localStorage du navigateur a survécu à l'opération) et ça garde
+// appInstalledAt "vivant" tant que l'app installée est réellement utilisée.
+const LAST_REPORT_KEY = 'fpronix_app_installed_last_report';
 
 function isStandalone() {
   return (
@@ -24,14 +29,15 @@ function isStandalone() {
   );
 }
 
-// Signale au serveur que l'app est installée (une seule fois, si connecté).
-// Le token d'auth vit maintenant dans un cookie httpOnly illisible en JS : on
-// ne peut plus vérifier la connexion ici, on tente l'appel et on ignore
-// silencieusement le 401 si l'utilisateur n'est pas connecté.
+// Signale au serveur que l'app est installée — au maximum 1x/jour, si
+// connecté. Le token d'auth vit maintenant dans un cookie httpOnly illisible
+// en JS : on ne peut plus vérifier la connexion ici, on tente l'appel et on
+// ignore silencieusement le 401 si l'utilisateur n'est pas connecté.
 function reportInstalled() {
-  if (localStorage.getItem(INSTALLED_FLAG)) return;
+  const today = new Date().toISOString().slice(0, 10);
+  if (localStorage.getItem(LAST_REPORT_KEY) === today) return;
   api.post('/auth/app-installed')
-    .then(() => localStorage.setItem(INSTALLED_FLAG, '1'))
+    .then(() => localStorage.setItem(LAST_REPORT_KEY, today))
     .catch(() => {});
 }
 

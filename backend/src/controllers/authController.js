@@ -458,13 +458,16 @@ async function me(req, res) {
 // ─── Marquer l'app comme installée (PWA) ─────────────────────────────────────
 async function markAppInstalled(req, res, next) {
   try {
-    // On ne réécrase pas une date déjà enregistrée (première installation)
-    if (!req.user.appInstalledAt) {
-      await prisma.user.update({
-        where: { id: req.user.id },
-        data: { appInstalledAt: new Date() },
-      });
-    }
+    // On réécrit systématiquement la date à chaque appel (throttlé à 1x/jour
+    // côté frontend, voir usePWAInstall.js) — appInstalledAt représente donc
+    // la dernière fois qu'on a confirmé l'app ouverte en mode standalone, pas
+    // la toute première installation. Ça permet de détecter indirectement une
+    // désinstallation : si la date arrête d'avancer, l'app n'est plus utilisée
+    // en mode installé (désinstallée, ou juste jamais réouverte depuis).
+    await prisma.user.update({
+      where: { id: req.user.id },
+      data: { appInstalledAt: new Date() },
+    });
     res.json({ success: true });
   } catch (err) {
     next(err);

@@ -33,7 +33,16 @@ api.interceptors.response.use(
   async (error) => {
     const original = error.config;
 
-    if (error.response?.status === 401 && error.response?.data?.code === 'TOKEN_EXPIRED' && !original._retry) {
+    // TOKEN_EXPIRED : le JWT a expiré mais le cookie était encore présent.
+    // UNAUTHORIZED : cas le plus fréquent en pratique — le cookie d'access
+    // token a une durée de vie calée pile sur l'expiration du JWT (voir
+    // accessCookieMaxAge côté backend), donc le navigateur supprime déjà le
+    // cookie lui-même avant la requête suivante ; le token n'est alors plus
+    // "expiré", il est "absent", et le serveur répond UNAUTHORIZED. Sans ce
+    // deuxième code, la session ne se renouvelait plus jamais après 15 min
+    // d'inactivité (symptôme observé : l'app "se déconnecte" silencieusement).
+    const RETRYABLE_CODES = ['TOKEN_EXPIRED', 'UNAUTHORIZED'];
+    if (error.response?.status === 401 && RETRYABLE_CODES.includes(error.response?.data?.code) && !original._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });

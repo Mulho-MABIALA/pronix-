@@ -322,6 +322,24 @@ function FormBadge({ result }) {
   );
 }
 
+// Teaser gratuit — vrai résumé V/N/D calculé sur les vraies données, mais pas
+// le détail des matchs (voir matchController.getMatchContext). Un aperçu réel
+// donne plus envie de débloquer qu'une boîte cadenassée vide.
+function TeaserFormChips({ label, summary }) {
+  const { t } = useTranslation();
+  if (!summary) return null;
+  return (
+    <div className="flex items-center justify-between gap-2">
+      <span className="text-xs font-medium text-ink-3 truncate">{label}</span>
+      <div className="flex items-center gap-1.5 text-[11px] font-bold">
+        <span className="px-1.5 py-0.5 rounded bg-primary-500/20 text-primary-400">{summary.wins}{t('matchDetail.formLetterW')}</span>
+        <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-400">{summary.draws}{t('matchDetail.formLetterD')}</span>
+        <span className="px-1.5 py-0.5 rounded bg-red-500/20 text-red-400">{summary.losses}{t('matchDetail.formLetterL')}</span>
+      </div>
+    </div>
+  );
+}
+
 function FormRow({ label, matches }) {
   const { t } = useTranslation();
   if (!matches || matches.length === 0) {
@@ -823,7 +841,7 @@ export default function MatchDetail() {
                 <Lock size={22} className="mx-auto text-ink-3 mb-2" aria-hidden="true" />
                 <p className="text-ink-4 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
                 <p className="text-ink-3 text-xs mt-1">
-                  {t('matchDetail.premiumDataDesc')}
+                  {t('matchDetail.premiumDataDesc', { home: match.homeTeam, away: match.awayTeam })}
                 </p>
                 <Link to="/abonnement" className="btn-primary mt-4 text-sm">
                   {t('matchDetail.upgradePremium', { price: '5 150' })}
@@ -1132,13 +1150,35 @@ export default function MatchDetail() {
                 <SkeletonCard className="h-24" />
               </div>
             ) : contextData?.data?.locked ? (
-              <section className="card border-dashed border-surface-600 p-6 text-center">
-                <Lock size={22} className="mx-auto text-ink-3 mb-2" aria-hidden="true" />
-                <p className="text-ink-4 font-medium text-sm">{t('matchDetail.premiumDataTitle')}</p>
-                <p className="text-ink-3 text-xs mt-1">{t('matchDetail.premiumDataDesc')}</p>
-                <Link to="/abonnement" className="btn-primary mt-4 text-sm">
-                  {t('matchDetail.upgradePremium', { price: '5 150' })}
-                </Link>
+              <section className="space-y-3">
+                {/* Vrai aperçu — compte V/N/D réel, pas une boîte vide */}
+                <div className="card p-4 space-y-3">
+                  <TeaserFormChips label={match.homeTeam} summary={contextData.data.homeFormSummary} />
+                  <TeaserFormChips label={match.awayTeam} summary={contextData.data.awayFormSummary} />
+                  {contextData.data.h2hCount > 0 && (
+                    <div className="pt-2 border-t border-overlay/[0.06] text-xs text-ink-3">
+                      {t('matchDetail.h2hTeaser', {
+                        count: contextData.data.h2hCount,
+                        home: match.homeTeam,
+                        homeWins: contextData.data.h2hSummary.homeWins,
+                        draws: contextData.data.h2hSummary.draws,
+                        away: match.awayTeam,
+                        awayWins: contextData.data.h2hSummary.awayWins,
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <section className="card border-dashed border-surface-600 p-6 text-center">
+                  <Lock size={22} className="mx-auto text-ink-3 mb-2" aria-hidden="true" />
+                  <p className="text-ink-4 font-medium text-sm">{t('matchDetail.premiumFormTitle')}</p>
+                  <p className="text-ink-3 text-xs mt-1">
+                    {t('matchDetail.premiumFormDesc', { home: match.homeTeam, away: match.awayTeam })}
+                  </p>
+                  <Link to="/abonnement" className="btn-primary mt-4 text-sm">
+                    {t('matchDetail.upgradePremium', { price: '5 150' })}
+                  </Link>
+                </section>
               </section>
             ) : !contextData?.data ? (
               <div className="card-p text-center py-8">

@@ -175,12 +175,11 @@ async function getMatchContext(req, res, next) {
     const match = await prisma.match.findUnique({ where: { id: req.params.id } });
     if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
 
-    // Forme récente + confrontations directes = contenu Premium.
-    // On coupe avant les requêtes lourdes pour ne pas exposer la donnée aux non-abonnés.
+    // Forme récente + confrontations directes = contenu Premium. Les non-abonnés
+    // reçoivent quand même un teaser agrégé (V/N/D, pas le détail des matchs) —
+    // un vrai aperçu convertit mieux qu'une boîte verrouillée vide, et le coût
+    // de ces requêtes (take: 5, filtre simple) reste négligeable.
     const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(req.userPlan || 'FREE');
-    if (!isPremium) {
-      return res.json({ success: true, data: { locked: true, homeForm: null, awayForm: null, h2h: null } });
-    }
 
     const formFilter = (teamName) => ({
       OR: [{ homeTeam: teamName }, { awayTeam: teamName }],
@@ -225,11 +224,41 @@ async function getMatchContext(req, res, next) {
       return 'D';
     };
 
+    const homeResults = homeForm.map(m => getResult(m, match.homeTeam));
+    const awayResults = awayForm.map(m => getResult(m, match.awayTeam));
+    const summarize = (results) => ({
+      wins:   results.filter(r => r === 'W').length,
+      draws:  results.filter(r => r === 'D').length,
+      losses: results.filter(r => r === 'L').length,
+    });
+    const h2hSummary = {
+      homeWins: h2h.filter(m => getResult(m, match.homeTeam) === 'W').length,
+      draws:    h2h.filter(m => getResult(m, match.homeTeam) === 'D').length,
+      awayWins: h2h.filter(m => getResult(m, match.homeTeam) === 'L').length,
+    };
+
+    if (!isPremium) {
+      // Teaser : le compte V/N/D est un vrai aperçu (calculé sur les vraies
+      // données), mais le détail des matchs (dates, scores, adversaires)
+      // reste verrouillé — c'est ça qui donne envie de débloquer, plutôt
+      // qu'une boîte cadenassée vide.
+      return res.json({
+        success: true,
+        data: {
+          locked: true,
+          homeFormSummary: summarize(homeResults),
+          awayFormSummary: summarize(awayResults),
+          h2hSummary,
+          h2hCount: h2h.length,
+        },
+      });
+    }
+
     res.json({
       success: true,
       data: {
-        homeForm: homeForm.map(m => ({ ...m, result: getResult(m, match.homeTeam) })),
-        awayForm: awayForm.map(m => ({ ...m, result: getResult(m, match.awayTeam) })),
+        homeForm: homeForm.map((m, i) => ({ ...m, result: homeResults[i] })),
+        awayForm: awayForm.map((m, i) => ({ ...m, result: awayResults[i] })),
         h2h,
       },
     });

@@ -396,6 +396,8 @@
     "unitWeek": "semana",
     "unitMonth": "mês",
     "paymentError": "Erro ao iniciar o pagamento",
+    "perDay": "≈ {{price}} FCFA/dia",
+    "lifetimeBreakeven": "Compensa em {{months}} meses vs Premium mensal",
     "stats": {
       "tipsters": "Tipsters ativos",
       "days": "Dias de acompanhamento contínuo",
@@ -443,6 +445,17 @@
       "currentPlan": "✓ Plano atual",
       "defaultPlan": "Plano padrão",
       "startWith": "Começar com {{plan}}"
+    },
+    "unlock": {
+      "title": "O que você desbloqueia",
+      "predictionsLimit": "3 palpites IA/dia",
+      "predictionsUnlimited": "Ilimitado",
+      "chatLimit": "3 perguntas IA/dia",
+      "chatUnlimited": "Chat IA ilimitado"
+    },
+    "reassurance": {
+      "cancelAnytime": "Cancele quando quiser · Pagamento seguro",
+      "lifetimeOnce": "Pagamento único · Acesso vitalício garantido"
     },
     "payment": {
       "title": "Pagamento seguro via GeniusPay"

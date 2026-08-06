@@ -53,10 +53,11 @@ const PLAN_STYLE = {
   LIFETIME: { ring: 'ring-1 ring-amber-500/50 border-amber-500/60', badgeKey: 'badgeBestValue', btn: 'w-full py-3 rounded-xl font-semibold text-sm bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-400 hover:to-orange-400 transition-all active:scale-[0.98]' },
 };
 
-function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
+function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, premiumMonthlyPrice }) {
   const { t } = useTranslation();
   const isFree     = plan.code === 'FREE';
   const isLifetime = plan.code === 'LIFETIME';
+  const isPremium  = plan.code === 'PREMIUM';
   const style      = PLAN_STYLE[plan.code] || PLAN_STYLE.FREE;
   const price      = isLifetime
     ? plan.priceMonthly
@@ -66,11 +67,24 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
   const monthly    = !isLifetime && billingCycle === 'YEARLY' ? (plan.priceYearly / 12).toFixed(2) : null;
   const unitLabel  = billingCycle === 'YEARLY' ? t('subscription.unitYear') : billingCycle === 'WEEKLY' ? t('subscription.unitWeek') : t('subscription.unitMonth');
 
+  // Prix ramené à la journée — un prix mensuel/annuel se compare mal à une
+  // dépense quotidienne, le ramener au jour le rend concret (technique
+  // standard, honnête tant que le calcul est exact).
+  const perDayPrice = !isFree && !isLifetime
+    ? Math.round(price / (billingCycle === 'YEARLY' ? 365 : billingCycle === 'WEEKLY' ? 7 : 30))
+    : null;
+
+  // Seuil de rentabilité du Lifetime face à un abonnement Premium mensuel —
+  // calcul réel à partir des prix actuels, pas un chiffre marketing.
+  const breakevenMonths = isLifetime && premiumMonthlyPrice
+    ? Math.ceil(plan.priceMonthly / premiumMonthlyPrice)
+    : null;
+
   // Halo animé discret sur les plans mis en avant, pour attirer l'oeil sans surcharger
   const glowClass = plan.code === 'PREMIUM' || plan.code === 'LIFETIME' ? 'animate-glow-pulse shine-auto' : '';
 
   return (
-    <div className={`bento-card flex flex-col gap-5 relative ${style.ring} ${glowClass}`}>
+    <div className={`bento-card flex flex-col gap-5 relative ${style.ring} ${glowClass} ${isPremium ? 'md:scale-[1.04] md:z-10' : ''}`}>
       {/* Badge */}
       {style.badgeKey && (
         <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 whitespace-nowrap">
@@ -100,10 +114,36 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
             ≈ {new Intl.NumberFormat('fr-FR').format(Math.round(plan.priceYearly / 12))} FCFA/mois
           </p>
         )}
+        {perDayPrice != null && (
+          <p className="text-xs text-ink-4 mt-1">
+            {t('subscription.perDay', { price: new Intl.NumberFormat('fr-FR').format(perDayPrice) })}
+          </p>
+        )}
+        {breakevenMonths != null && (
+          <p className="text-xs text-amber-400 mt-1 font-medium">
+            {t('subscription.lifetimeBreakeven', { months: breakevenMonths })}
+          </p>
+        )}
       </div>
 
       {/* Séparateur */}
       <div className="h-px bg-overlay/[0.06]" />
+
+      {/* Ce que tu débloques — comparaison directe avec les limites du plan
+          Gratuit, sur le plan Premium uniquement (là où la bascule se joue). */}
+      {isPremium && (
+        <div className="rounded-xl bg-primary-500/[0.06] border border-primary-500/15 p-3 space-y-2">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-primary-400">{t('subscription.unlock.title')}</p>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-ink-4 line-through decoration-red-500/50">{t('subscription.unlock.predictionsLimit')}</span>
+            <span className="font-semibold text-ink-1">{t('subscription.unlock.predictionsUnlimited')}</span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
+            <span className="text-ink-4 line-through decoration-red-500/50">{t('subscription.unlock.chatLimit')}</span>
+            <span className="font-semibold text-ink-1">{t('subscription.unlock.chatUnlimited')}</span>
+          </div>
+        </div>
+      )}
 
       {/* Features */}
       <ul className="space-y-2.5 flex-1">
@@ -125,13 +165,18 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading }) {
           {t('common.defaultPlan')}
         </div>
       ) : (
-        <button
-          onClick={() => onSelect(plan)}
-          disabled={loading}
-          className="btn-primary w-full"
-        >
-          {loading ? t('common.loading') : t('common.startWith', { plan: plan.displayName })}
-        </button>
+        <div className="space-y-2">
+          <button
+            onClick={() => onSelect(plan)}
+            disabled={loading}
+            className={isLifetime ? style.btn : 'btn-primary w-full'}
+          >
+            {loading ? t('common.loading') : t('common.startWith', { plan: plan.displayName })}
+          </button>
+          <p className="text-center text-[11px] text-ink-4">
+            {isLifetime ? t('subscription.reassurance.lifetimeOnce') : t('subscription.reassurance.cancelAnytime')}
+          </p>
+        </div>
       )}
     </div>
   );
@@ -384,6 +429,7 @@ export default function Subscription() {
             isCurrentPlan={userPlan === plan.code}
             onSelect={handleSelectPlan}
             loading={loading}
+            premiumMonthlyPrice={premiumPlan?.priceMonthly}
           />
         ))}
       </div>

@@ -251,14 +251,13 @@ function BetRow({ bet, onDelete, onResultChange }) {
         )}
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-ink-2 truncate flex items-center gap-1.5">
-            {bet.match && (
-              <TeamLogo logo={bet.match.homeTeamLogo} teamId={bet.match.homeTeamId} name={bet.teamA} size={14} />
-            )}
+            {/* Toujours affiché, même sans match lié (vieux paris créés avant
+                que le choix d'un vrai match soit obligatoire) — TeamLogo
+                retombe sur un avatar-initiale si logo/teamId sont absents. */}
+            <TeamLogo logo={bet.match?.homeTeamLogo} teamId={bet.match?.homeTeamId} name={bet.teamA} size={14} />
             {bet.teamA}
             <span className="text-ink-4 font-normal">vs</span>
-            {bet.match && (
-              <TeamLogo logo={bet.match.awayTeamLogo} teamId={bet.match.awayTeamId} name={bet.teamB} size={14} />
-            )}
+            <TeamLogo logo={bet.match?.awayTeamLogo} teamId={bet.match?.awayTeamId} name={bet.teamB} size={14} />
             {bet.teamB}
           </p>
           <p className="text-[11px] text-ink-3 truncate mt-0.5">

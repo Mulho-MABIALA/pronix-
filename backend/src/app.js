@@ -1,4 +1,18 @@
 const env = require('./config/env');
+
+// ─── Sentry — suivi d'erreurs en production ────────────────────────────────
+// Doit être initialisé AVANT de require() express et le reste des modules
+// pour que l'auto-instrumentation (OpenTelemetry) puisse s'accrocher dessus.
+// Sans SENTRY_DSN configuré (dev/test), tourne avec enabled:false — aucun
+// envoi réseau, aucun overhead. Voir SENTRY_DSN dans config/env.js.
+const Sentry = require('@sentry/node');
+Sentry.init({
+  dsn: env.SENTRY_DSN,
+  enabled: !!env.SENTRY_DSN,
+  environment: env.NODE_ENV,
+  tracesSampleRate: env.NODE_ENV === 'production' ? 0.1 : 0,
+});
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -131,6 +145,10 @@ app.get('/api/health', (req, res) => {
 app.use((req, res) => {
   res.status(404).json({ success: false, code: 'NOT_FOUND', message: 'Route introuvable' });
 });
+
+// Capture Sentry — doit être monté après les routes, avant le errorHandler
+// applicatif (qui, lui, formate toujours la réponse JSON envoyée au client).
+Sentry.setupExpressErrorHandler(app);
 
 // Gestionnaire d'erreurs global
 app.use(errorHandler);

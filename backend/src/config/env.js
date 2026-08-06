@@ -55,6 +55,9 @@ const envSchema = z.object({
   // exactement au domaine servi au navigateur — pas de https://, pas de port.
   // Si absent, dérivé automatiquement du hostname de FRONTEND_URL au démarrage.
   WEBAUTHN_RP_ID: z.string().optional(),
+  // Sentry — suivi d'erreurs en production. Optionnel : si absent, Sentry.init()
+  // tourne en mode "enabled: false" (aucun envoi, aucun overhead réseau).
+  SENTRY_DSN: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

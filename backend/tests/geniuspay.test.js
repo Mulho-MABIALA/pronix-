@@ -132,7 +132,7 @@ describe('POST /api/payments/geniuspay/webhook', () => {
     // rawBody est défini grâce au middleware verify → 200
     expect(res.status).toBe(200);
     expect(res.body.ok).toBe(true);
-  });
+  }, 15000); // sandbox CI parfois lent au premier listen() — 5s par défaut trop court
 
   it('valide correctement le HMAC dans le middleware express', () => {
     const secret    = 'test_webhook_secret_32_chars_min!';

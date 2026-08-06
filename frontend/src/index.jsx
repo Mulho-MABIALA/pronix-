@@ -1,8 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import * as Sentry from '@sentry/react';
 import './index.css';
 import './i18n'; // Initialise i18next avant le rendu de l'app
 import App from './App';
+
+// Suivi d'erreurs production — sans VITE_SENTRY_DSN configuré (dev/local),
+// Sentry.init() ne fait rien de nuisible : aucun envoi réseau n'est déclenché
+// tant qu'aucun DSN n'est fourni. Voir .env.example (VITE_SENTRY_DSN).
+if (import.meta.env.VITE_SENTRY_DSN) {
+  Sentry.init({
+    dsn: import.meta.env.VITE_SENTRY_DSN,
+    environment: import.meta.env.MODE,
+    // Échantillonnage modéré — évite d'exploser le quota gratuit (5k/mois)
+    // sur une app à fort trafic mobile tout en gardant une vraie visibilité.
+    tracesSampleRate: 0.1,
+    replaysSessionSampleRate: 0,
+    replaysOnErrorSampleRate: 0.1,
+    integrations: [Sentry.replayIntegration()],
+  });
+}
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

@@ -1,0 +1,61 @@
+name: CI
+
+# Vérifie chaque push/PR avant que le code n'atteigne main — ne déploie rien
+# (le déploiement reste manuel via SSH, cf. workflow habituel du projet).
+# Objectif : qu'un bug sur l'auth ou les paiements se voie ici plutôt qu'en prod.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-tests:
+    name: Backend — tests Jest
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Prisma generate
+        run: npx prisma generate
+
+      - name: Run tests
+        run: npm test
+
+  frontend-build:
+    name: Frontend — build Vite
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          # Build "à blanc" — pas besoin des vraies clés API pour vérifier
+          # que le bundle compile, seulement que rien ne casse.
+          VITE_SENTRY_DSN: ""

@@ -14,13 +14,18 @@ export default function MatchReminderButton({ matchId, scheduledAt, size = 16 })
 
   // Don't show if match already started
   const isPast = scheduledAt && new Date(scheduledAt) <= new Date();
-  if (!user || isPast) return null;
+  const active = !!user && !isPast;
 
+  // Important : tous les hooks doivent être appelés inconditionnellement à
+  // chaque rendu (Rules of Hooks). Le "return null" ne doit intervenir
+  // qu'après, dans le JSX — sinon, quand `user` passe de null à défini
+  // (chargement de la session au montage), ce même composant appelle un
+  // nombre de hooks différent d'un rendu à l'autre → crash React #300.
   const { data } = useQuery({
     queryKey: ['reminder', matchId],
     queryFn: () =>
       api.get('/reminders').then((r) => r.data.data.some((rem) => rem.matchId === matchId)),
-    enabled: !!user,
+    enabled: active,
     staleTime: 30_000,
   });
 
@@ -56,6 +61,8 @@ export default function MatchReminderButton({ matchId, scheduledAt, size = 16 })
   };
 
   const isLoading = setMutation.isPending || deleteMutation.isPending;
+
+  if (!active) return null;
 
   return (
     <button

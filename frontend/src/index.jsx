@@ -14,10 +14,10 @@ if (import.meta.env.VITE_SENTRY_DSN) {
     environment: import.meta.env.MODE,
     // Échantillonnage modéré — évite d'exploser le quota gratuit (5k/mois)
     // sur une app à fort trafic mobile tout en gardant une vraie visibilité.
+    // Pas de Session Replay : ça enregistre l'écran des utilisateurs (implique
+    // consentement RGPD à traiter séparément) et nécessite worker-src blob:
+    // dans la CSP — hors scope du simple suivi d'erreurs demandé ici.
     tracesSampleRate: 0.1,
-    replaysSessionSampleRate: 0,
-    replaysOnErrorSampleRate: 0.1,
-    integrations: [Sentry.replayIntegration()],
   });
 }
 

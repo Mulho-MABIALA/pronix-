@@ -32,11 +32,14 @@ function OrangeMoneyIcon() {
     </svg>
   );
 }
-function AirtelMoneyIcon() {
+// Remplace Airtel Money (non couvert par PayTech, cf. liste target_payment de
+// la doc) par Free Money — réellement supporté par PayTech et pertinent au
+// Sénégal (Free/Groupe Axian).
+function FreeMoneyIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="12" cy="12" r="12" fill="#ED1C24" />
-      <path d="M6.5 15c2-5.5 9-5.5 11 0" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none" />
+      <circle cx="12" cy="12" r="12" fill="#E2001A" />
+      <text x="12" y="16" textAnchor="middle" fontSize="12" fontWeight="800" fontFamily="Arial, sans-serif" fill="#fff">F</text>
     </svg>
   );
 }
@@ -69,7 +72,7 @@ function MastercardIcon() {
 const PAYMENT_METHODS = [
   { name: 'Wave',         Icon: WaveIcon,        bg: 'bg-[#1DC8CD]/10' },
   { name: 'Orange Money', Icon: OrangeMoneyIcon, bg: 'bg-[#FF7900]/10' },
-  { name: 'Airtel Money', Icon: AirtelMoneyIcon, bg: 'bg-[#ED1C24]/10' },
+  { name: 'Free Money',   Icon: FreeMoneyIcon,   bg: 'bg-[#E2001A]/10' },
   { name: 'MTN',          Icon: MtnIcon,         bg: 'bg-[#FFCB05]/10' },
   { name: 'Visa',         Icon: VisaIcon,        bg: 'bg-[#1A1F71]/10' },
   { name: 'Mastercard',   Icon: MastercardIcon,  bg: 'bg-overlay/[0.05]' },
@@ -219,7 +222,7 @@ function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, on
   // Devise de paiement effective (peut différer de la devise détectée si elle
   // n'est pas supportée par PayTech, cf. payCurrency) → paiement carte via
   // PayTech, montant affiché directement dans cette devise. Sinon → FCFA
-  // via GeniusPay (Mobile Money).
+  // via PayTech (Mobile Money).
   const converted = currency ? formatIn(price, currency) : null;
 
   return (
@@ -270,8 +273,8 @@ export default function Subscription() {
   usePageMeta(t('subscription.metaTitle'), t('subscription.metaDesc'));
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
-  // null = devise native FCFA (GeniusPay Mobile Money) ; sinon devise étrangère
-  // détectée (carte internationale via PayTech), cf. useCurrency.js.
+  // null = devise native FCFA (PayTech Mobile Money/carte locale) ; sinon
+  // devise étrangère détectée (PayTech carte internationale), cf. useCurrency.js.
   const { currency, formatIn } = useCurrency();
   const [billingCycle, setBillingCycle] = useState('MONTHLY');
   const [loading, setLoading] = useState(false);
@@ -342,18 +345,18 @@ export default function Subscription() {
   const payCurrency = currency ? (PAYTECH_CURRENCIES.includes(currency) ? currency : 'USD') : null;
 
   // Étape 2 : confirmation explicite dans la modale → initiation réelle du paiement.
-  // Devise FCFA (native) → GeniusPay Mobile Money. Devise étrangère détectée
-  // (useCurrency) → PayTech, carte bancaire facturée dans cette devise.
+  // PayTech gère les deux cas : devise FCFA (native, aucun `currency` envoyé) →
+  // Mobile Money + carte locale ; devise étrangère détectée (useCurrency) →
+  // carte bancaire facturée dans cette devise. Processeur unique de la plateforme.
   const confirmAndPay = async () => {
     if (!pendingPlan) return;
     setError('');
     setLoading(true);
     try {
-      const endpoint = payCurrency ? '/payments/paytech/init' : '/payments/geniuspay/init';
       const body = payCurrency
         ? { planId: pendingPlan.id, billingCycle, currency: payCurrency }
         : { planId: pendingPlan.id, billingCycle };
-      const { data: res } = await api.post(endpoint, body);
+      const { data: res } = await api.post('/payments/paytech/init', body);
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || t('subscription.paymentError'));

@@ -16,7 +16,7 @@ FONCTIONNALITÉS :
 - Statistiques en temps réel : Premier League, Ligue 1, Bundesliga, Serie A, La Liga, Champions League, CAN, CAF Champions League, Coupe du Monde 2026
 - Communauté tipsters : classements transparents, historique complet, aucune manipulation possible
 - Pronostics IA : analyse basée sur la forme des équipes et confrontations directes
-- Paiement via GeniusPay (Wave, Orange Money, Airtel, Mobile Money)
+- Paiement via PayTech (Wave, Orange Money, Free Money, Mobile Money, carte bancaire)
 
 RÈGLES IMPORTANTES :
 - La plateforme ne donne JAMAIS de conseils de paris

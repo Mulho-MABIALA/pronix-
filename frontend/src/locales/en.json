@@ -464,7 +464,7 @@
       "lifetimeOnce": "One-time payment · Lifetime access guaranteed"
     },
     "payment": {
-      "title": "Secure payment via GeniusPay"
+      "title": "Secure payment via PayTech"
     },
     "confirmModal": {
       "title": "Confirm subscription",
@@ -487,7 +487,7 @@
       "q3": "How do I cancel my subscription?",
       "a3": "From your profile, at any time, with one click. Your access remains active until the end of the paid period — no prorated refund.",
       "q4": "What payment methods are accepted?",
-      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money, and Visa/Mastercard — via GeniusPay, a certified platform.",
+      "a4": "Wave, Orange Money, Free Money, MTN Mobile Money, and Visa/Mastercard — via PayTech, a certified platform.",
       "q5": "Why pay when there are free prediction groups?",
       "a5": "Because a free group proves nothing — no one checks if it actually wins, and failed picks just disappear. On fpronix, every pick's track record is public and can't be faked — that's what you're paying for: proof, not just a tip."
     },

@@ -59,12 +59,12 @@ async function getPlan(req, res, next) {
 }
 
 // POST /tipster-plans/:tipsterId/subscribe — octroi manuel (ADMIN uniquement)
-// Le flux payant normal passe par POST /payments/tipster/geniuspay/init — cet
+// Le flux payant normal passe par POST /payments/tipster/paytech/init — cet
 // endpoint reste pour un octroi manuel exceptionnel (support, geste commercial).
 async function subscribe(req, res, next) {
   try {
     if (req.user.role !== 'ADMIN') {
-      throw new AppError('Utilisez le paiement Geniuspay pour vous abonner à un tipster', 403, 'PAYMENT_REQUIRED');
+      throw new AppError('Utilisez le paiement PayTech pour vous abonner à un tipster', 403, 'PAYMENT_REQUIRED');
     }
 
     const { tipsterId } = req.params;

@@ -464,7 +464,7 @@
       "lifetimeOnce": "Pago único · Acceso de por vida garantizado"
     },
     "payment": {
-      "title": "Pago seguro vía GeniusPay"
+      "title": "Pago seguro vía PayTech"
     },
     "confirmModal": {
       "title": "Confirmar suscripción",
@@ -487,7 +487,7 @@
       "q3": "¿Cómo cancelo mi suscripción?",
       "a3": "Desde tu perfil, en cualquier momento, con un clic. Tu acceso permanece activo hasta el final del período pagado — sin reembolso prorrateado.",
       "q4": "¿Qué medios de pago se aceptan?",
-      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money y tarjeta bancaria Visa/Mastercard — vía GeniusPay, plataforma certificada.",
+      "a4": "Wave, Orange Money, Free Money, MTN Mobile Money y tarjeta bancaria Visa/Mastercard — vía PayTech, plataforma certificada.",
       "q5": "¿Por qué pagar si hay grupos de pronósticos gratuitos?",
       "a5": "Porque un grupo gratuito no prueba nada: nadie verifica si realmente acierta, y los mensajes fallidos simplemente desaparecen. En fpronix, el balance de cada pronóstico es público y no se puede falsear — eso es lo que pagas: la prueba, no solo el tip."
     },

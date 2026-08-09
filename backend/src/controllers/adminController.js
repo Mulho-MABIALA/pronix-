@@ -1167,7 +1167,7 @@ async function getDeletedAccounts(req, res, next) {
 }
 
 // ── Remboursement manuel d'un paiement ───────────────────────────────────────
-// Le provider (Geniuspay) ne gère pas de webhook de remboursement automatique
+// Le provider (PayTech) ne gère pas de webhook de remboursement automatique
 // pour l'instant — cette action sert à corriger le statut à la main après un
 // remboursement traité manuellement (virement, litige) hors de la plateforme.
 // N'annule PAS l'abonnement lié automatiquement : à faire séparément si besoin

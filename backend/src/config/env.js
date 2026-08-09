@@ -36,6 +36,8 @@ const envSchema = z.object({
   PAYTECH_ENV: z.enum(['test', 'prod']).optional(),
   FEDAPAY_SECRET_KEY: z.string().optional(), // sk_live_xxx (prod) ou sk_sandbox_xxx (test)
   FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
+  // GeniusPay — DORMANT, retiré au profit de PayTech (processeur unique).
+  // Config laissée en place (optionnelle, sans effet) au cas où.
   GENIUSPAY_API_KEY: z.string().optional(),        // pk_sandbox_xxx ou pk_live_xxx
   GENIUSPAY_API_SECRET: z.string().optional(),     // sk_sandbox_xxx ou sk_live_xxx
   GENIUSPAY_WEBHOOK_SECRET: z.string().optional(), // whsec_sandbox_xxx ou whsec_live_xxx

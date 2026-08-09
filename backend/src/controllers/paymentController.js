@@ -4,7 +4,6 @@ const prisma = require('../config/database');
 const waveService = require('../services/waveService');
 const paytechService = require('../services/paytechService');
 const fedapayService = require('../services/fedapayService');
-const geniuspayService = require('../services/geniuspayService');
 const flutterwaveService = require('../services/flutterwaveService');
 const currencyService = require('../services/currencyService');
 const { AppError } = require('../middleware/errorHandler');
@@ -229,7 +228,7 @@ async function initiatePaytechPayment(req, res, next) {
         userId:      req.user.id,
         amount:      amountFcfa, // référence interne en FCFA (cohérence rapports admin)
         currency:    chargedCurrency,
-        method:      'CARD',
+        method:      currency ? 'CARD' : 'MOBILE_MONEY',
         status:      'PENDING',
         provider:    'paytech',
         providerRef: refCommand,
@@ -245,6 +244,80 @@ async function initiatePaytechPayment(req, res, next) {
       commandName: `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
       customField: { paymentId: payment.id, userId: req.user.id },
       // Mobile Money n'existe qu'en FCFA — carte uniquement pour une devise étrangère.
+      // Sans devise (FCFA) : target_payment vide = toutes les méthodes proposées
+      // par PayTech (Orange Money, Wave, Free Money, Wizall, Carte Bancaire...).
+      targetPayment: currency ? 'Carte Bancaire' : '',
+    });
+
+    if (result.success !== 1) {
+      throw new AppError(result.message || 'Erreur lors de l\'initialisation du paiement', 500, 'PAYMENT_ERROR');
+    }
+
+    res.json({
+      success: true,
+      data: {
+        paymentId: payment.id,
+        checkoutUrl: result.redirect_url,
+        transactionId: refCommand,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Initier un paiement PayTech pour s'abonner au plan payant d'un TIPSTER ──
+// Remplace initiateTipsterGeniuspayPayment (retiré) — même logique que
+// l'abonnement plateforme ci-dessus, avec metadata.type='tipster' pour que
+// handlePaytechWebhook route vers activateTipsterSubscription.
+async function initiateTipsterPaytechPayment(req, res, next) {
+  try {
+    const schema = z.object({
+      tipsterId: z.string().uuid(),
+      currency:  z.enum(PAYTECH_CURRENCIES).optional(),
+    });
+    const { tipsterId, currency } = schema.parse(req.body);
+
+    if (tipsterId === req.user.id) {
+      throw new AppError('Vous ne pouvez pas vous abonner à vous-même', 400, 'SELF_SUBSCRIBE');
+    }
+
+    const plan = await prisma.tipsterPlan.findUnique({ where: { tipsterId } });
+    if (!plan || !plan.isActive) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
+
+    const existing = await prisma.tipsterSubscription.findUnique({
+      where: { subscriberId_planId: { subscriberId: req.user.id, planId: plan.id } },
+    });
+    if (existing && existing.status === 'ACTIVE' && existing.endDate && existing.endDate > new Date()) {
+      throw new AppError('Déjà abonné à ce tipster', 409, 'ALREADY_SUBSCRIBED');
+    }
+
+    const chargedAmount   = currency ? currencyService.convertFromXof(plan.price, currency) : plan.price;
+    const chargedCurrency = currency || 'XOF';
+    if (currency && !chargedAmount) throw new AppError('Devise non supportée', 400, 'UNSUPPORTED_CURRENCY');
+
+    const refCommand = `PTT-${Date.now()}-${req.user.id.slice(0, 8)}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:      req.user.id,
+        amount:      plan.price,
+        currency:    chargedCurrency,
+        method:      currency ? 'CARD' : 'MOBILE_MONEY',
+        status:      'PENDING',
+        provider:    'paytech',
+        providerRef: refCommand,
+        metadata:    { type: 'tipster', tipsterId, planId: plan.id, chargedAmount, chargedCurrency },
+      },
+    });
+
+    const result = await paytechService.requestPayment({
+      amount: chargedAmount,
+      currency: chargedCurrency,
+      refCommand,
+      itemName: `Abonnement tipster — ${plan.name}`,
+      commandName: `Abonnement tipster — ${plan.name}`,
+      customField: { paymentId: payment.id, userId: req.user.id, type: 'tipster', tipsterId },
       targetPayment: currency ? 'Carte Bancaire' : '',
     });
 
@@ -457,222 +530,11 @@ async function handleFedapayWebhook(req, res) {
   }
 }
 
-// ─── Initier un paiement Geniuspay (checkout unifié : Wave, Orange, Airtel…) ──
-// Moyen de paiement actif de la plateforme (PayDunya a été retiré).
-async function initiateGeniuspayPayment(req, res, next) {
-  try {
-    const schema = z.object({
-      planId:       z.string().uuid(),
-      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
-    });
-    const { planId, billingCycle } = schema.parse(req.body);
-
-    const plan = await prisma.plan.findUnique({ where: { id: planId } });
-    if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
-
-    const amount = getPlanPrice(plan, billingCycle);
-
-    // Créer le paiement en BDD d'abord (pour avoir l'ID)
-    const payment = await prisma.payment.create({
-      data: {
-        userId:     req.user.id,
-        amount,
-        method:     'MOBILE_MONEY',
-        status:     'PENDING',
-        provider:   'geniuspay',
-        providerRef: `GP-${Date.now()}-${req.user.id.slice(0, 8)}`,
-        metadata:   { planId, billingCycle },
-      },
-    });
-
-    const successUrl = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${payment.providerRef}`;
-    const errorUrl   = `${env.FRONTEND_URL}/abonnement/erreur?ref=${payment.providerRef}`;
-
-    // Appel API Geniuspay (ou mock si clés absentes)
-    const isSandbox = !env.GENIUSPAY_API_KEY;
-    const gpData = isSandbox
-      ? geniuspayService.mockCheckout({ amount, description: `Abonnement ${plan.displayName}`, successUrl, metadata: { paymentId: payment.id, planId, billingCycle, userId: req.user.id } })
-      : await geniuspayService.createCheckout({
-          amount,
-          description: `Abonnement fpronix ${plan.displayName} — ${billingLabel(billingCycle)}`,
-          successUrl,
-          errorUrl,
-          metadata: { paymentId: payment.id, planId, billingCycle, userId: req.user.id },
-        });
-
-    // Stocker la référence Geniuspay
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data:  { transactionId: gpData.reference },
-    });
-
-    res.json({
-      success: true,
-      data: {
-        paymentId:   payment.id,
-        checkoutUrl: gpData.checkout_url || gpData.payment_url,
-        reference:   gpData.reference,
-        sandbox:     isSandbox,
-      },
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
-// ─── Webhook Geniuspay ─────────────────────────────────────────────────────────
-async function handleGeniuspayWebhook(req, res) {
-  const signature = req.headers['x-webhook-signature'];
-  const timestamp = req.headers['x-webhook-timestamp'];
-  const event     = req.headers['x-webhook-event'];
-
-  console.log(`[Webhook GeniusPay] ← Reçu: event=${event} timestamp=${timestamp} sig=${signature?.slice(0,16)}...`);
-
-  // ── Vérifier les headers requis ──
-  if (!event || !timestamp || !signature) {
-    console.warn('[Webhook GeniusPay] Headers manquants');
-    return res.status(400).json({ error: 'Headers requis manquants' });
-  }
-
-  // ── Vérifier la signature ──
-  const rawBody = req.rawBody || JSON.stringify(req.body);
-  if (!geniuspayService.verifyWebhookSignature(rawBody, timestamp, signature)) {
-    console.warn('[Webhook GeniusPay] Signature invalide');
-    return res.status(401).json({ error: 'Signature invalide' });
-  }
-
-  // ── Répondre 200 immédiatement (GeniusPay exige < 10s) ──
-  res.json({ received: true });
-
-  // ── Traitement asynchrone (après la réponse) ──
-  try {
-    // Événement de test — rien à faire
-    if (event === 'webhook.test') {
-      console.log('[Webhook GeniusPay] Test reçu ✅');
-      return;
-    }
-
-    if (event !== 'payment.success') {
-      console.log(`[Webhook GeniusPay] Événement ignoré: ${event}`);
-      return;
-    }
-
-    const data     = req.body?.data || {};
-    const { metadata, status, reference } = data;
-
-    console.log(`[Webhook GeniusPay] payment.success → reference=${reference} status=${status}`);
-
-    if (status !== 'completed') {
-      console.log(`[Webhook GeniusPay] Statut non complété: ${status} — ignoré`);
-      return;
-    }
-
-    // Récupérer le paiement via transactionId (référence GeniusPay) OU metadata.paymentId
-    const payment = await prisma.payment.findFirst({
-      where: {
-        OR: [
-          { transactionId: reference },
-          { id: metadata?.paymentId },
-        ],
-        status: 'PENDING',
-        provider: 'geniuspay',
-      },
-    });
-
-    if (!payment) {
-      console.warn(`[Webhook GeniusPay] Paiement PENDING introuvable — reference=${reference} paymentId=${metadata?.paymentId}`);
-      return;
-    }
-
-    // Abonnement à un tipster (metadata.type='tipster') vs abonnement plateforme classique
-    if (payment.metadata?.type === 'tipster') {
-      const { tipsterId, planId } = payment.metadata;
-      await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
-      console.log(`[Webhook GeniusPay] ✅ Abonnement tipster activé pour userId=${payment.userId} → tipster=${tipsterId}`);
-    } else {
-      console.log(`[Webhook GeniusPay] Activation abonnement → paymentId=${payment.id} userId=${payment.userId}`);
-      const { planId, billingCycle } = payment.metadata;
-      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
-      console.log(`[Webhook GeniusPay] ✅ Abonnement activé pour userId=${payment.userId}`);
-    }
-
-  } catch (err) {
-    // Ne pas retourner d'erreur ici (200 déjà envoyé) — GeniusPay ne retentera pas
-    console.error('[Webhook GeniusPay] Erreur traitement asynchrone:', err.message, err.stack);
-  }
-}
-
-// ─── Initier un paiement Geniuspay pour s'abonner au plan payant d'un TIPSTER ──
-// Réutilise le même webhook /geniuspay/webhook — distingué via metadata.type='tipster'
-async function initiateTipsterGeniuspayPayment(req, res, next) {
-  try {
-    const schema = z.object({ tipsterId: z.string().uuid() });
-    const { tipsterId } = schema.parse(req.body);
-
-    if (tipsterId === req.user.id) {
-      throw new AppError('Vous ne pouvez pas vous abonner à vous-même', 400, 'SELF_SUBSCRIBE');
-    }
-
-    const plan = await prisma.tipsterPlan.findUnique({ where: { tipsterId } });
-    if (!plan || !plan.isActive) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
-
-    const existing = await prisma.tipsterSubscription.findUnique({
-      where: { subscriberId_planId: { subscriberId: req.user.id, planId: plan.id } },
-    });
-    if (existing && existing.status === 'ACTIVE' && existing.endDate && existing.endDate > new Date()) {
-      throw new AppError('Déjà abonné à ce tipster', 409, 'ALREADY_SUBSCRIBED');
-    }
-
-    const payment = await prisma.payment.create({
-      data: {
-        userId:      req.user.id,
-        amount:      plan.price,
-        method:      'MOBILE_MONEY',
-        status:      'PENDING',
-        provider:    'geniuspay',
-        providerRef: `GPT-${Date.now()}-${req.user.id.slice(0, 8)}`,
-        metadata:    { type: 'tipster', tipsterId, planId: plan.id },
-      },
-    });
-
-    const successUrl = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${payment.providerRef}&type=tipster&tipsterId=${tipsterId}`;
-    const errorUrl   = `${env.FRONTEND_URL}/abonnement/erreur?ref=${payment.providerRef}&type=tipster&tipsterId=${tipsterId}`;
-
-    const isSandbox = !env.GENIUSPAY_API_KEY;
-    const gpData = isSandbox
-      ? geniuspayService.mockCheckout({ amount: plan.price, description: `Abonnement tipster — ${plan.name}`, successUrl, metadata: { paymentId: payment.id, type: 'tipster', tipsterId, planId: plan.id, userId: req.user.id } })
-      : await geniuspayService.createCheckout({
-          amount: plan.price,
-          description: `Abonnement tipster — ${plan.name}`,
-          successUrl,
-          errorUrl,
-          metadata: { paymentId: payment.id, type: 'tipster', tipsterId, planId: plan.id, userId: req.user.id },
-        });
-
-    await prisma.payment.update({
-      where: { id: payment.id },
-      data:  { transactionId: gpData.reference },
-    });
-
-    res.json({
-      success: true,
-      data: {
-        paymentId:   payment.id,
-        checkoutUrl: gpData.checkout_url || gpData.payment_url,
-        reference:   gpData.reference,
-        sandbox:     isSandbox,
-      },
-    });
-  } catch (err) {
-    next(err);
-  }
-}
-
 // ─── Initier un paiement Flutterwave (carte internationale, devise étrangère) ─
-// Second processeur : GeniusPay reste le moyen par défaut en FCFA (Mobile
-// Money), Flutterwave prend le relais pour les utilisateurs dont la devise
-// détectée n'est pas le FCFA (cf. useCurrency côté frontend) — cartes Visa/
-// Mastercard, montant facturé directement dans leur devise.
+// DORMANT — non branché au frontend (compte Flutterwave jamais activé faute
+// du seuil de volume requis, cf. décision produit). PayTech est désormais
+// l'unique processeur actif de la plateforme (FCFA + devises étrangères).
+// Code laissé en place au cas où Flutterwave redeviendrait pertinent.
 async function initiateFlutterwavePayment(req, res, next) {
   try {
     const schema = z.object({
@@ -875,9 +737,8 @@ async function initiateTipsterFlutterwavePayment(req, res, next) {
 module.exports = {
   initiateWavePayment, handleWaveWebhook,
   initiatePaytechPayment, handlePaytechWebhook,
+  initiateTipsterPaytechPayment,
   initiateFedapayPayment, handleFedapayWebhook,
-  initiateGeniuspayPayment, handleGeniuspayWebhook,
-  initiateTipsterGeniuspayPayment,
   initiateFlutterwavePayment, handleFlutterwaveWebhook,
   initiateTipsterFlutterwavePayment,
   verifyPayment,

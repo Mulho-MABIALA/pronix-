@@ -1,8 +1,8 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Flutterwave — passerelle carte bancaire internationale (Visa/Mastercard) et
 // devises étrangères (USD, EUR, GBP, BRL, MXN, CAD, ZAR — cf. currencyService).
-// Second processeur, en complément de GeniusPay qui reste le moyen Mobile
-// Money par défaut pour les paiements en FCFA.
+// DORMANT — non branché au frontend, PayTech est l'unique processeur actif
+// (FCFA + devises étrangères). Code laissé en place au cas où.
 //
 // Doc API Standard : https://developer.flutterwave.com/docs/collecting-payments/standard
 const env = require('../config/env');

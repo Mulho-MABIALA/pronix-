@@ -464,7 +464,7 @@
       "lifetimeOnce": "Paiement unique · Accès garanti à vie"
     },
     "payment": {
-      "title": "Paiement sécurisé via GeniusPay"
+      "title": "Paiement sécurisé via PayTech"
     },
     "confirmModal": {
       "title": "Confirmer l'abonnement",
@@ -487,7 +487,7 @@
       "q3": "Comment annuler mon abonnement ?",
       "a3": "Depuis votre profil, à tout moment, en un clic. Votre accès reste actif jusqu'à la fin de la période payée — aucun remboursement au prorata.",
       "q4": "Quels moyens de paiement sont acceptés ?",
-      "a4": "Wave, Orange Money, Airtel Money, MTN Mobile Money, et carte bancaire Visa/Mastercard — via GeniusPay, plateforme certifiée.",
+      "a4": "Wave, Orange Money, Free Money, MTN Mobile Money, et carte bancaire Visa/Mastercard — via PayTech, plateforme certifiée.",
       "q5": "Pourquoi payer s'il existe des groupes de pronostics gratuits ?",
       "a5": "Parce qu'un groupe gratuit ne prouve rien : personne ne vérifie s'il gagne vraiment, et les messages ratés disparaissent. Sur fpronix, le bilan de chaque pronostic est public et impossible à trafiquer — c'est ce que tu paies : la preuve, pas juste le tip."
     },

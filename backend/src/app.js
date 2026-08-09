@@ -96,10 +96,6 @@ app.use('/api/payments/wave/webhook', express.raw({ type: 'application/json' }))
 // PayTech IPN : pas besoin de raw body (verifyIpnHmac lit des champs précis
 // du body déjà parsé) — passe par les parseurs génériques json/urlencoded
 // plus bas.
-app.use('/api/payments/geniuspay/webhook', express.json({
-  limit: '10kb',
-  verify: (req, _res, buf) => { req.rawBody = buf.toString(); },
-}));
 // Route profil : accepte jusqu'à 2mb pour les avatars base64
 app.use('/api/profiles', express.json({ limit: '2mb' }));
 app.use(express.json({ limit: '10kb' }));

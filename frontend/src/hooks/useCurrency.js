@@ -37,7 +37,7 @@ function detectCurrency(uiLang) {
 
 /**
  * Hook de conversion FCFA -> devise locale, à titre indicatif uniquement.
- * Le paiement réel reste toujours en FCFA via les moyens actuels (GeniusPay, Wave, PayTech, FedaPay).
+ * Le paiement réel reste toujours en FCFA via les moyens actuels (PayTech, Wave, FedaPay).
  */
 export function useCurrency() {
   const { i18n } = useTranslation();

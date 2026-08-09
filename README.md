@@ -15,7 +15,7 @@
 | Auth | JWT + Google OAuth |
 | IA | Anthropic Claude (Haiku 4.5) |
 | Data football | API-Football (api-sports.io) |
-| Paiements | GeniusPay (Wave, Orange Money, MTN, Visa) |
+| Paiements | PayTech (Wave, Orange Money, Mtn Money, Moov Money, Wizall, Free Money, Carte Bancaire) |
 | Serveur | Hetzner VPS (Ubuntu, 8GB RAM, 80GB) — IP : 167.233.132.85 |
 | Domaine | fpronix.com (LWS) |
 | Process manager | PM2 (prévu) |
@@ -88,11 +88,12 @@ ODDS_API_KEY="..."
 # Google OAuth
 GOOGLE_CLIENT_ID="362490521978-mv57n5..."
 
-# GeniusPay (Wave, Orange Money, MTN, Visa) — clés sandbox → production après validation KYC
-GENIUSPAY_API_KEY=""
-GENIUSPAY_API_SECRET=""
-GENIUSPAY_WEBHOOK_SECRET=""
-GENIUSPAY_BASE_URL="https://geniuspay.ci/api/v1/merchant"
+# PayTech (Wave, Orange Money, Mtn Money, Moov Money, Wizall, Free Money, Carte Bancaire)
+# — clés test → production après validation manuelle (email à contact@paytech.sn)
+PAYTECH_API_KEY=""
+PAYTECH_API_SECRET=""
+PAYTECH_BASE_URL="https://paytech.sn/api"
+PAYTECH_ENV="test"
 
 # Email transactionnel (configurer Resend.com — gratuit 3000 mails/mois)
 SMTP_HOST="smtp.gmail.com"
@@ -151,7 +152,7 @@ fpronix.com  ──►  Nginx (Hetzner 167.233.132.85)
 
 ### Abonnements & Paiements
 - [x] Plans FREE / PREMIUM ($8.99/mois)
-- [x] GeniusPay (Wave, Orange Money, MTN, Visa) — KYC en attente
+- [x] PayTech (Wave, Orange Money, Mtn Money, Moov Money, Wizall, Free Money, Carte Bancaire)
 - [x] Mode simulation pour tests dev
 - [x] Webhooks paiement
 
@@ -180,7 +181,7 @@ fpronix.com  ──►  Nginx (Hetzner 167.233.132.85)
 ### Haute priorité
 - [x] Déploiement production Nginx + PM2 + SSL sur Hetzner (`https://fpronix.com` live)
 - [x] Boîte mail `support@fpronix.com` créée sur LWS + forwarding → Gmail + Send-as Gmail
-- [ ] Clés GeniusPay production (KYC en cours sur onboarding.geniuspay.ci)
+- [ ] Clés PayTech production (validation manuelle en attente — email à contact@paytech.sn)
 - [ ] Email transactionnel — configurer Resend.com
 - [ ] Crédits Claude — recharger console.anthropic.com
 - [x] Google OAuth production — `https://fpronix.com` ajouté dans Google Console
@@ -282,4 +283,4 @@ Projection an 1 : 500 abonnés × $8.99 × 12 = ~$53 940
 
 - Site : https://fpronix.com
 - Email : support@fpronix.com
-- GeniusPay : onboarding.geniuspay.ci (KYC en cours)
+- PayTech : paytech.sn (validation production en attente)

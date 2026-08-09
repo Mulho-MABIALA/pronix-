@@ -93,7 +93,9 @@ const authLimiter = rateLimit({
 
 // Parser JSON — raw pour les webhooks paiement (signature HMAC)
 app.use('/api/payments/wave/webhook', express.raw({ type: 'application/json' }));
-app.use('/api/payments/cinetpay/webhook', express.raw({ type: 'application/json' }));
+// PayTech IPN : pas besoin de raw body (verifyIpnHmac lit des champs précis
+// du body déjà parsé) — passe par les parseurs génériques json/urlencoded
+// plus bas.
 app.use('/api/payments/geniuspay/webhook', express.json({
   limit: '10kb',
   verify: (req, _res, buf) => { req.rawBody = buf.toString(); },

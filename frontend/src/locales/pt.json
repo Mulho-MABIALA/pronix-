@@ -469,7 +469,7 @@
     "confirmModal": {
       "title": "Confirmar assinatura",
       "reminder": "Nenhum palpite é garantido. Certifica-te de que esta despesa cabe no teu orçamento antes de continuar.",
-      "cardPayment": "Pagamento por cartão (Visa/Mastercard) via CinetPay.",
+      "cardPayment": "Pagamento por cartão (Visa/Mastercard) via PayTech.",
       "cancel": "Cancelar",
       "confirm": "Confirmar e pagar"
     },
@@ -1546,7 +1546,7 @@
         "items": [
           "Gerenciar sua conta e sua assinatura",
           "Fornecer as funcionalidades da Plataforma (palpites, classificações, estatísticas)",
-          "Processar seus pagamentos através dos nossos provedores (Wave, CinetPay, FedaPay)",
+          "Processar seus pagamentos através dos nossos provedores (Wave, PayTech, FedaPay)",
           "Enviar notificações relacionadas à sua conta (caso você tenha consentido)",
           "Melhorar nossos serviços e detectar fraudes",
           "Cumprir nossas obrigações legais"
@@ -1560,7 +1560,7 @@
         "title": "5. Compartilhamento de dados",
         "intro": "Seus dados não são vendidos a terceiros. Podem ser compartilhados com:",
         "items": [
-          "Nossos provedores de pagamento (Wave, CinetPay, FedaPay) para o processamento das transações",
+          "Nossos provedores de pagamento (Wave, PayTech, FedaPay) para o processamento das transações",
           "Nossos provedores de hospedagem técnica (servidores seguros na Europa)",
           "As autoridades competentes em caso de obrigação legal"
         ]
@@ -1630,7 +1630,7 @@
       },
       "s5": {
         "title": "5. Assinatura Premium",
-        "body1": "A assinatura Premium está disponível pelo valor de 8,99 USD por mês. O pagamento é processado através dos provedores Wave, CinetPay ou FedaPay. A assinatura é renovada mensalmente e pode ser cancelada a qualquer momento.",
+        "body1": "A assinatura Premium está disponível pelo valor de 8,99 USD por mês. O pagamento é processado através dos provedores Wave, PayTech ou FedaPay. A assinatura é renovada mensalmente e pode ser cancelada a qualquer momento.",
         "body2": "Em caso de não pagamento, o acesso às funcionalidades Premium será suspenso na data de vencimento da assinatura em curso."
       },
       "s6": {
@@ -1724,7 +1724,7 @@
         },
         "howToPay": {
           "q": "Como pagar a assinatura Premium?",
-          "a": "Aceitamos Wave, Orange Money, Free Money e cartão via CinetPay e FedaPay. Acesse a página «Assinatura» para escolher sua forma de pagamento."
+          "a": "Aceitamos Wave, Orange Money, Free Money e cartão via PayTech e FedaPay. Acesse a página «Assinatura» para escolher sua forma de pagamento."
         },
         "cancelSub": {
           "q": "Posso cancelar minha assinatura?",

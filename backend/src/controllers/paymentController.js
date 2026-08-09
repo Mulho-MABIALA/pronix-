@@ -2,7 +2,7 @@ const { z } = require('zod');
 const { v4: uuidv4 } = require('uuid');
 const prisma = require('../config/database');
 const waveService = require('../services/waveService');
-const cinetpayService = require('../services/cinetpayService');
+const paytechService = require('../services/paytechService');
 const fedapayService = require('../services/fedapayService');
 const geniuspayService = require('../services/geniuspayService');
 const flutterwaveService = require('../services/flutterwaveService');
@@ -195,21 +195,22 @@ async function handleWaveWebhook(req, res, next) {
   }
 }
 
-// ─── Initier un paiement CinetPay (carte bancaire) ────────────────────────────
-// Devises de règlement acceptées par CinetPay (cf. doc CinetPay) — sous-
-// ensemble des devises détectées par useCurrency côté frontend. Une devise
-// détectée non couverte ici retombe sur USD (large acceptation carte) plutôt
-// que de bloquer le paiement.
-const CINETPAY_CURRENCIES = ['EUR', 'USD', 'ZAR'];
+// ─── Initier un paiement PayTech (carte bancaire / Mobile Money) ─────────────
+// Devises acceptées par PayTech (cf. doc) : XOF, EUR, USD, CAD, GBP, MAD —
+// intersection retenue avec les devises détectées par useCurrency côté
+// frontend (currencyService) : EUR, USD, GBP, CAD. Une devise détectée hors
+// de cette liste (BRL, MXN, ZAR) retombe sur USD plutôt que de bloquer le
+// paiement (cf. Subscription.jsx).
+const PAYTECH_CURRENCIES = ['EUR', 'USD', 'GBP', 'CAD'];
 
-async function initiateCinetpayPayment(req, res, next) {
+async function initiatePaytechPayment(req, res, next) {
   try {
     const schema = z.object({
       planId:       z.string().uuid(),
       billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
       // Devise étrangère optionnelle — absente/'XOF' = paiement FCFA classique
       // (Mobile Money + carte), sinon carte internationale uniquement.
-      currency: z.enum(CINETPAY_CURRENCIES).optional(),
+      currency: z.enum(PAYTECH_CURRENCIES).optional(),
     });
     const { planId, billingCycle, currency } = schema.parse(req.body);
 
@@ -221,7 +222,7 @@ async function initiateCinetpayPayment(req, res, next) {
     const chargedCurrency = currency || 'XOF';
     if (currency && !chargedAmount) throw new AppError('Devise non supportée', 400, 'UNSUPPORTED_CURRENCY');
 
-    const transactionId = `CP-${Date.now()}-${req.user.id.slice(0, 8)}`;
+    const refCommand = `PT-${Date.now()}-${req.user.id.slice(0, 8)}`;
 
     const payment = await prisma.payment.create({
       data: {
@@ -230,33 +231,33 @@ async function initiateCinetpayPayment(req, res, next) {
         currency:    chargedCurrency,
         method:      'CARD',
         status:      'PENDING',
-        provider:    'cinetpay',
-        providerRef: transactionId,
+        provider:    'paytech',
+        providerRef: refCommand,
         metadata:    { planId, billingCycle, chargedAmount, chargedCurrency },
       },
     });
 
-    const result = await cinetpayService.initTransaction({
+    const result = await paytechService.requestPayment({
       amount: chargedAmount,
       currency: chargedCurrency,
-      transactionId,
-      description: `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
-      customerName: req.user.profile?.displayName || req.user.username,
-      customerEmail: req.user.email,
+      refCommand,
+      itemName: `Abonnement ${plan.displayName}`,
+      commandName: `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
+      customField: { paymentId: payment.id, userId: req.user.id },
       // Mobile Money n'existe qu'en FCFA — carte uniquement pour une devise étrangère.
-      channels: currency ? 'CREDIT_CARD' : 'MOBILE_MONEY,CREDIT_CARD',
+      targetPayment: currency ? 'Carte Bancaire' : '',
     });
 
-    if (result.code !== '201') {
-      throw new AppError('Erreur lors de l\'initialisation du paiement', 500, 'PAYMENT_ERROR');
+    if (result.success !== 1) {
+      throw new AppError(result.message || 'Erreur lors de l\'initialisation du paiement', 500, 'PAYMENT_ERROR');
     }
 
     res.json({
       success: true,
       data: {
         paymentId: payment.id,
-        checkoutUrl: result.data.payment_url,
-        transactionId,
+        checkoutUrl: result.redirect_url,
+        transactionId: refCommand,
       },
     });
   } catch (err) {
@@ -264,20 +265,25 @@ async function initiateCinetpayPayment(req, res, next) {
   }
 }
 
-// ─── Webhook CinetPay ──────────────────────────────────────────────────────────
-async function handleCinetpayWebhook(req, res, next) {
+// ─── Webhook PayTech (IPN) ─────────────────────────────────────────────────────
+async function handlePaytechWebhook(req, res, next) {
   try {
-    const body = Buffer.isBuffer(req.body) ? req.body.toString() : req.body;
-    const { transactionId, status } = cinetpayService.parseWebhookPayload(body);
+    const ipn = paytechService.parseIpnPayload(req.body);
 
-    if (status !== '00') return res.json({ received: true });
+    const validHmac = paytechService.verifyIpnHmac({
+      itemPrice: ipn.itemPrice,
+      refCommand: ipn.refCommand,
+      hmacCompute: ipn.hmacCompute,
+    });
+    if (!validHmac) {
+      console.warn(`[Webhook PayTech] HMAC invalide — ref_command=${ipn.refCommand}`);
+      return res.status(401).json({ error: 'Signature invalide' });
+    }
 
-    // Vérification du statut réel auprès de CinetPay
-    const check = await cinetpayService.checkTransactionStatus(transactionId);
-    if (check?.data?.status !== 'ACCEPTED') return res.json({ received: true });
+    if (ipn.typeEvent !== 'sale_complete') return res.json({ received: true });
 
     const payment = await prisma.payment.findFirst({
-      where: { providerRef: transactionId, status: 'PENDING', provider: 'cinetpay' },
+      where: { providerRef: ipn.refCommand, status: 'PENDING', provider: 'paytech' },
     });
 
     if (!payment) return res.json({ received: true });
@@ -286,25 +292,24 @@ async function handleCinetpayWebhook(req, res, next) {
     // (protection contre une manipulation côté client, cf. même contrôle sur
     // le webhook Flutterwave).
     const expected = payment.metadata?.chargedAmount;
-    const paidAmount = Number(check?.data?.amount ?? check?.data?.montant ?? expected);
-    if (expected && Math.round(paidAmount) < Math.round(expected)) {
-      console.error(`[Webhook CinetPay] Montant payé (${paidAmount}) < attendu (${expected}) — paymentId=${payment.id}`);
+    if (expected && Math.round(ipn.itemPrice) < Math.round(expected)) {
+      console.error(`[Webhook PayTech] Montant payé (${ipn.itemPrice}) < attendu (${expected}) — paymentId=${payment.id}`);
       return res.json({ received: true });
     }
 
     if (payment.metadata?.type === 'tipster') {
       const { tipsterId, planId } = payment.metadata;
-      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId } });
+      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId: ipn.token } });
       await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
     } else {
       const { planId, billingCycle } = payment.metadata;
-      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId } });
+      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId: ipn.token } });
       await activateSubscription(payment.userId, planId, billingCycle, payment.id);
     }
 
     res.json({ received: true });
   } catch (err) {
-    console.error('[Webhook CinetPay] Erreur:', err.message);
+    console.error('[Webhook PayTech] Erreur:', err.message);
     res.status(500).json({ error: 'Erreur interne' });
   }
 }
@@ -869,7 +874,7 @@ async function initiateTipsterFlutterwavePayment(req, res, next) {
 
 module.exports = {
   initiateWavePayment, handleWaveWebhook,
-  initiateCinetpayPayment, handleCinetpayWebhook,
+  initiatePaytechPayment, handlePaytechWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
   initiateGeniuspayPayment, handleGeniuspayWebhook,
   initiateTipsterGeniuspayPayment,

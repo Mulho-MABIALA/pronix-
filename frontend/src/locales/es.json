@@ -469,7 +469,7 @@
     "confirmModal": {
       "title": "Confirmar suscripción",
       "reminder": "Ningún pronóstico está garantizado. Asegúrate de que este gasto encaja en tu presupuesto antes de continuar.",
-      "cardPayment": "Pago con tarjeta (Visa/Mastercard) vía CinetPay.",
+      "cardPayment": "Pago con tarjeta (Visa/Mastercard) vía PayTech.",
       "cancel": "Cancelar",
       "confirm": "Confirmar y pagar"
     },
@@ -1546,7 +1546,7 @@
         "items": [
           "Gestionar tu cuenta y tu suscripción",
           "Proporcionar las funcionalidades de la Plataforma (pronósticos, clasificaciones, estadísticas)",
-          "Procesar tus pagos a través de nuestros proveedores (Wave, CinetPay, FedaPay)",
+          "Procesar tus pagos a través de nuestros proveedores (Wave, PayTech, FedaPay)",
           "Enviarte notificaciones relacionadas con tu cuenta (si has dado tu consentimiento)",
           "Mejorar nuestros servicios y detectar fraudes",
           "Cumplir con nuestras obligaciones legales"
@@ -1560,7 +1560,7 @@
         "title": "5. Compartición de datos",
         "intro": "Tus datos no se venden a terceros. Pueden compartirse con:",
         "items": [
-          "Nuestros proveedores de pago (Wave, CinetPay, FedaPay) para el procesamiento de transacciones",
+          "Nuestros proveedores de pago (Wave, PayTech, FedaPay) para el procesamiento de transacciones",
           "Nuestros proveedores de alojamiento técnico (servidores seguros en Europa)",
           "Las autoridades competentes en caso de obligación legal"
         ]
@@ -1630,7 +1630,7 @@
       },
       "s5": {
         "title": "5. Suscripción Premium",
-        "body1": "La suscripción Premium está disponible a un precio de 8,99 USD por mes. El pago se procesa a través de los proveedores Wave, CinetPay o FedaPay. La suscripción se renueva mensualmente y puede cancelarse en cualquier momento.",
+        "body1": "La suscripción Premium está disponible a un precio de 8,99 USD por mes. El pago se procesa a través de los proveedores Wave, PayTech o FedaPay. La suscripción se renueva mensualmente y puede cancelarse en cualquier momento.",
         "body2": "En caso de impago, el acceso a las funcionalidades Premium se suspenderá en la fecha de vencimiento de la suscripción en curso."
       },
       "s6": {
@@ -1724,7 +1724,7 @@
         },
         "howToPay": {
           "q": "¿Cómo pago la suscripción Premium?",
-          "a": "Aceptamos Wave, Orange Money, Free Money y tarjeta bancaria vía CinetPay y FedaPay. Ve a la página «Suscripción» para elegir tu método de pago."
+          "a": "Aceptamos Wave, Orange Money, Free Money y tarjeta bancaria vía PayTech y FedaPay. Ve a la página «Suscripción» para elegir tu método de pago."
         },
         "cancelSub": {
           "q": "¿Puedo cancelar mi suscripción?",

@@ -3,7 +3,7 @@ const rateLimit = require('express-rate-limit');
 const { authenticate, blockIfSelfExcluded } = require('../middleware/auth');
 const {
   initiateWavePayment, handleWaveWebhook,
-  initiateCinetpayPayment, handleCinetpayWebhook,
+  initiatePaytechPayment, handlePaytechWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
   initiateGeniuspayPayment, handleGeniuspayWebhook,
   initiateTipsterGeniuspayPayment,
@@ -23,7 +23,7 @@ const paymentLimit = rateLimit({
 
 // Webhooks (sans authentification — appelés par les providers)
 router.post('/wave/webhook',       handleWaveWebhook);
-router.post('/cinetpay/webhook',   handleCinetpayWebhook);
+router.post('/paytech/webhook',    handlePaytechWebhook);
 router.post('/fedapay/webhook',    handleFedapayWebhook);
 router.post('/geniuspay/webhook',  handleGeniuspayWebhook);
 router.post('/flutterwave/webhook', handleFlutterwaveWebhook);
@@ -31,7 +31,7 @@ router.post('/flutterwave/webhook', handleFlutterwaveWebhook);
 // Paiements initiés par l'utilisateur (authentifié)
 router.use(authenticate);
 router.post('/wave/init',      paymentLimit, blockIfSelfExcluded, initiateWavePayment);
-router.post('/cinetpay/init',  paymentLimit, blockIfSelfExcluded, initiateCinetpayPayment);
+router.post('/paytech/init',   paymentLimit, blockIfSelfExcluded, initiatePaytechPayment);
 router.post('/fedapay/init',   paymentLimit, blockIfSelfExcluded, initiateFedapayPayment);
 router.post('/geniuspay/init', paymentLimit, blockIfSelfExcluded, initiateGeniuspayPayment);
 // Abonnement payant à un tipster (même provider Geniuspay, webhook partagé)

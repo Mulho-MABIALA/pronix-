@@ -469,7 +469,7 @@
     "confirmModal": {
       "title": "Confirmer l'abonnement",
       "reminder": "Aucun pronostic n'est garanti. Assure-toi que cette dépense reste dans ton budget avant de continuer.",
-      "cardPayment": "Paiement par carte bancaire (Visa/Mastercard) via CinetPay.",
+      "cardPayment": "Paiement par carte bancaire (Visa/Mastercard) via PayTech.",
       "cancel": "Annuler",
       "confirm": "Confirmer et payer"
     },
@@ -1546,7 +1546,7 @@
         "items": [
           "Gérer votre compte et votre abonnement",
           "Fournir les fonctionnalités de la Plateforme (pronostics, classements, statistiques)",
-          "Traiter vos paiements via nos prestataires (Wave, CinetPay, FedaPay)",
+          "Traiter vos paiements via nos prestataires (Wave, PayTech, FedaPay)",
           "Vous envoyer des notifications relatives à votre compte (si vous y avez consenti)",
           "Améliorer nos services et détecter les fraudes",
           "Respecter nos obligations légales"
@@ -1560,7 +1560,7 @@
         "title": "5. Partage des données",
         "intro": "Vos données ne sont pas vendues à des tiers. Elles peuvent être partagées avec :",
         "items": [
-          "Nos prestataires de paiement (Wave, CinetPay, FedaPay) dans le cadre du traitement des transactions",
+          "Nos prestataires de paiement (Wave, PayTech, FedaPay) dans le cadre du traitement des transactions",
           "Nos hébergeurs techniques (serveurs sécurisés en Europe)",
           "Les autorités compétentes en cas d'obligation légale"
         ]
@@ -1630,7 +1630,7 @@
       },
       "s5": {
         "title": "5. Abonnement Premium",
-        "body1": "L'abonnement Premium est disponible au tarif de 8,99 USD par mois. Le paiement est traité via les prestataires Wave, CinetPay ou FedaPay. L'abonnement est renouvelable mensuellement et peut être résilié à tout moment.",
+        "body1": "L'abonnement Premium est disponible au tarif de 8,99 USD par mois. Le paiement est traité via les prestataires Wave, PayTech ou FedaPay. L'abonnement est renouvelable mensuellement et peut être résilié à tout moment.",
         "body2": "En cas de non-paiement, l'accès aux fonctionnalités Premium sera suspendu à la date d'expiration de l'abonnement en cours."
       },
       "s6": {
@@ -1724,7 +1724,7 @@
         },
         "howToPay": {
           "q": "Comment payer l'abonnement Premium ?",
-          "a": "Nous acceptons Wave, Orange Money, Free Money et carte bancaire via CinetPay et FedaPay. Rendez-vous sur la page « Abonnement » pour choisir votre méthode de paiement."
+          "a": "Nous acceptons Wave, Orange Money, Free Money et carte bancaire via PayTech et FedaPay. Rendez-vous sur la page « Abonnement » pour choisir votre méthode de paiement."
         },
         "cancelSub": {
           "q": "Puis-je annuler mon abonnement ?",

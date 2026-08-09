@@ -217,8 +217,8 @@ function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, on
   const { t } = useTranslation();
   const unitLabel = billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
   // Devise de paiement effective (peut différer de la devise détectée si elle
-  // n'est pas supportée par CinetPay, cf. payCurrency) → paiement carte via
-  // CinetPay, montant affiché directement dans cette devise. Sinon → FCFA
+  // n'est pas supportée par PayTech, cf. payCurrency) → paiement carte via
+  // PayTech, montant affiché directement dans cette devise. Sinon → FCFA
   // via GeniusPay (Mobile Money).
   const converted = currency ? formatIn(price, currency) : null;
 
@@ -271,7 +271,7 @@ export default function Subscription() {
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
   // null = devise native FCFA (GeniusPay Mobile Money) ; sinon devise étrangère
-  // détectée (carte internationale via CinetPay), cf. useCurrency.js.
+  // détectée (carte internationale via PayTech), cf. useCurrency.js.
   const { currency, formatIn } = useCurrency();
   const [billingCycle, setBillingCycle] = useState('MONTHLY');
   const [loading, setLoading] = useState(false);
@@ -335,21 +335,21 @@ export default function Subscription() {
     setPendingPlan(plan);
   };
 
-  // Devises réellement acceptées par CinetPay (carte internationale) — cf.
-  // CINETPAY_CURRENCIES côté backend. Une devise détectée hors de cette
-  // liste (GBP/BRL/MXN/CAD) retombe sur USD plutôt que de bloquer le paiement.
-  const CINETPAY_CURRENCIES = ['EUR', 'USD', 'ZAR'];
-  const payCurrency = currency ? (CINETPAY_CURRENCIES.includes(currency) ? currency : 'USD') : null;
+  // Devises réellement acceptées par PayTech (carte internationale) — cf.
+  // PAYTECH_CURRENCIES côté backend. Une devise détectée hors de cette
+  // liste (BRL/MXN/ZAR) retombe sur USD plutôt que de bloquer le paiement.
+  const PAYTECH_CURRENCIES = ['EUR', 'USD', 'GBP', 'CAD'];
+  const payCurrency = currency ? (PAYTECH_CURRENCIES.includes(currency) ? currency : 'USD') : null;
 
   // Étape 2 : confirmation explicite dans la modale → initiation réelle du paiement.
   // Devise FCFA (native) → GeniusPay Mobile Money. Devise étrangère détectée
-  // (useCurrency) → CinetPay, carte bancaire facturée dans cette devise.
+  // (useCurrency) → PayTech, carte bancaire facturée dans cette devise.
   const confirmAndPay = async () => {
     if (!pendingPlan) return;
     setError('');
     setLoading(true);
     try {
-      const endpoint = payCurrency ? '/payments/cinetpay/init' : '/payments/geniuspay/init';
+      const endpoint = payCurrency ? '/payments/paytech/init' : '/payments/geniuspay/init';
       const body = payCurrency
         ? { planId: pendingPlan.id, billingCycle, currency: payCurrency }
         : { planId: pendingPlan.id, billingCycle };

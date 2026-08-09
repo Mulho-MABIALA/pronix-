@@ -469,7 +469,7 @@
     "confirmModal": {
       "title": "Confirm subscription",
       "reminder": "No pick is guaranteed. Make sure this expense fits your budget before continuing.",
-      "cardPayment": "Card payment (Visa/Mastercard) via CinetPay.",
+      "cardPayment": "Card payment (Visa/Mastercard) via PayTech.",
       "cancel": "Cancel",
       "confirm": "Confirm and pay"
     },
@@ -1546,7 +1546,7 @@
         "items": [
           "Manage your account and subscription",
           "Provide Platform features (predictions, standings, statistics)",
-          "Process your payments via our providers (Wave, CinetPay, FedaPay)",
+          "Process your payments via our providers (Wave, PayTech, FedaPay)",
           "Send you notifications related to your account (if you consented)",
           "Improve our services and detect fraud",
           "Comply with our legal obligations"
@@ -1560,7 +1560,7 @@
         "title": "5. Data sharing",
         "intro": "Your data is not sold to third parties. It may be shared with:",
         "items": [
-          "Our payment providers (Wave, CinetPay, FedaPay) as part of transaction processing",
+          "Our payment providers (Wave, PayTech, FedaPay) as part of transaction processing",
           "Our technical hosting providers (secure servers in Europe)",
           "Competent authorities in case of legal obligation"
         ]
@@ -1630,7 +1630,7 @@
       },
       "s5": {
         "title": "5. Premium subscription",
-        "body1": "The Premium subscription is available for 8.99 USD per month. Payment is processed via Wave, CinetPay, or FedaPay. The subscription renews monthly and can be canceled at any time.",
+        "body1": "The Premium subscription is available for 8.99 USD per month. Payment is processed via Wave, PayTech, or FedaPay. The subscription renews monthly and can be canceled at any time.",
         "body2": "In case of non-payment, access to Premium features will be suspended at the expiration date of the current subscription."
       },
       "s6": {
@@ -1724,7 +1724,7 @@
         },
         "howToPay": {
           "q": "How do I pay for Premium?",
-          "a": "We accept Wave, Orange Money, Free Money, and credit card via CinetPay and FedaPay. Go to the \"Subscription\" page to choose your payment method."
+          "a": "We accept Wave, Orange Money, Free Money, and credit card via PayTech and FedaPay. Go to the \"Subscription\" page to choose your payment method."
         },
         "cancelSub": {
           "q": "Can I cancel my subscription?",

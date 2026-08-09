@@ -25,11 +25,15 @@ const envSchema = z.object({
   WAVE_API_KEY: z.string().optional(),
   WAVE_BASE_URL: z.string().default('https://api.wave.com/v1'),
   WAVE_WEBHOOK_SECRET: z.string().optional(),
-  CINETPAY_API_KEY: z.string().optional(),
-  CINETPAY_SITE_ID: z.string().optional(),
-  CINETPAY_BASE_URL: z.string().default('https://api-checkout.cinetpay.com/v2'),
-  CINETPAY_NOTIFY_URL: z.string().optional(),
-  CINETPAY_RETURN_URL: z.string().optional(),
+  // PayTech (paytech.sn, groupe Intech) — Orange Money/Wave/Free Money/Wizall/
+  // Carte Bancaire (Sénégal, Côte d'Ivoire, Mali, Bénin) + devises étrangères
+  // (EUR/USD/GBP/CAD) pour le paiement carte international. Remplace CinetPay.
+  PAYTECH_API_KEY: z.string().optional(),
+  PAYTECH_API_SECRET: z.string().optional(),
+  PAYTECH_BASE_URL: z.string().default('https://paytech.sn/api'),
+  // 'test' tant que le compte n'est pas validé en production par PayTech
+  // (email à contact@paytech.sn, cf. doc) — sinon 'prod'.
+  PAYTECH_ENV: z.enum(['test', 'prod']).optional(),
   FEDAPAY_SECRET_KEY: z.string().optional(), // sk_live_xxx (prod) ou sk_sandbox_xxx (test)
   FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
   GENIUSPAY_API_KEY: z.string().optional(),        // pk_sandbox_xxx ou pk_live_xxx
@@ -76,6 +80,13 @@ if (!parsed.success) {
   console.error('❌ Variables d\'environnement invalides:');
   console.error(parsed.error.flatten().fieldErrors);
   process.exit(1);
+}
+
+// Dérive PAYTECH_ENV depuis NODE_ENV si non défini explicitement — évite
+// d'oublier de repasser en 'prod' sur le serveur (le mode 'test' ne débite
+// qu'un montant aléatoire de 100-150 FCFA, cf. doc PayTech).
+if (!parsed.data.PAYTECH_ENV) {
+  parsed.data.PAYTECH_ENV = parsed.data.NODE_ENV === 'production' ? 'prod' : 'test';
 }
 
 // Dérive le RP ID des passkeys depuis FRONTEND_URL si non défini explicitement

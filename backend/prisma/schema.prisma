@@ -344,7 +344,7 @@ model Payment {
   currency       String        @default("XOF")
   method         PaymentMethod
   status         PaymentStatus @default(PENDING)
-  provider       String        // "wave" | "cinetpay"
+  provider       String        // "wave" | "paytech" | "cinetpay" (ancien, historique) | "fedapay" | "geniuspay" | "flutterwave"
   providerRef    String?       // ID de transaction chez le provider
   transactionId  String?       @unique
   metadata       Json?

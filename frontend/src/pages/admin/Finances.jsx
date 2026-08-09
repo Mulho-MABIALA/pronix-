@@ -19,7 +19,8 @@ const STATUS_STYLE = {
 const PROVIDER_LABEL = {
   geniuspay: 'GeniusPay',
   wave:      'Wave',
-  cinetpay:  'CinetPay',
+  paytech:   'PayTech',
+  cinetpay:  'CinetPay', // ancien prestataire — conservé pour l'affichage de l'historique
   fedapay:   'FedaPay',
 };
 

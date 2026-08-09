@@ -138,5 +138,23 @@ export default defineConfig({
   },
   build: {
     outDir: 'dist',
+    rollupOptions: {
+      output: {
+        // Sépare les grosses libs partagées du code applicatif — sans ça,
+        // TOUT (React, Query, i18n, icônes, Sentry...) finissait dans un seul
+        // chunk "index" de ~870 Ko (277 Ko gzip) téléchargé d'un bloc avant le
+        // premier rendu. En les isolant par groupe logique : (1) chaque chunk
+        // se télécharge en parallèle avec les autres plutôt qu'en série,
+        // (2) le navigateur les met en cache indépendamment — un déploiement
+        // qui ne touche qu'au code applicatif n'oblige plus à retélécharger
+        // React/Query/etc, seulement le petit chunk "app" qui a changé.
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-query': ['@tanstack/react-query', 'axios'],
+          'vendor-i18n': ['i18next', 'react-i18next', 'i18next-browser-languagedetector'],
+          'vendor-ui': ['lucide-react', 'date-fns'],
+        },
+      },
+    },
   },
 });

@@ -1,23 +1,25 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import * as Sentry from '@sentry/react';
 import './index.css';
 import './i18n'; // Initialise i18next avant le rendu de l'app
 import App from './App';
 
-// Suivi d'erreurs production — sans VITE_SENTRY_DSN configuré (dev/local),
-// Sentry.init() ne fait rien de nuisible : aucun envoi réseau n'est déclenché
-// tant qu'aucun DSN n'est fourni. Voir .env.example (VITE_SENTRY_DSN).
+// Suivi d'erreurs production — chargement différé (dynamic import) : le SDK
+// Sentry (~60-90 Ko gzip avec le tracing) ne fait plus partie du chunk
+// critique téléchargé avant le premier rendu, et n'est même pas récupéré du
+// tout en dev/local (VITE_SENTRY_DSN vide) au lieu d'être bundlé inutilement.
 if (import.meta.env.VITE_SENTRY_DSN) {
-  Sentry.init({
-    dsn: import.meta.env.VITE_SENTRY_DSN,
-    environment: import.meta.env.MODE,
-    // Échantillonnage modéré — évite d'exploser le quota gratuit (5k/mois)
-    // sur une app à fort trafic mobile tout en gardant une vraie visibilité.
-    // Pas de Session Replay : ça enregistre l'écran des utilisateurs (implique
-    // consentement RGPD à traiter séparément) et nécessite worker-src blob:
-    // dans la CSP — hors scope du simple suivi d'erreurs demandé ici.
-    tracesSampleRate: 0.1,
+  import('@sentry/react').then((Sentry) => {
+    Sentry.init({
+      dsn: import.meta.env.VITE_SENTRY_DSN,
+      environment: import.meta.env.MODE,
+      // Échantillonnage modéré — évite d'exploser le quota gratuit (5k/mois)
+      // sur une app à fort trafic mobile tout en gardant une vraie visibilité.
+      // Pas de Session Replay : ça enregistre l'écran des utilisateurs (implique
+      // consentement RGPD à traiter séparément) et nécessite worker-src blob:
+      // dans la CSP — hors scope du simple suivi d'erreurs demandé ici.
+      tracesSampleRate: 0.1,
+    });
   });
 }
 

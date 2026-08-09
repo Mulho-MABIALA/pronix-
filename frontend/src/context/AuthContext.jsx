@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import api from '../services/api';
+import api, { setHasSession } from '../services/api';
 import i18n from '../i18n';
 
 const AuthContext = createContext(null);
@@ -24,9 +24,11 @@ export function AuthProvider({ children }) {
     try {
       const { data } = await api.get('/auth/me');
       setUser(data.data);
+      setHasSession(true);
       applyAccountLanguage(data.data);
     } catch {
       setUser(null);
+      setHasSession(false);
     } finally {
       setLoading(false);
     }
@@ -44,6 +46,7 @@ export function AuthProvider({ children }) {
       return { requiresPasskey: true, stepUpToken: data.data.stepUpToken };
     }
     setUser(data.data.user);
+    setHasSession(true);
     applyAccountLanguage(data.data.user);
     return { user: data.data.user };
   };
@@ -58,6 +61,7 @@ export function AuthProvider({ children }) {
     const authResponse = await startAuthentication({ optionsJSON: options });
     const { data } = await api.post('/auth/webauthn/admin-step-up-verify', { stepUpToken, challengeId, response: authResponse });
     setUser(data.data.user);
+    setHasSession(true);
     applyAccountLanguage(data.data.user);
     return data.data.user;
   };
@@ -65,12 +69,14 @@ export function AuthProvider({ children }) {
   const register = async (email, password, username, language, currency, ageConfirmed) => {
     const { data } = await api.post('/auth/register', { email, password, username, language, currency, ageConfirmed });
     setUser(data.data.user);
+    setHasSession(true);
     return data.data.user;
   };
 
   const loginWithGoogle = async (credential, ageConfirmed) => {
     const { data } = await api.post('/auth/google', { credential, ageConfirmed });
     setUser(data.data.user);
+    setHasSession(true);
     applyAccountLanguage(data.data.user);
     return data.data.user;
   };
@@ -84,6 +90,7 @@ export function AuthProvider({ children }) {
     const authResponse = await startAuthentication({ optionsJSON: options });
     const { data } = await api.post('/auth/webauthn/login-verify', { challengeId, response: authResponse });
     setUser(data.data.user);
+    setHasSession(true);
     applyAccountLanguage(data.data.user);
     return data.data.user;
   };
@@ -91,6 +98,7 @@ export function AuthProvider({ children }) {
   const logout = async () => {
     try { await api.post('/auth/logout'); } catch {}
     setUser(null);
+    setHasSession(false);
   };
 
   const refreshUser = loadUser;

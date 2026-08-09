@@ -469,6 +469,7 @@
     "confirmModal": {
       "title": "Confirmar assinatura",
       "reminder": "Nenhum palpite é garantido. Certifica-te de que esta despesa cabe no teu orçamento antes de continuar.",
+      "cardPayment": "Pagamento por cartão (Visa/Mastercard) via CinetPay.",
       "cancel": "Cancelar",
       "confirm": "Confirmar e pagar"
     },

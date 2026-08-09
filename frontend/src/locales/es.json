@@ -469,6 +469,7 @@
     "confirmModal": {
       "title": "Confirmar suscripción",
       "reminder": "Ningún pronóstico está garantizado. Asegúrate de que este gasto encaja en tu presupuesto antes de continuar.",
+      "cardPayment": "Pago con tarjeta (Visa/Mastercard) vía CinetPay.",
       "cancel": "Cancelar",
       "confirm": "Confirmar y pagar"
     },

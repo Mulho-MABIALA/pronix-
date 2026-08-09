@@ -9,7 +9,10 @@ const cinetpayClient = axios.create({
 });
 
 // Initialise une transaction CinetPay
-async function initTransaction({ amount, currency = 'XOF', transactionId, description, customerName, customerEmail }) {
+// channels : 'MOBILE_MONEY,CREDIT_CARD' par défaut (paiement FCFA local) —
+// forcé à 'CREDIT_CARD' seul pour les devises étrangères (Mobile Money
+// n'existe qu'en FCFA, inutile/trompeur de le proposer en EUR/USD/ZAR).
+async function initTransaction({ amount, currency = 'XOF', transactionId, description, customerName, customerEmail, channels = 'MOBILE_MONEY,CREDIT_CARD' }) {
   if (!env.CINETPAY_API_KEY) {
     console.warn('[CinetPay] API non configurée — simulation de paiement');
     return {
@@ -32,7 +35,7 @@ async function initTransaction({ amount, currency = 'XOF', transactionId, descri
     return_url: env.CINETPAY_RETURN_URL,
     customer_name: customerName,
     customer_email: customerEmail,
-    channels: 'MOBILE_MONEY,CREDIT_CARD',
+    channels,
     lang: 'fr',
   });
 

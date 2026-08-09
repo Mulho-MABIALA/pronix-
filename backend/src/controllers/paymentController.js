@@ -5,6 +5,8 @@ const waveService = require('../services/waveService');
 const cinetpayService = require('../services/cinetpayService');
 const fedapayService = require('../services/fedapayService');
 const geniuspayService = require('../services/geniuspayService');
+const flutterwaveService = require('../services/flutterwaveService');
+const currencyService = require('../services/currencyService');
 const { AppError } = require('../middleware/errorHandler');
 const env = require('../config/env');
 const { notifyUser } = require('./pushController');
@@ -194,38 +196,55 @@ async function handleWaveWebhook(req, res, next) {
 }
 
 // ─── Initier un paiement CinetPay (carte bancaire) ────────────────────────────
+// Devises de règlement acceptées par CinetPay (cf. doc CinetPay) — sous-
+// ensemble des devises détectées par useCurrency côté frontend. Une devise
+// détectée non couverte ici retombe sur USD (large acceptation carte) plutôt
+// que de bloquer le paiement.
+const CINETPAY_CURRENCIES = ['EUR', 'USD', 'ZAR'];
+
 async function initiateCinetpayPayment(req, res, next) {
   try {
     const schema = z.object({
-      planId: z.string().uuid(),
+      planId:       z.string().uuid(),
       billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
+      // Devise étrangère optionnelle — absente/'XOF' = paiement FCFA classique
+      // (Mobile Money + carte), sinon carte internationale uniquement.
+      currency: z.enum(CINETPAY_CURRENCIES).optional(),
     });
-    const { planId, billingCycle } = schema.parse(req.body);
+    const { planId, billingCycle, currency } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
-    const amount = getPlanPrice(plan, billingCycle);
+    const amountFcfa = getPlanPrice(plan, billingCycle);
+    const chargedAmount   = currency ? currencyService.convertFromXof(amountFcfa, currency) : amountFcfa;
+    const chargedCurrency = currency || 'XOF';
+    if (currency && !chargedAmount) throw new AppError('Devise non supportée', 400, 'UNSUPPORTED_CURRENCY');
+
     const transactionId = `CP-${Date.now()}-${req.user.id.slice(0, 8)}`;
 
     const payment = await prisma.payment.create({
       data: {
-        userId: req.user.id,
-        amount,
-        method: 'CARD',
-        status: 'PENDING',
-        provider: 'cinetpay',
+        userId:      req.user.id,
+        amount:      amountFcfa, // référence interne en FCFA (cohérence rapports admin)
+        currency:    chargedCurrency,
+        method:      'CARD',
+        status:      'PENDING',
+        provider:    'cinetpay',
         providerRef: transactionId,
-        metadata: { planId, billingCycle },
+        metadata:    { planId, billingCycle, chargedAmount, chargedCurrency },
       },
     });
 
     const result = await cinetpayService.initTransaction({
-      amount,
+      amount: chargedAmount,
+      currency: chargedCurrency,
       transactionId,
       description: `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
       customerName: req.user.profile?.displayName || req.user.username,
       customerEmail: req.user.email,
+      // Mobile Money n'existe qu'en FCFA — carte uniquement pour une devise étrangère.
+      channels: currency ? 'CREDIT_CARD' : 'MOBILE_MONEY,CREDIT_CARD',
     });
 
     if (result.code !== '201') {
@@ -236,7 +255,7 @@ async function initiateCinetpayPayment(req, res, next) {
       success: true,
       data: {
         paymentId: payment.id,
-        paymentUrl: result.data.payment_url,
+        checkoutUrl: result.data.payment_url,
         transactionId,
       },
     });
@@ -258,14 +277,30 @@ async function handleCinetpayWebhook(req, res, next) {
     if (check?.data?.status !== 'ACCEPTED') return res.json({ received: true });
 
     const payment = await prisma.payment.findFirst({
-      where: { providerRef: transactionId, status: 'PENDING' },
+      where: { providerRef: transactionId, status: 'PENDING', provider: 'cinetpay' },
     });
 
     if (!payment) return res.json({ received: true });
 
-    const { planId, billingCycle } = payment.metadata;
-    await prisma.payment.update({ where: { id: payment.id }, data: { transactionId } });
-    await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    // Garde-fou : montant réellement payé doit couvrir le montant facturé
+    // (protection contre une manipulation côté client, cf. même contrôle sur
+    // le webhook Flutterwave).
+    const expected = payment.metadata?.chargedAmount;
+    const paidAmount = Number(check?.data?.amount ?? check?.data?.montant ?? expected);
+    if (expected && Math.round(paidAmount) < Math.round(expected)) {
+      console.error(`[Webhook CinetPay] Montant payé (${paidAmount}) < attendu (${expected}) — paymentId=${payment.id}`);
+      return res.json({ received: true });
+    }
+
+    if (payment.metadata?.type === 'tipster') {
+      const { tipsterId, planId } = payment.metadata;
+      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId } });
+      await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
+    } else {
+      const { planId, billingCycle } = payment.metadata;
+      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId } });
+      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    }
 
     res.json({ received: true });
   } catch (err) {
@@ -628,11 +663,217 @@ async function initiateTipsterGeniuspayPayment(req, res, next) {
   }
 }
 
+// ─── Initier un paiement Flutterwave (carte internationale, devise étrangère) ─
+// Second processeur : GeniusPay reste le moyen par défaut en FCFA (Mobile
+// Money), Flutterwave prend le relais pour les utilisateurs dont la devise
+// détectée n'est pas le FCFA (cf. useCurrency côté frontend) — cartes Visa/
+// Mastercard, montant facturé directement dans leur devise.
+async function initiateFlutterwavePayment(req, res, next) {
+  try {
+    const schema = z.object({
+      planId:       z.string().uuid(),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
+      currency:     z.enum(currencyService.getSupportedCurrencies().filter((c) => c !== 'XOF')),
+    });
+    const { planId, billingCycle, currency } = schema.parse(req.body);
+
+    const plan = await prisma.plan.findUnique({ where: { id: planId } });
+    if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
+
+    const amountFcfa = getPlanPrice(plan, billingCycle);
+    const chargedAmount = currencyService.convertFromXof(amountFcfa, currency);
+    if (!chargedAmount) throw new AppError('Devise non supportée', 400, 'UNSUPPORTED_CURRENCY');
+
+    const txRef = `FLW-${Date.now()}-${req.user.id.slice(0, 8)}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:      req.user.id,
+        amount:      amountFcfa, // référence interne en FCFA (cohérence rapports admin)
+        currency,
+        method:      'CARD',
+        status:      'PENDING',
+        provider:    'flutterwave',
+        providerRef: txRef,
+        metadata:    { planId, billingCycle, chargedAmount, chargedCurrency: currency },
+      },
+    });
+
+    const profile = await prisma.profile.findUnique({ where: { userId: req.user.id } });
+    const redirectUrl = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${txRef}`;
+
+    const isSandbox = !env.FLUTTERWAVE_SECRET_KEY;
+    const fwData = isSandbox
+      ? flutterwaveService.mockPayment({ amount: chargedAmount, currency, txRef, redirectUrl })
+      : await flutterwaveService.createPayment({
+          amount: chargedAmount,
+          currency,
+          txRef,
+          customerEmail: req.user.email,
+          customerName:  profile?.displayName || req.user.username,
+          redirectUrl,
+          meta: { paymentId: payment.id, planId, billingCycle, userId: req.user.id },
+        });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId:   payment.id,
+        checkoutUrl: fwData.link,
+        reference:   txRef,
+        sandbox:     isSandbox,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Webhook Flutterwave ───────────────────────────────────────────────────────
+async function handleFlutterwaveWebhook(req, res) {
+  const verifHash = req.headers['verif-hash'];
+
+  if (!flutterwaveService.verifyWebhookSignature(verifHash)) {
+    console.warn('[Webhook Flutterwave] Signature invalide (verif-hash)');
+    return res.status(401).json({ error: 'Signature invalide' });
+  }
+
+  // Répondre 200 immédiatement, traiter ensuite (Flutterwave retente sinon)
+  res.json({ received: true });
+
+  try {
+    const { event, data } = req.body || {};
+    if (event !== 'charge.completed' || !data) {
+      console.log(`[Webhook Flutterwave] Événement ignoré: ${event}`);
+      return;
+    }
+
+    // Ne jamais faire confiance au payload webhook seul — revérifier auprès
+    // de l'API Flutterwave (montant, devise, statut réels).
+    const verified = await flutterwaveService.verifyTransaction(data.id);
+    if (!verified || verified.status !== 'successful') {
+      console.warn(`[Webhook Flutterwave] Vérification échouée ou statut non réussi — tx_ref=${data.tx_ref}`);
+      return;
+    }
+
+    const payment = await prisma.payment.findFirst({
+      where: {
+        OR: [
+          { providerRef: verified.tx_ref },
+          { id: verified.meta?.paymentId },
+        ],
+        status:   'PENDING',
+        provider: 'flutterwave',
+      },
+    });
+
+    if (!payment) {
+      console.warn(`[Webhook Flutterwave] Paiement PENDING introuvable — tx_ref=${verified.tx_ref}`);
+      return;
+    }
+
+    // Garde-fou : le montant/devise réellement payés doivent correspondre à
+    // ce qui a été facturé (protection contre une manipulation côté client).
+    const expected = payment.metadata?.chargedAmount;
+    if (expected && Math.round(verified.amount) < Math.round(expected)) {
+      console.error(`[Webhook Flutterwave] Montant payé (${verified.amount} ${verified.currency}) < attendu (${expected}) — paymentId=${payment.id}`);
+      return;
+    }
+
+    await prisma.payment.update({ where: { id: payment.id }, data: { transactionId: String(data.id) } });
+
+    if (payment.metadata?.type === 'tipster') {
+      const { tipsterId, planId } = payment.metadata;
+      await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
+      console.log(`[Webhook Flutterwave] ✅ Abonnement tipster activé pour userId=${payment.userId} → tipster=${tipsterId}`);
+    } else {
+      const { planId, billingCycle } = payment.metadata;
+      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+      console.log(`[Webhook Flutterwave] ✅ Abonnement activé pour userId=${payment.userId}`);
+    }
+  } catch (err) {
+    console.error('[Webhook Flutterwave] Erreur traitement asynchrone:', err.message, err.stack);
+  }
+}
+
+// ─── Initier un paiement Flutterwave pour s'abonner au plan payant d'un TIPSTER ─
+async function initiateTipsterFlutterwavePayment(req, res, next) {
+  try {
+    const schema = z.object({
+      tipsterId: z.string().uuid(),
+      currency:  z.enum(currencyService.getSupportedCurrencies().filter((c) => c !== 'XOF')),
+    });
+    const { tipsterId, currency } = schema.parse(req.body);
+
+    if (tipsterId === req.user.id) {
+      throw new AppError('Vous ne pouvez pas vous abonner à vous-même', 400, 'SELF_SUBSCRIBE');
+    }
+
+    const plan = await prisma.tipsterPlan.findUnique({ where: { tipsterId } });
+    if (!plan || !plan.isActive) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
+
+    const existing = await prisma.tipsterSubscription.findUnique({
+      where: { subscriberId_planId: { subscriberId: req.user.id, planId: plan.id } },
+    });
+    if (existing && existing.status === 'ACTIVE' && existing.endDate && existing.endDate > new Date()) {
+      throw new AppError('Déjà abonné à ce tipster', 409, 'ALREADY_SUBSCRIBED');
+    }
+
+    const chargedAmount = currencyService.convertFromXof(plan.price, currency);
+    if (!chargedAmount) throw new AppError('Devise non supportée', 400, 'UNSUPPORTED_CURRENCY');
+
+    const txRef = `FLWT-${Date.now()}-${req.user.id.slice(0, 8)}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:      req.user.id,
+        amount:      plan.price,
+        currency,
+        method:      'CARD',
+        status:      'PENDING',
+        provider:    'flutterwave',
+        providerRef: txRef,
+        metadata:    { type: 'tipster', tipsterId, planId: plan.id, chargedAmount, chargedCurrency: currency },
+      },
+    });
+
+    const profile = await prisma.profile.findUnique({ where: { userId: req.user.id } });
+    const redirectUrl = `${env.FRONTEND_URL}/abonnement/confirmation?ref=${txRef}&type=tipster&tipsterId=${tipsterId}`;
+
+    const isSandbox = !env.FLUTTERWAVE_SECRET_KEY;
+    const fwData = isSandbox
+      ? flutterwaveService.mockPayment({ amount: chargedAmount, currency, txRef, redirectUrl })
+      : await flutterwaveService.createPayment({
+          amount: chargedAmount,
+          currency,
+          txRef,
+          customerEmail: req.user.email,
+          customerName:  profile?.displayName || req.user.username,
+          redirectUrl,
+          meta: { paymentId: payment.id, type: 'tipster', tipsterId, planId: plan.id, userId: req.user.id },
+        });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId:   payment.id,
+        checkoutUrl: fwData.link,
+        reference:   txRef,
+        sandbox:     isSandbox,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
 module.exports = {
   initiateWavePayment, handleWaveWebhook,
   initiateCinetpayPayment, handleCinetpayWebhook,
   initiateFedapayPayment, handleFedapayWebhook,
   initiateGeniuspayPayment, handleGeniuspayWebhook,
   initiateTipsterGeniuspayPayment,
+  initiateFlutterwavePayment, handleFlutterwaveWebhook,
+  initiateTipsterFlutterwavePayment,
   verifyPayment,
 };

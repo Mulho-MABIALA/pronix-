@@ -36,6 +36,16 @@ const envSchema = z.object({
   GENIUSPAY_API_SECRET: z.string().optional(),     // sk_sandbox_xxx ou sk_live_xxx
   GENIUSPAY_WEBHOOK_SECRET: z.string().optional(), // whsec_sandbox_xxx ou whsec_live_xxx
   GENIUSPAY_BASE_URL: z.string().default('https://geniuspay.ci/api/v1/merchant'),
+  // Flutterwave — cartes internationales (Visa/Mastercard) + devises étrangères,
+  // en complément de GeniusPay (Mobile Money, toujours en FCFA). Clés "Test"
+  // (FLWPUBK_TEST-... / FLWSECK_TEST-...) utilisables en développement, avant
+  // validation KYC business sur le dashboard Flutterwave.
+  FLUTTERWAVE_PUBLIC_KEY: z.string().optional(),
+  FLUTTERWAVE_SECRET_KEY: z.string().optional(),
+  // Secret hash défini manuellement dans Dashboard Flutterwave > Settings >
+  // Webhooks (PAS une clé auto-générée) — comparé à l'en-tête "verif-hash".
+  FLUTTERWAVE_WEBHOOK_HASH: z.string().optional(),
+  FLUTTERWAVE_BASE_URL: z.string().default('https://api.flutterwave.com/v3'),
   SMTP_HOST: z.string().default('smtp.gmail.com'),
   SMTP_PORT: z.string().default('587').transform(Number),
   SMTP_SECURE: z.string().default('false').transform((v) => v === 'true'),

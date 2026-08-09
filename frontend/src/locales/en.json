@@ -469,6 +469,7 @@
     "confirmModal": {
       "title": "Confirm subscription",
       "reminder": "No pick is guaranteed. Make sure this expense fits your budget before continuing.",
+      "cardPayment": "Card payment (Visa/Mastercard) via CinetPay.",
       "cancel": "Cancel",
       "confirm": "Confirm and pay"
     },

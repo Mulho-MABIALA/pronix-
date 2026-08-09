@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { useCurrency } from '../hooks/useCurrency';
 
 // Logos dessinés en local (SVG inline, couleurs officielles de chaque marque)
 // — pas de dépendance à un service externe (Clearbit ne renvoyait plus rien
@@ -212,9 +213,14 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, pre
 }
 
 /* ─── Modale de confirmation — rappel jeu responsable juste avant paiement ─── */
-function ConfirmPaymentModal({ plan, billingCycle, price, onCancel, onConfirm, loading }) {
+function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, onCancel, onConfirm, loading }) {
   const { t } = useTranslation();
   const unitLabel = billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
+  // Devise de paiement effective (peut différer de la devise détectée si elle
+  // n'est pas supportée par CinetPay, cf. payCurrency) → paiement carte via
+  // CinetPay, montant affiché directement dans cette devise. Sinon → FCFA
+  // via GeniusPay (Mobile Money).
+  const converted = currency ? formatIn(price, currency) : null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.6)' }} onClick={onCancel}>
@@ -228,9 +234,13 @@ function ConfirmPaymentModal({ plan, billingCycle, price, onCancel, onConfirm, l
         <div className="bg-overlay/[0.04] rounded-xl px-3 py-2.5 flex items-center justify-between">
           <span className="text-sm text-ink-2">{plan.displayName} — {unitLabel}</span>
           <span className="text-sm font-bold text-ink-1">
-            {new Intl.NumberFormat('fr-FR').format(price)} FCFA
+            {converted || `${new Intl.NumberFormat('fr-FR').format(price)} FCFA`}
           </span>
         </div>
+
+        {currency && (
+          <p className="text-[11px] text-ink-4 -mt-2">{t('subscription.confirmModal.cardPayment')}</p>
+        )}
 
         <div className="flex items-start gap-2.5 bg-amber-500/10 border border-amber-500/25 rounded-xl px-3 py-2.5">
           <AlertTriangle size={15} className="text-amber-400 shrink-0 mt-0.5" />
@@ -260,6 +270,9 @@ export default function Subscription() {
   usePageMeta(t('subscription.metaTitle'), t('subscription.metaDesc'));
   const { user, userPlan } = useAuth();
   const navigate = useNavigate();
+  // null = devise native FCFA (GeniusPay Mobile Money) ; sinon devise étrangère
+  // détectée (carte internationale via CinetPay), cf. useCurrency.js.
+  const { currency, formatIn } = useCurrency();
   const [billingCycle, setBillingCycle] = useState('MONTHLY');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -322,13 +335,25 @@ export default function Subscription() {
     setPendingPlan(plan);
   };
 
+  // Devises réellement acceptées par CinetPay (carte internationale) — cf.
+  // CINETPAY_CURRENCIES côté backend. Une devise détectée hors de cette
+  // liste (GBP/BRL/MXN/CAD) retombe sur USD plutôt que de bloquer le paiement.
+  const CINETPAY_CURRENCIES = ['EUR', 'USD', 'ZAR'];
+  const payCurrency = currency ? (CINETPAY_CURRENCIES.includes(currency) ? currency : 'USD') : null;
+
   // Étape 2 : confirmation explicite dans la modale → initiation réelle du paiement.
+  // Devise FCFA (native) → GeniusPay Mobile Money. Devise étrangère détectée
+  // (useCurrency) → CinetPay, carte bancaire facturée dans cette devise.
   const confirmAndPay = async () => {
     if (!pendingPlan) return;
     setError('');
     setLoading(true);
     try {
-      const { data: res } = await api.post('/payments/geniuspay/init', { planId: pendingPlan.id, billingCycle });
+      const endpoint = payCurrency ? '/payments/cinetpay/init' : '/payments/geniuspay/init';
+      const body = payCurrency
+        ? { planId: pendingPlan.id, billingCycle, currency: payCurrency }
+        : { planId: pendingPlan.id, billingCycle };
+      const { data: res } = await api.post(endpoint, body);
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || t('subscription.paymentError'));
@@ -524,6 +549,8 @@ export default function Subscription() {
               : billingCycle === 'WEEKLY' ? pendingPlan.priceWeekly
               : pendingPlan.priceMonthly
           }
+          currency={payCurrency}
+          formatIn={formatIn}
           loading={loading}
           onCancel={() => setPendingPlan(null)}
           onConfirm={confirmAndPay}

@@ -469,6 +469,7 @@
     "confirmModal": {
       "title": "Confirmer l'abonnement",
       "reminder": "Aucun pronostic n'est garanti. Assure-toi que cette dépense reste dans ton budget avant de continuer.",
+      "cardPayment": "Paiement par carte bancaire (Visa/Mastercard) via CinetPay.",
       "cancel": "Annuler",
       "confirm": "Confirmer et payer"
     },

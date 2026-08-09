@@ -68,19 +68,24 @@ export function useCurrency() {
   };
 
   /** Formate le montant converti avec le symbole de la devise (ex: "23,50 €"). */
-  const formatConverted = (amountFcfa) => {
-    const converted = convert(amountFcfa);
-    if (converted === null) return null;
+  const formatConverted = (amountFcfa) => formatIn(amountFcfa, currency);
+
+  /** Formate un montant FCFA dans une devise ARBITRAIRE (pas forcément celle
+   * détectée) — utile quand le processeur de paiement ne couvre pas la
+   * devise détectée et retombe sur une autre (ex: USD par défaut). */
+  function formatIn(amountFcfa, targetCurrency) {
+    if (!targetCurrency || !data?.rates?.[targetCurrency] || !Number.isFinite(amountFcfa)) return null;
+    const converted = amountFcfa * data.rates[targetCurrency];
     try {
       return new Intl.NumberFormat(i18n.language || 'fr-FR', {
         style: 'currency',
-        currency,
+        currency: targetCurrency,
         maximumFractionDigits: converted >= 100 ? 0 : 2,
       }).format(converted);
     } catch {
-      return `${converted.toFixed(2)} ${currency}`;
+      return `${converted.toFixed(2)} ${targetCurrency}`;
     }
-  };
+  }
 
   return {
     currency, // null si la devise native (FCFA) suffit
@@ -88,5 +93,6 @@ export function useCurrency() {
     rate,
     convert,
     formatConverted,
+    formatIn,
   };
 }

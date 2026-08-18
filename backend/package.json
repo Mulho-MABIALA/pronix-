@@ -34,7 +34,6 @@
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "node-cron": "^3.0.3",
-    "nodemailer": "^6.9.14",
     "resend": "^4.0.0",
     "sharp": "^0.35.3",
     "uuid": "^10.0.0",

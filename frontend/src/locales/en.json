@@ -760,6 +760,20 @@
         "CLOSED": "Closed"
       }
     },
+    "suggestions": {
+      "title": "Suggestions",
+      "newSuggestion": "New suggestion",
+      "cancel": "Cancel",
+      "messagePlaceholder": "An idea to improve fpronix?",
+      "submit": "Send suggestion",
+      "none": "No suggestion sent yet.",
+      "sentToast": "Thanks for your suggestion!",
+      "sendError": "Error sending suggestion. Try again.",
+      "status": {
+        "NEW": "Sent",
+        "READ": "Read by the team"
+      }
+    },
     "contact": {
       "title": "Contact & support",
       "desc": "A question, an issue? Our team replies directly."
@@ -773,6 +787,16 @@
       "referredCount": "{{count}} referral(s) signed up",
       "rewardedCount": "{{count}} reward(s) earned — {{days}} Premium days total"
     }
+  },
+  "reviewPrompt": {
+    "title": "Your opinion matters",
+    "subtitle": "Take 30 seconds to rate fpronix — it helps us improve.",
+    "starLabel": "{{n}} star(s)",
+    "commentPlaceholder": "What could we improve? (optional)",
+    "later": "Later",
+    "submit": "Send",
+    "thanks": "Thanks for your feedback!",
+    "error": "Error sending feedback. Try again."
   },
   "tipsters": {
     "leaderboardTitle": "Tipsters Leaderboard",
@@ -1954,7 +1978,10 @@
       "blogSeo": "SEO Blog",
       "aiAgents": "AI Agents",
       "notifications": "Notifications",
-      "auditLog": "Audit log"
+      "auditLog": "Audit log",
+      "support": "Support",
+      "suggestions": "Suggestions",
+      "reviews": "Reviews"
     },
     "viewSite": "View site",
     "logout": "Log out",

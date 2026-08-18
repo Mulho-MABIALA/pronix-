@@ -8,7 +8,7 @@ import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
   MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle, PauseCircle,
-  Fingerprint, KeyRound, Phone,
+  Fingerprint, KeyRound, Phone, Lightbulb,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -1126,6 +1126,115 @@ function SupportTicketsSection() {
   );
 }
 
+/* ─── Section "Suggestions" (boîte à idées, sens unique) ─────────────────────
+   Distincte des tickets support : pas de conversation, juste un formulaire
+   libre + l'historique de ce que l'utilisateur a déjà envoyé. */
+const SUGGESTION_STATUS_STYLE = {
+  NEW:  'bg-blue-500/15 text-blue-400',
+  READ: 'bg-emerald-500/15 text-emerald-400',
+};
+
+function SuggestionsSection() {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
+  const toast = useToast();
+  const qc = useQueryClient();
+  const [showNew, setShowNew] = useState(false);
+  const [message, setMessage] = useState('');
+  const [sending, setSending] = useState(false);
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['my-suggestions'],
+    queryFn: () => api.get('/suggestions/mine').then((r) => r.data),
+  });
+  const suggestions = data?.data || [];
+
+  const send = async () => {
+    if (message.trim().length < 5 || sending) return;
+    setSending(true);
+    try {
+      await api.post('/suggestions', { message: message.trim() });
+      setMessage('');
+      setShowNew(false);
+      toast(t('profile.suggestions.sentToast'), 'success');
+      qc.invalidateQueries({ queryKey: ['my-suggestions'] });
+    } catch (err) {
+      toast(err?.response?.data?.message || t('profile.suggestions.sendError'), 'error');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Section
+      title={t('profile.suggestions.title')}
+      icon={Lightbulb}
+      color="amber"
+      action={
+        <button
+          onClick={() => setShowNew((s) => !s)}
+          className="text-[12px] font-semibold text-primary-400 hover:text-primary-300 transition-colors"
+        >
+          {showNew ? t('profile.suggestions.cancel') : t('profile.suggestions.newSuggestion')}
+        </button>
+      }
+    >
+      {showNew && (
+        <div className="space-y-2 bg-surface-700/30 border border-overlay/[0.06] rounded-xl p-3">
+          <textarea
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder={t('profile.suggestions.messagePlaceholder')}
+            rows={3}
+            maxLength={1000}
+            className="w-full bg-surface-700/60 border border-overlay/[0.07] rounded-xl px-3 py-2 text-sm text-ink-2 placeholder-ph-a focus:outline-none focus:border-primary-500 resize-none"
+          />
+          <button
+            onClick={send}
+            disabled={message.trim().length < 5 || sending}
+            className="w-full py-2 rounded-xl text-sm font-semibold text-white bg-primary-500 hover:bg-primary-400 disabled:opacity-40 transition-colors"
+          >
+            {t('profile.suggestions.submit')}
+          </button>
+        </div>
+      )}
+
+      {isLoading ? (
+        <div className="h-16 bg-surface-700/40 rounded-xl animate-pulse" />
+      ) : suggestions.length === 0 ? (
+        !showNew && (
+          <div className="text-center py-6">
+            <Lightbulb size={22} className="mx-auto text-ink-4 mb-2" />
+            <p className="text-xs text-ink-3 mb-3">{t('profile.suggestions.none')}</p>
+            <button
+              onClick={() => setShowNew(true)}
+              className="text-[12px] font-semibold text-primary-400 hover:text-primary-300 transition-colors"
+            >
+              {t('profile.suggestions.newSuggestion')}
+            </button>
+          </div>
+        )
+      ) : (
+        <div className="space-y-2">
+          {suggestions.map((s) => (
+            <div key={s.id} className="rounded-xl border border-overlay/[0.08] px-3 py-2.5" style={{ background: 'rgb(var(--overlay-rgb) / 0.02)' }}>
+              <div className="flex items-start justify-between gap-2">
+                <p className="text-sm text-ink-2 leading-relaxed">{s.message}</p>
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0 ${SUGGESTION_STATUS_STYLE[s.status]}`}>
+                  {t(`profile.suggestions.status.${s.status}`)}
+                </span>
+              </div>
+              <p className="text-[11px] text-ink-3 mt-1.5">
+                {format(new Date(s.createdAt), 'dd MMM yyyy', { locale: dateLocale })}
+              </p>
+            </div>
+          ))}
+        </div>
+      )}
+    </Section>
+  );
+}
+
 /* ─── Carte "numéro manquant" ────────────────────────────────────────────────
    Affichée de façon proéminente en haut de la page tant que le profil n'a pas
    de téléphone — c'est ce que la bannière (IncompleteProfileBanner) promet en
@@ -1689,6 +1798,9 @@ export default function Profile() {
 
       {/* ── Mes tickets support ──────────────────────────────────────────────── */}
       <SupportTicketsSection />
+
+      {/* ── Suggestions (boîte à idées) ──────────────────────────────────────── */}
+      <SuggestionsSection />
 
       {/* ── Parrainage ────────────────────────────────────────────────────────── */}
       <ReferralSection />

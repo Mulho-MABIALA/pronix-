@@ -1108,6 +1108,77 @@ async function updateTicketStatus(req, res, next) {
   } catch (err) { next(err); }
 }
 
+// ─── Suggestions (boîte à idées) ────────────────────────────────────────────
+async function getAdminSuggestions(req, res, next) {
+  try {
+    const schema = z.object({
+      page:   z.string().default('1').transform(Number),
+      limit:  z.string().default('20').transform(Number),
+      status: z.enum(['NEW', 'READ']).optional(),
+    });
+    const { page, limit, status } = schema.parse(req.query);
+    const where = status ? { status } : {};
+
+    const [total, newCount, suggestions] = await prisma.$transaction([
+      prisma.suggestion.count({ where }),
+      prisma.suggestion.count({ where: { status: 'NEW' } }),
+      prisma.suggestion.findMany({
+        where,
+        include: { user: { select: { username: true, email: true, profile: { select: { displayName: true, avatar: true } } } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+
+    res.json({ success: true, data: suggestions, newCount, pagination: { total, page, limit, pages: Math.ceil(total / limit) } });
+  } catch (err) { next(err); }
+}
+
+async function updateSuggestionStatus(req, res, next) {
+  try {
+    const { suggestionId } = req.params;
+    const { status } = z.object({ status: z.enum(['NEW', 'READ']) }).parse(req.body);
+    await prisma.suggestion.update({ where: { id: suggestionId }, data: { status } });
+    res.json({ success: true, message: 'Statut mis à jour' });
+  } catch (err) {
+    if (err.code === 'P2025') return next(new AppError('Suggestion introuvable', 404, 'NOT_FOUND'));
+    next(err);
+  }
+}
+
+// ─── Avis (étoiles + commentaire) ───────────────────────────────────────────
+async function getAdminReviews(req, res, next) {
+  try {
+    const schema = z.object({
+      page:   z.string().default('1').transform(Number),
+      limit:  z.string().default('20').transform(Number),
+      rating: z.string().optional().transform((v) => (v ? Number(v) : undefined)),
+    });
+    const { page, limit, rating } = schema.parse(req.query);
+    const where = rating ? { rating } : {};
+
+    const [total, reviews, avg] = await prisma.$transaction([
+      prisma.appReview.count({ where }),
+      prisma.appReview.findMany({
+        where,
+        include: { user: { select: { username: true, email: true, profile: { select: { displayName: true, avatar: true } } } } },
+        orderBy: { createdAt: 'desc' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+      prisma.appReview.aggregate({ _avg: { rating: true }, _count: true }),
+    ]);
+
+    res.json({
+      success: true,
+      data: reviews,
+      stats: { average: avg._avg.rating || 0, total: avg._count },
+      pagination: { total, page, limit, pages: Math.ceil(total / limit) },
+    });
+  } catch (err) { next(err); }
+}
+
 // ── Cloche d'activité admin (nouveau user / paiement / signalement / ticket) ─
 // Flux distinct des push notifications utilisateurs — alimenté par
 // adminNotificationService.notifyAdmin() depuis les controllers concernés.
@@ -1254,6 +1325,8 @@ module.exports = {
   getAdminComments, deleteAdminComment,
   activateUserSubscription,
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
+  getAdminSuggestions, updateSuggestionStatus,
+  getAdminReviews,
   getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
   getDeletedAccounts,
   refundPayment,

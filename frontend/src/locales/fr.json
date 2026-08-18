@@ -764,6 +764,20 @@
         "CLOSED": "Fermé"
       }
     },
+    "suggestions": {
+      "title": "Suggestions",
+      "newSuggestion": "Nouvelle suggestion",
+      "cancel": "Annuler",
+      "messagePlaceholder": "Une idée pour améliorer fpronix ?",
+      "submit": "Envoyer la suggestion",
+      "none": "Aucune suggestion envoyée pour le moment.",
+      "sentToast": "Merci pour ta suggestion !",
+      "sendError": "Erreur lors de l'envoi. Réessaie.",
+      "status": {
+        "NEW": "Envoyée",
+        "READ": "Lue par l'équipe"
+      }
+    },
     "referral": {
       "title": "Parrainage",
       "desc": "Partage ton lien : dès qu'un ami s'abonne à un plan payant grâce à toi, tu reçois 7 jours Premium offerts.",
@@ -773,6 +787,16 @@
       "referredCount": "{{count}} filleul(s) inscrit(s)",
       "rewardedCount": "{{count}} récompense(s) obtenue(s) — {{days}} jours Premium au total"
     }
+  },
+  "reviewPrompt": {
+    "title": "Votre avis compte",
+    "subtitle": "Prenez 30 secondes pour noter fpronix — ça nous aide à nous améliorer.",
+    "starLabel": "{{n}} étoile(s)",
+    "commentPlaceholder": "Qu'est-ce qu'on pourrait améliorer ? (optionnel)",
+    "later": "Plus tard",
+    "submit": "Envoyer",
+    "thanks": "Merci pour votre avis !",
+    "error": "Erreur lors de l'envoi. Réessayez."
   },
   "tipsters": {
     "title": "Tipsters",
@@ -1954,7 +1978,10 @@
       "blogSeo": "Blog SEO",
       "aiAgents": "Agents IA",
       "notifications": "Notifications",
-      "auditLog": "Journal d'audit"
+      "auditLog": "Journal d'audit",
+      "support": "Support",
+      "suggestions": "Suggestions",
+      "reviews": "Avis"
     },
     "viewSite": "Voir le site",
     "logout": "Déconnexion",

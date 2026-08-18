@@ -54,6 +54,8 @@ const ticketsRoutes      = require('./routes/tickets');
 const partnersRoutes     = require('./routes/partners');
 const currencyRoutes     = require('./routes/currency');
 const newsletterRoutes   = require('./routes/newsletter');
+const suggestionsRoutes  = require('./routes/suggestions');
+const reviewsRoutes      = require('./routes/reviews');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
@@ -132,6 +134,8 @@ app.use('/api/tickets', ticketsRoutes);
 app.use('/api/partners', partnersRoutes);
 app.use('/api/currency', currencyRoutes);
 app.use('/api/newsletter', newsletterRoutes);
+app.use('/api/suggestions', suggestionsRoutes);
+app.use('/api/reviews', reviewsRoutes);
 app.use('/sitemap.xml', sitemapRoutes);
 
 // Santé de l'API

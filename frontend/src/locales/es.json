@@ -764,6 +764,20 @@
         "CLOSED": "Cerrado"
       }
     },
+    "suggestions": {
+      "title": "Sugerencias",
+      "newSuggestion": "Nueva sugerencia",
+      "cancel": "Cancelar",
+      "messagePlaceholder": "¿Una idea para mejorar fpronix?",
+      "submit": "Enviar sugerencia",
+      "none": "Aún no has enviado ninguna sugerencia.",
+      "sentToast": "¡Gracias por tu sugerencia!",
+      "sendError": "Error al enviar. Inténtalo de nuevo.",
+      "status": {
+        "NEW": "Enviada",
+        "READ": "Leída por el equipo"
+      }
+    },
     "referral": {
       "title": "Referidos",
       "desc": "Comparte tu enlace: en cuanto un amigo se suscriba a un plan de pago gracias a ti, recibes 7 días Premium gratis.",
@@ -773,6 +787,16 @@
       "referredCount": "{{count}} referido(s) registrado(s)",
       "rewardedCount": "{{count}} recompensa(s) obtenida(s) — {{days}} días Premium en total"
     }
+  },
+  "reviewPrompt": {
+    "title": "Tu opinión cuenta",
+    "subtitle": "Tómate 30 segundos para valorar fpronix — nos ayuda a mejorar.",
+    "starLabel": "{{n}} estrella(s)",
+    "commentPlaceholder": "¿Qué podríamos mejorar? (opcional)",
+    "later": "Más tarde",
+    "submit": "Enviar",
+    "thanks": "¡Gracias por tu opinión!",
+    "error": "Error al enviar. Inténtalo de nuevo."
   },
   "tipsters": {
     "title": "Tipsters",
@@ -1954,7 +1978,10 @@
       "blogSeo": "Blog SEO",
       "aiAgents": "Agentes IA",
       "notifications": "Notificaciones",
-      "auditLog": "Registro de auditoría"
+      "auditLog": "Registro de auditoría",
+      "support": "Soporte",
+      "suggestions": "Sugerencias",
+      "reviews": "Reseñas"
     },
     "viewSite": "Ver el sitio",
     "logout": "Cerrar sesión",

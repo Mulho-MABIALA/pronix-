@@ -25,6 +25,8 @@ const {
   getAdminComments, deleteAdminComment,
   activateUserSubscription,
   getAdminSupportTickets, replyToSupportTicket, updateTicketStatus,
+  getAdminSuggestions, updateSuggestionStatus,
+  getAdminReviews,
   getActivityNotifications, markActivityNotificationRead, markAllActivityNotificationsRead,
   getDeletedAccounts,
   refundPayment,
@@ -101,6 +103,13 @@ router.delete('/comments/:commentId', deleteAdminComment);
 router.get('/support/tickets', getAdminSupportTickets);
 router.post('/support/tickets/:ticketId/reply', replyToSupportTicket);
 router.patch('/support/tickets/:ticketId/status', updateTicketStatus);
+
+// Suggestions (boîte à idées)
+router.get('/suggestions', getAdminSuggestions);
+router.patch('/suggestions/:suggestionId/status', updateSuggestionStatus);
+
+// Avis (étoiles + commentaire)
+router.get('/reviews', getAdminReviews);
 
 // Programme Partenaires (influenceurs)
 router.get('/partners', getAdminPartners);

@@ -64,6 +64,8 @@ const AdminFinances = lazy(() => import('./pages/admin/Finances'));
 const AdminNotifications = lazy(() => import('./pages/admin/Notifications'));
 const AdminAuditLog = lazy(() => import('./pages/admin/AuditLog'));
 const AdminSupport = lazy(() => import('./pages/admin/Support'));
+const AdminSuggestions = lazy(() => import('./pages/admin/Suggestions'));
+const AdminReviews = lazy(() => import('./pages/admin/Reviews'));
 const AdminPronostics = lazy(() => import('./pages/admin/AdminPronostics'));
 const AdminCommentaires = lazy(() => import('./pages/admin/AdminCommentaires'));
 const AdminBlog = lazy(() => import('./pages/admin/Blog'));
@@ -199,6 +201,8 @@ export default function App() {
                 <Route path="/admin/agents" element={<AdminAgents />} />
                 <Route path="/admin/blog" element={<AdminBlog />} />
                 <Route path="/admin/support" element={<AdminSupport />} />
+                <Route path="/admin/suggestions" element={<AdminSuggestions />} />
+                <Route path="/admin/avis" element={<AdminReviews />} />
                 <Route path="/admin/pronostics" element={<AdminPronostics />} />
                 <Route path="/admin/commentaires" element={<AdminCommentaires />} />
                 <Route path="/admin/partenaires" element={<AdminPartners />} />

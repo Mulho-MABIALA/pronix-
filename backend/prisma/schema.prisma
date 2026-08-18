@@ -96,6 +96,7 @@ model User {
   ageConfirmedAt      DateTime? // horodatage de la confirmation "18 ans ou plus" à l'inscription (preuve de consentement)
   selfExclusionUntil  DateTime? // pause auto-imposée (jeu responsable) — bloque tickets + paiements tant que non expirée
   currentChallenge    String?   // challenge WebAuthn en attente (registration ou login), écrasé à chaque ceremony
+  lastReviewPromptAt  DateTime? // dernière fois que le popup avis (étoiles + commentaire) a été montré (soumis ou ignoré) — contrôle la fréquence (1x/mois, cf. routes/reviews.js)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
@@ -130,6 +131,8 @@ model User {
   supportTickets       SupportTicket[]
   webauthnCredentials  WebAuthnCredential[]
   adminAuditLogs       AdminAuditLog[]       @relation("AdminAuditLogAuthor")
+  suggestions          Suggestion[]
+  appReviews           AppReview[]
 
   @@index([role])
   @@index([isActive])
@@ -835,6 +838,43 @@ model SupportMessage {
 
   @@index([ticketId])
   @@map("support_messages")
+}
+
+// ─── SUGGESTIONS & AVIS ─────────────────────────────────────────────────────
+// Boîte à idées à sens unique (distincte des SupportTicket qui sont une
+// conversation) + avis périodique (étoiles + commentaire) proposé
+// automatiquement à l'utilisateur — cf. User.lastReviewPromptAt et
+// routes/reviews.js pour la logique d'éligibilité (1x/mois par défaut).
+
+model Suggestion {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  message   String           @db.Text
+  status    SuggestionStatus @default(NEW)
+  createdAt DateTime         @default(now())
+
+  @@index([userId])
+  @@index([status])
+  @@map("suggestions")
+}
+
+enum SuggestionStatus {
+  NEW
+  READ
+}
+
+model AppReview {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int      // 1 à 5 étoiles
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("app_reviews")
 }
 
 enum SupportStatus {

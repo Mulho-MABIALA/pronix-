@@ -6,6 +6,7 @@ import PWABanner from '../ui/PWABanner';
 import EmailVerifyBanner from '../ui/EmailVerifyBanner';
 import IncompleteProfileBanner from '../ui/IncompleteProfileBanner';
 import TrialBanner from '../ui/TrialBanner';
+import ReviewPromptModal from '../ui/ReviewPromptModal';
 import SupportChat from '../ai/SupportChat';
 import { useSwipeBack } from '../../hooks/useSwipeBack';
 
@@ -27,6 +28,7 @@ export default function Layout() {
       <BottomNav />
       <PWABanner />
       <SupportChat />
+      <ReviewPromptModal />
     </div>
   );
 }

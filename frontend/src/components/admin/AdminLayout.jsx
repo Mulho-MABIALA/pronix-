@@ -6,6 +6,7 @@ import {
   LayoutDashboard, Users, Trophy, AlertTriangle,
   Globe, Calendar, CreditCard, Menu, X,
   ExternalLink, LogOut, ChevronRight, ChevronLeft, Bot, Shield, BarChart3, Bell, BookOpen, Megaphone, Mail, UserCircle, ScrollText, Fingerprint,
+  Lightbulb, Star, MessageSquare,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
@@ -26,6 +27,9 @@ const NAV_GROUPS = [
       { to: '/admin/utilisateurs', itemKey: 'users',   Icon: Users },
       { to: '/admin/tipsters',     itemKey: 'tipsters', Icon: Trophy },
       { to: '/admin/signalements', itemKey: 'reports', Icon: AlertTriangle, badge: 'alert' },
+      { to: '/admin/support',      itemKey: 'support',     Icon: MessageSquare },
+      { to: '/admin/suggestions',  itemKey: 'suggestions', Icon: Lightbulb },
+      { to: '/admin/avis',         itemKey: 'reviews',     Icon: Star },
     ],
   },
   {

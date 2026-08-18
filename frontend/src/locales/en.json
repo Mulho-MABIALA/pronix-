@@ -788,6 +788,11 @@
       "rewardedCount": "{{count}} reward(s) earned — {{days}} Premium days total"
     }
   },
+  "cookieBanner": {
+    "message": "fpronix only uses technical cookies required for login (no advertising cookies or third-party trackers).",
+    "learnMore": "Learn more",
+    "accept": "Got it"
+  },
   "reviewPrompt": {
     "title": "Your opinion matters",
     "subtitle": "Take 30 seconds to rate fpronix — it helps us improve.",

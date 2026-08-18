@@ -7,6 +7,7 @@ import EmailVerifyBanner from '../ui/EmailVerifyBanner';
 import IncompleteProfileBanner from '../ui/IncompleteProfileBanner';
 import TrialBanner from '../ui/TrialBanner';
 import ReviewPromptModal from '../ui/ReviewPromptModal';
+import CookieBanner from '../ui/CookieBanner';
 import SupportChat from '../ai/SupportChat';
 import { useSwipeBack } from '../../hooks/useSwipeBack';
 
@@ -29,6 +30,7 @@ export default function Layout() {
       <PWABanner />
       <SupportChat />
       <ReviewPromptModal />
+      <CookieBanner />
     </div>
   );
 }

@@ -69,7 +69,18 @@ async function checkStatus(token) {
 // (recommandée par PayTech) : message = "item_price|ref_command|api_key",
 // signé avec la clé secrète, comparé au champ hmac_compute reçu.
 function verifyIpnHmac({ itemPrice, refCommand, hmacCompute }) {
-  if (!env.PAYTECH_API_KEY || !env.PAYTECH_API_SECRET) return true; // mode sandbox (clés absentes)
+  if (!env.PAYTECH_API_KEY || !env.PAYTECH_API_SECRET) {
+    // Sandbox local uniquement (pas de clés configurées) — en production,
+    // des clés manquantes/mal nommées ne doivent JAMAIS désactiver
+    // silencieusement la vérification de signature (ça permettrait d'activer
+    // un abonnement gratuitement avec un ref_command deviné). On fail-closed
+    // et on logue fort pour que ce soit visible immédiatement (Sentry/PM2).
+    if (env.NODE_ENV === 'production') {
+      console.error('[PayTech] CRITIQUE: PAYTECH_API_KEY/SECRET absents en production — webhook IPN rejeté par sécurité.');
+      return false;
+    }
+    return true; // mode sandbox (dev/test, clés absentes intentionnellement)
+  }
   if (!hmacCompute) return false;
   const message = `${itemPrice}|${refCommand}|${env.PAYTECH_API_KEY}`;
   const expected = crypto.createHmac('sha256', env.PAYTECH_API_SECRET).update(message).digest('hex');

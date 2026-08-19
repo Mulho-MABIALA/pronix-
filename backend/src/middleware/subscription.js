@@ -1,5 +1,10 @@
 const { AppError } = require('./errorHandler');
 
+// NB : 'PRO' n'existe pas comme plan réel en base (seed.js ne crée que
+// FREE/PREMIUM/LIFETIME) — c'est un palier réservé pour une éventuelle offre
+// future. getUserPlanCode() ne peut donc jamais retourner 'PRO' aujourd'hui ;
+// il est conservé ici et dans les checks .includes(['PREMIUM','PRO',...])
+// disséminés dans le code par simple défense en profondeur, pas par bug.
 const PLAN_LEVELS = { FREE: 0, PREMIUM: 1, PRO: 1, LIFETIME: 2 };
 
 // L'utilisateur est-il en période d'essai gratuit (7 jours après inscription) ?

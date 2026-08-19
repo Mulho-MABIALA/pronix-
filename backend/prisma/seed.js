@@ -122,6 +122,24 @@ async function main() {
         'Notifications par email',
       ],
     },
+    // Plan à paiement unique. NOTE : ce plan était référencé partout dans le
+    // code (paymentController, Subscription.jsx, AdminUsers.jsx, gating
+    // premium...) mais n'existait jamais réellement en base — l'achat et
+    // l'activation manuelle admin plantaient tous les deux (findFirst({code:
+    // 'LIFETIME'}) → null). Prix ci-dessous = ~3,5x le prix annuel Premium,
+    // une heuristique standard pour une offre "à vie" — à ajuster librement
+    // depuis la table `plans` (aucun code ne dépend de cette valeur précise).
+    // priceMonthly est réutilisé comme prix unique payé (voir
+    // paymentController.js:22 et Subscription.jsx:96) — priceWeekly/Yearly
+    // ne sont pas utilisés pour ce plan mais restent à 0 pour rester valides.
+    {
+      code: 'LIFETIME', displayName: 'Lifetime', priceWeekly: 0, priceMonthly: 175000, priceYearly: 0, sortOrder: 2,
+      features: [
+        'Tout du plan Premium',
+        'Accès à vie — paiement unique',
+        'Aucun renouvellement, jamais',
+      ],
+    },
   ];
 
   for (const plan of plans) {

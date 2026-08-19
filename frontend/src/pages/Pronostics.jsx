@@ -11,7 +11,7 @@ import api from '../services/api';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
-import { getOdd, getValueEdge, isValueBet, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import { getOdd, getValueEdge, isValueBet } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import InfoTooltip from '../components/ui/InfoTooltip';
 import AiBadge from '../components/ui/AiBadge';
@@ -406,7 +406,12 @@ function CompetitionGroup({ name, logo, items, isPremium, globalIndex, activeMar
       <div>
         {items.map(({ match }, localIdx) => {
           const absIdx = globalIndex + localIdx;
-          const isBlurred = !isPremium && absIdx >= FREE_DAILY_LIMIT;
+          // Le serveur est la source de vérité (match.locked, cf.
+          // applyPredictionsPaywall côté backend) — il a déjà masqué les
+          // predictions réelles au-delà de l'aperçu gratuit. On retombe sur
+          // l'ancien calcul par index seulement si le backend ne renvoie pas
+          // le flag (compat. ascendante avec un cache/déploiement partiel).
+          const isBlurred = match.locked ?? (!isPremium && absIdx >= FREE_DAILY_LIMIT);
           return (
             <div key={match.id} className={`relative ${isBlurred ? 'select-none' : ''}`}>
               <div className={isBlurred ? 'blur-sm pointer-events-none' : ''}>
@@ -530,6 +535,12 @@ export default function Pronostics() {
   const valueBets = useMemo(
     () =>
       filteredMatches.filter((m) => {
+        // Un match verrouillé (au-delà de l'aperçu gratuit) a des predictions
+        // masquées côté serveur (voir matchController.js applyPredictionsPaywall)
+        // — on l'exclut explicitement de la mise en avant "value bets" plutôt
+        // que de compter sur le fait que des valeurs à 0 ne matchent jamais
+        // isValueBet (cf. audit : cette section contournait le paywall avant).
+        if (m.locked) return false;
         const p = m.predictions?.bestPick;
         if (!p) return false;
         return isValueBet(p.prob, getOdd(p.prob, `${m.id}-${p.type}`));
@@ -798,7 +809,7 @@ export default function Pronostics() {
                 <PronoRow key={`vb-${m.id}`} match={m} index={i} activeMarket={activeMarket} />
               ))}
               <p className="text-[9px] text-ink-5 px-3 py-2 border-t border-overlay/[0.09]">
-                {ODDS_DISCLAIMER}
+                {t('common.oddsDisclaimer')}
               </p>
             </div>
           )}

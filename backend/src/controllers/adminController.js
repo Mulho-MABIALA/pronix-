@@ -287,7 +287,7 @@ async function cancelUserSubscription(req, res, next) {
     const { userId } = req.params;
     await prisma.subscription.updateMany({
       where: { userId, status: 'ACTIVE' },
-      data: { status: 'CANCELLED', endsAt: new Date() },
+      data: { status: 'CANCELLED', endDate: new Date() },
     });
     logAdminAction({
       admin: req.user, action: 'SUBSCRIPTION_CANCELLED', targetType: 'User', targetId: userId,
@@ -1028,22 +1028,22 @@ async function activateUserSubscription(req, res, next) {
     const plan = await prisma.plan.findFirst({ where: { code: planCode } });
     if (!plan) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
 
-    const endsAt = planCode === 'LIFETIME'
+    const endDate = planCode === 'LIFETIME'
       ? new Date('2099-12-31')
       : new Date(Date.now() + months * 30 * 24 * 60 * 60 * 1000);
 
     await prisma.subscription.upsert({
       where: { userId },
-      update: { planId: plan.id, status: 'ACTIVE', endsAt },
-      create: { userId, planId: plan.id, status: 'ACTIVE', endsAt },
+      update: { planId: plan.id, status: 'ACTIVE', endDate },
+      create: { userId, planId: plan.id, status: 'ACTIVE', endDate },
     });
 
     logAdminAction({
       admin: req.user, action: 'SUBSCRIPTION_ACTIVATED_MANUALLY', targetType: 'User', targetId: userId,
-      details: `${planCode} · ${months} mois · jusqu'au ${endsAt.toLocaleDateString('fr-FR')}`,
+      details: `${planCode} · ${months} mois · jusqu'au ${endDate.toLocaleDateString('fr-FR')}`,
     });
 
-    res.json({ success: true, message: `Abonnement ${planCode} activé jusqu'au ${endsAt.toLocaleDateString('fr-FR')}` });
+    res.json({ success: true, message: `Abonnement ${planCode} activé jusqu'au ${endDate.toLocaleDateString('fr-FR')}` });
   } catch (err) { next(err); }
 }
 

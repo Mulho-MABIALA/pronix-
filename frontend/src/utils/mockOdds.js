@@ -73,7 +73,8 @@ export function formatEdge(edge) {
   return `${pct > 0 ? '+' : ''}${pct.toFixed(1)}%`;
 }
 
-export const ODDS_DISCLAIMER = 'Cotes simulées à titre indicatif — non fournies par un bookmaker réel.';
+// NOTE : le texte du disclaimer est désormais i18n (clé common.oddsDisclaimer
+// dans les 4 locales) — voir Machine.jsx, Pronostics.jsx, MatchDetail.jsx.
 
 // ── Probabilités 1X2 simulées + score prédit ──────────────────────────────────
 const PREDICTED_SCORES = [

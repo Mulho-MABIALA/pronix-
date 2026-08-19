@@ -6,6 +6,6 @@ const router = Router();
 
 router.get('/vapid-public-key', getPublicKey);
 router.post('/subscribe', optionalAuthenticate, subscribe);
-router.post('/unsubscribe', unsubscribe);
+router.post('/unsubscribe', optionalAuthenticate, unsubscribe);
 
 module.exports = router;

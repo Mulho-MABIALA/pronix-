@@ -31,6 +31,7 @@
   },
   "common": {
     "loading": "Cargando...",
+    "oddsDisclaimer": "Cuotas simuladas con fines informativos — no proporcionadas por una casa de apuestas real.",
     "error": "Se produjo un error",
     "noData": "No hay datos disponibles",
     "retry": "Reintentar",
@@ -326,6 +327,7 @@
     "upgradePremium": "Hazte Premium — {{price}} FCFA/mes",
     "aiAnalysisDesc": "Claude analiza la forma, el H2H y las estadísticas",
     "usedTodayCount": "{{used}}/{{limit}} hoy",
+    "unlimitedCount": "Ilimitado",
     "analyzing": "Analizando…",
     "analyzeMatch": "Analizar este partido",
     "analysisReady": "Análisis listo",
@@ -1593,7 +1595,7 @@
         "items": [
           "Gestionar tu cuenta y tu suscripción",
           "Proporcionar las funcionalidades de la Plataforma (pronósticos, clasificaciones, estadísticas)",
-          "Procesar tus pagos a través de nuestros proveedores (Wave, PayTech, FedaPay)",
+          "Procesar tus pagos a través de nuestro proveedor PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, tarjeta)",
           "Enviarte notificaciones relacionadas con tu cuenta (si has dado tu consentimiento)",
           "Mejorar nuestros servicios y detectar fraudes",
           "Cumplir con nuestras obligaciones legales"
@@ -1607,7 +1609,7 @@
         "title": "5. Compartición de datos",
         "intro": "Tus datos no se venden a terceros. Pueden compartirse con:",
         "items": [
-          "Nuestros proveedores de pago (Wave, PayTech, FedaPay) para el procesamiento de transacciones",
+          "Nuestro proveedor de pago PayTech para el procesamiento de transacciones",
           "Nuestros proveedores de alojamiento técnico (servidores seguros en Europa)",
           "Las autoridades competentes en caso de obligación legal"
         ]
@@ -1677,7 +1679,7 @@
       },
       "s5": {
         "title": "5. Suscripción Premium",
-        "body1": "La suscripción Premium está disponible a un precio de 8,99 USD por mes. El pago se procesa a través de los proveedores Wave, PayTech o FedaPay. La suscripción se renueva mensualmente y puede cancelarse en cualquier momento.",
+        "body1": "La suscripción Premium está disponible en formato semanal, mensual o anual (ver tarifas en la página «Suscripción»), además de un acceso Lifetime de por vida (pago único). El pago se procesa a través de PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, tarjeta Visa/Mastercard). Las suscripciones recurrentes se renuevan automáticamente y pueden cancelarse en cualquier momento.",
         "body2": "En caso de impago, el acceso a las funcionalidades Premium se suspenderá en la fecha de vencimiento de la suscripción en curso."
       },
       "s6": {
@@ -1767,11 +1769,11 @@
         },
         "freeVsPremium": {
           "q": "¿Cuál es la diferencia entre FREE y Premium?",
-          "a": "El plan FREE te da acceso a los partidos, clasificaciones y pronósticos de otros tipsters. El plan Premium (8,99 USD/mes) te permite publicar tus propios pronósticos, acceder a los análisis IA (Claude), a datos avanzados y a las alineaciones de los equipos."
+          "a": "El plan FREE te da acceso a los partidos, clasificaciones, 3 pronósticos detallados, 3 preguntas al chat IA y 3 tickets generados al día. El plan Premium desbloquea todo eso sin límite (pronósticos IA, chat, generador de tickets), además del historial de enfrentamientos, la forma reciente, las alineaciones probables, las lesiones, la explicación IA de los value bets, el análisis en directo y el coach IA personal. Publicar tus propios pronósticos está disponible en cualquier plan, incluido FREE."
         },
         "howToPay": {
           "q": "¿Cómo pago la suscripción Premium?",
-          "a": "Aceptamos Wave, Orange Money, Free Money y tarjeta bancaria vía PayTech y FedaPay. Ve a la página «Suscripción» para elegir tu método de pago."
+          "a": "Aceptamos Wave, Orange Money, Free Money, MTN Mobile Money y tarjeta bancaria (Visa/Mastercard), todos procesados a través de PayTech, nuestro proveedor de pago. Ve a la página «Suscripción» para elegir tu método de pago."
         },
         "cancelSub": {
           "q": "¿Puedo cancelar mi suscripción?",

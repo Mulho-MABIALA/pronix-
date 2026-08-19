@@ -3,26 +3,45 @@ const prisma = require('../config/database');
 const { generateMatchPrediction } = require('../services/claudeService');
 const footballApi = require('../services/footballApi');
 const { AppError } = require('../middleware/errorHandler');
+const { getUserPlanCode } = require('../middleware/subscription');
 
-// Limite : max 5 générations IA par utilisateur par jour
-const dailyLimitCache = new Map(); // userId → { date: 'YYYY-MM-DD', count: n }
-const DAILY_LIMIT = 5;
+// Quota stocké en PostgreSQL → partagé entre tous les workers PM2 cluster
+// (l'ancien Map() en mémoire ne l'était pas : chaque worker avait son propre
+// compteur, donc la vraie limite effective était bien plus haute que prévu,
+// et tout repartait à zéro à chaque redéploiement).
+//
+// La route POST /tips/generate-ai exige déjà requirePlan('PREMIUM') — seuls
+// les comptes PREMIUM/PRO/LIFETIME (ou en essai gratuit) atteignent ce code.
+// seed.js promet "Pronostics IA illimités" à ces utilisateurs : on applique
+// donc le même principe que chatService.checkAndIncrementQuota — illimité
+// pour ces plans, avec un filet de sécurité FREE au cas où (défense en
+// profondeur si jamais la route change).
+const FREE_DAILY_LIMIT = 5;
 
-function checkDailyLimit(userId) {
-  const today = new Date().toISOString().split('T')[0];
-  const entry = dailyLimitCache.get(userId);
-  if (!entry || entry.date !== today) {
-    dailyLimitCache.set(userId, { date: today, count: 0 });
-    return 0;
-  }
-  return entry.count;
+function today() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
 }
 
-function incrementDailyLimit(userId) {
-  const today = new Date().toISOString().split('T')[0];
-  const entry = dailyLimitCache.get(userId) || { date: today, count: 0 };
-  entry.count += 1;
-  dailyLimitCache.set(userId, entry);
+async function checkAndIncrementQuota(userId, isPremium) {
+  if (isPremium) return { allowed: true, used: null, limit: null };
+
+  const date = today();
+
+  const quota = await prisma.aiTipQuota.upsert({
+    where:  { userId_date: { userId, date } },
+    create: { userId, date, count: 1 },
+    update: { count: { increment: 1 } },
+  });
+
+  if (quota.count > FREE_DAILY_LIMIT) {
+    await prisma.aiTipQuota.update({
+      where: { userId_date: { userId, date } },
+      data:  { count: { decrement: 1 } },
+    });
+    return { allowed: false, used: FREE_DAILY_LIMIT, limit: FREE_DAILY_LIMIT };
+  }
+
+  return { allowed: true, used: quota.count, limit: FREE_DAILY_LIMIT };
 }
 
 function getResult(m, teamName) {
@@ -37,12 +56,12 @@ async function generateAiTip(req, res, next) {
   try {
     const { matchId } = z.object({ matchId: z.string().uuid('matchId invalide') }).parse(req.body);
 
-
-    // Vérif quota journalier
-    const usedToday = checkDailyLimit(req.user.id);
-    if (usedToday >= DAILY_LIMIT) {
+    // Vérif + incrémentation atomique du quota journalier en DB
+    const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(getUserPlanCode(req.user));
+    const quota = await checkAndIncrementQuota(req.user.id, isPremium);
+    if (!quota.allowed) {
       throw new AppError(
-        `Limite atteinte : ${DAILY_LIMIT} analyses IA par jour maximum`,
+        `Limite atteinte : ${FREE_DAILY_LIMIT} analyses IA par jour maximum`,
         429,
         'DAILY_LIMIT_EXCEEDED'
       );
@@ -125,12 +144,12 @@ async function generateAiTip(req, res, next) {
       injuries,
     });
 
-    incrementDailyLimit(req.user.id);
-
     res.json({
       success: true,
       data: prediction,
-      meta: { usedToday: usedToday + 1, dailyLimit: DAILY_LIMIT },
+      meta: isPremium
+        ? { usedToday: null, dailyLimit: null, unlimited: true }
+        : { usedToday: quota.used, dailyLimit: FREE_DAILY_LIMIT, unlimited: false },
     });
   } catch (err) {
     next(err);

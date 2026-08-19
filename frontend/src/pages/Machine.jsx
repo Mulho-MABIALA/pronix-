@@ -12,7 +12,7 @@ import { TeamLogo } from '../components/matches/MatchCard';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import TicketHistory from '../components/machine/TicketHistory';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
-import { getOdd, isValueBet, getValueEdge, formatOdd, ODDS_DISCLAIMER } from '../utils/mockOdds';
+import { getOdd, isValueBet, getValueEdge, formatOdd } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import { drawTicketCanvas } from '../utils/ticketCanvas';
 import { useCountUp } from '../hooks/useCountUp';
@@ -1115,7 +1115,7 @@ export default function Machine() {
             </div>
           )}
 
-          <p className="text-xs text-ink-4 text-center">{ODDS_DISCLAIMER}</p>
+          <p className="text-xs text-ink-4 text-center">{t('common.oddsDisclaimer')}</p>
         </div>
       )}
       </>

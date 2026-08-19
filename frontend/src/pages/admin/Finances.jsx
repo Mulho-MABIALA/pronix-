@@ -22,6 +22,7 @@ const PROVIDER_LABEL = {
   paytech:   'PayTech',
   cinetpay:  'CinetPay', // ancien prestataire — conservé pour l'affichage de l'historique
   fedapay:   'FedaPay',
+  flutterwave: 'Flutterwave', // ancien prestataire (dormant) — idem, conservé pour l'historique
 };
 
 const CATEGORY_LABEL = {

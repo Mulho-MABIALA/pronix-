@@ -74,7 +74,13 @@ function blockIfSelfExcluded(req, res, next) {
   next();
 }
 
-// Auth optionnelle : lit le token si présent, ne bloque pas si absent
+// Auth optionnelle : lit le token si présent (cookie httpOnly `fp_at` en
+// priorité, sinon header Authorization — voir extractToken), ne bloque pas
+// si absent/invalide. Inclut subscription+plan et trialEndsAt (pas juste
+// id/isActive) car ce middleware est utilisé avec `attachPlan` juste après
+// sur des routes publiques (ex: GET /matches) pour déterminer si le
+// contenu premium doit être masqué — sans ça un utilisateur Premium connecté
+// via cookie (donc sans header Authorization) serait traité comme FREE.
 async function optionalAuthenticate(req, res, next) {
   try {
     const token = extractToken(req);
@@ -83,7 +89,10 @@ async function optionalAuthenticate(req, res, next) {
     try { payload = jwt.verify(token, env.JWT_ACCESS_SECRET); } catch { return next(); }
     const user = await prisma.user.findUnique({
       where: { id: payload.sub },
-      select: { id: true, isActive: true },
+      include: {
+        profile: true,
+        subscription: { include: { plan: true } },
+      },
     });
     if (user?.isActive) req.user = user;
   } catch {}

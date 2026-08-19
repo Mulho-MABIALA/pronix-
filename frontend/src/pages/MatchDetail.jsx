@@ -15,7 +15,7 @@ import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import Alert from '../components/ui/Alert';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
-import { getOddsPanel, isValueBet, getValueEdge, ODDS_DISCLAIMER, getMock1X2 } from '../utils/mockOdds';
+import { getOddsPanel, isValueBet, getValueEdge, getMock1X2 } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
@@ -260,7 +260,7 @@ function OddsAndValueSection({ match, realOdds, isPremium }) {
 
       {isReal
         ? <p className="disclaimer">{t('matchDetail.oddsInfoDisclaimer')}</p>
-        : <p className="disclaimer">{ODDS_DISCLAIMER}</p>
+        : <p className="disclaimer">{t('common.oddsDisclaimer')}</p>
       }
     </section>
   );
@@ -864,7 +864,9 @@ export default function MatchDetail() {
                     </div>
                   </div>
                   {aiMeta && (
-                    <span className="text-xs text-ink-4 shrink-0">{t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
+                    <span className="text-xs text-ink-4 shrink-0">
+                      {aiMeta.unlimited ? t('matchDetail.unlimitedCount') : t('matchDetail.usedTodayCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}
+                    </span>
                   )}
                 </div>
 
@@ -876,7 +878,7 @@ export default function MatchDetail() {
                   {!generateAi.isSuccess ? (
                     <button
                       onClick={() => generateAi.mutate()}
-                      disabled={generateAi.isPending || (aiMeta && aiMeta.usedToday >= aiMeta.dailyLimit)}
+                      disabled={generateAi.isPending || (aiMeta && !aiMeta.unlimited && aiMeta.usedToday >= aiMeta.dailyLimit)}
                       className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-violet-500/15 border border-violet-500/30 text-violet-400 hover:bg-violet-500/25 active:scale-[0.98] transition-all font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <Sparkles size={15} className={generateAi.isPending ? 'animate-spin' : ''} />
@@ -888,7 +890,9 @@ export default function MatchDetail() {
                         <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
                         <p className="text-xs font-semibold text-violet-400">{t('matchDetail.analysisReady')}</p>
                         {aiMeta && (
-                          <span className="text-xs text-ink-4 ml-auto">{t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}</span>
+                          <span className="text-xs text-ink-4 ml-auto">
+                            {aiMeta.unlimited ? t('matchDetail.unlimitedCount') : t('matchDetail.analysesUsedCount', { used: aiMeta.usedToday, limit: aiMeta.dailyLimit })}
+                          </span>
                         )}
                       </div>
                       {analysis && (

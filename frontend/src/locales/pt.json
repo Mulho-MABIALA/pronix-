@@ -31,6 +31,7 @@
   },
   "common": {
     "loading": "Carregando...",
+    "oddsDisclaimer": "Odds simuladas apenas para fins informativos — não fornecidas por uma casa de apostas real.",
     "error": "Ocorreu um erro",
     "noData": "Nenhum dado disponível",
     "retry": "Tentar novamente",
@@ -326,6 +327,7 @@
     "upgradePremium": "Assine o Premium — {{price}} FCFA/mês",
     "aiAnalysisDesc": "Claude analisa a forma, o H2H e as estatísticas",
     "usedTodayCount": "{{used}}/{{limit}} hoje",
+    "unlimitedCount": "Ilimitado",
     "analyzing": "Analisando…",
     "analyzeMatch": "Analisar esta partida",
     "analysisReady": "Análise pronta",
@@ -1593,7 +1595,7 @@
         "items": [
           "Gerenciar sua conta e sua assinatura",
           "Fornecer as funcionalidades da Plataforma (palpites, classificações, estatísticas)",
-          "Processar seus pagamentos através dos nossos provedores (Wave, PayTech, FedaPay)",
+          "Processar seus pagamentos através do nosso provedor PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, cartão)",
           "Enviar notificações relacionadas à sua conta (caso você tenha consentido)",
           "Melhorar nossos serviços e detectar fraudes",
           "Cumprir nossas obrigações legais"
@@ -1607,7 +1609,7 @@
         "title": "5. Compartilhamento de dados",
         "intro": "Seus dados não são vendidos a terceiros. Podem ser compartilhados com:",
         "items": [
-          "Nossos provedores de pagamento (Wave, PayTech, FedaPay) para o processamento das transações",
+          "Nosso provedor de pagamento PayTech para o processamento das transações",
           "Nossos provedores de hospedagem técnica (servidores seguros na Europa)",
           "As autoridades competentes em caso de obrigação legal"
         ]
@@ -1677,7 +1679,7 @@
       },
       "s5": {
         "title": "5. Assinatura Premium",
-        "body1": "A assinatura Premium está disponível pelo valor de 8,99 USD por mês. O pagamento é processado através dos provedores Wave, PayTech ou FedaPay. A assinatura é renovada mensalmente e pode ser cancelada a qualquer momento.",
+        "body1": "A assinatura Premium está disponível nos planos semanal, mensal ou anual (veja os preços na página «Assinatura»), além do acesso Lifetime vitalício (pagamento único). O pagamento é processado via PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, cartão Visa/Mastercard). As assinaturas recorrentes são renovadas automaticamente e podem ser canceladas a qualquer momento.",
         "body2": "Em caso de não pagamento, o acesso às funcionalidades Premium será suspenso na data de vencimento da assinatura em curso."
       },
       "s6": {
@@ -1767,11 +1769,11 @@
         },
         "freeVsPremium": {
           "q": "Qual é a diferença entre FREE e Premium?",
-          "a": "O plano FREE te dá acesso às partidas, classificações e palpites de outros tipsters. O plano Premium (8,99 USD/mês) permite publicar seus próprios palpites, acessar as análises de IA (Claude), dados avançados e escalações dos times."
+          "a": "O plano FREE te dá acesso às partidas, classificações, 3 palpites detalhados, 3 perguntas ao chat IA e 3 tickets gerados por dia. O plano Premium libera tudo isso sem limite (palpites IA, chat, gerador de tickets), além do histórico de confrontos diretos, forma recente, escalações prováveis, lesões, explicação IA dos value bets, análise ao vivo e coach IA pessoal. Publicar seus próprios palpites está disponível em qualquer plano, incluindo o FREE."
         },
         "howToPay": {
           "q": "Como pagar a assinatura Premium?",
-          "a": "Aceitamos Wave, Orange Money, Free Money e cartão via PayTech e FedaPay. Acesse a página «Assinatura» para escolher sua forma de pagamento."
+          "a": "Aceitamos Wave, Orange Money, Free Money, MTN Mobile Money e cartão (Visa/Mastercard), todos processados via PayTech, nosso provedor de pagamento. Acesse a página «Assinatura» para escolher sua forma de pagamento."
         },
         "cancelSub": {
           "q": "Posso cancelar minha assinatura?",

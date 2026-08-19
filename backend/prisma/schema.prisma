@@ -112,6 +112,7 @@ model User {
   pushSubscriptions  PushSubscription[]
   chatQuotas         ChatQuota[]
   ticketQuotas       TicketQuota[]
+  aiTipQuotas        AiTipQuota[]
   emailVerifications EmailVerification[]
   referralsGiven     Referral[]         @relation("ReferrerUser")
   referralReceived   Referral?          @relation("RefereeUser")
@@ -358,6 +359,7 @@ model Payment {
 
   @@index([userId])
   @@index([status])
+  @@index([providerRef])
   @@map("payments")
 }
 
@@ -530,6 +532,23 @@ model TicketQuota {
 
   @@unique([userId, date])
   @@map("ticket_quotas")
+}
+
+// ─── QUOTA GÉNÉRATION DE PRONOSTIC IA (aiTipController.js) ─────────────────
+// Même principe que ChatQuota/TicketQuota — remplace l'ancien Map() en
+// mémoire du contrôleur, qui ne survivait pas à un redéploiement et n'était
+// PAS partagé entre les workers PM2 en cluster mode (chaque worker avait son
+// propre quota, donc la vraie limite effective était bien plus haute que 5).
+model AiTipQuota {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String   // format YYYY-MM-DD
+  count     Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
+  @@map("ai_tip_quotas")
 }
 
 // ─── DÉPENSES (SORTIES) ───────────────────────────────────────────────────────

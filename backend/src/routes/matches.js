@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const { authenticate } = require('../middleware/auth');
+const { authenticate, optionalAuthenticate } = require('../middleware/auth');
 const { attachPlan } = require('../middleware/subscription');
 const { getMatches, getMatchById, getMatchContext, getStandings, getCompetitions, getMatchStats, getLeagueStats, getMatchOdds, getMatchEvents, getAdvancedFilterMatches, getTeamCompare, getNextOpponent, getLiveMarkets } = require('../controllers/matchController');
 const { askAboutMatch } = require('../services/chatService');
@@ -10,7 +10,10 @@ const { explainValueBet } = require('../services/valueBetAiService');
 
 const router = Router();
 
-router.get('/', getMatches);
+// Liste des matchs — plan optionnel (attaché via cookie httpOnly OU header),
+// nécessaire pour masquer côté serveur les pronostics au-delà de l'aperçu
+// gratuit (voir FREE_PREVIEW_LIMIT dans matchController.js).
+router.get('/', optionalAuthenticate, attachPlan, getMatches);
 router.get('/competitions', getCompetitions);
 router.get('/standings', getStandings);
 router.get('/league-stats', getLeagueStats);
@@ -18,21 +21,13 @@ router.get('/advanced-filter', getAdvancedFilterMatches);
 router.get('/compare-teams', getTeamCompare);
 router.get('/next-opponent', getNextOpponent);
 
-// Détail avec plan optionnel
-router.get('/:id', (req, res, next) => {
-  if (req.headers.authorization) {
-    return authenticate(req, res, () => attachPlan(req, res, () => getMatchById(req, res, next)));
-  }
-  attachPlan(req, res, () => getMatchById(req, res, next));
-});
+// Détail avec plan optionnel (cookie httpOnly OU header Authorization —
+// optionalAuthenticate gère les deux, contrairement à l'ancien check manuel
+// sur req.headers.authorization qui ignorait le cookie).
+router.get('/:id', optionalAuthenticate, attachPlan, getMatchById);
 
 // Contexte enrichi (H2H + forme) — Premium (dégradé gracieusement pour FREE, cf. controller)
-router.get('/:id/context', (req, res, next) => {
-  if (req.headers.authorization) {
-    return authenticate(req, res, () => attachPlan(req, res, () => getMatchContext(req, res, next)));
-  }
-  attachPlan(req, res, () => getMatchContext(req, res, next));
-});
+router.get('/:id/context', optionalAuthenticate, attachPlan, getMatchContext);
 
 // Statistiques du match (possession, tirs, etc.) — public
 router.get('/:id/stats', getMatchStats);

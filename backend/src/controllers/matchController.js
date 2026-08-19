@@ -6,6 +6,49 @@ const footballApi = require('../services/footballApi');
 const oddsService = require('../services/oddsService');
 const { deriveLiveMarkets } = require('../services/predictionService');
 
+// ─── Aperçu gratuit des pronostics (paywall serveur) ───────────────────────────
+// AVANT : `predictions` (Json? sur Match) était renvoyé intégralement pour
+// TOUS les matchs par getMatches, quel que soit le plan — le "flou" appliqué
+// aux picks au-delà de 3/jour n'existait que côté CSS dans Pronostics.jsx.
+// N'importe qui pouvait donc récupérer tous les pronostics premium via
+// l'onglet réseau des devtools. Le masquage doit se faire ICI, côté serveur.
+// FREE_PREVIEW_LIMIT est aligné avec FREE_DAILY_LIMIT de Pronostics.jsx.
+const FREE_PREVIEW_LIMIT = 3;
+
+// Masque récursivement les valeurs "feuilles" d'un objet de prédictions tout
+// en préservant sa forme (mêmes clés, même longueur de tableaux) — le
+// frontend continue d'accéder à pred.bestPick.type, pred.allPicks[], etc.
+// sans planter, mais aucune vraie valeur (probabilité, pick, score) ne fuite.
+// Reste robuste si de nouveaux champs sont ajoutés à predictions plus tard
+// (marchés corners/MT/live) puisqu'elle ne dépend d'aucun nom de champ précis.
+function maskPredictionValue(value) {
+  if (Array.isArray(value)) return value.map(maskPredictionValue);
+  if (value && typeof value === 'object') {
+    const masked = {};
+    for (const key of Object.keys(value)) masked[key] = maskPredictionValue(value[key]);
+    return masked;
+  }
+  if (typeof value === 'number') return 0;
+  if (typeof value === 'string') return '•••';
+  return value; // booléens / null / undefined inchangés
+}
+
+// Applique le paywall serveur sur une page de résultats getMatches : les
+// FREE_PREVIEW_LIMIT premiers matchs (dans l'ordre trié scheduledAt asc,
+// position absolue = skip + index local) gardent leurs predictions ; les
+// suivants sont masqués et marqués `locked: true` pour que le frontend sache
+// avec certitude lesquels flouter (au lieu de recalculer son propre index
+// côté client, qui pouvait diverger de l'ordre serveur).
+function applyPredictionsPaywall(matches, { userPlan, skip }) {
+  const isPremiumPlan = userPlan && userPlan !== 'FREE';
+  return matches.map((match, i) => {
+    const globalIndex = skip + i;
+    const shouldLock = !isPremiumPlan && globalIndex >= FREE_PREVIEW_LIMIT && !!match.predictions;
+    if (!shouldLock) return { ...match, locked: false };
+    return { ...match, predictions: maskPredictionValue(match.predictions), locked: true };
+  });
+}
+
 // ─── Liste des matchs ──────────────────────────────────────────────────────────
 async function getMatches(req, res, next) {
   try {
@@ -72,9 +115,11 @@ async function getMatches(req, res, next) {
       }),
     ]);
 
+    const data = applyPredictionsPaywall(matches, { userPlan: req.userPlan, skip: (page - 1) * limit });
+
     res.json({
       success: true,
-      data: matches,
+      data,
       pagination: { total, page, limit, pages: Math.ceil(total / limit) },
     });
   } catch (err) {
@@ -103,7 +148,7 @@ async function getMatchById(req, res, next) {
     if (!match) throw new AppError('Match introuvable', 404, 'NOT_FOUND');
 
     const userPlan = req.userPlan || 'FREE';
-    const isPremium = ['PREMIUM', 'PRO'].includes(userPlan);
+    const isPremium = ['PREMIUM', 'PRO', 'LIFETIME'].includes(userPlan);
     const hasExternalId = match.externalId && !String(match.externalId).startsWith('mock');
 
     // Enrichissement API-Football (fetch lazy + cache en DB) pour les premium

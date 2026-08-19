@@ -476,7 +476,7 @@ export default function Home() {
                 <Link to="/abonnement" className="btn-cta w-full text-sm shadow-lg shadow-orange-500/15">
                   {t('home.premiumBtn')}
                 </Link>
-                <p className="disclaimer text-center mt-3">{t('pronostics.noPicksDesc')}</p>
+                <p className="disclaimer text-center mt-3">{t('subscription.reassurance.cancelAnytime')}</p>
               </div>
             </div>
           </section>

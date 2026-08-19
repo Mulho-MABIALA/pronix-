@@ -4,14 +4,14 @@ import { useTranslation } from 'react-i18next';
 import { useCurrency } from '../../hooks/useCurrency';
 
 export default function PlanCard({ plan, isCurrentPlan, onSelect, loading, billingCycle = 'MONTHLY' }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { formatConverted } = useCurrency();
   const isFree = plan.code === 'FREE';
   const isPremium = plan.code === 'PREMIUM';
   const isYearly = billingCycle === 'YEARLY';
   const displayPrice = isYearly ? plan.priceYearly : plan.priceMonthly;
   const monthlyEquiv = isYearly ? Math.round(plan.priceYearly / 12) : null;
-  const fmt = (n) => new Intl.NumberFormat('fr-FR').format(n);
+  const fmt = (n) => new Intl.NumberFormat(i18n.language).format(n);
   const convertedPrice = !isFree ? formatConverted(displayPrice) : null;
 
   return (

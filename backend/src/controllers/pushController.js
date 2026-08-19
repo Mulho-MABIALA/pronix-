@@ -46,7 +46,17 @@ async function unsubscribe(req, res, next) {
     const { endpoint } = req.body;
     if (!endpoint) return res.status(400).json({ success: false, message: 'Endpoint manquant' });
 
-    await prisma.pushSubscription.deleteMany({ where: { endpoint } });
+    // Aucune authentification n'était requise ici auparavant — n'importe qui
+    // connaissant (ou devinant) un endpoint pouvait désabonner un autre
+    // utilisateur de ses notifications. L'endpoint push est en pratique un
+    // secret non-devinable (URL longue générée par le service push du
+    // navigateur), donc le match sur `endpoint` seul reste la garde
+    // principale ; on ajoute en défense en profondeur un filtre sur userId
+    // quand la requête est authentifiée, pour ne jamais supprimer la
+    // souscription d'un autre compte par erreur.
+    await prisma.pushSubscription.deleteMany({
+      where: req.user ? { endpoint, userId: req.user.id } : { endpoint },
+    });
 
     res.json({ success: true, message: 'Souscription supprimée' });
   } catch (err) {

@@ -79,11 +79,14 @@ const queryClient = new QueryClient({
   },
 });
 
-function ProtectedRoute({ children, adminOnly = false }) {
+// NB : pas de prop adminOnly ici — les routes /admin/* sont protégées par
+// AdminGuard ci-dessous (seul mécanisme réellement utilisé pour ça). Un ancien
+// paramètre adminOnly sur ce composant n'était jamais passé par aucune route
+// (mort depuis toujours) — retiré lors de l'audit pour éviter la confusion.
+function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
   if (loading) return null;
   if (!user) return <Navigate to="/connexion" replace />;
-  if (adminOnly && user.role !== 'ADMIN') return <Navigate to="/" replace />;
   return children;
 }
 

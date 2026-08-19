@@ -3,6 +3,7 @@ const prisma = require('../config/database');
 const { startSyncMatchesCron } = require('./syncMatches');
 const { startUpdateStatsCron } = require('./updateTipsterStats');
 const { startCheckSubscriptionsCron } = require('./checkSubscriptions');
+const { startMatchRemindersCron } = require('./matchReminders');
 const { startAgentsCron } = require('./runAgents');
 const { syncOdds } = require('../services/oddsService');
 const { broadcastNotification } = require('../controllers/pushController');
@@ -13,6 +14,7 @@ function startAllCronJobs() {
   startSyncMatchesCron();
   startUpdateStatsCron();
   startCheckSubscriptionsCron();
+  startMatchRemindersCron();
 
   if (process.env.ANTHROPIC_API_KEY) {
     startAgentsCron();

@@ -31,6 +31,7 @@
   },
   "common": {
     "loading": "Loading...",
+    "oddsDisclaimer": "Simulated odds for informational purposes — not provided by a real bookmaker.",
     "error": "An error occurred",
     "noData": "No data available",
     "retry": "Retry",
@@ -326,6 +327,7 @@
     "upgradePremium": "Go Premium — {{price}} FCFA/month",
     "aiAnalysisDesc": "Claude analyzes form, H2H and stats",
     "usedTodayCount": "{{used}}/{{limit}} today",
+    "unlimitedCount": "Unlimited",
     "analyzing": "Analyzing…",
     "analyzeMatch": "Analyze this match",
     "analysisReady": "Analysis ready",
@@ -1593,7 +1595,7 @@
         "items": [
           "Manage your account and subscription",
           "Provide Platform features (predictions, standings, statistics)",
-          "Process your payments via our providers (Wave, PayTech, FedaPay)",
+          "Process your payments via our provider PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, card)",
           "Send you notifications related to your account (if you consented)",
           "Improve our services and detect fraud",
           "Comply with our legal obligations"
@@ -1607,7 +1609,7 @@
         "title": "5. Data sharing",
         "intro": "Your data is not sold to third parties. It may be shared with:",
         "items": [
-          "Our payment providers (Wave, PayTech, FedaPay) as part of transaction processing",
+          "Our payment provider PayTech as part of transaction processing",
           "Our technical hosting providers (secure servers in Europe)",
           "Competent authorities in case of legal obligation"
         ]
@@ -1677,7 +1679,7 @@
       },
       "s5": {
         "title": "5. Premium subscription",
-        "body1": "The Premium subscription is available for 8.99 USD per month. Payment is processed via Wave, PayTech, or FedaPay. The subscription renews monthly and can be canceled at any time.",
+        "body1": "The Premium subscription is available as a weekly, monthly, or yearly plan (see pricing on the \"Subscription\" page), plus a one-time Lifetime option. Payment is processed via PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, Visa/Mastercard). Recurring subscriptions renew automatically and can be canceled at any time.",
         "body2": "In case of non-payment, access to Premium features will be suspended at the expiration date of the current subscription."
       },
       "s6": {
@@ -1767,11 +1769,11 @@
         },
         "freeVsPremium": {
           "q": "What's the difference between FREE and Premium?",
-          "a": "The FREE plan gives you access to matches, standings, and other tipsters' predictions. The Premium plan (8.99 USD/month) lets you publish your own predictions, access AI analysis (Claude), advanced data, and team lineups."
+          "a": "The FREE plan gives you access to matches, standings, 3 detailed predictions, 3 AI chat questions, and 3 generated tickets per day. The Premium plan unlocks all of that unlimited (AI predictions, chat, ticket generator), plus head-to-head history, recent form, probable lineups, injuries, AI value bet explanations, live analysis, and a personal AI coach. Publishing your own predictions is available on any plan, including FREE."
         },
         "howToPay": {
           "q": "How do I pay for Premium?",
-          "a": "We accept Wave, Orange Money, Free Money, and credit card via PayTech and FedaPay. Go to the \"Subscription\" page to choose your payment method."
+          "a": "We accept Wave, Orange Money, Free Money, MTN Mobile Money, and card (Visa/Mastercard), all processed via PayTech, our payment provider. Go to the \"Subscription\" page to choose your payment method."
         },
         "cancelSub": {
           "q": "Can I cancel my subscription?",

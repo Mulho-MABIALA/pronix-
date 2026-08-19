@@ -5,6 +5,20 @@ const { sendSubscriptionExpiryReminder } = require('../services/emailService');
 const { notifyUser } = require('../controllers/pushController');
 
 async function checkExpiringSubscriptions() {
+  try {
+    await checkExpiringSubscriptionsUnsafe();
+  } catch (err) {
+    // Sans ce try/catch, une erreur ici (ex: DB momentanément indisponible)
+    // faisait disparaître silencieusement ce cron — aucun log, aucune alerte
+    // — et donc plus aucun rappel d'expiration ni passage EXPIRED tant que le
+    // process n'était pas redémarré. node-cron catch bien la rejection en
+    // interne mais aucun listener 'task-failed' n'est enregistré ailleurs
+    // dans le code, donc rien n'était jamais visible.
+    console.error('[Cron checkSubscriptions] Erreur:', err.message);
+  }
+}
+
+async function checkExpiringSubscriptionsUnsafe() {
   console.log('[Cron checkSubscriptions] Vérification des abonnements...');
   const now = new Date();
 

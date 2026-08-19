@@ -87,7 +87,7 @@ const PLAN_STYLE = {
 };
 
 function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, premiumMonthlyPrice }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isFree     = plan.code === 'FREE';
   const isLifetime = plan.code === 'LIFETIME';
   const isPremium  = plan.code === 'PREMIUM';
@@ -135,7 +135,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, pre
         ) : (
           <div className="flex items-end gap-1.5 flex-wrap">
             <span className="text-4xl font-display font-bold text-ink-1">
-              {new Intl.NumberFormat('fr-FR').format(price)}
+              {new Intl.NumberFormat(i18n.language).format(price)}
             </span>
             <span className="text-ink-3 pb-1 text-sm">
               {' '}FCFA{isLifetime ? ` ${t('subscription.plans.lifetime')}` : `/${unitLabel}`}
@@ -144,12 +144,12 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, pre
         )}
         {monthly && (
           <p className="text-xs text-primary-400 mt-1">
-            ≈ {new Intl.NumberFormat('fr-FR').format(Math.round(plan.priceYearly / 12))} FCFA/mois
+            ≈ {new Intl.NumberFormat(i18n.language).format(Math.round(plan.priceYearly / 12))} FCFA/mois
           </p>
         )}
         {perDayPrice != null && (
           <p className="text-xs text-ink-4 mt-1">
-            {t('subscription.perDay', { price: new Intl.NumberFormat('fr-FR').format(perDayPrice) })}
+            {t('subscription.perDay', { price: new Intl.NumberFormat(i18n.language).format(perDayPrice) })}
           </p>
         )}
         {breakevenMonths != null && (
@@ -217,7 +217,7 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, pre
 
 /* ─── Modale de confirmation — rappel jeu responsable juste avant paiement ─── */
 function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, onCancel, onConfirm, loading }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const unitLabel = billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
   // Devise de paiement effective (peut différer de la devise détectée si elle
   // n'est pas supportée par PayTech, cf. payCurrency) → paiement carte via
@@ -237,7 +237,7 @@ function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, on
         <div className="bg-overlay/[0.04] rounded-xl px-3 py-2.5 flex items-center justify-between">
           <span className="text-sm text-ink-2">{plan.displayName} — {unitLabel}</span>
           <span className="text-sm font-bold text-ink-1">
-            {converted || `${new Intl.NumberFormat('fr-FR').format(price)} FCFA`}
+            {converted || `${new Intl.NumberFormat(i18n.language).format(price)} FCFA`}
           </span>
         </div>
 
@@ -423,7 +423,7 @@ export default function Subscription() {
           </div>
           <div className="bento-card text-center py-4">
             <p className="text-2xl font-display font-bold text-primary-400">
-              {statsLoading ? '—' : new Intl.NumberFormat('fr-FR').format((trStats?.ai?.totalPicks ?? 0) + (trStats?.tipsters?.totalPicks ?? 0))}
+              {statsLoading ? '—' : new Intl.NumberFormat(i18n.language).format((trStats?.ai?.totalPicks ?? 0) + (trStats?.tipsters?.totalPicks ?? 0))}
             </p>
             <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.pronostics')}</p>
           </div>

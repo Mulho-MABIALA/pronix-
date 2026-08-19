@@ -183,9 +183,28 @@ async function handleWaveWebhook(req, res, next) {
 
     if (!payment) return res.json({ received: true });
 
+    // Claim atomique : updateMany avec la garde status:'PENDING' dans le WHERE
+    // fait office de verrou — si deux webhooks identiques/dupliqués arrivent
+    // en parallèle (retry du fournisseur, double delivery...), un seul des deux
+    // gagne la transition PENDING→COMPLETED (count === 1) ; l'autre voit
+    // count === 0 et n'active jamais l'abonnement une seconde fois. L'ancien
+    // code faisait un findFirst PENDING puis un update séparé — une fenêtre de
+    // course permettait un double-crédit d'abonnement.
+    const claimed = await prisma.payment.updateMany({
+      where: { id: payment.id, status: 'PENDING' },
+      data:  { status: 'COMPLETED', transactionId },
+    });
+    if (claimed.count === 0) return res.json({ received: true });
+
     const { planId, billingCycle } = payment.metadata;
-    await prisma.payment.update({ where: { id: payment.id }, data: { transactionId } });
-    await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    try {
+      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    } catch (activationErr) {
+      // Le paiement reste marqué COMPLETED (empêche un retraitement en double
+      // par un futur retry du webhook) mais l'activation a échoué — nécessite
+      // une intervention manuelle admin (activation manuelle depuis AdminUsers).
+      console.error(`[Webhook Wave] Échec activation après claim atomique — paymentId=${payment.id}:`, activationErr.message);
+    }
 
     res.json({ received: true });
   } catch (err) {
@@ -370,14 +389,26 @@ async function handlePaytechWebhook(req, res, next) {
       return res.json({ received: true });
     }
 
-    if (payment.metadata?.type === 'tipster') {
-      const { tipsterId, planId } = payment.metadata;
-      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId: ipn.token } });
-      await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
-    } else {
-      const { planId, billingCycle } = payment.metadata;
-      await prisma.payment.update({ where: { id: payment.id }, data: { transactionId: ipn.token } });
-      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    // Claim atomique : voir commentaire détaillé dans handleWaveWebhook.
+    // PayTech peut renvoyer le même IPN plusieurs fois (retry sur non-200) —
+    // sans ce verrou, deux requêtes concurrentes passaient toutes les deux le
+    // findFirst PENDING et activaient l'abonnement deux fois.
+    const claimed = await prisma.payment.updateMany({
+      where: { id: payment.id, status: 'PENDING' },
+      data:  { status: 'COMPLETED', transactionId: ipn.token },
+    });
+    if (claimed.count === 0) return res.json({ received: true });
+
+    try {
+      if (payment.metadata?.type === 'tipster') {
+        const { tipsterId, planId } = payment.metadata;
+        await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
+      } else {
+        const { planId, billingCycle } = payment.metadata;
+        await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+      }
+    } catch (activationErr) {
+      console.error(`[Webhook PayTech] Échec activation après claim atomique — paymentId=${payment.id}:`, activationErr.message);
     }
 
     res.json({ received: true });
@@ -520,8 +551,19 @@ async function handleFedapayWebhook(req, res) {
     });
     if (!payment) return res.json({ received: true });
 
+    // Claim atomique — voir commentaire détaillé dans handleWaveWebhook.
+    const claimed = await prisma.payment.updateMany({
+      where: { id: payment.id, status: 'PENDING' },
+      data:  { status: 'COMPLETED' },
+    });
+    if (claimed.count === 0) return res.json({ received: true });
+
     const { planId, billingCycle } = payment.metadata;
-    await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    try {
+      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+    } catch (activationErr) {
+      console.error(`[Webhook FedaPay] Échec activation après claim atomique — paymentId=${payment.id}:`, activationErr.message);
+    }
 
     res.json({ received: true });
   } catch (err) {
@@ -647,16 +689,25 @@ async function handleFlutterwaveWebhook(req, res) {
       return;
     }
 
-    await prisma.payment.update({ where: { id: payment.id }, data: { transactionId: String(data.id) } });
+    // Claim atomique — voir commentaire détaillé dans handleWaveWebhook.
+    const claimed = await prisma.payment.updateMany({
+      where: { id: payment.id, status: 'PENDING' },
+      data:  { status: 'COMPLETED', transactionId: String(data.id) },
+    });
+    if (claimed.count === 0) return;
 
-    if (payment.metadata?.type === 'tipster') {
-      const { tipsterId, planId } = payment.metadata;
-      await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
-      console.log(`[Webhook Flutterwave] ✅ Abonnement tipster activé pour userId=${payment.userId} → tipster=${tipsterId}`);
-    } else {
-      const { planId, billingCycle } = payment.metadata;
-      await activateSubscription(payment.userId, planId, billingCycle, payment.id);
-      console.log(`[Webhook Flutterwave] ✅ Abonnement activé pour userId=${payment.userId}`);
+    try {
+      if (payment.metadata?.type === 'tipster') {
+        const { tipsterId, planId } = payment.metadata;
+        await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
+        console.log(`[Webhook Flutterwave] ✅ Abonnement tipster activé pour userId=${payment.userId} → tipster=${tipsterId}`);
+      } else {
+        const { planId, billingCycle } = payment.metadata;
+        await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+        console.log(`[Webhook Flutterwave] ✅ Abonnement activé pour userId=${payment.userId}`);
+      }
+    } catch (activationErr) {
+      console.error(`[Webhook Flutterwave] Échec activation après claim atomique — paymentId=${payment.id}:`, activationErr.message);
     }
   } catch (err) {
     console.error('[Webhook Flutterwave] Erreur traitement asynchrone:', err.message, err.stack);

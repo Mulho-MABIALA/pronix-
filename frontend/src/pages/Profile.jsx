@@ -8,7 +8,7 @@ import {
   Camera, Check, ChevronRight, Crown, LogOut, Mail,
   Bell, BellOff, Pencil, Shield, Star, TrendingUp, X, Gift, Copy,
   MessageCircle, HelpCircle, Trophy, Search, Globe, Trash2, AlertTriangle, PauseCircle,
-  Fingerprint, KeyRound, Phone, Lightbulb,
+  Fingerprint, Phone, Lightbulb,
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -534,143 +534,77 @@ function PasskeysSection() {
   );
 }
 
-/* ─── Changer l'adresse email — formulaire inline ─────────────────────────────
-   Exige le mot de passe actuel si le compte en a un (voir hasPassword côté
-   /auth/me). Repasse emailVerified à false côté backend et envoie un nouveau
-   lien de vérification vers la nouvelle adresse. */
-function ChangeEmailRow({ user, refreshUser }) {
+/* ─── Identifiants de connexion (email + mot de passe) — formulaire unique ────
+   Fusionné volontairement : changer l'email exige déjà le mot de passe actuel
+   pour confirmer l'identité, donc autant permettre de changer le mot de passe
+   dans la foulée plutôt que de forcer deux allers-retours séparés. Le nouveau
+   mot de passe reste optionnel (case à cocher) — seul l'email peut changer.
+   Voir routes/profiles.js PATCH /me/email (accepte newPassword optionnel). */
+function AccountCredentialsRow({ user, refreshUser }) {
   const { t } = useTranslation();
   const toast = useToast();
   const [editing, setEditing] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const mutation = useMutation({
-    mutationFn: () => api.patch('/profiles/me/email', {
-      newEmail: newEmail.trim(),
-      ...(user?.hasPassword ? { currentPassword } : {}),
-    }),
-    onSuccess: async () => {
-      await refreshUser();
-      setEditing(false);
-      setNewEmail('');
-      setCurrentPassword('');
-      setError('');
-      if (toast) toast(t('profile.changeEmail.successToast'), 'success');
-    },
-    onError: (err) => {
-      setError(err?.response?.data?.message || t('profile.changeEmail.genericError'));
-    },
-  });
-
-  const canSubmit = /\S+@\S+\.\S+/.test(newEmail) && (!user?.hasPassword || currentPassword.length > 0);
-
-  if (!editing) {
-    return (
-      <div className="flex items-center justify-between py-2 border-b border-overlay/[0.05]">
-        <div className="flex items-center gap-2">
-          <Mail size={14} className="text-ink-3" />
-          <span className="text-sm text-ink-3">{t('profile.email')}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <span className="text-xs text-ink-3 truncate max-w-[160px]">{user?.email}</span>
-          <button
-            onClick={() => { setEditing(true); setNewEmail(''); setCurrentPassword(''); setError(''); }}
-            className="text-xs text-primary-400 hover:text-primary-300 font-medium shrink-0"
-          >
-            {t('profile.changeEmail.editCta')}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="py-3 border-b border-overlay/[0.05] space-y-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Mail size={14} className="text-ink-3" />
-          <span className="text-sm text-ink-2 font-medium">{t('profile.changeEmail.newEmailPlaceholder')}</span>
-        </div>
-        <button onClick={() => setEditing(false)} className="text-ink-4 hover:text-ink-2 transition-colors">
-          <X size={15} />
-        </button>
-      </div>
-      <input
-        type="email"
-        className="input w-full text-sm"
-        value={newEmail}
-        onChange={(e) => setNewEmail(e.target.value)}
-        placeholder={user?.email}
-        autoComplete="email"
-      />
-      {user?.hasPassword && (
-        <PasswordField
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          placeholder={t('profile.changeEmail.currentPasswordConfirmPlaceholder')}
-          autoComplete="current-password"
-        />
-      )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
-      <button
-        onClick={() => mutation.mutate()}
-        disabled={!canSubmit || mutation.isPending}
-        className="btn-primary w-full py-2 text-sm disabled:opacity-40"
-      >
-        {mutation.isPending ? t('profile.changeEmail.sendingCta') : t('profile.changeEmail.submitCta')}
-      </button>
-    </div>
-  );
-}
-
-/* ─── Changer le mot de passe — formulaire inline ─────────────────────────────
-   Si le compte n'a pas encore de mot de passe (Google), pas de champ "actuel"
-   — même logique que le backend (voir routes/profiles.js PATCH /me/password). */
-function ChangePasswordRow({ user }) {
-  const { t } = useTranslation();
-  const toast = useToast();
-  const [editing, setEditing] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
+  const [changePassword, setChangePassword] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
 
   const reset = () => {
-    setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); setError('');
+    setNewEmail(user?.email || '');
+    setCurrentPassword('');
+    setChangePassword(false);
+    setNewPassword('');
+    setConfirmPassword('');
+    setError('');
   };
 
   const mutation = useMutation({
-    mutationFn: () => api.patch('/profiles/me/password', {
-      newPassword,
+    mutationFn: () => api.patch('/profiles/me/email', {
+      newEmail: newEmail.trim(),
       ...(user?.hasPassword ? { currentPassword } : {}),
+      ...(changePassword ? { newPassword } : {}),
     }),
-    onSuccess: () => {
+    onSuccess: async (res) => {
+      await refreshUser();
       setEditing(false);
+      const { emailChanged, passwordChanged } = res?.data || {};
+      let msg = t('profile.accountCredentials.successPasswordToast');
+      if (emailChanged && passwordChanged) msg = t('profile.accountCredentials.successBothToast');
+      else if (emailChanged) msg = t('profile.accountCredentials.successEmailToast');
       reset();
-      if (toast) toast(t('profile.changePassword.successToast'), 'success');
+      if (toast) toast(msg, 'success');
     },
     onError: (err) => {
-      setError(err?.response?.data?.message || t('profile.changePassword.genericError'));
+      setError(err?.response?.data?.message || t('profile.accountCredentials.genericError'));
     },
   });
 
+  const emailChanged = newEmail.trim().toLowerCase() !== (user?.email || '').toLowerCase();
+  const passwordOk = !changePassword || (newPassword.length >= 8 && newPassword === confirmPassword);
   const canSubmit =
-    newPassword.length >= 8 &&
-    newPassword === confirmPassword &&
-    (!user?.hasPassword || currentPassword.length > 0);
+    /\S+@\S+\.\S+/.test(newEmail) &&
+    (emailChanged || changePassword) &&
+    (!user?.hasPassword || currentPassword.length > 0) &&
+    passwordOk;
 
   if (!editing) {
     return (
       <div className="flex items-center justify-between py-2">
-        <span className="text-sm text-ink-3">{user?.hasPassword ? t('profile.password') : t('profile.googleLogin')}</span>
-        <button
-          onClick={() => { setEditing(true); reset(); }}
-          className="text-xs text-primary-400 hover:text-primary-300 font-medium"
-        >
-          {user?.hasPassword ? t('profile.editPassword') : t('profile.setPassword')}
-        </button>
+        <div className="flex items-center gap-2">
+          <Mail size={14} className="text-ink-3" />
+          <span className="text-sm text-ink-3">{t('profile.accountCredentials.label')}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-ink-3 truncate max-w-[160px]">{user?.email}</span>
+          <button
+            onClick={() => { reset(); setEditing(true); }}
+            className="text-xs text-primary-400 hover:text-primary-300 font-medium shrink-0"
+          >
+            {t('profile.accountCredentials.editCta')}
+          </button>
+        </div>
       </div>
     );
   }
@@ -679,48 +613,74 @@ function ChangePasswordRow({ user }) {
     <div className="py-3 space-y-2.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <KeyRound size={14} className="text-ink-3" />
-          <span className="text-sm text-ink-2 font-medium">
-            {user?.hasPassword ? t('profile.changePassword.title') : t('profile.changePassword.setTitle')}
-          </span>
+          <Mail size={14} className="text-ink-3" />
+          <span className="text-sm text-ink-2 font-medium">{t('profile.accountCredentials.title')}</span>
         </div>
         <button onClick={() => setEditing(false)} className="text-ink-4 hover:text-ink-2 transition-colors">
           <X size={15} />
         </button>
       </div>
+
+      <div>
+        <label className="text-xs text-ink-4 mb-1 block">{t('profile.accountCredentials.emailLabel')}</label>
+        <input
+          type="email"
+          className="input w-full text-sm"
+          value={newEmail}
+          onChange={(e) => setNewEmail(e.target.value)}
+          autoComplete="email"
+        />
+      </div>
+
       {user?.hasPassword && (
         <PasswordField
           value={currentPassword}
           onChange={(e) => setCurrentPassword(e.target.value)}
-          placeholder={t('profile.changePassword.currentPlaceholder')}
+          placeholder={t('profile.accountCredentials.currentPasswordPlaceholder')}
           autoComplete="current-password"
         />
       )}
-      <PasswordField
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        placeholder={t('profile.changePassword.newPlaceholder')}
-        autoComplete="new-password"
-      />
-      <PasswordField
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder={t('profile.changePassword.confirmPlaceholder')}
-        autoComplete="new-password"
-      />
-      {newPassword.length > 0 && newPassword.length < 8 && (
-        <p className="text-xs text-amber-400">{t('profile.changePassword.tooShortError')}</p>
+
+      <label className="flex items-center gap-2 text-xs text-ink-3 cursor-pointer pt-1">
+        <input
+          type="checkbox"
+          checked={changePassword}
+          onChange={(e) => setChangePassword(e.target.checked)}
+          className="accent-primary-500"
+        />
+        {user?.hasPassword ? t('profile.accountCredentials.alsoChangePassword') : t('profile.setPassword')}
+      </label>
+
+      {changePassword && (
+        <div className="space-y-2.5">
+          <PasswordField
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder={t('profile.accountCredentials.newPasswordPlaceholder')}
+            autoComplete="new-password"
+          />
+          <PasswordField
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder={t('profile.accountCredentials.confirmPasswordPlaceholder')}
+            autoComplete="new-password"
+          />
+          {newPassword.length > 0 && newPassword.length < 8 && (
+            <p className="text-xs text-amber-400">{t('profile.accountCredentials.tooShortError')}</p>
+          )}
+          {confirmPassword.length > 0 && newPassword !== confirmPassword && (
+            <p className="text-xs text-amber-400">{t('profile.accountCredentials.mismatchError')}</p>
+          )}
+        </div>
       )}
-      {confirmPassword.length > 0 && newPassword !== confirmPassword && (
-        <p className="text-xs text-amber-400">{t('profile.changePassword.mismatchError')}</p>
-      )}
+
       {error && <p className="text-xs text-red-400">{error}</p>}
       <button
         onClick={() => mutation.mutate()}
         disabled={!canSubmit || mutation.isPending}
         className="btn-primary w-full py-2 text-sm disabled:opacity-40"
       >
-        {mutation.isPending ? t('profile.changePassword.savingCta') : t('profile.changePassword.submitCta')}
+        {mutation.isPending ? t('profile.accountCredentials.savingCta') : t('profile.accountCredentials.submitCta')}
       </button>
     </div>
   );
@@ -1754,8 +1714,7 @@ export default function Profile() {
       {/* ── Sécurité / compte ─────────────────────────────────────────────────── */}
       <Section title={t('profile.account')} icon={Shield} color="blue">
         <div className="space-y-2">
-          <ChangeEmailRow user={user} refreshUser={refreshUser} />
-          <ChangePasswordRow user={user} />
+          <AccountCredentialsRow user={user} refreshUser={refreshUser} />
 
           {isGoogleUser && (
             <p className="text-xs text-ink-4 flex items-center gap-1.5 pt-1">

@@ -132,50 +132,63 @@ router.patch('/me/password', async (req, res, next) => {
   }
 });
 
-// Changer l'adresse email (utilisateur déjà authentifié). Repasse
-// emailVerified à false et renvoie un lien de vérification vers la nouvelle
-// adresse — jamais vers l'ancienne, qui n'appartient plus au compte.
+// Changer l'adresse email et/ou le mot de passe (utilisateur déjà
+// authentifié), en une seule soumission — le mot de passe actuel confirme
+// l'identité dans les deux cas, donc autant regrouper les deux actions
+// plutôt que de les séparer en deux formulaires distincts.
+// newPassword est optionnel : si absent, seul l'email change. Si newEmail
+// est identique à l'email actuel, seul le mot de passe change (pas d'erreur
+// SAME_EMAIL dans ce cas — on ne force plus à toujours changer l'email).
+// Un changement d'email repasse emailVerified à false et renvoie un lien de
+// vérification vers la nouvelle adresse — jamais vers l'ancienne.
 router.patch('/me/email', async (req, res, next) => {
   try {
     const schema = z.object({
       newEmail: z.string().email('Adresse email invalide'),
       currentPassword: z.string().optional(),
+      newPassword: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(100).optional(),
     });
-    const { newEmail, currentPassword } = schema.parse(req.body);
+    const { newEmail, currentPassword, newPassword } = schema.parse(req.body);
     const emailLower = newEmail.toLowerCase().trim();
+    const emailChanged = emailLower !== req.user.email.toLowerCase();
 
-    if (emailLower === req.user.email.toLowerCase()) {
-      throw new AppError('C\'est déjà ton adresse actuelle', 400, 'SAME_EMAIL');
+    if (!emailChanged && !newPassword) {
+      throw new AppError('Rien à modifier', 400, 'NOTHING_TO_UPDATE');
     }
 
     if (req.user.password) {
       if (!currentPassword) {
-        throw new AppError('Mot de passe requis pour changer d\'email', 400, 'PASSWORD_REQUIRED');
+        throw new AppError('Mot de passe actuel requis', 400, 'PASSWORD_REQUIRED');
       }
       const isValid = await bcrypt.compare(currentPassword, req.user.password);
       if (!isValid) {
-        throw new AppError('Mot de passe incorrect', 401, 'INVALID_PASSWORD');
+        throw new AppError('Mot de passe actuel incorrect', 401, 'INVALID_PASSWORD');
       }
     }
 
-    const existing = await prisma.user.findUnique({ where: { email: emailLower } });
-    if (existing && existing.id !== req.user.id) {
-      throw new AppError('Cette adresse email est déjà utilisée', 409, 'EMAIL_TAKEN');
+    if (emailChanged) {
+      const existing = await prisma.user.findUnique({ where: { email: emailLower } });
+      if (existing && existing.id !== req.user.id) {
+        throw new AppError('Cette adresse email est déjà utilisée', 409, 'EMAIL_TAKEN');
+      }
     }
 
-    const user = await prisma.user.update({
-      where: { id: req.user.id },
-      data: { email: emailLower, emailVerified: false },
-    });
+    const data = {};
+    if (emailChanged) { data.email = emailLower; data.emailVerified = false; }
+    if (newPassword) { data.password = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS); }
 
-    // Best-effort : un échec d'envoi ne doit pas annuler le changement d'email.
-    const token = crypto.randomBytes(32).toString('hex');
-    prisma.emailVerification.create({
-      data: { userId: user.id, token, expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
-    }).then(() => sendEmailVerification(user, token)).catch((err) => console.error('[EmailVerification] échec envoi:', err.message || err));
+    const user = await prisma.user.update({ where: { id: req.user.id }, data });
+
+    if (emailChanged) {
+      // Best-effort : un échec d'envoi ne doit pas annuler le changement d'email.
+      const token = crypto.randomBytes(32).toString('hex');
+      prisma.emailVerification.create({
+        data: { userId: user.id, token, expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+      }).then(() => sendEmailVerification(user, token)).catch((err) => console.error('[EmailVerification] échec envoi:', err.message || err));
+    }
 
     const { password: _, ...userSafe } = user;
-    res.json({ success: true, data: userSafe });
+    res.json({ success: true, data: userSafe, emailChanged, passwordChanged: !!newPassword });
   } catch (err) {
     next(err);
   }

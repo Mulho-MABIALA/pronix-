@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import {
-  Camera, Check, Pencil, Shield, Mail, Fingerprint, LogOut, KeyRound, X, Eye, EyeOff,
+  Camera, Check, Pencil, Shield, Mail, Fingerprint, LogOut, X, Eye, EyeOff,
 } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
@@ -174,10 +174,6 @@ function PasskeysSection() {
   );
 }
 
-/* ─── Changer l'adresse email — formulaire inline ─────────────────────────────
-   Exige le mot de passe actuel si le compte en a un (voir hasPassword côté
-   /auth/me). Repasse emailVerified à false côté backend et envoie un nouveau
-   lien de vérification vers la nouvelle adresse. */
 /* ─── Champ mot de passe avec bouton œil pour afficher/masquer la saisie ── */
 function PasswordField({ value, onChange, placeholder, autoComplete }) {
   const [show, setShow] = useState(false);
@@ -204,44 +200,72 @@ function PasswordField({ value, onChange, placeholder, autoComplete }) {
   );
 }
 
-function ChangeEmailRow({ user, refreshUser }) {
+/* ─── Identifiants de connexion (email + mot de passe) — formulaire unique ────
+   Fusionné volontairement : changer l'email exige déjà le mot de passe actuel
+   pour confirmer l'identité, donc autant permettre de changer le mot de passe
+   dans la foulée plutôt que de forcer deux allers-retours séparés. Le nouveau
+   mot de passe reste optionnel (case à cocher) — seul l'email peut changer.
+   Voir routes/profiles.js PATCH /me/email (accepte newPassword optionnel). */
+function AccountCredentialsRow({ user, refreshUser }) {
   const toast = useToast();
   const [editing, setEditing] = useState(false);
   const [newEmail, setNewEmail] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
+  const [changePassword, setChangePassword] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+
+  const reset = () => {
+    setNewEmail(user?.email || '');
+    setCurrentPassword('');
+    setChangePassword(false);
+    setNewPassword('');
+    setConfirmPassword('');
+    setError('');
+  };
 
   const mutation = useMutation({
     mutationFn: () => api.patch('/profiles/me/email', {
       newEmail: newEmail.trim(),
       ...(user?.hasPassword ? { currentPassword } : {}),
+      ...(changePassword ? { newPassword } : {}),
     }),
-    onSuccess: async () => {
+    onSuccess: async (res) => {
       await refreshUser();
       setEditing(false);
-      setNewEmail('');
-      setCurrentPassword('');
-      setError('');
-      if (toast) toast('Email mis à jour — vérifie ta boîte mail pour la confirmer', 'success');
+      const { emailChanged, passwordChanged } = res?.data || {};
+      let msg = 'Mis à jour';
+      if (emailChanged && passwordChanged) msg = 'Email et mot de passe mis à jour — vérifie ta boîte mail pour confirmer le nouvel email';
+      else if (emailChanged) msg = 'Email mis à jour — vérifie ta boîte mail pour la confirmer';
+      else if (passwordChanged) msg = 'Mot de passe mis à jour';
+      reset();
+      if (toast) toast(msg, 'success');
     },
     onError: (err) => {
-      setError(err?.response?.data?.message || 'Erreur lors du changement d\'email');
+      setError(err?.response?.data?.message || 'Erreur lors de la mise à jour');
     },
   });
 
-  const canSubmit = /\S+@\S+\.\S+/.test(newEmail) && (!user?.hasPassword || currentPassword.length > 0);
+  const emailChanged = newEmail.trim().toLowerCase() !== (user?.email || '').toLowerCase();
+  const passwordOk = !changePassword || (newPassword.length >= 8 && newPassword === confirmPassword);
+  const canSubmit =
+    /\S+@\S+\.\S+/.test(newEmail) &&
+    (emailChanged || changePassword) &&
+    (!user?.hasPassword || currentPassword.length > 0) &&
+    passwordOk;
 
   if (!editing) {
     return (
-      <div className="flex items-center justify-between py-2 border-b border-overlay/[0.05]">
+      <div className="flex items-center justify-between py-2">
         <div className="flex items-center gap-2">
           <Mail size={14} className="text-ink-3" />
-          <span className="text-sm text-ink-3">Email</span>
+          <span className="text-sm text-ink-3">Identifiants de connexion</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-xs text-ink-3 truncate max-w-[160px]">{user?.email}</span>
           <button
-            onClick={() => { setEditing(true); setNewEmail(''); setCurrentPassword(''); setError(''); }}
+            onClick={() => { reset(); setEditing(true); }}
             className="text-xs text-primary-400 hover:text-primary-300 font-medium shrink-0"
           >
             Modifier
@@ -252,24 +276,28 @@ function ChangeEmailRow({ user, refreshUser }) {
   }
 
   return (
-    <div className="py-3 border-b border-overlay/[0.05] space-y-2.5">
+    <div className="py-3 space-y-2.5">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Mail size={14} className="text-ink-3" />
-          <span className="text-sm text-ink-2 font-medium">Nouvelle adresse email</span>
+          <span className="text-sm text-ink-2 font-medium">Modifier mes identifiants</span>
         </div>
         <button onClick={() => setEditing(false)} className="text-ink-4 hover:text-ink-2 transition-colors">
           <X size={15} />
         </button>
       </div>
-      <input
-        type="email"
-        className="input w-full text-sm"
-        value={newEmail}
-        onChange={(e) => setNewEmail(e.target.value)}
-        placeholder={user?.email}
-        autoComplete="email"
-      />
+
+      <div>
+        <label className="text-xs text-ink-4 mb-1 block">Adresse email</label>
+        <input
+          type="email"
+          className="input w-full text-sm"
+          value={newEmail}
+          onChange={(e) => setNewEmail(e.target.value)}
+          autoComplete="email"
+        />
+      </div>
+
       {user?.hasPassword && (
         <PasswordField
           value={currentPassword}
@@ -278,113 +306,47 @@ function ChangeEmailRow({ user, refreshUser }) {
           autoComplete="current-password"
         />
       )}
-      {error && <p className="text-xs text-red-400">{error}</p>}
-      <button
-        onClick={() => mutation.mutate()}
-        disabled={!canSubmit || mutation.isPending}
-        className="btn-primary w-full py-2 text-sm disabled:opacity-40"
-      >
-        {mutation.isPending ? 'Envoi...' : 'Changer l\'email'}
-      </button>
-    </div>
-  );
-}
 
-/* ─── Changer le mot de passe — formulaire inline ─────────────────────────────
-   Si le compte n'a pas encore de mot de passe (Google), pas de champ "actuel"
-   — même logique que le backend (voir routes/profiles.js PATCH /me/password). */
-function ChangePasswordRow({ user }) {
-  const toast = useToast();
-  const [editing, setEditing] = useState(false);
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const reset = () => {
-    setCurrentPassword(''); setNewPassword(''); setConfirmPassword(''); setError('');
-  };
-
-  const mutation = useMutation({
-    mutationFn: () => api.patch('/profiles/me/password', {
-      newPassword,
-      ...(user?.hasPassword ? { currentPassword } : {}),
-    }),
-    onSuccess: () => {
-      setEditing(false);
-      reset();
-      if (toast) toast('Mot de passe mis à jour', 'success');
-    },
-    onError: (err) => {
-      setError(err?.response?.data?.message || 'Erreur lors du changement de mot de passe');
-    },
-  });
-
-  const canSubmit =
-    newPassword.length >= 8 &&
-    newPassword === confirmPassword &&
-    (!user?.hasPassword || currentPassword.length > 0);
-
-  if (!editing) {
-    return (
-      <div className="flex items-center justify-between py-2">
-        <span className="text-sm text-ink-3">{user?.hasPassword ? 'Mot de passe' : 'Connexion Google — pas de mot de passe'}</span>
-        <button
-          onClick={() => { setEditing(true); reset(); }}
-          className="text-xs text-primary-400 hover:text-primary-300 font-medium"
-        >
-          {user?.hasPassword ? 'Modifier' : 'Définir un mot de passe'}
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className="py-3 space-y-2.5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <KeyRound size={14} className="text-ink-3" />
-          <span className="text-sm text-ink-2 font-medium">
-            {user?.hasPassword ? 'Changer le mot de passe' : 'Définir un mot de passe'}
-          </span>
-        </div>
-        <button onClick={() => setEditing(false)} className="text-ink-4 hover:text-ink-2 transition-colors">
-          <X size={15} />
-        </button>
-      </div>
-      {user?.hasPassword && (
-        <PasswordField
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          placeholder="Mot de passe actuel"
-          autoComplete="current-password"
+      <label className="flex items-center gap-2 text-xs text-ink-3 cursor-pointer pt-1">
+        <input
+          type="checkbox"
+          checked={changePassword}
+          onChange={(e) => setChangePassword(e.target.checked)}
+          className="accent-primary-500"
         />
+        {user?.hasPassword ? 'Changer aussi le mot de passe' : 'Définir un mot de passe'}
+      </label>
+
+      {changePassword && (
+        <div className="space-y-2.5">
+          <PasswordField
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            placeholder="Nouveau mot de passe (8 caractères min.)"
+            autoComplete="new-password"
+          />
+          <PasswordField
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            placeholder="Confirmer le nouveau mot de passe"
+            autoComplete="new-password"
+          />
+          {newPassword.length > 0 && newPassword.length < 8 && (
+            <p className="text-xs text-amber-400">8 caractères minimum</p>
+          )}
+          {confirmPassword.length > 0 && newPassword !== confirmPassword && (
+            <p className="text-xs text-amber-400">Les mots de passe ne correspondent pas</p>
+          )}
+        </div>
       )}
-      <PasswordField
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-        placeholder="Nouveau mot de passe (8 caractères min.)"
-        autoComplete="new-password"
-      />
-      <PasswordField
-        value={confirmPassword}
-        onChange={(e) => setConfirmPassword(e.target.value)}
-        placeholder="Confirmer le nouveau mot de passe"
-        autoComplete="new-password"
-      />
-      {newPassword.length > 0 && newPassword.length < 8 && (
-        <p className="text-xs text-amber-400">8 caractères minimum</p>
-      )}
-      {confirmPassword.length > 0 && newPassword !== confirmPassword && (
-        <p className="text-xs text-amber-400">Les mots de passe ne correspondent pas</p>
-      )}
+
       {error && <p className="text-xs text-red-400">{error}</p>}
       <button
         onClick={() => mutation.mutate()}
         disabled={!canSubmit || mutation.isPending}
         className="btn-primary w-full py-2 text-sm disabled:opacity-40"
       >
-        {mutation.isPending ? 'Sauvegarde...' : 'Enregistrer'}
+        {mutation.isPending ? 'Enregistrement...' : 'Enregistrer'}
       </button>
     </div>
   );
@@ -548,8 +510,7 @@ export default function AdminProfile() {
       {/* ── Sécurité / compte ── */}
       <Section title="Compte" icon={Shield} color="blue">
         <div>
-          <ChangeEmailRow user={user} refreshUser={refreshUser} />
-          <ChangePasswordRow user={user} />
+          <AccountCredentialsRow user={user} refreshUser={refreshUser} />
         </div>
         {isGoogleUser && (
           <p className="text-xs text-ink-4 flex items-center gap-1.5 pt-1">

@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
+import { trackPageview } from './utils/analytics';
 
 import Layout from './components/layout/Layout';
 // Home reste en import statique : c'est la page d'atterrissage la plus
@@ -145,6 +146,25 @@ function RouteFallback() {
   );
 }
 
+// Suit les changements de route côté client pour GA4 (voir utils/analytics.js).
+// Le tout premier rendu est ignoré : le script gtag.js dans index.html envoie
+// déjà un page_view pour le chargement initial, donc le compter deux fois
+// gonflerait artificiellement les stats de la page d'entrée.
+function RouteTracker() {
+  const location = useLocation();
+  const isFirstRender = useRef(true);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    trackPageview(location.pathname + location.search);
+  }, [location.pathname, location.search]);
+
+  return null;
+}
+
 export default function App() {
   return (
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
@@ -154,6 +174,7 @@ export default function App() {
           <AppGate>
           <ToastProvider>
           <BrowserRouter>
+            <RouteTracker />
             <Suspense fallback={<RouteFallback />}>
             <Routes>
               {/* Routes publiques avec layout principal */}

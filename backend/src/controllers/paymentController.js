@@ -442,14 +442,14 @@ async function verifyPayment(req, res, next) {
       }
 
       if (payment?.metadata?.type === 'tipster') {
-        return res.json({ success: true, data: { confirmed: true, type: 'tipster', tipsterId: payment.metadata.tipsterId } });
+        return res.json({ success: true, data: { confirmed: true, type: 'tipster', tipsterId: payment.metadata.tipsterId, amount: payment.amount } });
       }
 
       const sub = await prisma.subscription.findUnique({
         where: { userId: req.user.id },
         include: { plan: true },
       });
-      return res.json({ success: true, data: { confirmed: true, plan: sub?.plan?.code || null } });
+      return res.json({ success: true, data: { confirmed: true, plan: sub?.plan?.code || null, amount: payment?.amount } });
     }
 
     // Mode réel : vérifie si le paiement est complété
@@ -463,13 +463,13 @@ async function verifyPayment(req, res, next) {
 
     if (payment.status === 'COMPLETED') {
       if (payment.metadata?.type === 'tipster') {
-        return res.json({ success: true, data: { confirmed: true, type: 'tipster', tipsterId: payment.metadata.tipsterId } });
+        return res.json({ success: true, data: { confirmed: true, type: 'tipster', tipsterId: payment.metadata.tipsterId, amount: payment.amount } });
       }
       const sub = await prisma.subscription.findUnique({
         where: { userId: req.user.id },
         include: { plan: true },
       });
-      return res.json({ success: true, data: { confirmed: true, plan: sub?.plan?.code || null } });
+      return res.json({ success: true, data: { confirmed: true, plan: sub?.plan?.code || null, amount: payment.amount } });
     }
 
     return res.json({ success: true, data: { confirmed: false, status: payment.status } });

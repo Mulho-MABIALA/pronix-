@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Gift } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { trackEvent } from '../utils/analytics';
 
 // Extrait le message le plus utile d'une erreur API : priorité au premier
 // message de validation par champ (ex: "Le mot de passe doit contenir une
@@ -44,7 +45,10 @@ export default function Register() {
     try {
       const user = await loginWithGoogle(credential, ageConfirmed);
       const isNewAccount = user.profile?.onboardingDone === false;
-      if (isNewAccount) registerReferralIfAny();
+      if (isNewAccount) {
+        registerReferralIfAny();
+        trackEvent('sign_up', { method: 'google' });
+      }
       navigate(isNewAccount ? '/onboarding' : '/');
     } catch (err) {
       setError(extractErrorMessage(err, t('errors.serverError')));
@@ -68,6 +72,7 @@ export default function Register() {
     try {
       await register(form.email, form.password, form.username, undefined, undefined, ageConfirmed);
       registerReferralIfAny();
+      trackEvent('sign_up', { method: 'email' });
       navigate('/onboarding');
     } catch (err) {
       setError(extractErrorMessage(err, t('errors.serverError')));

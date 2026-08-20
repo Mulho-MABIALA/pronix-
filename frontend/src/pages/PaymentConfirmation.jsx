@@ -5,6 +5,7 @@ import { CheckCircle, XCircle, Loader } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { hapticImpact } from '../utils/haptics';
+import { trackEvent } from '../utils/analytics';
 
 const MAX_ATTEMPTS = 12;  // 12 × 2s = 24 secondes max
 const POLL_INTERVAL = 2000;
@@ -14,6 +15,7 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
   const [params] = useSearchParams();
   const { refreshUser } = useAuth();
   const [status, setStatus] = useState(isErrorPage ? 'error' : 'loading');
+  const [confirmedData, setConfirmedData] = useState(null);
   const attemptsRef = useRef(0);
   const timerRef = useRef(null);
 
@@ -34,7 +36,10 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
 
         if (data.data?.confirmed) {
           await refreshUser();
-          if (!cancelled) setStatus('success');
+          if (!cancelled) {
+            setConfirmedData(data.data);
+            setStatus('success');
+          }
           return;
         }
       } catch {
@@ -66,8 +71,21 @@ export default function PaymentConfirmation({ error: isErrorPage = false }) {
 
   // Moment fort — paiement confirmé, un seul déclenchement par arrivée à 'success'.
   useEffect(() => {
-    if (status === 'success') hapticImpact();
-  }, [status]);
+    if (status !== 'success') return;
+    hapticImpact();
+
+    // Conversion GA4 — sert à mesurer le ROI par canal (utm_source/campaign)
+    // sur le budget pub du plan de médiatisation. Pas de montant disponible
+    // pour l'accès direct sans ref (confirmedData reste null) — pas grave,
+    // ce cas ne vient jamais d'un lien de paiement traçable de toute façon.
+    if (confirmedData?.amount) {
+      trackEvent(confirmedData.type === 'tipster' ? 'purchase_tipster' : 'purchase_subscription', {
+        currency: 'XOF',
+        value: confirmedData.amount,
+        plan: confirmedData.plan || undefined,
+      });
+    }
+  }, [status, confirmedData]);
 
   if (status === 'loading') {
     return (

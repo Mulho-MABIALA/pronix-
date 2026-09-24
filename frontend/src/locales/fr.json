@@ -441,6 +441,18 @@
     }
   },
   "subscription": {
+    "dailyPass": {
+      "title": "Pass Jour",
+      "kicker": "Pass Jour · sans engagement",
+      "subtitle": "Juste pour aujourd'hui ? Tout le Premium pendant 24h.",
+      "details": "Tous les pronostics, analyses IA et outils. Aucun renouvellement automatique.",
+      "cta": "Prendre le Pass Jour · {{price}} FCFA",
+      "ctaExtend": "Prolonger de 24h",
+      "activeUntil": "Pass actif jusqu'à {{date}}",
+      "compare": "7 Pass Jour = {{sevenPasses}} FCFA · l'abonnement Hebdo = {{weekly}} FCFA",
+      "upsell": "Tu as pris {{count}} Pass Jour cette semaine ({{spent}} FCFA). L'abonnement Hebdo à {{weekly}} FCFA te donne 7 jours complets pour moins cher.",
+      "upsellCta": "Voir l'abonnement Hebdo"
+    },
     "pageBadge": "Propulsé par IA + données temps réel",
     "title": "Passez au niveau supérieur",
     "titleHighlight": "avec les vraies données",

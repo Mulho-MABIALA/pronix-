@@ -34,6 +34,9 @@ async function checkExpiringSubscriptionsUnsafe() {
       where: {
         status: 'ACTIVE',
         endDate: { gte: targetDate, lt: nextDay },
+        // Pas de rappel « votre abonnement expire » pour un Pass Jour : il
+        // dure 24h par nature, le rappel J-1/J0 arriverait pendant l'usage.
+        billingCycle: { not: 'DAILY' },
       },
       include: {
         user: { include: { profile: true } },

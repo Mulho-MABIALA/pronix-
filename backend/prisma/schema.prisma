@@ -24,6 +24,7 @@ enum SubStatus {
 }
 
 enum BillingCycle {
+  DAILY   // Pass Jour : accès Premium 24h, paiement unique (pas de renouvellement)
   WEEKLY
   MONTHLY
   YEARLY
@@ -304,6 +305,7 @@ model Plan {
   id           String   @id @default(uuid())
   code         String   @unique // FREE, PREMIUM, PRO
   displayName  String
+  priceDaily   Int      @default(0) // Pass Jour 24h, en FCFA — 0 = formule non proposée
   priceWeekly  Int      @default(0) // en FCFA — 0 tant que non configuré (plan existant)
   priceMonthly Int      // en FCFA (0 pour FREE)
   priceYearly  Int      // en FCFA

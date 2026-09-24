@@ -103,7 +103,12 @@ export function AuthProvider({ children }) {
 
   const refreshUser = loadUser;
 
-  const userPlan = user?.subscription?.plan?.code || 'FREE';
+  // Même règle que le backend (middleware/subscription.js isSubscriptionLive) :
+  // un abonnement échu n'ouvre plus l'accès, même si le cron quotidien ne l'a
+  // pas encore passé en EXPIRED (indispensable pour le Pass Jour 24h).
+  const sub = user?.subscription;
+  const subLive = !!sub && sub.status === 'ACTIVE' && (!sub.endDate || new Date(sub.endDate) > new Date());
+  const userPlan = (subLive && sub.plan?.code) || 'FREE';
 
   // Essai gratuit 7 jours après inscription
   const trialActive = !!(user?.trialEndsAt && new Date(user.trialEndsAt) > new Date());

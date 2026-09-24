@@ -441,6 +441,18 @@
     }
   },
   "subscription": {
+    "dailyPass": {
+      "title": "Day Pass",
+      "kicker": "Day Pass · no commitment",
+      "subtitle": "Just for today? Full Premium for 24h.",
+      "details": "All predictions, AI analysis and tools. No automatic renewal.",
+      "cta": "Get the Day Pass · {{price}} FCFA",
+      "ctaExtend": "Extend by 24h",
+      "activeUntil": "Pass active until {{date}}",
+      "compare": "7 Day Passes = {{sevenPasses}} FCFA · Weekly plan = {{weekly}} FCFA",
+      "upsell": "You've bought {{count}} Day Passes this week ({{spent}} FCFA). The Weekly plan at {{weekly}} FCFA gives you 7 full days for less.",
+      "upsellCta": "See the Weekly plan"
+    },
     "pageBadge": "Powered by AI + real-time data",
     "title": "Level up",
     "titleHighlight": "with real data",

@@ -21,28 +21,91 @@ const { notifyAdmin } = require('../services/adminNotificationService');
 // n'est pas configuré pour ce plan).
 function getPlanPrice(plan, billingCycle) {
   if (plan.code === 'LIFETIME') return plan.priceMonthly;
+  if (billingCycle === 'DAILY') return plan.priceDaily;
   if (billingCycle === 'WEEKLY') return plan.priceWeekly;
   if (billingCycle === 'YEARLY') return plan.priceYearly;
   return plan.priceMonthly;
 }
 
+// Cycles acceptés à l'initiation d'un paiement. Le Pass Jour (DAILY) n'est
+// proposé qu'en Mobile Money FCFA (SenePay) — pas sur les processeurs carte /
+// devise étrangère, où un montant de 300 FCFA (~0,46 €) n'a pas de sens.
+const BILLING_CYCLES = ['DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY'];
+const CARD_BILLING_CYCLES = ['WEEKLY', 'MONTHLY', 'YEARLY'];
+
+// Montant minimum accepté par SenePay (cf. doc api.sene-pay.com). Protège aussi
+// contre une formule dont le prix n'est pas configuré (0 FCFA en base).
+const MIN_PAYMENT_XOF = 200;
+
 // ─── Helper : libellé du cycle de facturation (pour descriptions paiement) ────
 function billingLabel(billingCycle, lowercase = false) {
-  const label = billingCycle === 'WEEKLY' ? 'Hebdomadaire' : billingCycle === 'YEARLY' ? 'Annuel' : 'Mensuel';
-  return lowercase ? label.toLowerCase() : label;
+  const label = billingCycle === 'DAILY' ? 'Pass Jour'
+    : billingCycle === 'WEEKLY' ? 'Hebdomadaire'
+    : billingCycle === 'YEARLY' ? 'Annuel'
+    : 'Mensuel';
+  return lowercase && billingCycle !== 'DAILY' ? label.toLowerCase() : label;
+}
+
+// Refuse un achat qui n'aurait aucun sens pour un titulaire Lifetime actif
+// (il a déjà tout, à vie) — évite aussi d'écraser son accès à vie.
+async function assertNotLifetime(userId) {
+  const sub = await prisma.subscription.findUnique({ where: { userId }, include: { plan: true } });
+  if (sub?.status === 'ACTIVE' && sub.plan?.code === 'LIFETIME') {
+    throw new AppError('Vous avez déjà un accès Lifetime à vie.', 409, 'ALREADY_LIFETIME');
+  }
+}
+
+const LIFETIME_END = new Date('2099-12-31T23:59:59Z');
+const CYCLE_MS = {
+  DAILY:   24 * 60 * 60 * 1000,
+  WEEKLY:  7 * 24 * 60 * 60 * 1000,
+  MONTHLY: 30 * 24 * 60 * 60 * 1000,
+  YEARLY:  365 * 24 * 60 * 60 * 1000,
+};
+
+/**
+ * Calcule la nouvelle période d'abonnement après un paiement.
+ * - LIFETIME → fin au 31/12/2099 (avant : 30 jours seulement, car la durée
+ *   dépendait du cycle choisi dans l'UI — un client Lifetime perdait l'accès
+ *   au bout d'un mois).
+ * - Même plan encore actif → on PROLONGE depuis la fin actuelle (2 Pass Jour
+ *   d'affilée = 48h ; un renouvellement anticipé ne fait plus perdre les
+ *   jours restants).
+ * - Un Pass Jour pris pendant un abonnement long garde le cycle de celui-ci
+ *   (sinon les rappels d'expiration de l'abonnement seraient désactivés).
+ */
+function computeSubscriptionPeriod({ planCode, planId, billingCycle, existing, now = new Date() }) {
+  if (planCode === 'LIFETIME') {
+    return { endDate: LIFETIME_END, billingCycle };
+  }
+  const extending = existing
+    && existing.status === 'ACTIVE'
+    && existing.planId === planId
+    && existing.endDate
+    && new Date(existing.endDate) > now;
+  const base = extending ? new Date(existing.endDate) : now;
+  const endDate = new Date(base.getTime() + (CYCLE_MS[billingCycle] || CYCLE_MS.MONTHLY));
+  const cycle = extending && billingCycle === 'DAILY' && existing.billingCycle !== 'DAILY'
+    ? existing.billingCycle
+    : billingCycle;
+  return { endDate, billingCycle: cycle };
 }
 
 // ─── Helper : active/renouvelle l'abonnement après paiement validé ───────────
 async function activateSubscription(userId, planId, billingCycle, paymentId) {
-  const durationDays = billingCycle === 'WEEKLY' ? 7 : billingCycle === 'YEARLY' ? 365 : 30;
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() + durationDays);
+  const [plan, existing] = await Promise.all([
+    prisma.plan.findUnique({ where: { id: planId } }),
+    prisma.subscription.findUnique({ where: { userId } }),
+  ]);
+  const period = computeSubscriptionPeriod({
+    planCode: plan?.code, planId, billingCycle, existing,
+  });
 
   const [, payment] = await prisma.$transaction([
     prisma.subscription.upsert({
       where: { userId },
-      update: { planId, billingCycle, status: 'ACTIVE', endDate, updatedAt: new Date() },
-      create: { userId, planId, billingCycle, status: 'ACTIVE', endDate },
+      update: { planId, billingCycle: period.billingCycle, status: 'ACTIVE', endDate: period.endDate, updatedAt: new Date() },
+      create: { userId, planId, billingCycle: period.billingCycle, status: 'ACTIVE', endDate: period.endDate },
     }),
     prisma.payment.update({
       where: { id: paymentId },
@@ -61,15 +124,25 @@ async function activateSubscription(userId, planId, billingCycle, paymentId) {
     .catch(() => {});
 
   // Push de confirmation (fire & forget)
-  notifyUser(userId, {
-    title: '🎉 Bienvenue Premium !',
-    body:  `Votre abonnement ${billingLabel(billingCycle, true)} est maintenant actif. Profitez de tous les avantages !`,
-    url:   '/profil',
-    tag:   'subscription-confirmed',
-  }).catch(() => {});
+  notifyUser(userId, billingCycle === 'DAILY'
+    ? {
+        title: '⚡ Pass Jour activé !',
+        body:  'Premium débloqué pendant 24h : tous les pronostics, analyses IA et outils.',
+        url:   '/pronostics',
+        tag:   'subscription-confirmed',
+      }
+    : {
+        title: '🎉 Bienvenue Premium !',
+        body:  `Votre abonnement ${billingLabel(billingCycle, true)} est maintenant actif. Profitez de tous les avantages !`,
+        url:   '/profil',
+        tag:   'subscription-confirmed',
+      }).catch(() => {});
 
-  // Récompense de parrainage (si ce paiement est le 1er abonnement payant d'un filleul)
-  grantReferralReward(userId).catch(() => {});
+  // Récompense de parrainage (si ce paiement est le 1er abonnement payant d'un
+  // filleul). Pas pour un Pass Jour : 7 jours offerts au parrain contre un
+  // achat de 300 FCFA serait trop facile à exploiter (faux filleul). Le
+  // parrainage reste « en attente » et sera récompensé au 1er vrai abonnement.
+  if (billingCycle !== 'DAILY') grantReferralReward(userId).catch(() => {});
 
   // Commission partenaire/influenceur (si l'utilisateur est venu via un code partenaire)
   grantPartnerCommission(userId, paymentId).catch(() => {});
@@ -226,7 +299,7 @@ async function initiatePaytechPayment(req, res, next) {
   try {
     const schema = z.object({
       planId:       z.string().uuid(),
-      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(CARD_BILLING_CYCLES),
       // Devise étrangère optionnelle — absente/'XOF' = paiement FCFA classique
       // (Mobile Money + carte), sinon carte internationale uniquement.
       currency: z.enum(PAYTECH_CURRENCIES).optional(),
@@ -236,7 +309,12 @@ async function initiatePaytechPayment(req, res, next) {
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
 
+    await assertNotLifetime(req.user.id);
+
     const amountFcfa = getPlanPrice(plan, billingCycle);
+    if (!amountFcfa || amountFcfa < MIN_PAYMENT_XOF) {
+      throw new AppError('Cette formule n\'est pas disponible pour le moment', 400, 'PLAN_UNAVAILABLE');
+    }
     const chargedAmount   = currency ? currencyService.convertFromXof(amountFcfa, currency) : amountFcfa;
     const chargedCurrency = currency || 'XOF';
     if (currency && !chargedAmount) throw new AppError('Devise non supportée', 400, 'UNSUPPORTED_CURRENCY');
@@ -428,14 +506,22 @@ async function initiateSenepayPayment(req, res, next) {
   try {
     const schema = z.object({
       planId:       z.string().uuid(),
-      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
+      billingCycle: z.enum(BILLING_CYCLES),
     });
     const { planId, billingCycle } = schema.parse(req.body);
 
     const plan = await prisma.plan.findUnique({ where: { id: planId } });
     if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
+    // Pass Jour : Premium uniquement (Lifetime = paiement unique, pas de cycle)
+    if (billingCycle === 'DAILY' && plan.code !== 'PREMIUM') {
+      throw new AppError('Le Pass Jour concerne uniquement le Premium', 400, 'INVALID_PLAN');
+    }
+    await assertNotLifetime(req.user.id);
 
     const amount = getPlanPrice(plan, billingCycle);
+    if (!amount || amount < MIN_PAYMENT_XOF) {
+      throw new AppError('Cette formule n\'est pas disponible pour le moment', 400, 'PLAN_UNAVAILABLE');
+    }
     const orderReference = `SP-${Date.now()}-${req.user.id.slice(0, 8)}`;
 
     const payment = await prisma.payment.create({
@@ -975,4 +1061,5 @@ module.exports = {
   initiateFlutterwavePayment, handleFlutterwaveWebhook,
   initiateTipsterFlutterwavePayment,
   verifyPayment,
+  computeSubscriptionPeriod, // exporté pour les tests
 };

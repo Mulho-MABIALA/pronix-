@@ -441,6 +441,18 @@
     }
   },
   "subscription": {
+    "dailyPass": {
+      "title": "Passe Diário",
+      "kicker": "Passe Diário · sem compromisso",
+      "subtitle": "Só para hoje? Todo o Premium durante 24h.",
+      "details": "Todos os palpites, análises de IA e ferramentas. Sem renovação automática.",
+      "cta": "Obter o Passe Diário · {{price}} FCFA",
+      "ctaExtend": "Prolongar por 24h",
+      "activeUntil": "Passe ativo até {{date}}",
+      "compare": "7 Passes Diários = {{sevenPasses}} FCFA · Assinatura semanal = {{weekly}} FCFA",
+      "upsell": "Você comprou {{count}} Passes Diários esta semana ({{spent}} FCFA). A assinatura semanal a {{weekly}} FCFA dá 7 dias completos por menos.",
+      "upsellCta": "Ver a assinatura semanal"
+    },
     "pageBadge": "Feito com IA + dados em tempo real",
     "title": "Suba de nível",
     "titleHighlight": "com dados reais",

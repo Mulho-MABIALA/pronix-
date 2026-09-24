@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import {
   Shield, Lock, RefreshCw, Check, Star, Users, TrendingUp, Zap, AlertTriangle,
-  ShieldCheck, MessageCircle, Radio, HeartHandshake, ArrowRight,
+  ShieldCheck, MessageCircle, Radio, HeartHandshake, ArrowRight, Clock,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../services/api';
@@ -215,10 +215,80 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, pre
   );
 }
 
+/* ─── Pass Jour — Premium 24h en paiement unique ─────────────────────────────
+   Pensé pour le paiement « au besoin » (comme une recharge de crédit) : un
+   premier achat à faible montant, sans engagement. Prix réglé pour que
+   l'hebdo reste l'offre avantageuse des réguliers (7 × 300 > 1 800), ce qu'on
+   affiche honnêtement — et on le rappelle dès le 3e pass de la semaine. */
+function DailyPassCard({ plan, activePassEnd, passesThisWeek, onBuy, onSeeWeekly, loading }) {
+  const { t, i18n } = useTranslation();
+  const fmt = (n) => new Intl.NumberFormat(i18n.language).format(n);
+  const isActive = !!activePassEnd;
+  const showUpsell = passesThisWeek >= 2 && plan.priceWeekly > 0;
+
+  return (
+    <div className="bento-card border border-amber-500/30 bg-amber-500/[0.04] space-y-3">
+      <div className="flex items-center gap-4">
+        <div className="w-11 h-11 rounded-xl bg-amber-500/15 flex items-center justify-center shrink-0">
+          <Zap size={20} className="text-amber-400" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-amber-400">{t('subscription.dailyPass.kicker')}</p>
+          <p className="font-semibold text-ink-1 text-sm">{t('subscription.dailyPass.subtitle')}</p>
+          <p className="text-xs text-ink-4 mt-0.5">{t('subscription.dailyPass.details')}</p>
+        </div>
+        <div className="text-right shrink-0">
+          <p className="font-display font-bold text-2xl text-ink-1 leading-none">{fmt(plan.priceDaily)}</p>
+          <p className="text-[11px] text-ink-4 mt-1">FCFA / 24h</p>
+        </div>
+      </div>
+
+      {isActive && (
+        <p className="flex items-center gap-1.5 text-xs text-primary-400">
+          <Clock size={12} />
+          {t('subscription.dailyPass.activeUntil', { date: activePassEnd })}
+        </p>
+      )}
+
+      <button
+        onClick={onBuy}
+        disabled={loading}
+        className="w-full py-2.5 rounded-xl font-semibold text-sm bg-amber-500 hover:bg-amber-400 text-black transition-colors disabled:opacity-60"
+      >
+        {isActive ? t('subscription.dailyPass.ctaExtend') : t('subscription.dailyPass.cta', { price: fmt(plan.priceDaily) })}
+      </button>
+
+      {plan.priceWeekly > 0 && (
+        showUpsell ? (
+          <div className="rounded-xl bg-primary-500/[0.08] border border-primary-500/25 px-3 py-2.5 space-y-2">
+            <p className="text-xs text-ink-2 leading-relaxed">
+              {t('subscription.dailyPass.upsell', {
+                count: passesThisWeek,
+                spent: fmt(passesThisWeek * plan.priceDaily),
+                weekly: fmt(plan.priceWeekly),
+              })}
+            </p>
+            <button onClick={onSeeWeekly} className="text-xs font-semibold text-primary-400 hover:text-primary-300 inline-flex items-center gap-1">
+              {t('subscription.dailyPass.upsellCta')} <ArrowRight size={12} />
+            </button>
+          </div>
+        ) : (
+          <p className="text-[11px] text-ink-4 text-center">
+            {t('subscription.dailyPass.compare', {
+              sevenPasses: fmt(plan.priceDaily * 7),
+              weekly: fmt(plan.priceWeekly),
+            })}
+          </p>
+        )
+      )}
+    </div>
+  );
+}
+
 /* ─── Modale de confirmation — rappel jeu responsable juste avant paiement ─── */
 function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, onCancel, onConfirm, loading }) {
   const { t, i18n } = useTranslation();
-  const unitLabel = billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
+  const unitLabel = billingCycle === 'DAILY' ? t('subscription.dailyPass.title') : billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
   // Devise de paiement effective (peut différer de la devise détectée si elle
   // n'est pas supportée par PayTech, cf. payCurrency) → paiement carte via
   // PayTech, montant affiché directement dans cette devise. Sinon → FCFA
@@ -271,7 +341,7 @@ export default function Subscription() {
   const { t, i18n } = useTranslation();
   const dateLocale = i18n.language?.startsWith('en') ? enUS : fr;
   usePageMeta(t('subscription.metaTitle'), t('subscription.metaDesc'));
-  const { user, userPlan } = useAuth();
+  const { user, userPlan, hasPaidPlan } = useAuth();
   const navigate = useNavigate();
   // null = devise native FCFA (PayTech Mobile Money/carte locale) ; sinon
   // devise étrangère détectée (PayTech carte internationale), cf. useCurrency.js.
@@ -280,6 +350,20 @@ export default function Subscription() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [pendingPlan, setPendingPlan] = useState(null);
+  // Cycle de la commande en cours de confirmation — distinct du sélecteur
+  // (le Pass Jour s'achète sans toucher au sélecteur hebdo/mensuel/annuel).
+  const [pendingCycle, setPendingCycle] = useState('MONTHLY');
+
+  // Abonnement détaillé (même cache que la page Profil) : nombre de Pass Jour
+  // pris sur 7 jours glissants, pour la suggestion « l'hebdo vous aurait coûté
+  // moins cher ».
+  const { data: mySubRes } = useQuery({
+    queryKey: ['my-subscription'],
+    queryFn: () => api.get('/subscriptions/me').then((r) => r.data),
+    enabled: !!user,
+    staleTime: 60 * 1000,
+  });
+  const passesThisWeek = mySubRes?.data?.dailyPassesLast7Days || 0;
 
   const TRUST_BADGES = [
     { icon: Lock,      label: t('subscription.trust.secure') },
@@ -335,7 +419,20 @@ export default function Subscription() {
   const handleSelectPlan = (plan) => {
     if (!user) { navigate('/connexion'); return; }
     setError('');
+    setPendingCycle(billingCycle);
     setPendingPlan(plan);
+  };
+
+  const handleSelectDailyPass = () => {
+    if (!user) { navigate('/connexion'); return; }
+    setError('');
+    setPendingCycle('DAILY');
+    setPendingPlan(premiumPlan);
+  };
+
+  const handleSeeWeekly = () => {
+    setBillingCycle('WEEKLY');
+    document.getElementById('plans-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   // Devises réellement acceptées par PayTech (carte internationale) — cf.
@@ -343,6 +440,17 @@ export default function Subscription() {
   // liste (BRL/MXN/ZAR) retombe sur USD plutôt que de bloquer le paiement.
   const PAYTECH_CURRENCIES = ['EUR', 'USD', 'GBP', 'CAD'];
   const payCurrency = currency ? (PAYTECH_CURRENCIES.includes(currency) ? currency : 'USD') : null;
+
+  // Pass Jour en cours (fin affichée sur la carte, bouton « Prolonger »)
+  const sub = user?.subscription;
+  const activePassEnd = sub?.billingCycle === 'DAILY' && sub.status === 'ACTIVE'
+    && sub.endDate && new Date(sub.endDate) > new Date()
+    ? format(new Date(sub.endDate), 'EEEE HH:mm', { locale: dateLocale })
+    : null;
+  // Proposé en FCFA uniquement, aux gratuits / essais / titulaires d'un pass —
+  // pas à un abonné hebdo/mensuel/annuel/Lifetime qui a déjà l'accès.
+  const showDailyPass = !!premiumPlan && premiumPlan.priceDaily >= 200 && !payCurrency
+    && (!hasPaidPlan || !!activePassEnd);
 
   // Étape 2 : confirmation explicite dans la modale → initiation réelle du paiement.
   // FCFA (natif, cas immense majorité) → SenePay Mobile Money (remplace PayTech,
@@ -355,9 +463,10 @@ export default function Subscription() {
     setError('');
     setLoading(true);
     try {
-      const { data: res } = payCurrency
-        ? await api.post('/payments/paytech/init', { planId: pendingPlan.id, billingCycle, currency: payCurrency })
-        : await api.post('/payments/senepay/init', { planId: pendingPlan.id, billingCycle });
+      // Le Pass Jour n'existe qu'en FCFA (SenePay) — jamais via la carte en devise.
+      const { data: res } = payCurrency && pendingCycle !== 'DAILY'
+        ? await api.post('/payments/paytech/init', { planId: pendingPlan.id, billingCycle: pendingCycle, currency: payCurrency })
+        : await api.post('/payments/senepay/init', { planId: pendingPlan.id, billingCycle: pendingCycle });
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || t('subscription.paymentError'));
@@ -471,6 +580,19 @@ export default function Subscription() {
         ))}
       </div>
 
+      {/* Pass Jour — FCFA uniquement ; pas pour un abonné long déjà actif
+          (Lifetime, hebdo, mensuel, annuel) : seulement gratuit / essai / pass en cours */}
+      {showDailyPass && (
+        <DailyPassCard
+          plan={premiumPlan}
+          activePassEnd={activePassEnd}
+          passesThisWeek={passesThisWeek}
+          onBuy={handleSelectDailyPass}
+          onSeeWeekly={handleSeeWeekly}
+          loading={loading}
+        />
+      )}
+
       {error && (
         <div role="alert" className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3 text-center">
           {error}
@@ -478,13 +600,13 @@ export default function Subscription() {
       )}
 
       {/* Plans */}
-      <div className={`grid gap-5 ${plans.length >= 3 ? 'md:grid-cols-3' : plans.length === 2 ? 'md:grid-cols-2' : 'grid-cols-1 max-w-sm mx-auto'}`}>
+      <div id="plans-grid" className={`scroll-mt-4 grid gap-5 ${plans.length >= 3 ? 'md:grid-cols-3' : plans.length === 2 ? 'md:grid-cols-2' : 'grid-cols-1 max-w-sm mx-auto'}`}>
         {plans.map((plan) => (
           <PricingCard
             key={plan.id}
             plan={plan}
             billingCycle={billingCycle}
-            isCurrentPlan={userPlan === plan.code}
+            isCurrentPlan={userPlan === plan.code && !activePassEnd}
             onSelect={handleSelectPlan}
             loading={loading}
             premiumMonthlyPrice={premiumPlan?.priceMonthly}
@@ -545,15 +667,16 @@ export default function Subscription() {
       {pendingPlan && (
         <ConfirmPaymentModal
           plan={pendingPlan}
-          billingCycle={billingCycle}
+          billingCycle={pendingCycle}
           price={
             pendingPlan.code === 'LIFETIME'
               ? pendingPlan.priceMonthly
-              : billingCycle === 'YEARLY' ? pendingPlan.priceYearly
-              : billingCycle === 'WEEKLY' ? pendingPlan.priceWeekly
+              : pendingCycle === 'DAILY' ? pendingPlan.priceDaily
+              : pendingCycle === 'YEARLY' ? pendingPlan.priceYearly
+              : pendingCycle === 'WEEKLY' ? pendingPlan.priceWeekly
               : pendingPlan.priceMonthly
           }
-          currency={payCurrency}
+          currency={pendingCycle === 'DAILY' ? null : payCurrency}
           formatIn={formatIn}
           loading={loading}
           onCancel={() => setPendingPlan(null)}

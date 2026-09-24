@@ -14,9 +14,19 @@ function isInTrial(user) {
 
 // Retourne le code plan actif de l'utilisateur authentifié
 // Pendant l'essai 7 jours, l'utilisateur est traité comme PREMIUM
+// Un abonnement n'est valable que tant que endDate n'est pas dépassée. Le cron
+// checkSubscriptions ne passe les abonnements en EXPIRED qu'une fois par jour
+// (8h) : sans ce contrôle, un Pass Jour 24h acheté à 9h restait actif jusqu'au
+// lendemain 8h suivant l'échéance (~47h), et un abonnement hebdo/mensuel
+// jusqu'à 24h de trop. endDate null = pas d'échéance (plan FREE).
+function isSubscriptionLive(sub) {
+  if (!sub || sub.status !== 'ACTIVE') return false;
+  return !sub.endDate || new Date(sub.endDate) > new Date();
+}
+
 function getUserPlanCode(user) {
   const sub = user.subscription;
-  const paidPlan = (sub && sub.status === 'ACTIVE' && sub.plan?.code) || 'FREE';
+  const paidPlan = (isSubscriptionLive(sub) && sub.plan?.code) || 'FREE';
   if (paidPlan !== 'FREE') return paidPlan;
   if (isInTrial(user)) return 'PREMIUM'; // essai actif → accès premium
   return 'FREE';
@@ -56,4 +66,4 @@ function attachPlan(req, res, next) {
   next();
 }
 
-module.exports = { requirePlan, attachPlan, getUserPlanCode, isInTrial };
+module.exports = { requirePlan, attachPlan, getUserPlanCode, isInTrial, isSubscriptionLive };

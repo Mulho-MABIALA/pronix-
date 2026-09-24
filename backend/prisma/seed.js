@@ -105,7 +105,7 @@ async function main() {
       ],
     },
     {
-      code: 'PREMIUM', displayName: 'Premium', priceWeekly: 1800, priceMonthly: 5150, priceYearly: 49000, sortOrder: 1,
+      code: 'PREMIUM', displayName: 'Premium', priceDaily: 300, priceWeekly: 1800, priceMonthly: 5150, priceYearly: 49000, sortOrder: 1,
       features: [
         'Tout du plan Gratuit',
         'Pronostics IA illimités',
@@ -133,7 +133,7 @@ async function main() {
     // paymentController.js:22 et Subscription.jsx:96) — priceWeekly/Yearly
     // ne sont pas utilisés pour ce plan mais restent à 0 pour rester valides.
     {
-      code: 'LIFETIME', displayName: 'Lifetime', priceWeekly: 0, priceMonthly: 175000, priceYearly: 0, sortOrder: 2,
+      code: 'LIFETIME', displayName: 'Lifetime', priceDaily: 0, priceWeekly: 0, priceMonthly: 175000, priceYearly: 0, sortOrder: 2,
       features: [
         'Tout du plan Premium',
         'Accès à vie — paiement unique',

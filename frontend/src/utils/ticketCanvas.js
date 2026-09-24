@@ -15,7 +15,7 @@ function proxiedLogoUrl(url) {
 // Précharge un logo (via le proxy) en HTMLImageElement. Résout `null` en cas
 // d'échec (image manquante, timeout...) plutôt que de rejeter — un logo absent
 // ne doit jamais empêcher la génération du ticket.
-function loadLogo(url) {
+export function loadLogo(url) {
   const proxied = proxiedLogoUrl(url);
   if (!proxied) return Promise.resolve(null);
   return new Promise((resolve) => {
@@ -24,6 +24,18 @@ function loadLogo(url) {
     img.onerror = () => resolve(null);
     setTimeout(() => resolve(null), 5000);
     img.src = proxied;
+  });
+}
+
+// Logo fpronix servi par le frontend lui-même (public/logo-circle.png) —
+// même origine, pas besoin du proxy. Résout null en cas d'échec.
+export function loadBrandLogo() {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload  = () => resolve(img);
+    img.onerror = () => resolve(null);
+    setTimeout(() => resolve(null), 5000);
+    img.src = '/logo-circle.png';
   });
 }
 
@@ -43,7 +55,7 @@ function drawTeamFallback(ctx, name, cx, cy, r) {
   ctx.textBaseline = 'alphabetic';
 }
 
-function drawTeamLogo(ctx, img, name, x, sizeCenterY, size) {
+export function drawTeamLogo(ctx, img, name, x, sizeCenterY, size) {
   const r = size / 2;
   const cx = x + r;
   if (img) {
@@ -74,7 +86,7 @@ async function preloadTicketLogos(rows) {
 
 // Tronque un texte avec "…" pour qu'il tienne dans maxWidth (évite le
 // chevauchement avec le badge de pick à droite sur les noms d'équipe longs).
-function fitText(ctx, text, maxWidth) {
+export function fitText(ctx, text, maxWidth) {
   if (ctx.measureText(text).width <= maxWidth) return text;
   let truncated = text;
   while (truncated.length > 1 && ctx.measureText(`${truncated}…`).width > maxWidth) {
@@ -83,7 +95,7 @@ function fitText(ctx, text, maxWidth) {
   return `${truncated}…`;
 }
 
-function roundRect(ctx, x, y, w, h, r) {
+export function roundRect(ctx, x, y, w, h, r) {
   ctx.beginPath();
   ctx.moveTo(x + r, y);
   ctx.lineTo(x + w - r, y);
@@ -110,7 +122,7 @@ const RESULT_TEXT = { WIN: '#2ec16a',   LOSS: '#f87171',   VOID: '#9ca3af' };
  *   du pick (Gagné/Perdu/Remboursé/En attente) via `legResult`.
  */
 export async function drawTicketCanvas(rows, totalOdds, t) {
-  const logoMap = await preloadTicketLogos(rows);
+  const [logoMap, brandLogo] = await Promise.all([preloadTicketLogos(rows), loadBrandLogo()]);
   const getLogo = (url) => (url ? logoMap.get(url) || null : null);
 
   const W = 640;
@@ -136,14 +148,19 @@ export async function drawTicketCanvas(rows, totalOdds, t) {
   ctx.fillStyle = '#1aa656';
   ctx.fillRect(0, 0, W, 4);
 
-  // Logo + titre
-  ctx.fillStyle = '#1aa656';
-  roundRect(ctx, 16, 16, 32, 32, 8);
-  ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 14px system-ui';
-  ctx.textAlign = 'center';
-  ctx.fillText('SF', 32, 37);
+  // Logo + titre (logo réel fpronix, même origine → ne "tainte" pas le canvas ;
+  // repli sur un carré vert si l'image ne charge pas)
+  if (brandLogo) {
+    ctx.drawImage(brandLogo, 16, 16, 32, 32);
+  } else {
+    ctx.fillStyle = '#1aa656';
+    roundRect(ctx, 16, 16, 32, 32, 8);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 14px system-ui';
+    ctx.textAlign = 'center';
+    ctx.fillText('fp', 32, 37);
+  }
 
   ctx.fillStyle = '#ffffff';
   ctx.font = 'bold 16px system-ui';

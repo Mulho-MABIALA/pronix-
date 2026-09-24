@@ -252,6 +252,55 @@
     "disclaimerAuto": "Ces pronostics sont générés automatiquement. Ils ne constituent pas un conseil financier. Jouez de façon responsable."
   },
   "matchDetail": {
+    "shareImage": {
+      "button": "Partager l'image",
+      "pickTitle": "Pronostic fpronix",
+      "picks": {
+        "1": "Victoire {{home}}",
+        "2": "Victoire {{away}}",
+        "12": "Pas de match nul",
+        "X": "Match nul",
+        "over25": "Plus de 2,5 buts",
+        "over15": "Plus de 1,5 but",
+        "over35": "Plus de 3,5 buts",
+        "under25": "Moins de 2,5 buts",
+        "btts": "Les 2 équipes marquent",
+        "nobtts": "Une équipe ne marque pas",
+        "1X": "{{home}} ou nul",
+        "X2": "Nul ou {{away}}"
+      },
+      "confidence": {
+        "high": "Confiance élevée",
+        "medium": "Confiance moyenne",
+        "low": "Confiance faible"
+      },
+      "likelyScore": "Score le plus probable : {{score}} ({{prob}}%)",
+      "noPick": "Analyse complète disponible",
+      "noPickSub": "Probabilités, forme et stats sur fpronix",
+      "cta": "Analyse gratuite sur fpronix.com",
+      "disclaimer": "Statistiques à titre informatif. Aucun gain garanti. 18+ · Jouez de manière responsable.",
+      "shareText": "⚽ {{home}} vs {{away}} — le pronostic fpronix 👇\n{{url}}"
+    },
+    "weather": {
+      "title": "Météo au coup d'envoi · {{city}}",
+      "rain": "Risque de pluie",
+      "wind": "Vent",
+      "conditions": {
+        "clear": "Ensoleillé",
+        "cloudy": "Nuageux",
+        "fog": "Brouillard",
+        "rain": "Pluie",
+        "snow": "Neige",
+        "storm": "Orage"
+      },
+      "flags": {
+        "rain": "Terrain glissant",
+        "wind": "Vent fort",
+        "heat": "Forte chaleur",
+        "cold": "Grand froid"
+      },
+      "disclaimer": "Prévision Open-Meteo, prise en compte par l'IA comme facteur secondaire."
+    },
     "prediction": "Prédiction",
     "probabilities": "Probabilités",
     "scorelines": "Scénarios probables",
@@ -466,7 +515,7 @@
       "lifetimeOnce": "Paiement unique · Accès garanti à vie"
     },
     "payment": {
-      "title": "Paiement sécurisé via PayTech"
+      "title": "Paiement sécurisé via SenePay"
     },
     "confirmModal": {
       "title": "Confirmer l'abonnement",
@@ -489,7 +538,7 @@
       "q3": "Comment annuler mon abonnement ?",
       "a3": "Depuis votre profil, à tout moment, en un clic. Votre accès reste actif jusqu'à la fin de la période payée — aucun remboursement au prorata.",
       "q4": "Quels moyens de paiement sont acceptés ?",
-      "a4": "Wave, Orange Money, Free Money, MTN Mobile Money, et carte bancaire Visa/Mastercard — via PayTech, plateforme certifiée.",
+      "a4": "Wave, Orange Money, Free Money et E-Money — via SenePay, notre prestataire de paiement Mobile Money.",
       "q5": "Pourquoi payer s'il existe des groupes de pronostics gratuits ?",
       "a5": "Parce qu'un groupe gratuit ne prouve rien : personne ne vérifie s'il gagne vraiment, et les messages ratés disparaissent. Sur fpronix, le bilan de chaque pronostic est public et impossible à trafiquer — c'est ce que tu paies : la preuve, pas juste le tip."
     },
@@ -1576,7 +1625,7 @@
     "sections": {
       "s1": {
         "title": "1. Responsable du traitement",
-        "body": "fpronix SN, éditeur de la plateforme fpronix, est responsable du traitement de vos données personnelles. Contact :"
+        "body": "Ibrahim-Tresor MABIALA-MULHO, éditeur de la plateforme fpronix, est responsable du traitement de vos données personnelles. Contact :"
       },
       "s2": {
         "title": "2. Données collectées",
@@ -1595,7 +1644,7 @@
         "items": [
           "Gérer votre compte et votre abonnement",
           "Fournir les fonctionnalités de la Plateforme (pronostics, classements, statistiques)",
-          "Traiter vos paiements via notre prestataire PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, carte bancaire)",
+          "Traiter vos paiements via notre prestataire SenePay (Wave, Orange Money, Free Money, E-Money)",
           "Vous envoyer des notifications relatives à votre compte (si vous y avez consenti)",
           "Améliorer nos services et détecter les fraudes",
           "Respecter nos obligations légales"
@@ -1609,7 +1658,7 @@
         "title": "5. Partage des données",
         "intro": "Vos données ne sont pas vendues à des tiers. Elles peuvent être partagées avec :",
         "items": [
-          "Notre prestataire de paiement PayTech dans le cadre du traitement des transactions",
+          "Notre prestataire de paiement SenePay dans le cadre du traitement des transactions",
           "Nos hébergeurs techniques (serveurs sécurisés en Europe)",
           "Les autorités compétentes en cas d'obligation légale"
         ]
@@ -1655,7 +1704,7 @@
     "sections": {
       "s1": {
         "title": "1. Objet",
-        "body": "fpronix (ci-après \"la Plateforme\") est un service d'informations et de statistiques footballistiques édité par fpronix SN. Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la Plateforme par tout utilisateur (ci-après \"l'Utilisateur\")."
+        "body": "fpronix (ci-après \"la Plateforme\") est un service d'informations et de statistiques footballistiques édité par Ibrahim-Tresor MABIALA-MULHO. Les présentes Conditions Générales d'Utilisation (CGU) régissent l'accès et l'utilisation de la Plateforme par tout utilisateur (ci-après \"l'Utilisateur\")."
       },
       "s2": {
         "title": "2. Acceptation des conditions",
@@ -1679,7 +1728,7 @@
       },
       "s5": {
         "title": "5. Abonnement Premium",
-        "body1": "L'abonnement Premium est disponible en formule hebdomadaire, mensuelle ou annuelle (tarifs détaillés sur la page « Abonnement »), ainsi qu'en accès Lifetime à vie (paiement unique). Le paiement est traité via PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, carte bancaire Visa/Mastercard). Les abonnements récurrents sont renouvelés automatiquement et peuvent être résiliés à tout moment.",
+        "body1": "L'abonnement Premium est disponible en formule hebdomadaire, mensuelle ou annuelle (tarifs détaillés sur la page « Abonnement »), ainsi qu'en accès Lifetime à vie (paiement unique). Le paiement est traité via SenePay (Wave, Orange Money, Free Money, E-Money). Les abonnements ne sont pas renouvelés automatiquement : l'accès prend fin à l'échéance de la période payée, et l'Utilisateur peut renouveler manuellement s'il le souhaite.",
         "body2": "En cas de non-paiement, l'accès aux fonctionnalités Premium sera suspendu à la date d'expiration de l'abonnement en cours."
       },
       "s6": {
@@ -1708,6 +1757,81 @@
       "s11": {
         "title": "11. Contact",
         "body": "Pour toute question relative aux présentes CGU, vous pouvez nous contacter à l'adresse : "
+      }
+    }
+  },
+  "cgv": {
+    "title": "Conditions Générales de Vente",
+    "lastUpdated": "Dernière mise à jour : septembre 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Objet",
+        "body": "Les présentes Conditions Générales de Vente (CGV) régissent la vente des abonnements payants proposés sur fpronix (abonnement Premium et abonnements aux plans payants de tipsters), éditée par Ibrahim-Tresor MABIALA-MULHO. Elles complètent les Conditions Générales d'Utilisation."
+      },
+      "s2": {
+        "title": "2. Produits et tarifs",
+        "body1": "L'abonnement Premium est proposé en formule Hebdomadaire, Mensuelle, Annuelle, ou en accès Lifetime (paiement unique), aux tarifs affichés en FCFA sur la page « Abonnement » au moment de l'achat.",
+        "body2": "Les abonnements à un tipster sont fixés librement par chaque tipster et affichés sur son profil avant paiement. fpronix agit en tant que facilitateur technique de ces paiements."
+      },
+      "s3": {
+        "title": "3. Modalités de paiement",
+        "body": "Le paiement s'effectue via Mobile Money (Wave, Orange Money, Free Money, E-Money) par l'intermédiaire de notre prestataire SenePay, ou par carte bancaire internationale pour les devises étrangères. Le montant facturé correspond exactement au prix affiché avant confirmation ; aucun frais caché n'est ajouté par fpronix."
+      },
+      "s4": {
+        "title": "4. Accès au service",
+        "body": "L'accès aux fonctionnalités Premium ou au contenu du tipster est activé automatiquement et immédiatement dès confirmation du paiement par le prestataire de paiement. Aucune livraison physique n'est effectuée, le service étant entièrement numérique."
+      },
+      "s5": {
+        "title": "5. Droit de rétractation",
+        "body": "Conformément aux règles applicables à la fourniture de contenu numérique non fourni sur support matériel, l'Utilisateur qui demande l'accès immédiat au service dès le paiement renonce expressément à son droit de rétractation dès le début de l'exécution du service, ce qu'il reconnaît en validant son achat."
+      },
+      "s6": {
+        "title": "6. Résiliation et remboursement",
+        "body1": "Les abonnements (Hebdomadaire, Mensuel, Annuel) ne sont pas renouvelés automatiquement : aucun prélèvement n'a lieu sans nouvelle action de l'Utilisateur. L'accès prend fin à l'échéance de la période payée. Une période entamée n'est pas remboursée au prorata.",
+        "body2": "En cas d'erreur de paiement, de double débit ou de problème technique avéré empêchant l'accès au service payé, l'Utilisateur peut demander un remboursement en écrivant à support@fpronix.com, avec preuve de la transaction."
+      },
+      "s7": {
+        "title": "7. Réclamations",
+        "body": "Toute réclamation relative à une commande peut être adressée à support@fpronix.com. fpronix s'engage à y répondre dans un délai raisonnable."
+      },
+      "s8": {
+        "title": "8. Droit applicable",
+        "body": "Les présentes CGV sont régies par le droit sénégalais. Tout litige sera soumis aux juridictions compétentes de Dakar, Sénégal."
+      }
+    }
+  },
+  "mentionsLegales": {
+    "title": "Mentions légales",
+    "lastUpdated": "Dernière mise à jour : septembre 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Éditeur du site",
+        "body": "Le site fpronix.com est édité par Ibrahim-Tresor MABIALA-MULHO, entrepreneur individuel, domicilié à Dakar, Sénégal.",
+        "contact": "Contact : "
+      },
+      "s2": {
+        "title": "2. Directeur de la publication",
+        "body": "Ibrahim-Tresor MABIALA-MULHO."
+      },
+      "s3": {
+        "title": "3. Hébergement",
+        "body": "Le site est hébergé par Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Allemagne — www.hetzner.com."
+      },
+      "s4": {
+        "title": "4. Nature du service",
+        "body": "fpronix est un service d'information, de statistiques et d'analyses footballistiques. fpronix n'est pas un opérateur de paris sportifs : aucune mise n'est prise ni reçue sur la Plateforme."
+      },
+      "s5": {
+        "title": "5. Paiements",
+        "body": "Les paiements des abonnements sont traités par notre prestataire SenePay (Millennium Capital Invest LLC). fpronix ne collecte ni ne stocke aucune donnée de paiement (numéro Mobile Money, code, carte bancaire)."
+      },
+      "s6": {
+        "title": "6. Propriété intellectuelle",
+        "body": "L'ensemble des contenus du site (textes, logos, algorithmes, interface) est la propriété de l'éditeur. Toute reproduction sans autorisation préalable est interdite."
+      },
+      "s7": {
+        "title": "7. Documents associés",
+        "body": "Consultez également nos"
       }
     }
   },
@@ -1773,7 +1897,7 @@
         },
         "howToPay": {
           "q": "Comment payer l'abonnement Premium ?",
-          "a": "Nous acceptons Wave, Orange Money, Free Money, MTN Mobile Money et carte bancaire (Visa/Mastercard), tous traités via PayTech, notre prestataire de paiement. Rendez-vous sur la page « Abonnement » pour choisir votre méthode de paiement."
+          "a": "Nous acceptons Wave, Orange Money, Free Money et E-Money, traités via SenePay, notre prestataire de paiement. Rendez-vous sur la page « Abonnement » pour choisir votre méthode de paiement."
         },
         "cancelSub": {
           "q": "Puis-je annuler mon abonnement ?",
@@ -2054,6 +2178,8 @@
     "helpLink": "Besoin d'aide ?",
     "transparencyLink": "Transparence",
     "termsLink": "CGU",
+    "salesTermsLink": "CGV",
+    "legalNoticeLink": "Mentions légales",
     "privacyLink": "Politique de confidentialité",
     "faqLink": "FAQ",
     "newsletterLink": "Newsletter",

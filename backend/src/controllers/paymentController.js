@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid');
 const prisma = require('../config/database');
 const waveService = require('../services/waveService');
 const paytechService = require('../services/paytechService');
+const senepayService = require('../services/senepayService');
 const fedapayService = require('../services/fedapayService');
 const flutterwaveService = require('../services/flutterwaveService');
 const currencyService = require('../services/currencyService');
@@ -418,6 +419,185 @@ async function handlePaytechWebhook(req, res, next) {
   }
 }
 
+// ─── Initier un paiement SenePay (Mobile Money — remplace PayTech) ───────────
+// SenePay ne gère que le FCFA/devises locales (pas de carte bancaire ni de
+// devise étrangère pour l'instant) — contrairement à PayTech, aucun paramètre
+// `currency` ici. Le choix du pays (SN/BF/ML/CG/GA/TG) se fait sur la page
+// checkout hébergée de SenePay elle-même.
+async function initiateSenepayPayment(req, res, next) {
+  try {
+    const schema = z.object({
+      planId:       z.string().uuid(),
+      billingCycle: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
+    });
+    const { planId, billingCycle } = schema.parse(req.body);
+
+    const plan = await prisma.plan.findUnique({ where: { id: planId } });
+    if (!plan || plan.code === 'FREE') throw new AppError('Plan invalide', 400, 'INVALID_PLAN');
+
+    const amount = getPlanPrice(plan, billingCycle);
+    const orderReference = `SP-${Date.now()}-${req.user.id.slice(0, 8)}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:      req.user.id,
+        amount,
+        currency:    'XOF',
+        method:      'MOBILE_MONEY',
+        status:      'PENDING',
+        provider:    'senepay',
+        providerRef: orderReference,
+        metadata:    { planId, billingCycle },
+      },
+    });
+
+    const session = await senepayService.createCheckoutSession({
+      amount,
+      orderReference,
+      description: `Abonnement ${plan.displayName} — ${billingLabel(billingCycle)}`,
+      returnUrl:  `${env.FRONTEND_URL}/abonnement/confirmation?ref=${orderReference}`,
+      cancelUrl:  `${env.FRONTEND_URL}/abonnement/erreur?ref=${orderReference}`,
+      webhookUrl: `${env.BACKEND_URL}/api/payments/senepay/webhook`,
+      metadata:   { paymentId: payment.id, userId: req.user.id },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId: payment.id,
+        checkoutUrl: session.checkoutUrl,
+        transactionId: orderReference,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Initier un paiement SenePay pour s'abonner au plan payant d'un TIPSTER ──
+// Montant libre (plan.price défini par le tipster) — SenePay accepte un
+// `amount` arbitraire par session, pas de produit à prix fixe (contrairement
+// à Chariow, écarté pour cette raison). L'abonnement tipster reste donc actif.
+async function initiateTipsterSenepayPayment(req, res, next) {
+  try {
+    const schema = z.object({
+      tipsterId: z.string().uuid(),
+    });
+    const { tipsterId } = schema.parse(req.body);
+
+    if (tipsterId === req.user.id) {
+      throw new AppError('Vous ne pouvez pas vous abonner à vous-même', 400, 'SELF_SUBSCRIBE');
+    }
+
+    const plan = await prisma.tipsterPlan.findUnique({ where: { tipsterId } });
+    if (!plan || !plan.isActive) throw new AppError('Plan introuvable', 404, 'NOT_FOUND');
+
+    const existing = await prisma.tipsterSubscription.findUnique({
+      where: { subscriberId_planId: { subscriberId: req.user.id, planId: plan.id } },
+    });
+    if (existing && existing.status === 'ACTIVE' && existing.endDate && existing.endDate > new Date()) {
+      throw new AppError('Déjà abonné à ce tipster', 409, 'ALREADY_SUBSCRIBED');
+    }
+
+    const orderReference = `SPT-${Date.now()}-${req.user.id.slice(0, 8)}`;
+
+    const payment = await prisma.payment.create({
+      data: {
+        userId:      req.user.id,
+        amount:      plan.price,
+        currency:    'XOF',
+        method:      'MOBILE_MONEY',
+        status:      'PENDING',
+        provider:    'senepay',
+        providerRef: orderReference,
+        metadata:    { type: 'tipster', tipsterId, planId: plan.id },
+      },
+    });
+
+    const session = await senepayService.createCheckoutSession({
+      amount: plan.price,
+      orderReference,
+      description: `Abonnement tipster — ${plan.name}`,
+      returnUrl:  `${env.FRONTEND_URL}/abonnement/confirmation?ref=${orderReference}&type=tipster&tipsterId=${tipsterId}`,
+      cancelUrl:  `${env.FRONTEND_URL}/abonnement/erreur?ref=${orderReference}`,
+      webhookUrl: `${env.BACKEND_URL}/api/payments/senepay/webhook`,
+      metadata:   { paymentId: payment.id, userId: req.user.id, type: 'tipster', tipsterId },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        paymentId: payment.id,
+        checkoutUrl: session.checkoutUrl,
+        transactionId: orderReference,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── Webhook SenePay ───────────────────────────────────────────────────────────
+// req.body arrive en Buffer brut ici (express.raw() monté sur cette route
+// dans app.js, avant les parseurs JSON globaux) — nécessaire pour calculer le
+// HMAC sur les octets exacts envoyés par SenePay, comme pour le webhook Wave.
+async function handleSenepayWebhook(req, res) {
+  try {
+    const signature = req.headers['x-senepay-signature'];
+    if (!senepayService.verifyWebhookSignature(req.body, signature)) {
+      console.warn('[Webhook SenePay] Signature invalide');
+      return res.status(401).json({ error: 'Signature invalide' });
+    }
+
+    const rawPayload = JSON.parse(req.body.toString('utf8'));
+    const { event, orderReference, status, amount, transactionId } = senepayService.parseWebhookPayload(rawPayload);
+
+    if (event !== 'checkout.session.completed' || status !== 'Complete') {
+      return res.json({ received: true });
+    }
+
+    const payment = await prisma.payment.findFirst({
+      where: { providerRef: orderReference, status: 'PENDING', provider: 'senepay' },
+    });
+    if (!payment) return res.json({ received: true });
+
+    // Garde-fou : montant réellement payé doit couvrir le montant facturé
+    // (protection contre une manipulation côté client, cf. même contrôle sur
+    // les webhooks PayTech/Flutterwave).
+    if (Math.round(amount) < Math.round(payment.amount)) {
+      console.error(`[Webhook SenePay] Montant payé (${amount}) < attendu (${payment.amount}) — paymentId=${payment.id}`);
+      return res.json({ received: true });
+    }
+
+    // Claim atomique — voir commentaire détaillé dans handleWaveWebhook.
+    // SenePay peut renvoyer le même webhook plusieurs fois (retry sur non-200,
+    // jusqu'à ~3 jours) — sans ce verrou, deux requêtes concurrentes
+    // activeraient l'abonnement deux fois.
+    const claimed = await prisma.payment.updateMany({
+      where: { id: payment.id, status: 'PENDING' },
+      data:  { status: 'COMPLETED', transactionId },
+    });
+    if (claimed.count === 0) return res.json({ received: true });
+
+    try {
+      if (payment.metadata?.type === 'tipster') {
+        const { tipsterId, planId } = payment.metadata;
+        await activateTipsterSubscription(payment.userId, tipsterId, planId, payment.id);
+      } else {
+        const { planId, billingCycle } = payment.metadata;
+        await activateSubscription(payment.userId, planId, billingCycle, payment.id);
+      }
+    } catch (activationErr) {
+      console.error(`[Webhook SenePay] Échec activation après claim atomique — paymentId=${payment.id}:`, activationErr.message);
+    }
+
+    res.json({ received: true });
+  } catch (err) {
+    console.error('[Webhook SenePay] Erreur:', err.message);
+    res.status(500).json({ error: 'Erreur interne' });
+  }
+}
+
 // ─── Vérification du statut d'un paiement (polling côté client) ───────────────
 async function verifyPayment(req, res, next) {
   try {
@@ -789,6 +969,8 @@ module.exports = {
   initiateWavePayment, handleWaveWebhook,
   initiatePaytechPayment, handlePaytechWebhook,
   initiateTipsterPaytechPayment,
+  initiateSenepayPayment, handleSenepayWebhook,
+  initiateTipsterSenepayPayment,
   initiateFedapayPayment, handleFedapayWebhook,
   initiateFlutterwavePayment, handleFlutterwaveWebhook,
   initiateTipsterFlutterwavePayment,

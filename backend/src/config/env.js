@@ -34,6 +34,15 @@ const envSchema = z.object({
   // 'test' tant que le compte n'est pas validé en production par PayTech
   // (email à contact@paytech.sn, cf. doc) — sinon 'prod'.
   PAYTECH_ENV: z.enum(['test', 'prod']).optional(),
+  // SenePay (sene-pay.com) — agrégateur Mobile Money Sénégal/Afrique de
+  // l'Ouest/Centrale (Wave, Orange Money, Free Money, E-money, MTN, Moov,
+  // Airtel, T-Money — 6 pays). KYC individuel (pas de RCCM/NINEA requis) —
+  // remplace PayTech comme processeur principal FCFA. Pas de carte bancaire
+  // ni de devise étrangère pour l'instant (cf. doc api.sene-pay.com).
+  SENEPAY_API_KEY: z.string().optional(),        // pk_live_xxx (prod) ou pk_test_xxx (sandbox)
+  SENEPAY_API_SECRET: z.string().optional(),      // sk_live_xxx / sk_test_xxx
+  SENEPAY_WEBHOOK_SECRET: z.string().optional(),  // whsec_xxx — jamais le API_SECRET
+  SENEPAY_BASE_URL: z.string().default('https://api.sene-pay.com'),
   FEDAPAY_SECRET_KEY: z.string().optional(), // sk_live_xxx (prod) ou sk_sandbox_xxx (test)
   FEDAPAY_WEBHOOK_SECRET: z.string().optional(),
   // GeniusPay — DORMANT, retiré au profit de PayTech (processeur unique).

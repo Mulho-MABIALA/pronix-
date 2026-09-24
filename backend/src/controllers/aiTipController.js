@@ -2,6 +2,7 @@ const { z } = require('zod');
 const prisma = require('../config/database');
 const { generateMatchPrediction } = require('../services/claudeService');
 const footballApi = require('../services/footballApi');
+const { getMatchWeather } = require('../services/weatherService');
 const { AppError } = require('../middleware/errorHandler');
 const { getUserPlanCode } = require('../middleware/subscription');
 
@@ -136,12 +137,15 @@ async function generateAiTip(req, res, next) {
     const h2h = apiH2h?.length ? apiH2h : h2hMatches;
 
     // Appel Claude avec données enrichies
+    const weather = await getMatchWeather(match); // null si indisponible — jamais bloquant
+
     const prediction = await generateMatchPrediction({
       match,
       homeForm,
       awayForm,
       h2h,
       injuries,
+      weather,
     });
 
     res.json({

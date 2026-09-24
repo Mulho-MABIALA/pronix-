@@ -5,6 +5,8 @@ const {
   initiateWavePayment, handleWaveWebhook,
   initiatePaytechPayment, handlePaytechWebhook,
   initiateTipsterPaytechPayment,
+  initiateSenepayPayment, handleSenepayWebhook,
+  initiateTipsterSenepayPayment,
   initiateFedapayPayment, handleFedapayWebhook,
   initiateFlutterwavePayment, handleFlutterwaveWebhook,
   initiateTipsterFlutterwavePayment,
@@ -23,6 +25,7 @@ const paymentLimit = rateLimit({
 // Webhooks (sans authentification — appelés par les providers)
 router.post('/wave/webhook',       handleWaveWebhook);
 router.post('/paytech/webhook',    handlePaytechWebhook);
+router.post('/senepay/webhook',    handleSenepayWebhook);
 router.post('/fedapay/webhook',    handleFedapayWebhook);
 router.post('/flutterwave/webhook', handleFlutterwaveWebhook);
 
@@ -30,9 +33,11 @@ router.post('/flutterwave/webhook', handleFlutterwaveWebhook);
 router.use(authenticate);
 router.post('/wave/init',      paymentLimit, blockIfSelfExcluded, initiateWavePayment);
 router.post('/paytech/init',   paymentLimit, blockIfSelfExcluded, initiatePaytechPayment);
+router.post('/senepay/init',   paymentLimit, blockIfSelfExcluded, initiateSenepayPayment);
 router.post('/fedapay/init',   paymentLimit, blockIfSelfExcluded, initiateFedapayPayment);
 // Abonnement payant à un tipster (même provider PayTech, webhook partagé)
 router.post('/tipster/paytech/init', paymentLimit, blockIfSelfExcluded, initiateTipsterPaytechPayment);
+router.post('/tipster/senepay/init', paymentLimit, blockIfSelfExcluded, initiateTipsterSenepayPayment);
 // Flutterwave — carte internationale / devise étrangère (second processeur)
 router.post('/flutterwave/init',        paymentLimit, blockIfSelfExcluded, initiateFlutterwavePayment);
 router.post('/tipster/flutterwave/init', paymentLimit, blockIfSelfExcluded, initiateTipsterFlutterwavePayment);

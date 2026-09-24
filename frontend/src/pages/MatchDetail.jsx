@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
-import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square, Loader2 } from 'lucide-react';
+import { Lock, ChevronDown, Sparkles, Flag, X, CircleDot, ArrowLeftRight, Square, Loader2, ImageDown } from 'lucide-react';
 import ChatIA from '../components/match/ChatIA';
 import LiveAnalysis from '../components/match/LiveAnalysis';
 import LiveMarkets from '../components/match/LiveMarkets';
@@ -17,6 +17,7 @@ import Alert from '../components/ui/Alert';
 import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, getMock1X2 } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
+import { sharePredictionImage, hasShareablePrediction } from '../utils/predictionCanvas';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { addRecentlyViewed, getRecentlyViewed } from '../utils/recentlyViewed';
@@ -61,18 +62,87 @@ function ScorelineSection({ match }) {
   );
 }
 
+// ── Météo au coup d'envoi (Open-Meteo, cf. backend weatherService) ─────────
+const WEATHER_ICON = { clear: '☀️', cloudy: '☁️', fog: '🌫️', rain: '🌧️', snow: '❄️', storm: '⛈️' };
+
+function WeatherSection({ weather }) {
+  const { t } = useTranslation();
+  if (!weather) return null;
+
+  const badges = [
+    weather.flags?.rain && { key: 'rain', icon: '☔' },
+    weather.flags?.wind && { key: 'wind', icon: '💨' },
+    weather.flags?.heat && { key: 'heat', icon: '🥵' },
+    weather.flags?.cold && { key: 'cold', icon: '🥶' },
+  ].filter(Boolean);
+
+  return (
+    <section className="px-4 pb-1">
+      <div className="bento-card p-4 space-y-3">
+        <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider flex items-center gap-2">
+          <span className="w-1 h-3.5 rounded-full bg-sky-400 shrink-0" />
+          {t('matchDetail.weather.title', { city: weather.city })}
+        </h2>
+        <div className="flex items-center gap-4">
+          <span className="text-3xl" aria-hidden="true">{WEATHER_ICON[weather.condition] || '🌤️'}</span>
+          <div className="flex-1 grid grid-cols-3 gap-2 text-center">
+            <div>
+              <p className="font-display font-bold text-lg text-ink-1 tabular-nums">{weather.temperature}°C</p>
+              <p className="text-[11px] text-ink-4">{t(`matchDetail.weather.conditions.${weather.condition}`)}</p>
+            </div>
+            <div>
+              <p className="font-display font-bold text-lg text-ink-1 tabular-nums">
+                {weather.precipitationProbability != null ? `${weather.precipitationProbability}%` : '—'}
+              </p>
+              <p className="text-[11px] text-ink-4">{t('matchDetail.weather.rain')}</p>
+            </div>
+            <div>
+              <p className="font-display font-bold text-lg text-ink-1 tabular-nums">{weather.windSpeed} km/h</p>
+              <p className="text-[11px] text-ink-4">{t('matchDetail.weather.wind')}</p>
+            </div>
+          </div>
+        </div>
+        {badges.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {badges.map((b) => (
+              <span key={b.key} className="text-[11px] font-medium px-2 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-300">
+                {b.icon} {t(`matchDetail.weather.flags.${b.key}`)}
+              </span>
+            ))}
+          </div>
+        )}
+        <p className="text-xs text-ink-4">{t('matchDetail.weather.disclaimer')}</p>
+      </div>
+    </section>
+  );
+}
+
 // ── Probabilités 1X2 style Visifoot ─────────────────────────────────────────
 function ProbabilitySection({ match }) {
   const { t } = useTranslation();
   if (match.status !== 'SCHEDULED') return null;
-  const { home, draw, away, predictedHome, predictedAway } = getMock1X2(match.id);
+  // Vraies probabilités du modèle (match.predictions, calculées au sync) quand
+  // elles existent — même source que l'image de partage. Repli sur l'ancien
+  // affichage simulé uniquement si aucun calcul n'est disponible.
+  const p = match.predictions;
+  // (hors repli neutre aléatoire du backend, cf. hasShareablePrediction)
+  const hasReal = hasShareablePrediction(match) && [p?.home, p?.draw, p?.away].every((v) => typeof v === 'number' && v > 0);
+  const mock = getMock1X2(match.id);
+  const home = hasReal ? p.home : mock.home;
+  const draw = hasReal ? p.draw : mock.draw;
+  const away = hasReal ? p.away : mock.away;
+  const topScore = hasReal ? p.scorelines?.[0] : null;
+  const predictedHome = topScore ? topScore.homeGoals : (hasReal ? null : mock.predictedHome);
+  const predictedAway = topScore ? topScore.awayGoals : (hasReal ? null : mock.predictedAway);
 
   return (
     <section className="px-4 pb-1">
       <div className="bento-card p-4 space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider">{t('matchDetail.probabilities1x2')}</h2>
-          <span className="text-xs text-ink-4 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
+          {!hasReal && (
+            <span className="text-xs text-ink-4 bg-surface-700 px-2 py-0.5 rounded-full">{t('matchDetail.simulatedIndicative')}</span>
+          )}
         </div>
 
         {/* Gros chiffres */}
@@ -99,12 +169,14 @@ function ProbabilitySection({ match }) {
         </div>
 
         {/* Score prédit */}
+        {predictedHome != null && (
         <div className="flex items-center justify-center gap-3 border-t border-surface-700 pt-3">
           <span className="text-xs text-ink-3">{t('matchDetail.predictedScore')}</span>
           <span className="font-display font-bold text-xl text-ink-2 tabular-nums">
             {predictedHome} — {predictedAway}
           </span>
         </div>
+        )}
       </div>
     </section>
   );
@@ -514,6 +586,7 @@ export default function MatchDetail() {
   const [isAiGenerated, setIsAiGenerated] = useState(false);
   const [reportingTipId, setReportingTipId] = useState(null);
   const [reportedTips,   setReportedTips]   = useState(new Set());
+  const [sharingImage,   setSharingImage]   = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ['match', id],
@@ -653,6 +726,18 @@ export default function MatchDetail() {
     match.status === 'LIVE' ? `🔴 ${t('matchDetail.liveNow').toUpperCase()}` : match.status === 'FINISHED' ? t('matchDetail.finished') : format(new Date(match.scheduledAt), 'HH:mm dd MMM')
   }\n\nhttps://fpronix.com/matchs/${id}`;
 
+  async function handleShareImage() {
+    setSharingImage(true);
+    try {
+      await sharePredictionImage(match, t, { dateLocale, url: `https://fpronix.com/matchs/${id}` });
+    } catch {
+      // Dernier recours : partage texte classique
+      window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener');
+    } finally {
+      setSharingImage(false);
+    }
+  }
+
   return (
     <div className="max-w-2xl mx-auto animate-fade-in">
 
@@ -663,14 +748,27 @@ export default function MatchDetail() {
             <span className="comp-label">{match.competition?.name}</span>
             <MatchStatusBadge status={match.status} />
           </div>
-          <button
-            onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener')}
-            className="flex items-center gap-1.5 text-xs text-green-500 hover:text-green-400 transition-colors"
-            aria-label={t('matchDetail.shareWhatsapp')}
-          >
-            <WhatsAppIcon className="w-4 h-4" />
-            <span className="hidden sm:inline">{t('matchDetail.share')}</span>
-          </button>
+          <div className="flex items-center gap-3">
+            {isScheduled && (
+              <button
+                onClick={handleShareImage}
+                disabled={sharingImage}
+                className="flex items-center gap-1.5 text-xs font-semibold text-white bg-green-600 hover:bg-green-500 disabled:opacity-60 px-3 py-1.5 rounded-full transition-colors"
+                aria-label={t('matchDetail.shareImage.button')}
+              >
+                {sharingImage ? <Loader2 size={14} className="animate-spin" /> : <ImageDown size={14} />}
+                {t('matchDetail.shareImage.button')}
+              </button>
+            )}
+            <button
+              onClick={() => window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank', 'noopener')}
+              className="flex items-center gap-1.5 text-xs text-green-500 hover:text-green-400 transition-colors"
+              aria-label={t('matchDetail.shareWhatsapp')}
+            >
+              <WhatsAppIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">{t('matchDetail.share')}</span>
+            </button>
+          </div>
         </div>
 
         {/* Équipes + Score */}
@@ -726,6 +824,9 @@ export default function MatchDetail() {
 
       {/* ── Probabilités 1X2 ──────────────────────────────────────────── */}
       <ProbabilitySection match={match} />
+
+      {/* ── Météo au coup d'envoi ─────────────────────────────────────── */}
+      <WeatherSection weather={match.weather} />
 
       {/* ── Scénarios de score ────────────────────────────────────────── */}
       <ScorelineSection match={match} />

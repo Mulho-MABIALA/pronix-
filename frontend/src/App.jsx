@@ -38,6 +38,8 @@ const Machine = lazy(() => import('./pages/Machine'));
 const StatsLigues = lazy(() => import('./pages/StatsLigues'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 const CGU = lazy(() => import('./pages/CGU'));
+const CGV = lazy(() => import('./pages/CGV'));
+const MentionsLegales = lazy(() => import('./pages/MentionsLegales'));
 const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Transparency = lazy(() => import('./pages/Transparency'));
@@ -197,6 +199,8 @@ export default function App() {
                 <Route path="/outils/stats-ligues" element={<StatsLigues />} />
                 <Route path="/profil" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
                 <Route path="/cgu" element={<CGU />} />
+                <Route path="/cgv" element={<CGV />} />
+                <Route path="/mentions-legales" element={<MentionsLegales />} />
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/transparence" element={<Transparency />} />

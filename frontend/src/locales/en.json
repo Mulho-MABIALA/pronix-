@@ -252,6 +252,55 @@
     "disclaimerAuto": "These predictions are generated automatically. This is not financial advice. Please gamble responsibly."
   },
   "matchDetail": {
+    "shareImage": {
+      "button": "Share image",
+      "pickTitle": "fpronix prediction",
+      "picks": {
+        "1": "{{home}} to win",
+        "2": "{{away}} to win",
+        "12": "No draw",
+        "X": "Draw",
+        "over25": "Over 2.5 goals",
+        "over15": "Over 1.5 goals",
+        "over35": "Over 3.5 goals",
+        "under25": "Under 2.5 goals",
+        "btts": "Both teams to score",
+        "nobtts": "Both teams to score: No",
+        "1X": "{{home}} or draw",
+        "X2": "Draw or {{away}}"
+      },
+      "confidence": {
+        "high": "High confidence",
+        "medium": "Medium confidence",
+        "low": "Low confidence"
+      },
+      "likelyScore": "Most likely score: {{score}} ({{prob}}%)",
+      "noPick": "Full analysis available",
+      "noPickSub": "Probabilities, form and stats on fpronix",
+      "cta": "Free analysis on fpronix.com",
+      "disclaimer": "Stats for information only. No guaranteed winnings. 18+ · Play responsibly.",
+      "shareText": "⚽ {{home}} vs {{away}} — the fpronix prediction 👇\n{{url}}"
+    },
+    "weather": {
+      "title": "Kickoff weather · {{city}}",
+      "rain": "Chance of rain",
+      "wind": "Wind",
+      "conditions": {
+        "clear": "Sunny",
+        "cloudy": "Cloudy",
+        "fog": "Fog",
+        "rain": "Rain",
+        "snow": "Snow",
+        "storm": "Storm"
+      },
+      "flags": {
+        "rain": "Slippery pitch",
+        "wind": "Strong wind",
+        "heat": "Extreme heat",
+        "cold": "Freezing cold"
+      },
+      "disclaimer": "Open-Meteo forecast, used by the AI as a secondary factor."
+    },
     "prediction": "Prediction",
     "probabilities": "Probabilities",
     "scorelines": "Likely scorelines",
@@ -466,7 +515,7 @@
       "lifetimeOnce": "One-time payment · Lifetime access guaranteed"
     },
     "payment": {
-      "title": "Secure payment via PayTech"
+      "title": "Secure payment via SenePay"
     },
     "confirmModal": {
       "title": "Confirm subscription",
@@ -489,7 +538,7 @@
       "q3": "How do I cancel my subscription?",
       "a3": "From your profile, at any time, with one click. Your access remains active until the end of the paid period — no prorated refund.",
       "q4": "What payment methods are accepted?",
-      "a4": "Wave, Orange Money, Free Money, MTN Mobile Money, and Visa/Mastercard — via PayTech, a certified platform.",
+      "a4": "Wave, Orange Money, Free Money and E-Money — via SenePay, our Mobile Money payment provider.",
       "q5": "Why pay when there are free prediction groups?",
       "a5": "Because a free group proves nothing — no one checks if it actually wins, and failed picks just disappear. On fpronix, every pick's track record is public and can't be faked — that's what you're paying for: proof, not just a tip."
     },
@@ -1576,7 +1625,7 @@
     "sections": {
       "s1": {
         "title": "1. Data controller",
-        "body": "fpronix SN, publisher of the fpronix platform, is responsible for processing your personal data. Contact:"
+        "body": "Ibrahim-Tresor MABIALA-MULHO, publisher of the fpronix platform, is responsible for processing your personal data. Contact:"
       },
       "s2": {
         "title": "2. Data collected",
@@ -1595,7 +1644,7 @@
         "items": [
           "Manage your account and subscription",
           "Provide Platform features (predictions, standings, statistics)",
-          "Process your payments via our provider PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, card)",
+          "Process your payments via our provider SenePay (Wave, Orange Money, Free Money, E-Money)",
           "Send you notifications related to your account (if you consented)",
           "Improve our services and detect fraud",
           "Comply with our legal obligations"
@@ -1609,7 +1658,7 @@
         "title": "5. Data sharing",
         "intro": "Your data is not sold to third parties. It may be shared with:",
         "items": [
-          "Our payment provider PayTech as part of transaction processing",
+          "Our payment provider SenePay as part of transaction processing",
           "Our technical hosting providers (secure servers in Europe)",
           "Competent authorities in case of legal obligation"
         ]
@@ -1655,7 +1704,7 @@
     "sections": {
       "s1": {
         "title": "1. Purpose",
-        "body": "fpronix (hereinafter \"the Platform\") is a football information and statistics service published by fpronix SN. These Terms of Service (ToS) govern access to and use of the Platform by any user (hereinafter \"the User\")."
+        "body": "fpronix (hereinafter \"the Platform\") is a football information and statistics service published by Ibrahim-Tresor MABIALA-MULHO. These Terms of Service (ToS) govern access to and use of the Platform by any user (hereinafter \"the User\")."
       },
       "s2": {
         "title": "2. Acceptance of terms",
@@ -1679,7 +1728,7 @@
       },
       "s5": {
         "title": "5. Premium subscription",
-        "body1": "The Premium subscription is available as a weekly, monthly, or yearly plan (see pricing on the \"Subscription\" page), plus a one-time Lifetime option. Payment is processed via PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, Visa/Mastercard). Recurring subscriptions renew automatically and can be canceled at any time.",
+        "body1": "The Premium subscription is available as a weekly, monthly, or yearly plan (see pricing on the \"Subscription\" page), plus a one-time Lifetime option. Payment is processed via SenePay (Wave, Orange Money, Free Money, E-Money). Subscriptions do not renew automatically: access ends when the paid period expires, and the User may renew manually if they wish.",
         "body2": "In case of non-payment, access to Premium features will be suspended at the expiration date of the current subscription."
       },
       "s6": {
@@ -1708,6 +1757,81 @@
       "s11": {
         "title": "11. Contact",
         "body": "For any question regarding these ToS, you can contact us at: "
+      }
+    }
+  },
+  "cgv": {
+    "title": "Terms of Sale",
+    "lastUpdated": "Last updated: September 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Purpose",
+        "body": "These Terms of Sale govern the sale of paid subscriptions offered on fpronix (Premium subscription and paid tipster plan subscriptions), published by Ibrahim-Tresor MABIALA-MULHO. They complement the Terms of Service."
+      },
+      "s2": {
+        "title": "2. Products and pricing",
+        "body1": "The Premium subscription is offered as a Weekly, Monthly, Yearly plan, or a one-time Lifetime access, at the prices shown in FCFA on the \"Subscription\" page at the time of purchase.",
+        "body2": "Tipster subscription prices are set freely by each tipster and displayed on their profile before payment. fpronix acts as a technical facilitator for these payments."
+      },
+      "s3": {
+        "title": "3. Payment terms",
+        "body": "Payment is made via Mobile Money (Wave, Orange Money, Free Money, E-Money) through our provider SenePay, or by international card for foreign currencies. The amount charged exactly matches the price shown before confirmation; no hidden fees are added by fpronix."
+      },
+      "s4": {
+        "title": "4. Access to the service",
+        "body": "Access to Premium features or tipster content is activated automatically and immediately upon payment confirmation by the payment provider. No physical delivery takes place, as the service is fully digital."
+      },
+      "s5": {
+        "title": "5. Right of withdrawal",
+        "body": "In accordance with the rules applicable to digital content not supplied on a physical medium, the User who requests immediate access to the service upon payment expressly waives their right of withdrawal from the start of service performance, which they acknowledge by confirming their purchase."
+      },
+      "s6": {
+        "title": "6. Cancellation and refunds",
+        "body1": "Subscriptions (Weekly, Monthly, Yearly) do not renew automatically: no charge is made without a new action by the User. Access ends when the paid period expires. A period already started is not refunded pro rata.",
+        "body2": "In case of a payment error, duplicate charge, or a confirmed technical issue preventing access to the paid service, the User may request a refund by writing to support@fpronix.com, with proof of the transaction."
+      },
+      "s7": {
+        "title": "7. Complaints",
+        "body": "Any complaint regarding an order can be sent to support@fpronix.com. fpronix commits to responding within a reasonable timeframe."
+      },
+      "s8": {
+        "title": "8. Applicable law",
+        "body": "These Terms of Sale are governed by Senegalese law. Any dispute will be submitted to the competent courts of Dakar, Senegal."
+      }
+    }
+  },
+  "mentionsLegales": {
+    "title": "Legal Notice",
+    "lastUpdated": "Last updated: September 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Publisher",
+        "body": "The website fpronix.com is published by Ibrahim-Tresor MABIALA-MULHO, sole proprietor, based in Dakar, Senegal.",
+        "contact": "Contact: "
+      },
+      "s2": {
+        "title": "2. Publication director",
+        "body": "Ibrahim-Tresor MABIALA-MULHO."
+      },
+      "s3": {
+        "title": "3. Hosting",
+        "body": "The website is hosted by Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Germany — www.hetzner.com."
+      },
+      "s4": {
+        "title": "4. Nature of the service",
+        "body": "fpronix is a football information, statistics and analysis service. fpronix is not a sports betting operator: no bets are placed or accepted on the Platform."
+      },
+      "s5": {
+        "title": "5. Payments",
+        "body": "Subscription payments are processed by our provider SenePay (Millennium Capital Invest LLC). fpronix does not collect or store any payment data (Mobile Money number, PIN, bank card)."
+      },
+      "s6": {
+        "title": "6. Intellectual property",
+        "body": "All website content (text, logos, algorithms, interface) is the property of the publisher. Any reproduction without prior authorization is prohibited."
+      },
+      "s7": {
+        "title": "7. Related documents",
+        "body": "Please also see our"
       }
     }
   },
@@ -1773,7 +1897,7 @@
         },
         "howToPay": {
           "q": "How do I pay for Premium?",
-          "a": "We accept Wave, Orange Money, Free Money, MTN Mobile Money, and card (Visa/Mastercard), all processed via PayTech, our payment provider. Go to the \"Subscription\" page to choose your payment method."
+          "a": "We accept Wave, Orange Money, Free Money and E-Money, processed via SenePay, our payment provider. Go to the \"Subscription\" page to choose your payment method."
         },
         "cancelSub": {
           "q": "Can I cancel my subscription?",
@@ -2054,6 +2178,8 @@
     "helpLink": "Need help?",
     "transparencyLink": "Transparency",
     "termsLink": "Terms",
+    "salesTermsLink": "Sale Terms",
+    "legalNoticeLink": "Legal Notice",
     "privacyLink": "Privacy Policy",
     "faqLink": "FAQ",
     "newsletterLink": "Newsletter",

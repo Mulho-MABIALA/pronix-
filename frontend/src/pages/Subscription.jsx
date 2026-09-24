@@ -345,18 +345,19 @@ export default function Subscription() {
   const payCurrency = currency ? (PAYTECH_CURRENCIES.includes(currency) ? currency : 'USD') : null;
 
   // Étape 2 : confirmation explicite dans la modale → initiation réelle du paiement.
-  // PayTech gère les deux cas : devise FCFA (native, aucun `currency` envoyé) →
-  // Mobile Money + carte locale ; devise étrangère détectée (useCurrency) →
-  // carte bancaire facturée dans cette devise. Processeur unique de la plateforme.
+  // FCFA (natif, cas immense majorité) → SenePay Mobile Money (remplace PayTech,
+  // pas de RCCM/NINEA requis). Devise étrangère détectée (carte internationale,
+  // useCurrency) → reste sur PayTech en attendant que SenePay supporte la carte
+  // bancaire ; ce chemin était déjà non fonctionnel en production (PayTech jamais
+  // validé faute des mêmes documents), donc aucune régression réelle ici.
   const confirmAndPay = async () => {
     if (!pendingPlan) return;
     setError('');
     setLoading(true);
     try {
-      const body = payCurrency
-        ? { planId: pendingPlan.id, billingCycle, currency: payCurrency }
-        : { planId: pendingPlan.id, billingCycle };
-      const { data: res } = await api.post('/payments/paytech/init', body);
+      const { data: res } = payCurrency
+        ? await api.post('/payments/paytech/init', { planId: pendingPlan.id, billingCycle, currency: payCurrency })
+        : await api.post('/payments/senepay/init', { planId: pendingPlan.id, billingCycle });
       window.location.href = res.data.checkoutUrl;
     } catch (err) {
       setError(err.response?.data?.message || t('subscription.paymentError'));

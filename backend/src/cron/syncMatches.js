@@ -203,6 +203,9 @@ async function syncMatchesForDate(dateStr) {
           round:        normalized.round,
           homeTeamLogo: normalized.homeTeamLogo,
           awayTeamLogo: normalized.awayTeamLogo,
+          // Stade/ville : renseignés aussi pour les matchs créés avant l'ajout
+          // de venueCity (météo) — jamais écrasés par une valeur vide.
+          ...(normalized.venueCity ? { venue: normalized.venue, venueCity: normalized.venueCity } : {}),
         },
         create: normalized,
       });

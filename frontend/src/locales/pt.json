@@ -252,6 +252,55 @@
     "disclaimerAuto": "Estes palpites são gerados automaticamente. Não constituem aconselhamento financeiro. Jogue com responsabilidade."
   },
   "matchDetail": {
+    "shareImage": {
+      "button": "Partilhar imagem",
+      "pickTitle": "Palpite fpronix",
+      "picks": {
+        "1": "Vitória do {{home}}",
+        "2": "Vitória do {{away}}",
+        "12": "Sem empate",
+        "X": "Empate",
+        "over25": "Mais de 2,5 gols",
+        "over15": "Mais de 1,5 gol",
+        "over35": "Mais de 3,5 gols",
+        "under25": "Menos de 2,5 gols",
+        "btts": "Ambas marcam",
+        "nobtts": "Ambas marcam: Não",
+        "1X": "{{home}} ou empate",
+        "X2": "Empate ou {{away}}"
+      },
+      "confidence": {
+        "high": "Confiança alta",
+        "medium": "Confiança média",
+        "low": "Confiança baixa"
+      },
+      "likelyScore": "Placar mais provável: {{score}} ({{prob}}%)",
+      "noPick": "Análise completa disponível",
+      "noPickSub": "Probabilidades, forma e estatísticas no fpronix",
+      "cta": "Análise grátis em fpronix.com",
+      "disclaimer": "Estatísticas informativas. Nenhum ganho garantido. 18+ · Jogue com responsabilidade.",
+      "shareText": "⚽ {{home}} vs {{away}} — o palpite fpronix 👇\n{{url}}"
+    },
+    "weather": {
+      "title": "Clima no pontapé inicial · {{city}}",
+      "rain": "Chance de chuva",
+      "wind": "Vento",
+      "conditions": {
+        "clear": "Ensolarado",
+        "cloudy": "Nublado",
+        "fog": "Neblina",
+        "rain": "Chuva",
+        "snow": "Neve",
+        "storm": "Tempestade"
+      },
+      "flags": {
+        "rain": "Gramado escorregadio",
+        "wind": "Vento forte",
+        "heat": "Calor intenso",
+        "cold": "Frio intenso"
+      },
+      "disclaimer": "Previsão Open-Meteo, considerada pela IA como fator secundário."
+    },
     "prediction": "Previsão",
     "probabilities": "Probabilidades",
     "scorelines": "Cenários prováveis",
@@ -466,7 +515,7 @@
       "lifetimeOnce": "Pagamento único · Acesso vitalício garantido"
     },
     "payment": {
-      "title": "Pagamento seguro via PayTech"
+      "title": "Pagamento seguro via SenePay"
     },
     "confirmModal": {
       "title": "Confirmar assinatura",
@@ -489,7 +538,7 @@
       "q3": "Como cancelo minha assinatura?",
       "a3": "No seu perfil, a qualquer momento, com um clique. Seu acesso permanece ativo até o fim do período pago — sem reembolso proporcional.",
       "q4": "Quais formas de pagamento são aceitas?",
-      "a4": "Wave, Orange Money, Free Money, MTN Mobile Money e cartão Visa/Mastercard — via PayTech, plataforma certificada.",
+      "a4": "Wave, Orange Money, Free Money e E-Money — via SenePay, nosso provedor de pagamento Mobile Money.",
       "q5": "Por que pagar se existem grupos de palpites gratuitos?",
       "a5": "Porque um grupo gratuito não prova nada: ninguém verifica se ele realmente acerta, e os palpites errados simplesmente somem. Na fpronix, o histórico de cada palpite é público e não pode ser falsificado — é isso que você paga: a prova, não só o palpite."
     },
@@ -1576,7 +1625,7 @@
     "sections": {
       "s1": {
         "title": "1. Responsável pelo tratamento",
-        "body": "fpronix SN, editora da plataforma fpronix, é responsável pelo tratamento dos seus dados pessoais. Contato:"
+        "body": "Ibrahim-Tresor MABIALA-MULHO, editor da plataforma fpronix, é responsável pelo tratamento dos seus dados pessoais. Contato:"
       },
       "s2": {
         "title": "2. Dados coletados",
@@ -1595,7 +1644,7 @@
         "items": [
           "Gerenciar sua conta e sua assinatura",
           "Fornecer as funcionalidades da Plataforma (palpites, classificações, estatísticas)",
-          "Processar seus pagamentos através do nosso provedor PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, cartão)",
+          "Processar seus pagamentos através do nosso provedor SenePay (Wave, Orange Money, Free Money, E-Money)",
           "Enviar notificações relacionadas à sua conta (caso você tenha consentido)",
           "Melhorar nossos serviços e detectar fraudes",
           "Cumprir nossas obrigações legais"
@@ -1609,7 +1658,7 @@
         "title": "5. Compartilhamento de dados",
         "intro": "Seus dados não são vendidos a terceiros. Podem ser compartilhados com:",
         "items": [
-          "Nosso provedor de pagamento PayTech para o processamento das transações",
+          "Nosso provedor de pagamento SenePay para o processamento das transações",
           "Nossos provedores de hospedagem técnica (servidores seguros na Europa)",
           "As autoridades competentes em caso de obrigação legal"
         ]
@@ -1655,7 +1704,7 @@
     "sections": {
       "s1": {
         "title": "1. Objeto",
-        "body": "fpronix (doravante \"a Plataforma\") é um serviço de informações e estatísticas de futebol editado pela fpronix SN. Os presentes Termos e Condições de Uso regem o acesso e o uso da Plataforma por qualquer usuário (doravante \"o Usuário\")."
+        "body": "fpronix (doravante \"a Plataforma\") é um serviço de informações e estatísticas de futebol editado por Ibrahim-Tresor MABIALA-MULHO. Os presentes Termos e Condições de Uso regem o acesso e o uso da Plataforma por qualquer usuário (doravante \"o Usuário\")."
       },
       "s2": {
         "title": "2. Aceitação das condições",
@@ -1679,7 +1728,7 @@
       },
       "s5": {
         "title": "5. Assinatura Premium",
-        "body1": "A assinatura Premium está disponível nos planos semanal, mensal ou anual (veja os preços na página «Assinatura»), além do acesso Lifetime vitalício (pagamento único). O pagamento é processado via PayTech (Wave, Orange Money, Free Money, MTN Mobile Money, cartão Visa/Mastercard). As assinaturas recorrentes são renovadas automaticamente e podem ser canceladas a qualquer momento.",
+        "body1": "A assinatura Premium está disponível nos planos semanal, mensal ou anual (veja os preços na página «Assinatura»), além do acesso Lifetime vitalício (pagamento único). O pagamento é processado via SenePay (Wave, Orange Money, Free Money, E-Money). As assinaturas não são renovadas automaticamente: o acesso termina no vencimento do período pago, e o Usuário pode renovar manualmente se desejar.",
         "body2": "Em caso de não pagamento, o acesso às funcionalidades Premium será suspenso na data de vencimento da assinatura em curso."
       },
       "s6": {
@@ -1708,6 +1757,81 @@
       "s11": {
         "title": "11. Contato",
         "body": "Para qualquer dúvida relacionada aos presentes Termos, você pode entrar em contato conosco no endereço: "
+      }
+    }
+  },
+  "cgv": {
+    "title": "Termos e Condições de Venda",
+    "lastUpdated": "Última atualização: setembro de 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Objeto",
+        "body": "Os presentes Termos e Condições de Venda regem a venda das assinaturas pagas oferecidas no fpronix (assinatura Premium e assinaturas de planos pagos de tipsters), editado por Ibrahim-Tresor MABIALA-MULHO. Complementam os Termos e Condições de Uso."
+      },
+      "s2": {
+        "title": "2. Produtos e preços",
+        "body1": "A assinatura Premium é oferecida nos planos Semanal, Mensal, Anual, ou como acesso Lifetime (pagamento único), pelos preços exibidos em FCFA na página «Assinatura» no momento da compra.",
+        "body2": "Os preços das assinaturas de tipster são definidos livremente por cada tipster e exibidos em seu perfil antes do pagamento. O fpronix atua como facilitador técnico desses pagamentos."
+      },
+      "s3": {
+        "title": "3. Condições de pagamento",
+        "body": "O pagamento é feito via Mobile Money (Wave, Orange Money, Free Money, E-Money) por meio do nosso provedor SenePay, ou por cartão internacional para moedas estrangeiras. O valor cobrado corresponde exatamente ao preço exibido antes da confirmação; nenhuma taxa oculta é adicionada pelo fpronix."
+      },
+      "s4": {
+        "title": "4. Acesso ao serviço",
+        "body": "O acesso às funcionalidades Premium ou ao conteúdo do tipster é ativado automática e imediatamente após a confirmação do pagamento pelo provedor de pagamento. Nenhuma entrega física é realizada, pois o serviço é totalmente digital."
+      },
+      "s5": {
+        "title": "5. Direito de arrependimento",
+        "body": "Em conformidade com as regras aplicáveis a conteúdo digital não fornecido em suporte físico, o Usuário que solicita o acesso imediato ao serviço no momento do pagamento renuncia expressamente ao seu direito de arrependimento a partir do início da execução do serviço, o que reconhece ao confirmar sua compra."
+      },
+      "s6": {
+        "title": "6. Cancelamento e reembolsos",
+        "body1": "As assinaturas (Semanal, Mensal, Anual) não são renovadas automaticamente: nenhuma cobrança é feita sem uma nova ação do Usuário. O acesso termina no vencimento do período pago. Um período já iniciado não é reembolsado proporcionalmente.",
+        "body2": "Em caso de erro de pagamento, cobrança duplicada ou problema técnico confirmado que impeça o acesso ao serviço pago, o Usuário pode solicitar um reembolso escrevendo para support@fpronix.com, com comprovante da transação."
+      },
+      "s7": {
+        "title": "7. Reclamações",
+        "body": "Qualquer reclamação relativa a um pedido pode ser enviada para support@fpronix.com. O fpronix se compromete a responder em um prazo razoável."
+      },
+      "s8": {
+        "title": "8. Lei aplicável",
+        "body": "Os presentes Termos e Condições de Venda são regidos pelo direito senegalês. Qualquer litígio será submetido aos tribunais competentes de Dacar, Senegal."
+      }
+    }
+  },
+  "mentionsLegales": {
+    "title": "Aviso legal",
+    "lastUpdated": "Última atualização: setembro de 2026",
+    "sections": {
+      "s1": {
+        "title": "1. Editor do site",
+        "body": "O site fpronix.com é editado por Ibrahim-Tresor MABIALA-MULHO, empresário individual, domiciliado em Dacar, Senegal.",
+        "contact": "Contato: "
+      },
+      "s2": {
+        "title": "2. Diretor da publicação",
+        "body": "Ibrahim-Tresor MABIALA-MULHO."
+      },
+      "s3": {
+        "title": "3. Hospedagem",
+        "body": "O site é hospedado pela Hetzner Online GmbH, Industriestr. 25, 91710 Gunzenhausen, Alemanha — www.hetzner.com."
+      },
+      "s4": {
+        "title": "4. Natureza do serviço",
+        "body": "O fpronix é um serviço de informação, estatísticas e análises de futebol. O fpronix não é um operador de apostas esportivas: nenhuma aposta é feita ou aceita na Plataforma."
+      },
+      "s5": {
+        "title": "5. Pagamentos",
+        "body": "Os pagamentos das assinaturas são processados pelo nosso provedor SenePay (Millennium Capital Invest LLC). O fpronix não coleta nem armazena nenhum dado de pagamento (número Mobile Money, código, cartão bancário)."
+      },
+      "s6": {
+        "title": "6. Propriedade intelectual",
+        "body": "Todo o conteúdo do site (textos, logotipos, algoritmos, interface) é propriedade do editor. É proibida qualquer reprodução sem autorização prévia."
+      },
+      "s7": {
+        "title": "7. Documentos relacionados",
+        "body": "Consulte também os nossos"
       }
     }
   },
@@ -1773,7 +1897,7 @@
         },
         "howToPay": {
           "q": "Como pagar a assinatura Premium?",
-          "a": "Aceitamos Wave, Orange Money, Free Money, MTN Mobile Money e cartão (Visa/Mastercard), todos processados via PayTech, nosso provedor de pagamento. Acesse a página «Assinatura» para escolher sua forma de pagamento."
+          "a": "Aceitamos Wave, Orange Money, Free Money e E-Money, processados via SenePay, nosso provedor de pagamento. Acesse a página «Assinatura» para escolher sua forma de pagamento."
         },
         "cancelSub": {
           "q": "Posso cancelar minha assinatura?",
@@ -2054,6 +2178,8 @@
     "helpLink": "Precisas de ajuda?",
     "transparencyLink": "Transparência",
     "termsLink": "Termos",
+    "salesTermsLink": "Termos de Venda",
+    "legalNoticeLink": "Aviso legal",
     "privacyLink": "Política de Privacidade",
     "faqLink": "FAQ",
     "newsletterLink": "Newsletter",

@@ -404,6 +404,9 @@ model Match {
   minute        String?     // ex: "67'", "HT", "45+2'" — null si non commencé
   scheduledAt   DateTime
   venue         String?
+  // Ville du stade (API-Football fixture.venue.city) — sert à la prévision
+  // météo au coup d'envoi (services/weatherService.js).
+  venueCity     String?
   round         String?
   // Données premium (compositions, stats avancées)
   lineups       Json?

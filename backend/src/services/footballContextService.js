@@ -18,6 +18,7 @@ const {
   getInjuries,
   CURRENT_SEASON,
 } = require('./footballApi');
+const { getMatchWeather, formatWeatherForPrompt } = require('./weatherService');
 
 // ─── Cache mémoire avec TTL ────────────────────────────────────────────────────
 const _cache = new Map();
@@ -189,12 +190,14 @@ async function getMatchContext(match) {
     h2hResult,
     standingsResult,
     injuriesResult,
+    weatherResult,
   ] = await Promise.allSettled([
     cachedForm(homeTeamId),
     cachedForm(awayTeamId),
     cachedH2H(homeTeamId, awayTeamId),
     cachedStandings(leagueId),
     cachedInjuries(fixtureId),
+    getMatchWeather(match), // Open-Meteo, hors quota API-Football
   ]);
 
   const homeForm  = homeFormResult.status  === 'fulfilled' ? homeFormResult.value  : [];
@@ -202,6 +205,7 @@ async function getMatchContext(match) {
   const h2h       = h2hResult.status       === 'fulfilled' ? h2hResult.value       : [];
   const standings = standingsResult.status === 'fulfilled' ? standingsResult.value : [];
   const injuries  = injuriesResult.status  === 'fulfilled' ? injuriesResult.value  : [];
+  const weather   = weatherResult.status   === 'fulfilled' ? weatherResult.value   : null;
 
   // Formater chaque section
   const sections = [
@@ -212,6 +216,7 @@ async function getMatchContext(match) {
       ? `Classement :\n  ${formatStandingEntry(homeTeamId, match.homeTeam, standings)}\n  ${formatStandingEntry(awayTeamId, match.awayTeam, standings) || ''}`
       : null,
     formatInjuries(injuries),
+    formatWeatherForPrompt(weather),
   ].filter(Boolean);
 
   const hasData = sections.length > 0;
@@ -219,7 +224,7 @@ async function getMatchContext(match) {
   return {
     hasData,
     text: sections.join('\n\n'),
-    raw: { homeForm, awayForm, h2h, standings, injuries },
+    raw: { homeForm, awayForm, h2h, standings, injuries, weather },
   };
 }
 

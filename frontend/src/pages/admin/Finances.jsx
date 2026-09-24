@@ -20,6 +20,7 @@ const PROVIDER_LABEL = {
   geniuspay: 'GeniusPay',
   wave:      'Wave',
   paytech:   'PayTech',
+  senepay:   'SenePay',
   cinetpay:  'CinetPay', // ancien prestataire — conservé pour l'affichage de l'historique
   fedapay:   'FedaPay',
   flutterwave: 'Flutterwave', // ancien prestataire (dormant) — idem, conservé pour l'historique

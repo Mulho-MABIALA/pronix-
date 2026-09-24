@@ -110,6 +110,7 @@ function normalizeMatch(fixture, competitionId) {
     minute,
     scheduledAt:   new Date(f.date),
     venue:         f.venue?.name || null,
+    venueCity:     f.venue?.city || null,
     round:         fixture.league?.round || null,
   };
 }

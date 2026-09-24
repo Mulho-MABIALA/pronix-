@@ -4,6 +4,7 @@ const { AppError } = require('../middleware/errorHandler');
 const { syncMatchesForDate } = require('../cron/syncMatches');
 const footballApi = require('../services/footballApi');
 const oddsService = require('../services/oddsService');
+const { getMatchWeather } = require('../services/weatherService');
 const { deriveLiveMarkets } = require('../services/predictionService');
 
 // ─── Aperçu gratuit des pronostics (paywall serveur) ───────────────────────────
@@ -201,6 +202,11 @@ async function getMatchById(req, res, next) {
     }
 
     const response = { ...match };
+    // Météo au coup d'envoi — gratuite pour tous (Open-Meteo, cachée 3h),
+    // null si trop lointain, ville inconnue ou service indisponible.
+    response.weather = ['SCHEDULED', 'LIVE'].includes(match.status)
+      ? await getMatchWeather(match)
+      : null;
     if (!isPremium) {
       response.lineups    = null;
       response.statistics = null;

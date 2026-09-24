@@ -1,5 +1,6 @@
 const Anthropic = require('@anthropic-ai/sdk');
 const env = require('../config/env');
+const { formatWeatherForPrompt } = require('./weatherService');
 
 let client = null;
 
@@ -87,7 +88,7 @@ function generateMockPrediction({ match, homeForm, awayForm, h2h }) {
   return { prediction, confidence, analysis, _mock: true };
 }
 
-async function generateMatchPrediction({ match, homeForm, awayForm, h2h, injuries = null }) {
+async function generateMatchPrediction({ match, homeForm, awayForm, h2h, injuries = null, weather = null }) {
   const anthropic = getClient();
   if (!anthropic) {
     console.warn('[Claude] Pas de clé API — mode simulation');
@@ -116,7 +117,10 @@ ${formatH2H(h2h)}
 BLESSURES / ABSENCES CONFIRMÉES :
 ${formatInjuries(injuries)}
 
-Analyse tous les éléments : forme récente, historique H2H, avantage domicile, blessures importantes.
+MÉTÉO :
+${formatWeatherForPrompt(weather) || 'Non disponible'}
+
+Analyse tous les éléments : forme récente, historique H2H, avantage domicile, blessures importantes, et la météo si elle est marquante (pluie, vent fort, chaleur).
 Réponds UNIQUEMENT avec un objet JSON valide, sans markdown, sans texte avant ou après :
 {
   "prediction": "HOME_WIN" | "DRAW" | "AWAY_WIN" | "OVER_2_5" | "UNDER_2_5" | "BTTS_YES" | "BTTS_NO",

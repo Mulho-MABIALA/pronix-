@@ -428,7 +428,7 @@ export default function Machine() {
     try {
       const canvas = await drawTicketCanvas(ticket, totalOdds, t);
       canvas.toBlob(async (blob) => {
-        const file = new File([blob], 'ticket-statfoot.png', { type: 'image/png' });
+        const file = new File([blob], 'ticket-fpronix.png', { type: 'image/png' });
         if (navigator.share && navigator.canShare?.({ files: [file] })) {
           await navigator.share({ files: [file], title: t('machine.shareTitle') });
         } else {
@@ -436,7 +436,7 @@ export default function Machine() {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'ticket-statfoot.png';
+          a.download = 'ticket-fpronix.png';
           a.click();
           URL.revokeObjectURL(url);
         }

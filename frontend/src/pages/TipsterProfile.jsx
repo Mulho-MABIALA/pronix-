@@ -257,7 +257,7 @@ export default function TipsterProfile() {
   });
 
   const subscribeMutation = useMutation({
-    mutationFn: () => api.post('/payments/tipster/paytech/init', { tipsterId: userId }),
+    mutationFn: () => api.post('/payments/tipster/senepay/init', { tipsterId: userId }),
     onSuccess: ({ data }) => {
       if (data?.data?.checkoutUrl) window.location.href = data.data.checkoutUrl;
     },

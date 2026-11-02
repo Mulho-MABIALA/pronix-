@@ -4,8 +4,10 @@ import { useTranslation } from 'react-i18next';
 import { MessageCircle, X, Send, Bot, Loader2, ChevronDown, UserRound } from 'lucide-react';
 import api from '../../services/api';
 import { useAuth } from '../../context/AuthContext';
+import { TIPSTERS_ENABLED } from '../../config/features';
 
-const QUICK_QUESTION_KEYS = ['tipster', 'premium'];
+// Question rapide « tipster » retirée quand les tipsters sont masqués
+const QUICK_QUESTION_KEYS = TIPSTERS_ENABLED ? ['tipster', 'premium'] : ['premium'];
 
 function Message({ msg }) {
   const isBot = msg.role === 'assistant';
@@ -28,7 +30,7 @@ function Message({ msg }) {
 }
 
 export default function SupportChat() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([
@@ -63,7 +65,7 @@ export default function SupportChat() {
 
     try {
       const history = messages.slice(-6).map((m) => ({ role: m.role, content: m.content }));
-      const res = await api.post('/support/chat', { message: msg, history });
+      const res = await api.post('/support/chat', { message: msg, history, lang: i18n.language });
       const answer = res.data?.data?.answer || t('supportChat.noAnswer');
       setMessages((prev) => [...prev, { role: 'assistant', content: answer }]);
     } catch {

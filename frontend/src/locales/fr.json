@@ -186,17 +186,117 @@
     },
     "pickShort": {
       "1": "Victoire Dom.",
-      "X": "Match nul",
       "2": "Victoire Ext.",
+      "12": "Dom. ou Ext.",
+      "X": "Match nul",
       "over25": "Plus de 2.5",
       "over15": "Plus de 1.5",
       "btts": "BTTS Oui",
       "1X": "Double 1X",
       "X2": "Double X2",
-      "12": "Dom. ou Ext.",
       "under25": "Moins de 2.5",
       "nobtts": "BTTS Non",
-      "over35": "Plus de 3.5"
+      "over35": "Plus de 3.5",
+      "card1": "Dom. +cartons",
+      "cardX": "Égal. cartons",
+      "card2": "Ext. +cartons",
+      "cardOver25": "+2.5 cartons",
+      "cardUnder25": "-2.5 cartons",
+      "cardOver35": "+3.5 cartons",
+      "cardUnder35": "-3.5 cartons",
+      "cardOver45": "+4.5 cartons",
+      "cardUnder45": "-4.5 cartons",
+      "cardOver55": "+5.5 cartons",
+      "cardUnder55": "-5.5 cartons",
+      "sot1": "Dom. +cadrés",
+      "sotX": "Égal. cadrés",
+      "sot2": "Ext. +cadrés",
+      "sotOver65": "+6.5 cadrés",
+      "sotUnder65": "-6.5 cadrés",
+      "sotOver75": "+7.5 cadrés",
+      "sotUnder75": "-7.5 cadrés",
+      "sotOver85": "+8.5 cadrés",
+      "sotUnder85": "-8.5 cadrés",
+      "sotOver95": "+9.5 cadrés",
+      "sotUnder95": "-9.5 cadrés",
+      "foulOver195": "+19.5 fautes",
+      "foulUnder195": "-19.5 fautes",
+      "foulOver215": "+21.5 fautes",
+      "foulUnder215": "-21.5 fautes",
+      "foulOver235": "+23.5 fautes",
+      "foulUnder235": "-23.5 fautes",
+      "foulOver255": "+25.5 fautes",
+      "foulUnder255": "-25.5 fautes",
+      "offsideOver25": "+2.5 H-J",
+      "offsideUnder25": "-2.5 H-J",
+      "offsideOver35": "+3.5 H-J",
+      "offsideUnder35": "-3.5 H-J",
+      "offsideOver45": "+4.5 H-J",
+      "offsideUnder45": "-4.5 H-J",
+      "htft11": "MT/FT 1/1",
+      "htft1X": "MT/FT 1/X",
+      "htft12": "MT/FT 1/2",
+      "htftX1": "MT/FT X/1",
+      "htftXX": "MT/FT X/X",
+      "htftX2": "MT/FT X/2",
+      "htft21": "MT/FT 2/1",
+      "htft2X": "MT/FT 2/X",
+      "htft22": "MT/FT 2/2",
+      "dc1xover15": "1X +1.5",
+      "dc1xunder35": "1X -3.5",
+      "dcx2over15": "X2 +1.5",
+      "dcx2under35": "X2 -3.5",
+      "dc12over15": "12 +1.5",
+      "dc12under35": "12 -3.5",
+      "bttsover25": "BTTS +2.5",
+      "bttsunder35": "BTTS -3.5",
+      "nobttsunder25": "BTTS Non -2.5",
+      "nobttsover15": "BTTS Non +1.5",
+      "res1over15": "1 & +1.5",
+      "res2over15": "2 & +1.5",
+      "dnb1": "DNB1",
+      "dnb2": "DNB2",
+      "over05": "O0.5",
+      "over45": "O4.5",
+      "under15": "U1.5",
+      "under35": "U3.5",
+      "under45": "U4.5",
+      "ht1": "MT1",
+      "htX": "MTX",
+      "ht2": "MT2",
+      "htover15": "MT+1.5",
+      "htunder15": "MT-1.5",
+      "h1m1": "Dom.-1",
+      "h2m1": "Ext.-1",
+      "mb1_2plus": "Dom.2+",
+      "mb2_2plus": "Ext.2+",
+      "cleansheet1": "Dom.0enc.",
+      "cleansheet2": "Ext.0enc.",
+      "res1over25": "1+O2.5",
+      "res1under25": "1+U2.5",
+      "resXover25": "X+O2.5",
+      "resXunder25": "X+U2.5",
+      "res2over25": "2+O2.5",
+      "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS",
+      "resXbtts": "X+BTTS",
+      "res2btts": "2+BTTS",
+      "dc1xbtts": "1X+BTTS",
+      "dcx2btts": "X2+BTTS",
+      "dc12btts": "12+BTTS",
+      "totalpair": "Pair",
+      "totalimpair": "Impair",
+      "corner1": "Corn.Dom",
+      "cornerX": "Corn.Nul",
+      "corner2": "Corn.Ext",
+      "cornerOver85": "CO8.5",
+      "cornerUnder85": "CU8.5",
+      "cornerOver95": "CO9.5",
+      "cornerUnder95": "CU9.5",
+      "cornerOver105": "CO10.5",
+      "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Dom-3",
+      "cornerHandAway25": "CH Ext-3"
     },
     "liveLabel": "Direct",
     "allPicks": "Voir tous les picks",
@@ -222,7 +322,13 @@
       "handicap": "Handicap",
       "multibuts": "Multi-buts",
       "corners": "Corners",
-      "live": "🔴 En direct"
+      "live": "🔴 En direct",
+      "cards": "Cartons",
+      "shots": "Tirs cadrés",
+      "fouls": "Fautes",
+      "offsides": "Hors-jeu",
+      "scorers": "Buteurs",
+      "combos": "Combinaisons"
     },
     "filtersToggle": "Filtres",
     "marketGlossary": "1X2 : victoire domicile (1), nul (X) ou victoire extérieure (2).\nBTTS : les deux équipes marquent.\nDouble chance : combine deux issues (ex. 1X = domicile ou nul).\nValue : la cote proposée est jugée meilleure que la probabilité réelle estimée.",
@@ -252,6 +358,7 @@
     "disclaimerAuto": "Ces pronostics sont générés automatiquement. Ils ne constituent pas un conseil financier. Jouez de façon responsable."
   },
   "matchDetail": {
+    "aiPickTitle": "Pronostic fpronix IA",
     "shareImage": {
       "button": "Partager l'image",
       "pickTitle": "Pronostic fpronix",
@@ -336,11 +443,18 @@
     "oddsComparatorSimulated": "Comparateur de cotes (simulé)",
     "oddsInfoDisclaimer": "Cotes fournies à titre informatif — pas un conseil de pari.",
     "pickMarketLabels": {
-      "1": "Victoire domicile", "X": "Match nul", "2": "Victoire extérieur",
-      "1X": "Double chance 1X", "X2": "Double chance X2", "12": "Domicile ou Extérieur",
-      "over25": "Plus de 2.5 buts", "over15": "Plus de 1.5 buts", "over35": "Plus de 3.5 buts",
+      "1": "Victoire domicile",
+      "2": "Victoire extérieur",
+      "12": "Domicile ou Extérieur",
+      "X": "Match nul",
+      "1X": "Double chance 1X",
+      "X2": "Double chance X2",
+      "over25": "Plus de 2.5 buts",
+      "over15": "Plus de 1.5 buts",
+      "over35": "Plus de 3.5 buts",
       "under25": "Moins de 2.5 buts",
-      "btts": "Les 2 équipes marquent", "nobtts": "Une équipe ne marque pas"
+      "btts": "Les 2 équipes marquent",
+      "nobtts": "Une équipe ne marque pas"
     },
     "predictions": {
       "HOME_WIN": "1 — Victoire domicile",
@@ -415,7 +529,13 @@
     "sending": "Envoi…",
     "sendReport": "Envoyer le signalement",
     "aiGenerationError": "Erreur lors de la génération IA",
-    "formDataNotAvailable": "Données de forme non disponibles"
+    "formDataNotAvailable": "Données de forme non disponibles",
+    "players": {
+      "title": "Buteurs probables",
+      "goal": "Buteur",
+      "sot": "1+ tir cadré",
+      "note": "D'après les buts et tirs cadrés récents de chaque joueur. Indicatif : la composition officielle n'est connue qu'avant le coup d'envoi."
+    }
   },
   "chat": {
     "title": "Chat IA",
@@ -458,7 +578,7 @@
     "titleHighlight": "avec les vraies données",
     "description": "Forme récente, confrontations directes, classements, blessures — tout ça analysé par IA pour des pronostics fiables.",
     "metaTitle": "Abonnement Premium",
-    "metaDesc": "Passez à Premium fpronix — pronostics IA, value bets, données temps réel. Paiement sécurisé via Wave, Orange Money, Carte bancaire.",
+    "metaDesc": "Passez à Premium fpronix — pronostics IA, value bets, données temps réel. Paiement sécurisé par Mobile Money : Wave, Orange Money, Free Money.",
     "badgeRecommended": "⭐ Recommandé",
     "badgeBestValue": "🏆 Meilleure valeur",
     "unitYear": "an",
@@ -493,7 +613,8 @@
       },
       "tools": {
         "title": "Des outils, pas juste des messages",
-        "desc": "Carnet de paris avec ton propre taux de réussite, comparateur d'équipes, classement des tipsters avec leur vrai bilan — pas un flux à trier toi-même."
+        "desc": "Carnet de paris avec ton propre taux de réussite, comparateur d'équipes, classement des tipsters avec leur vrai bilan — pas un flux à trier toi-même.",
+        "descNoTipsters": "Carnet de paris avec ton propre taux de réussite, comparateur d'équipes, filtres statistiques et Machine à tickets — pas un flux à trier toi-même."
       },
       "serious": {
         "title": "Le sérieux avant tout",
@@ -555,7 +676,19 @@
       "a5": "Parce qu'un groupe gratuit ne prouve rien : personne ne vérifie s'il gagne vraiment, et les messages ratés disparaissent. Sur fpronix, le bilan de chaque pronostic est public et impossible à trafiquer — c'est ce que tu paies : la preuve, pas juste le tip."
     },
     "disclaimer": "fpronix ne garantit aucun gain. Les pronostics sont fournis à titre informatif uniquement. Jouez de façon responsable —",
-    "disclaimerLink": "aide aux joueurs"
+    "disclaimerLink": "aide aux joueurs",
+    "mobileMoneyOnly": {
+      "title": "Paiement par Mobile Money uniquement",
+      "desc": "Les abonnements se règlent pour l'instant en FCFA via Wave, Orange Money, Free Money, MTN ou Moov (Sénégal, Mali, Burkina Faso, Togo, Congo, Gabon). Le paiement par carte bancaire arrive bientôt.",
+      "modal": "Paiement en FCFA par Mobile Money uniquement pour le moment — la carte bancaire n'est pas encore disponible."
+    },
+    "androidApp": {
+      "title": "Abonnement fpronix",
+      "notAvailable": "L'abonnement n'est pas disponible dans l'application. Si vous avez déjà un abonnement, connectez-vous avec le même compte pour retrouver votre accès.",
+      "activeTitle": "Votre abonnement est actif",
+      "activeUntil": "Valable jusqu'au {{date}}",
+      "login": "Se connecter"
+    }
   },
   "auth": {
     "email": "Adresse e-mail",
@@ -662,14 +795,14 @@
     "leaguesNoResults": "Aucun championnat trouvé.",
     "preferencesLabel": "Langue & devise",
     "leagues": {
-      "61": "Ligue 1 (France)",
-      "140": "La Liga (Espagne)",
-      "39": "Premier League",
-      "135": "Serie A",
-      "78": "Bundesliga",
       "2": "Champions League",
-      "892": "Ligue Sénégalaise 1",
-      "529": "AFCON"
+      "39": "Premier League",
+      "61": "Ligue 1 (France)",
+      "78": "Bundesliga",
+      "135": "Serie A",
+      "140": "La Liga (Espagne)",
+      "529": "AFCON",
+      "892": "Ligue Sénégalaise 1"
     }
   },
   "profile": {
@@ -678,7 +811,19 @@
     "favorites": "Mes favoris",
     "settings": "Paramètres",
     "editProfile": "Modifier le profil",
-    "changePassword": "Changer le mot de passe",
+    "changePassword": {
+      "title": "Changer le mot de passe",
+      "setTitle": "Définir un mot de passe",
+      "currentPlaceholder": "Mot de passe actuel",
+      "newPlaceholder": "Nouveau mot de passe (8 caractères min.)",
+      "confirmPlaceholder": "Confirmer le nouveau mot de passe",
+      "tooShortError": "8 caractères minimum",
+      "mismatchError": "Les mots de passe ne correspondent pas",
+      "submitCta": "Enregistrer",
+      "savingCta": "Sauvegarde...",
+      "successToast": "Mot de passe mis à jour",
+      "genericError": "Erreur lors du changement de mot de passe"
+    },
     "changePhoto": "Changer",
     "premium": "Premium",
     "googleConnected": "Connecté avec Google",
@@ -751,19 +896,6 @@
       "sendingCta": "Envoi...",
       "successToast": "Email mis à jour — vérifie ta boîte mail pour la confirmer",
       "genericError": "Erreur lors du changement d'email"
-    },
-    "changePassword": {
-      "title": "Changer le mot de passe",
-      "setTitle": "Définir un mot de passe",
-      "currentPlaceholder": "Mot de passe actuel",
-      "newPlaceholder": "Nouveau mot de passe (8 caractères min.)",
-      "confirmPlaceholder": "Confirmer le nouveau mot de passe",
-      "tooShortError": "8 caractères minimum",
-      "mismatchError": "Les mots de passe ne correspondent pas",
-      "submitCta": "Enregistrer",
-      "savingCta": "Sauvegarde...",
-      "successToast": "Mot de passe mis à jour",
-      "genericError": "Erreur lors du changement de mot de passe"
     },
     "logoutBtn": "Se déconnecter",
     "avatarUploadError": "Erreur lors de l'upload de la photo. Réessaie.",
@@ -919,10 +1051,10 @@
     "today": "Auj.",
     "tomorrow": "Dem.",
     "marketOptions": {
-      "all": "Tous les marchés",
       "1": "1 — Domicile",
-      "X": "X — Nul",
       "2": "2 — Extérieur",
+      "all": "Tous les marchés",
+      "X": "X — Nul",
       "1X": "Double chance 1X",
       "X2": "Double chance X2",
       "over25": "Plus de 2.5 buts",
@@ -936,9 +1068,18 @@
       "low": "⚪ Faible (<58%)"
     },
     "pickLabels": {
-      "1": "Domicile", "X": "Nul", "2": "Extérieur",
-      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2",
-      "12": "12", "under25": "U2.5", "nobtts": "BTTS Non", "over35": "O3.5"
+      "1": "Domicile",
+      "2": "Extérieur",
+      "12": "12",
+      "X": "Nul",
+      "over25": "O2.5",
+      "over15": "O1.5",
+      "btts": "BTTS",
+      "1X": "1X",
+      "X2": "X2",
+      "under25": "U2.5",
+      "nobtts": "BTTS Non",
+      "over35": "O3.5"
     },
     "aiSectionTitle": "Affiner sur nos pronostics IA",
     "advancedSectionTitle": "Filtres statistiques avancés",
@@ -1165,219 +1306,861 @@
     },
     "allLeagues": "Toutes les ligues",
     "pickLabels": {
-      "1": "Dom.", "X": "Nul", "2": "Ext.",
-      "1X": "1X", "X2": "X2", "12": "12",
-      "dnb1": "DNB1", "dnb2": "DNB2",
-      "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
-      "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
-      "btts": "BTTS✓", "nobtts": "BTTSx",
-      "ht1": "MT1", "htX": "MTX", "ht2": "MT2", "htover15": "MT+1.5", "htunder15": "MT-1.5",
-      "h1m1": "Dom.-1", "h2m1": "Ext.-1",
-      "mb1_2plus": "Dom.2+", "mb2_2plus": "Ext.2+", "cleansheet1": "Dom.0enc.", "cleansheet2": "Ext.0enc.",
-      "totalpair": "Pair", "totalimpair": "Impair",
-      "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
-      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
-      "corner1": "Corn.Dom", "cornerX": "Corn.Nul", "corner2": "Corn.Ext",
-      "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
-      "cornerHandHome25": "CH Dom-3", "cornerHandAway25": "CH Ext-3",
-      "live1": "🔴Dom.", "liveX": "🔴Nul", "live2": "🔴Ext.",
-      "liveOver05": "🔴O0.5", "liveUnder05": "🔴U0.5", "liveOver15": "🔴O1.5", "liveUnder15": "🔴U1.5",
-      "liveOver25": "🔴O2.5", "liveUnder25": "🔴U2.5", "liveOver35": "🔴O3.5", "liveUnder35": "🔴U3.5",
-      "liveCornerOver75": "🔴CO7.5", "liveCornerUnder75": "🔴CU7.5", "liveCornerOver85": "🔴CO8.5", "liveCornerUnder85": "🔴CU8.5",
-      "liveCornerOver95": "🔴CO9.5", "liveCornerUnder95": "🔴CU9.5", "liveCornerOver105": "🔴CO10.5", "liveCornerUnder105": "🔴CU10.5"
+      "1": "Dom.",
+      "2": "Ext.",
+      "12": "12",
+      "X": "Nul",
+      "1X": "1X",
+      "X2": "X2",
+      "dnb1": "DNB1",
+      "dnb2": "DNB2",
+      "over05": "O0.5",
+      "over15": "O1.5",
+      "over25": "O2.5",
+      "over35": "O3.5",
+      "over45": "O4.5",
+      "under15": "U1.5",
+      "under25": "U2.5",
+      "under35": "U3.5",
+      "under45": "U4.5",
+      "btts": "BTTS✓",
+      "nobtts": "BTTSx",
+      "ht1": "MT1",
+      "htX": "MTX",
+      "ht2": "MT2",
+      "htover15": "MT+1.5",
+      "htunder15": "MT-1.5",
+      "h1m1": "Dom.-1",
+      "h2m1": "Ext.-1",
+      "mb1_2plus": "Dom.2+",
+      "mb2_2plus": "Ext.2+",
+      "cleansheet1": "Dom.0enc.",
+      "cleansheet2": "Ext.0enc.",
+      "totalpair": "Pair",
+      "totalimpair": "Impair",
+      "res1over25": "1+O2.5",
+      "res1under25": "1+U2.5",
+      "resXover25": "X+O2.5",
+      "resXunder25": "X+U2.5",
+      "res2over25": "2+O2.5",
+      "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS",
+      "resXbtts": "X+BTTS",
+      "res2btts": "2+BTTS",
+      "dc1xbtts": "1X+BTTS",
+      "dcx2btts": "X2+BTTS",
+      "dc12btts": "12+BTTS",
+      "corner1": "Corn.Dom",
+      "cornerX": "Corn.Nul",
+      "corner2": "Corn.Ext",
+      "cornerOver85": "CO8.5",
+      "cornerUnder85": "CU8.5",
+      "cornerOver95": "CO9.5",
+      "cornerUnder95": "CU9.5",
+      "cornerOver105": "CO10.5",
+      "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Dom-3",
+      "cornerHandAway25": "CH Ext-3",
+      "live1": "🔴Dom.",
+      "liveX": "🔴Nul",
+      "live2": "🔴Ext.",
+      "liveOver05": "🔴O0.5",
+      "liveUnder05": "🔴U0.5",
+      "liveOver15": "🔴O1.5",
+      "liveUnder15": "🔴U1.5",
+      "liveOver25": "🔴O2.5",
+      "liveUnder25": "🔴U2.5",
+      "liveOver35": "🔴O3.5",
+      "liveUnder35": "🔴U3.5",
+      "liveCornerOver75": "🔴CO7.5",
+      "liveCornerUnder75": "🔴CU7.5",
+      "liveCornerOver85": "🔴CO8.5",
+      "liveCornerUnder85": "🔴CU8.5",
+      "liveCornerOver95": "🔴CO9.5",
+      "liveCornerUnder95": "🔴CU9.5",
+      "liveCornerOver105": "🔴CO10.5",
+      "liveCornerUnder105": "🔴CU10.5",
+      "card1": "Dom. +cartons",
+      "cardX": "Égal. cartons",
+      "card2": "Ext. +cartons",
+      "cardOver25": "+2.5 cartons",
+      "cardUnder25": "-2.5 cartons",
+      "cardOver35": "+3.5 cartons",
+      "cardUnder35": "-3.5 cartons",
+      "cardOver45": "+4.5 cartons",
+      "cardUnder45": "-4.5 cartons",
+      "cardOver55": "+5.5 cartons",
+      "cardUnder55": "-5.5 cartons",
+      "sot1": "Dom. +cadrés",
+      "sotX": "Égal. cadrés",
+      "sot2": "Ext. +cadrés",
+      "sotOver65": "+6.5 cadrés",
+      "sotUnder65": "-6.5 cadrés",
+      "sotOver75": "+7.5 cadrés",
+      "sotUnder75": "-7.5 cadrés",
+      "sotOver85": "+8.5 cadrés",
+      "sotUnder85": "-8.5 cadrés",
+      "sotOver95": "+9.5 cadrés",
+      "sotUnder95": "-9.5 cadrés",
+      "foulOver195": "+19.5 fautes",
+      "foulUnder195": "-19.5 fautes",
+      "foulOver215": "+21.5 fautes",
+      "foulUnder215": "-21.5 fautes",
+      "foulOver235": "+23.5 fautes",
+      "foulUnder235": "-23.5 fautes",
+      "foulOver255": "+25.5 fautes",
+      "foulUnder255": "-25.5 fautes",
+      "offsideOver25": "+2.5 H-J",
+      "offsideUnder25": "-2.5 H-J",
+      "offsideOver35": "+3.5 H-J",
+      "offsideUnder35": "-3.5 H-J",
+      "offsideOver45": "+4.5 H-J",
+      "offsideUnder45": "-4.5 H-J",
+      "htft11": "MT/FT 1/1",
+      "htft1X": "MT/FT 1/X",
+      "htft12": "MT/FT 1/2",
+      "htftX1": "MT/FT X/1",
+      "htftXX": "MT/FT X/X",
+      "htftX2": "MT/FT X/2",
+      "htft21": "MT/FT 2/1",
+      "htft2X": "MT/FT 2/X",
+      "htft22": "MT/FT 2/2",
+      "dc1xover15": "1X +1.5",
+      "dc1xunder35": "1X -3.5",
+      "dcx2over15": "X2 +1.5",
+      "dcx2under35": "X2 -3.5",
+      "dc12over15": "12 +1.5",
+      "dc12under35": "12 -3.5",
+      "bttsover25": "BTTS +2.5",
+      "bttsunder35": "BTTS -3.5",
+      "nobttsunder25": "BTTS Non -2.5",
+      "nobttsover15": "BTTS Non +1.5",
+      "res1over15": "1 & +1.5",
+      "res2over15": "2 & +1.5"
     },
     "marketGroups": {
       "resultats": {
         "label": "Résultat",
         "subtitle": "Qui remporte le match à la fin du temps réglementaire ?",
         "markets": {
-          "auto": { "label": "Meilleur pick auto", "desc": "Choisit automatiquement le marché avec la probabilité la plus haute pour ce match." },
-          "1": { "label": "1 — Victoire domicile", "desc": "Gagné si l'équipe à domicile gagne. Perdu si nul ou victoire extérieure." },
-          "X": { "label": "X — Match nul", "desc": "Gagné si le match se termine à égalité. Perdu si une équipe gagne." },
-          "2": { "label": "2 — Victoire extérieur", "desc": "Gagné si l'équipe extérieure gagne. Perdu si nul ou victoire à domicile." }
+          "1": {
+            "label": "1 — Victoire domicile",
+            "desc": "Gagné si l'équipe à domicile gagne. Perdu si nul ou victoire extérieure."
+          },
+          "2": {
+            "label": "2 — Victoire extérieur",
+            "desc": "Gagné si l'équipe extérieure gagne. Perdu si nul ou victoire à domicile."
+          },
+          "auto": {
+            "label": "Meilleur pick auto",
+            "desc": "Choisit automatiquement le marché avec la probabilité la plus haute pour ce match."
+          },
+          "X": {
+            "label": "X — Match nul",
+            "desc": "Gagné si le match se termine à égalité. Perdu si une équipe gagne."
+          }
         }
       },
       "doublechance": {
         "label": "Double chance",
         "subtitle": "Tu couvres 2 résultats sur 3 — plus sécurisé, cote réduite.",
         "markets": {
-          "1X": { "label": "1X — Domicile ou Nul", "desc": "Gagné si domicile gagne ou match nul. Perdu seulement si l'extérieur gagne." },
-          "X2": { "label": "X2 — Nul ou Extérieur", "desc": "Gagné si nul ou victoire extérieure. Perdu seulement si domicile gagne." },
-          "12": { "label": "12 — Domicile ou Extérieur (sans nul)", "desc": "Gagné si l'une des deux équipes gagne. Perdu seulement en cas de nul." }
+          "12": {
+            "label": "12 — Domicile ou Extérieur (sans nul)",
+            "desc": "Gagné si l'une des deux équipes gagne. Perdu seulement en cas de nul."
+          },
+          "1X": {
+            "label": "1X — Domicile ou Nul",
+            "desc": "Gagné si domicile gagne ou match nul. Perdu seulement si l'extérieur gagne."
+          },
+          "X2": {
+            "label": "X2 — Nul ou Extérieur",
+            "desc": "Gagné si nul ou victoire extérieure. Perdu seulement si domicile gagne."
+          }
         }
       },
       "dnb": {
         "label": "Résultat sans nul",
         "subtitle": "Draw No Bet — ton mise est remboursée si match nul.",
         "markets": {
-          "dnb1": { "label": "DNB Domicile — Pari annulé si nul", "desc": "Gagné si domicile gagne. Remboursé si nul. Perdu si extérieur gagne." },
-          "dnb2": { "label": "DNB Extérieur — Pari annulé si nul", "desc": "Gagné si extérieur gagne. Remboursé si nul. Perdu si domicile gagne." }
+          "dnb1": {
+            "label": "DNB Domicile — Pari annulé si nul",
+            "desc": "Gagné si domicile gagne. Remboursé si nul. Perdu si extérieur gagne."
+          },
+          "dnb2": {
+            "label": "DNB Extérieur — Pari annulé si nul",
+            "desc": "Gagné si extérieur gagne. Remboursé si nul. Perdu si domicile gagne."
+          }
         }
       },
       "overunder": {
         "label": "Total buts",
         "subtitle": "Parie sur le nombre total de buts marqués dans le match.",
         "markets": {
-          "over05": { "label": "Plus de 0.5 but — Au moins 1 but", "desc": "Gagné dès qu'1 but est marqué dans le match (~97% des matchs)." },
-          "over15": { "label": "Plus de 1.5 buts — Au moins 2 buts", "desc": "Gagné si le match compte au moins 2 buts au total." },
-          "over25": { "label": "Plus de 2.5 buts — Au moins 3 buts", "desc": "Gagné si le match compte au moins 3 buts au total (ex. 2-1, 3-0)." },
-          "over35": { "label": "Plus de 3.5 buts — Au moins 4 buts", "desc": "Gagné si le match compte au moins 4 buts au total (ex. 2-2, 3-1)." },
-          "over45": { "label": "Plus de 4.5 buts — Au moins 5 buts", "desc": "Gagné si le match compte au moins 5 buts au total." },
-          "under15": { "label": "Moins de 1.5 but — Maximum 1 but", "desc": "Gagné si le match compte 0 ou 1 but au total." },
-          "under25": { "label": "Moins de 2.5 buts — Maximum 2 buts", "desc": "Gagné si le match compte 2 buts maximum au total." },
-          "under35": { "label": "Moins de 3.5 buts — Maximum 3 buts", "desc": "Gagné si le match compte 3 buts maximum au total." },
-          "under45": { "label": "Moins de 4.5 buts — Maximum 4 buts", "desc": "Gagné si le match compte 4 buts maximum au total." }
+          "over05": {
+            "label": "Plus de 0.5 but — Au moins 1 but",
+            "desc": "Gagné dès qu'1 but est marqué dans le match (~97% des matchs)."
+          },
+          "over15": {
+            "label": "Plus de 1.5 buts — Au moins 2 buts",
+            "desc": "Gagné si le match compte au moins 2 buts au total."
+          },
+          "over25": {
+            "label": "Plus de 2.5 buts — Au moins 3 buts",
+            "desc": "Gagné si le match compte au moins 3 buts au total (ex. 2-1, 3-0)."
+          },
+          "over35": {
+            "label": "Plus de 3.5 buts — Au moins 4 buts",
+            "desc": "Gagné si le match compte au moins 4 buts au total (ex. 2-2, 3-1)."
+          },
+          "over45": {
+            "label": "Plus de 4.5 buts — Au moins 5 buts",
+            "desc": "Gagné si le match compte au moins 5 buts au total."
+          },
+          "under15": {
+            "label": "Moins de 1.5 but — Maximum 1 but",
+            "desc": "Gagné si le match compte 0 ou 1 but au total."
+          },
+          "under25": {
+            "label": "Moins de 2.5 buts — Maximum 2 buts",
+            "desc": "Gagné si le match compte 2 buts maximum au total."
+          },
+          "under35": {
+            "label": "Moins de 3.5 buts — Maximum 3 buts",
+            "desc": "Gagné si le match compte 3 buts maximum au total."
+          },
+          "under45": {
+            "label": "Moins de 4.5 buts — Maximum 4 buts",
+            "desc": "Gagné si le match compte 4 buts maximum au total."
+          }
         }
       },
       "btts": {
         "label": "Les 2 marquent",
         "subtitle": "Both Teams To Score — est-ce que chaque équipe marque au moins une fois ?",
         "markets": {
-          "btts": { "label": "BTTS Oui — Les 2 équipes marquent", "desc": "Gagné si les deux équipes marquent chacune au moins 1 but." },
-          "nobtts": { "label": "BTTS Non — Au moins une équipe ne marque pas", "desc": "Gagné si au moins une équipe ne marque pas." }
+          "btts": {
+            "label": "BTTS Oui — Les 2 équipes marquent",
+            "desc": "Gagné si les deux équipes marquent chacune au moins 1 but."
+          },
+          "nobtts": {
+            "label": "BTTS Non — Au moins une équipe ne marque pas",
+            "desc": "Gagné si au moins une équipe ne marque pas."
+          }
         }
       },
       "mitemps": {
         "label": "1ère mi-temps",
         "subtitle": "Résultat et buts sur les 45 premières minutes uniquement.",
         "markets": {
-          "ht1": { "label": "MT 1 — Domicile mène à la mi-temps", "desc": "Gagné si l'équipe à domicile mène au score à la mi-temps." },
-          "htX": { "label": "MT X — Égalité à la mi-temps", "desc": "Gagné si les deux équipes sont à égalité à la mi-temps." },
-          "ht2": { "label": "MT 2 — Extérieur mène à la mi-temps", "desc": "Gagné si l'équipe extérieure mène au score à la mi-temps." },
-          "htover15": { "label": "MT +1.5 buts — Au moins 2 buts à la pause", "desc": "Gagné si au moins 2 buts sont marqués avant la mi-temps." },
-          "htunder15": { "label": "MT -1.5 but — Maximum 1 but à la pause", "desc": "Gagné si 0 ou 1 but est marqué avant la mi-temps." }
+          "ht1": {
+            "label": "MT 1 — Domicile mène à la mi-temps",
+            "desc": "Gagné si l'équipe à domicile mène au score à la mi-temps."
+          },
+          "htX": {
+            "label": "MT X — Égalité à la mi-temps",
+            "desc": "Gagné si les deux équipes sont à égalité à la mi-temps."
+          },
+          "ht2": {
+            "label": "MT 2 — Extérieur mène à la mi-temps",
+            "desc": "Gagné si l'équipe extérieure mène au score à la mi-temps."
+          },
+          "htover15": {
+            "label": "MT +1.5 buts — Au moins 2 buts à la pause",
+            "desc": "Gagné si au moins 2 buts sont marqués avant la mi-temps."
+          },
+          "htunder15": {
+            "label": "MT -1.5 but — Maximum 1 but à la pause",
+            "desc": "Gagné si 0 ou 1 but est marqué avant la mi-temps."
+          }
         }
       },
       "scoreexact": {
         "label": "Score exact",
         "subtitle": "Le score final précis calculé comme le plus probable par notre modèle.",
         "markets": {
-          "exactscore": { "label": "Score exact le plus probable", "desc": "Gagné uniquement si le score final correspond exactement au score le plus probable calculé pour ce match." }
+          "exactscore": {
+            "label": "Score exact le plus probable",
+            "desc": "Gagné uniquement si le score final correspond exactement au score le plus probable calculé pour ce match."
+          }
         }
       },
       "handicap": {
         "label": "Handicap européen",
         "subtitle": "Une équipe doit gagner avec au moins 2 buts d'écart.",
         "markets": {
-          "h1m1": { "label": "Domicile -1 — Gagne avec 2 buts d'écart ou plus", "desc": "Gagné si l'équipe à domicile l'emporte avec au moins 2 buts d'écart (ex. 2-0, 3-1)." },
-          "h2m1": { "label": "Extérieur -1 — Gagne avec 2 buts d'écart ou plus", "desc": "Gagné si l'équipe extérieure l'emporte avec au moins 2 buts d'écart." }
+          "h1m1": {
+            "label": "Domicile -1 — Gagne avec 2 buts d'écart ou plus",
+            "desc": "Gagné si l'équipe à domicile l'emporte avec au moins 2 buts d'écart (ex. 2-0, 3-1)."
+          },
+          "h2m1": {
+            "label": "Extérieur -1 — Gagne avec 2 buts d'écart ou plus",
+            "desc": "Gagné si l'équipe extérieure l'emporte avec au moins 2 buts d'écart."
+          }
         }
       },
       "multibuts": {
         "label": "Multi-buts",
         "subtitle": "Une équipe marque plusieurs buts, ou gagne sans en encaisser.",
         "markets": {
-          "mb1_2plus": { "label": "Domicile marque 2 buts ou plus", "desc": "Gagné si l'équipe à domicile marque au moins 2 buts dans le match, quel que soit le résultat final." },
-          "mb2_2plus": { "label": "Extérieur marque 2 buts ou plus", "desc": "Gagné si l'équipe extérieure marque au moins 2 buts dans le match, quel que soit le résultat final." },
-          "cleansheet1": { "label": "Domicile gagne sans encaisser", "desc": "Gagné si l'équipe à domicile remporte le match sans que l'extérieur ne marque." },
-          "cleansheet2": { "label": "Extérieur gagne sans encaisser", "desc": "Gagné si l'équipe extérieure remporte le match sans que le domicile ne marque." }
+          "mb1_2plus": {
+            "label": "Domicile marque 2 buts ou plus",
+            "desc": "Gagné si l'équipe à domicile marque au moins 2 buts dans le match, quel que soit le résultat final."
+          },
+          "mb2_2plus": {
+            "label": "Extérieur marque 2 buts ou plus",
+            "desc": "Gagné si l'équipe extérieure marque au moins 2 buts dans le match, quel que soit le résultat final."
+          },
+          "cleansheet1": {
+            "label": "Domicile gagne sans encaisser",
+            "desc": "Gagné si l'équipe à domicile remporte le match sans que l'extérieur ne marque."
+          },
+          "cleansheet2": {
+            "label": "Extérieur gagne sans encaisser",
+            "desc": "Gagné si l'équipe extérieure remporte le match sans que le domicile ne marque."
+          }
         }
       },
       "resulttotal": {
         "label": "Résultat + Total buts",
         "subtitle": "Combine le résultat du match et le nombre total de buts.",
         "markets": {
-          "res1over25": { "label": "1 & Plus de 2.5 buts", "desc": "Gagné si l'équipe à domicile gagne ET que le match compte au moins 3 buts." },
-          "res1under25": { "label": "1 & Moins de 2.5 buts", "desc": "Gagné si l'équipe à domicile gagne ET que le match compte 2 buts maximum." },
-          "resXover25": { "label": "X & Plus de 2.5 buts", "desc": "Gagné si le match se termine nul ET qu'il compte au moins 3 buts." },
-          "resXunder25": { "label": "X & Moins de 2.5 buts", "desc": "Gagné si le match se termine nul ET qu'il compte 2 buts maximum." },
-          "res2over25": { "label": "2 & Plus de 2.5 buts", "desc": "Gagné si l'équipe extérieure gagne ET que le match compte au moins 3 buts." },
-          "res2under25": { "label": "2 & Moins de 2.5 buts", "desc": "Gagné si l'équipe extérieure gagne ET que le match compte 2 buts maximum." }
+          "res1over25": {
+            "label": "1 & Plus de 2.5 buts",
+            "desc": "Gagné si l'équipe à domicile gagne ET que le match compte au moins 3 buts."
+          },
+          "res1under25": {
+            "label": "1 & Moins de 2.5 buts",
+            "desc": "Gagné si l'équipe à domicile gagne ET que le match compte 2 buts maximum."
+          },
+          "resXover25": {
+            "label": "X & Plus de 2.5 buts",
+            "desc": "Gagné si le match se termine nul ET qu'il compte au moins 3 buts."
+          },
+          "resXunder25": {
+            "label": "X & Moins de 2.5 buts",
+            "desc": "Gagné si le match se termine nul ET qu'il compte 2 buts maximum."
+          },
+          "res2over25": {
+            "label": "2 & Plus de 2.5 buts",
+            "desc": "Gagné si l'équipe extérieure gagne ET que le match compte au moins 3 buts."
+          },
+          "res2under25": {
+            "label": "2 & Moins de 2.5 buts",
+            "desc": "Gagné si l'équipe extérieure gagne ET que le match compte 2 buts maximum."
+          },
+          "res1over15": {
+            "label": "Victoire domicile & Plus de 1.5",
+            "desc": "Le domicile gagne et le match compte au moins 2 buts."
+          },
+          "res2over15": {
+            "label": "Victoire extérieur & Plus de 1.5",
+            "desc": "L'extérieur gagne et le match compte au moins 2 buts."
+          }
         }
       },
       "resultbtts": {
         "label": "Résultat + BTTS",
         "subtitle": "Combine le résultat (ou double chance) et les 2 équipes qui marquent.",
         "markets": {
-          "res1btts": { "label": "1 & BTTS Oui", "desc": "Gagné si l'équipe à domicile gagne ET que les deux équipes marquent." },
-          "resXbtts": { "label": "X & BTTS Oui", "desc": "Gagné si le match se termine nul ET que les deux équipes marquent." },
-          "res2btts": { "label": "2 & BTTS Oui", "desc": "Gagné si l'équipe extérieure gagne ET que les deux équipes marquent." },
-          "dc1xbtts": { "label": "1X & BTTS Oui", "desc": "Gagné si domicile gagne ou match nul ET que les deux équipes marquent." },
-          "dcx2btts": { "label": "X2 & BTTS Oui", "desc": "Gagné si nul ou victoire extérieure ET que les deux équipes marquent." },
-          "dc12btts": { "label": "12 & BTTS Oui", "desc": "Gagné si l'une des deux équipes gagne (sans nul) ET que les deux équipes marquent." }
+          "res1btts": {
+            "label": "1 & BTTS Oui",
+            "desc": "Gagné si l'équipe à domicile gagne ET que les deux équipes marquent."
+          },
+          "resXbtts": {
+            "label": "X & BTTS Oui",
+            "desc": "Gagné si le match se termine nul ET que les deux équipes marquent."
+          },
+          "res2btts": {
+            "label": "2 & BTTS Oui",
+            "desc": "Gagné si l'équipe extérieure gagne ET que les deux équipes marquent."
+          },
+          "dc1xbtts": {
+            "label": "1X & BTTS Oui",
+            "desc": "Gagné si domicile gagne ou match nul ET que les deux équipes marquent."
+          },
+          "dcx2btts": {
+            "label": "X2 & BTTS Oui",
+            "desc": "Gagné si nul ou victoire extérieure ET que les deux équipes marquent."
+          },
+          "dc12btts": {
+            "label": "12 & BTTS Oui",
+            "desc": "Gagné si l'une des deux équipes gagne (sans nul) ET que les deux équipes marquent."
+          }
         }
       },
       "totalpair": {
         "label": "Total pair/impair",
         "subtitle": "Le nombre total de buts du match est-il pair ou impair ?",
         "markets": {
-          "totalpair": { "label": "Total pair — 0, 2, 4 buts...", "desc": "Gagné si le nombre total de buts du match est pair (0, 2, 4...)." },
-          "totalimpair": { "label": "Total impair — 1, 3, 5 buts...", "desc": "Gagné si le nombre total de buts du match est impair (1, 3, 5...)." }
+          "totalpair": {
+            "label": "Total pair — 0, 2, 4 buts...",
+            "desc": "Gagné si le nombre total de buts du match est pair (0, 2, 4...)."
+          },
+          "totalimpair": {
+            "label": "Total impair — 1, 3, 5 buts...",
+            "desc": "Gagné si le nombre total de buts du match est impair (1, 3, 5...)."
+          }
         }
       },
       "corners1x2": {
         "label": "Corners — Équipe avec le plus",
         "subtitle": "Quelle équipe obtient le plus de corners dans le match ? Nécessite un historique de corners par équipe — se fiabilise avec le temps.",
         "markets": {
-          "corner1": { "label": "Domicile — Plus de corners", "desc": "Gagné si l'équipe à domicile obtient plus de corners que l'extérieur sur l'ensemble du match." },
-          "cornerX": { "label": "Égalité — Même nombre de corners", "desc": "Gagné si les deux équipes obtiennent exactement le même nombre de corners." },
-          "corner2": { "label": "Extérieur — Plus de corners", "desc": "Gagné si l'équipe extérieure obtient plus de corners que le domicile sur l'ensemble du match." }
+          "corner1": {
+            "label": "Domicile — Plus de corners",
+            "desc": "Gagné si l'équipe à domicile obtient plus de corners que l'extérieur sur l'ensemble du match."
+          },
+          "cornerX": {
+            "label": "Égalité — Même nombre de corners",
+            "desc": "Gagné si les deux équipes obtiennent exactement le même nombre de corners."
+          },
+          "corner2": {
+            "label": "Extérieur — Plus de corners",
+            "desc": "Gagné si l'équipe extérieure obtient plus de corners que le domicile sur l'ensemble du match."
+          }
         }
       },
       "cornerstotal": {
         "label": "Total corners",
         "subtitle": "Parie sur le nombre total de corners du match.",
         "markets": {
-          "cornerOver85": { "label": "Plus de 8.5 corners", "desc": "Gagné si le match compte au moins 9 corners au total." },
-          "cornerUnder85": { "label": "Moins de 8.5 corners", "desc": "Gagné si le match compte 8 corners maximum au total." },
-          "cornerOver95": { "label": "Plus de 9.5 corners", "desc": "Gagné si le match compte au moins 10 corners au total." },
-          "cornerUnder95": { "label": "Moins de 9.5 corners", "desc": "Gagné si le match compte 9 corners maximum au total." },
-          "cornerOver105": { "label": "Plus de 10.5 corners", "desc": "Gagné si le match compte au moins 11 corners au total." },
-          "cornerUnder105": { "label": "Moins de 10.5 corners", "desc": "Gagné si le match compte 10 corners maximum au total." }
+          "cornerOver85": {
+            "label": "Plus de 8.5 corners",
+            "desc": "Gagné si le match compte au moins 9 corners au total."
+          },
+          "cornerUnder85": {
+            "label": "Moins de 8.5 corners",
+            "desc": "Gagné si le match compte 8 corners maximum au total."
+          },
+          "cornerOver95": {
+            "label": "Plus de 9.5 corners",
+            "desc": "Gagné si le match compte au moins 10 corners au total."
+          },
+          "cornerUnder95": {
+            "label": "Moins de 9.5 corners",
+            "desc": "Gagné si le match compte 9 corners maximum au total."
+          },
+          "cornerOver105": {
+            "label": "Plus de 10.5 corners",
+            "desc": "Gagné si le match compte au moins 11 corners au total."
+          },
+          "cornerUnder105": {
+            "label": "Moins de 10.5 corners",
+            "desc": "Gagné si le match compte 10 corners maximum au total."
+          }
         }
       },
       "cornershandicap": {
         "label": "Handicap corners",
         "subtitle": "Une équipe doit dominer nettement la bataille des corners (3 d'écart ou plus).",
         "markets": {
-          "cornerHandHome25": { "label": "Domicile -2.5 corners", "desc": "Gagné si l'équipe à domicile obtient au moins 3 corners de plus que l'extérieur." },
-          "cornerHandAway25": { "label": "Extérieur -2.5 corners", "desc": "Gagné si l'équipe extérieure obtient au moins 3 corners de plus que le domicile." }
+          "cornerHandHome25": {
+            "label": "Domicile -2.5 corners",
+            "desc": "Gagné si l'équipe à domicile obtient au moins 3 corners de plus que l'extérieur."
+          },
+          "cornerHandAway25": {
+            "label": "Extérieur -2.5 corners",
+            "desc": "Gagné si l'équipe extérieure obtient au moins 3 corners de plus que le domicile."
+          }
         }
       },
       "liveresultats": {
         "label": "🔴 Résultat live",
         "subtitle": "Résultat final probable, recalculé à partir du score et du temps restant.",
         "markets": {
-          "live1": { "label": "1 — Domicile gagne (live)", "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant." },
-          "liveX": { "label": "X — Match nul (live)", "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant." },
-          "live2": { "label": "2 — Extérieur gagne (live)", "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant." }
+          "live1": {
+            "label": "1 — Domicile gagne (live)",
+            "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant."
+          },
+          "liveX": {
+            "label": "X — Match nul (live)",
+            "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant."
+          },
+          "live2": {
+            "label": "2 — Extérieur gagne (live)",
+            "desc": "Recalculé à chaque instant à partir du score actuel et du temps de jeu restant."
+          }
         }
       },
       "liveoverunder": {
         "label": "🔴 Total buts live",
         "subtitle": "Nombre total de buts en fin de match, recalculé depuis le score actuel.",
         "markets": {
-          "liveOver05": { "label": "Plus de 0.5 but (live)", "desc": "Gagné dès qu'1 but de plus est marqué dans le match." },
-          "liveUnder05": { "label": "Moins de 0.5 but (live)", "desc": "Gagné si aucun but supplémentaire n'est marqué." },
-          "liveOver15": { "label": "Plus de 1.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
-          "liveUnder15": { "label": "Moins de 1.5 but (live)", "desc": "Probabilité recalculée depuis le score actuel." },
-          "liveOver25": { "label": "Plus de 2.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
-          "liveUnder25": { "label": "Moins de 2.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
-          "liveOver35": { "label": "Plus de 3.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." },
-          "liveUnder35": { "label": "Moins de 3.5 buts (live)", "desc": "Probabilité recalculée depuis le score actuel." }
+          "liveOver05": {
+            "label": "Plus de 0.5 but (live)",
+            "desc": "Gagné dès qu'1 but de plus est marqué dans le match."
+          },
+          "liveUnder05": {
+            "label": "Moins de 0.5 but (live)",
+            "desc": "Gagné si aucun but supplémentaire n'est marqué."
+          },
+          "liveOver15": {
+            "label": "Plus de 1.5 buts (live)",
+            "desc": "Probabilité recalculée depuis le score actuel."
+          },
+          "liveUnder15": {
+            "label": "Moins de 1.5 but (live)",
+            "desc": "Probabilité recalculée depuis le score actuel."
+          },
+          "liveOver25": {
+            "label": "Plus de 2.5 buts (live)",
+            "desc": "Probabilité recalculée depuis le score actuel."
+          },
+          "liveUnder25": {
+            "label": "Moins de 2.5 buts (live)",
+            "desc": "Probabilité recalculée depuis le score actuel."
+          },
+          "liveOver35": {
+            "label": "Plus de 3.5 buts (live)",
+            "desc": "Probabilité recalculée depuis le score actuel."
+          },
+          "liveUnder35": {
+            "label": "Moins de 3.5 buts (live)",
+            "desc": "Probabilité recalculée depuis le score actuel."
+          }
         }
       },
       "livescoreexact": {
         "label": "🔴 Score exact live",
         "subtitle": "Score final le plus probable à partir de maintenant.",
         "markets": {
-          "livescoreexact": { "label": "Score exact le plus probable (live)", "desc": "Recalculé en continu à partir du score actuel et du temps restant." }
+          "livescoreexact": {
+            "label": "Score exact le plus probable (live)",
+            "desc": "Recalculé en continu à partir du score actuel et du temps restant."
+          }
         }
       },
       "livecorners": {
         "label": "🔴 Corners live",
         "subtitle": "Total corners en fin de match, recalculé depuis le compte actuel. Disponible seulement si le suivi corners live est activé pour ce match.",
         "markets": {
-          "liveCornerOver75": { "label": "Plus de 7.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerUnder75": { "label": "Moins de 7.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerOver85": { "label": "Plus de 8.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerUnder85": { "label": "Moins de 8.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerOver95": { "label": "Plus de 9.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerUnder95": { "label": "Moins de 9.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerOver105": { "label": "Plus de 10.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." },
-          "liveCornerUnder105": { "label": "Moins de 10.5 corners (live)", "desc": "Probabilité recalculée depuis le nombre de corners déjà joués." }
+          "liveCornerOver75": {
+            "label": "Plus de 7.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerUnder75": {
+            "label": "Moins de 7.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerOver85": {
+            "label": "Plus de 8.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerUnder85": {
+            "label": "Moins de 8.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerOver95": {
+            "label": "Plus de 9.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerUnder95": {
+            "label": "Moins de 9.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerOver105": {
+            "label": "Plus de 10.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          },
+          "liveCornerUnder105": {
+            "label": "Moins de 10.5 corners (live)",
+            "desc": "Probabilité recalculée depuis le nombre de corners déjà joués."
+          }
+        }
+      },
+      "cards1x2": {
+        "label": "Cartons — Équipe avec le plus",
+        "subtitle": "Quelle équipe prendra le plus de cartons (jaunes + rouges) ? Basé sur l'historique de discipline des deux équipes.",
+        "markets": {
+          "card1": {
+            "label": "Domicile — Plus de cartons",
+            "desc": "Gagné si l'équipe à domicile a plus de cartons que l'autre sur l'ensemble du match."
+          },
+          "cardX": {
+            "label": "Égalité — Même nombre de cartons",
+            "desc": "Gagné si les deux équipes ont exactement le même nombre de cartons."
+          },
+          "card2": {
+            "label": "Extérieur — Plus de cartons",
+            "desc": "Gagné si l'équipe à l'extérieur a plus de cartons que l'autre sur l'ensemble du match."
+          }
+        }
+      },
+      "cardstotal": {
+        "label": "Total cartons",
+        "subtitle": "Nombre total de cartons du match (jaunes + rouges, chaque carton compte 1).",
+        "markets": {
+          "cardOver25": {
+            "label": "Plus de 2.5 cartons",
+            "desc": "Gagné si le match compte au moins 3 cartons au total."
+          },
+          "cardUnder25": {
+            "label": "Moins de 2.5 cartons",
+            "desc": "Gagné si le match compte 2 cartons maximum au total."
+          },
+          "cardOver35": {
+            "label": "Plus de 3.5 cartons",
+            "desc": "Gagné si le match compte au moins 4 cartons au total."
+          },
+          "cardUnder35": {
+            "label": "Moins de 3.5 cartons",
+            "desc": "Gagné si le match compte 3 cartons maximum au total."
+          },
+          "cardOver45": {
+            "label": "Plus de 4.5 cartons",
+            "desc": "Gagné si le match compte au moins 5 cartons au total."
+          },
+          "cardUnder45": {
+            "label": "Moins de 4.5 cartons",
+            "desc": "Gagné si le match compte 4 cartons maximum au total."
+          },
+          "cardOver55": {
+            "label": "Plus de 5.5 cartons",
+            "desc": "Gagné si le match compte au moins 6 cartons au total."
+          },
+          "cardUnder55": {
+            "label": "Moins de 5.5 cartons",
+            "desc": "Gagné si le match compte 5 cartons maximum au total."
+          }
+        }
+      },
+      "sot1x2": {
+        "label": "Tirs cadrés — Équipe avec le plus",
+        "subtitle": "Quelle équipe cadrera le plus de tirs ? Basé sur l'historique offensif et défensif des deux équipes.",
+        "markets": {
+          "sot1": {
+            "label": "Domicile — Plus de tirs cadrés",
+            "desc": "Gagné si l'équipe à domicile a plus de tirs cadrés que l'autre sur l'ensemble du match."
+          },
+          "sotX": {
+            "label": "Égalité — Même nombre de tirs cadrés",
+            "desc": "Gagné si les deux équipes ont exactement le même nombre de tirs cadrés."
+          },
+          "sot2": {
+            "label": "Extérieur — Plus de tirs cadrés",
+            "desc": "Gagné si l'équipe à l'extérieur a plus de tirs cadrés que l'autre sur l'ensemble du match."
+          }
+        }
+      },
+      "sottotal": {
+        "label": "Total tirs cadrés",
+        "subtitle": "Nombre total de tirs cadrés du match.",
+        "markets": {
+          "sotOver65": {
+            "label": "Plus de 6.5 tirs cadrés",
+            "desc": "Gagné si le match compte au moins 7 tirs cadrés au total."
+          },
+          "sotUnder65": {
+            "label": "Moins de 6.5 tirs cadrés",
+            "desc": "Gagné si le match compte 6 tirs cadrés maximum au total."
+          },
+          "sotOver75": {
+            "label": "Plus de 7.5 tirs cadrés",
+            "desc": "Gagné si le match compte au moins 8 tirs cadrés au total."
+          },
+          "sotUnder75": {
+            "label": "Moins de 7.5 tirs cadrés",
+            "desc": "Gagné si le match compte 7 tirs cadrés maximum au total."
+          },
+          "sotOver85": {
+            "label": "Plus de 8.5 tirs cadrés",
+            "desc": "Gagné si le match compte au moins 9 tirs cadrés au total."
+          },
+          "sotUnder85": {
+            "label": "Moins de 8.5 tirs cadrés",
+            "desc": "Gagné si le match compte 8 tirs cadrés maximum au total."
+          },
+          "sotOver95": {
+            "label": "Plus de 9.5 tirs cadrés",
+            "desc": "Gagné si le match compte au moins 10 tirs cadrés au total."
+          },
+          "sotUnder95": {
+            "label": "Moins de 9.5 tirs cadrés",
+            "desc": "Gagné si le match compte 9 tirs cadrés maximum au total."
+          }
+        }
+      },
+      "foulstotal": {
+        "label": "Total fautes",
+        "subtitle": "Nombre total de fautes sifflées dans le match.",
+        "markets": {
+          "foulOver195": {
+            "label": "Plus de 19.5 fautes",
+            "desc": "Gagné si le match compte au moins 20 fautes au total."
+          },
+          "foulUnder195": {
+            "label": "Moins de 19.5 fautes",
+            "desc": "Gagné si le match compte 19 fautes maximum au total."
+          },
+          "foulOver215": {
+            "label": "Plus de 21.5 fautes",
+            "desc": "Gagné si le match compte au moins 22 fautes au total."
+          },
+          "foulUnder215": {
+            "label": "Moins de 21.5 fautes",
+            "desc": "Gagné si le match compte 21 fautes maximum au total."
+          },
+          "foulOver235": {
+            "label": "Plus de 23.5 fautes",
+            "desc": "Gagné si le match compte au moins 24 fautes au total."
+          },
+          "foulUnder235": {
+            "label": "Moins de 23.5 fautes",
+            "desc": "Gagné si le match compte 23 fautes maximum au total."
+          },
+          "foulOver255": {
+            "label": "Plus de 25.5 fautes",
+            "desc": "Gagné si le match compte au moins 26 fautes au total."
+          },
+          "foulUnder255": {
+            "label": "Moins de 25.5 fautes",
+            "desc": "Gagné si le match compte 25 fautes maximum au total."
+          }
+        }
+      },
+      "offsidestotal": {
+        "label": "Total hors-jeu",
+        "subtitle": "Nombre total de hors-jeu signalés dans le match.",
+        "markets": {
+          "offsideOver25": {
+            "label": "Plus de 2.5 hors-jeu",
+            "desc": "Gagné si le match compte au moins 3 hors-jeu au total."
+          },
+          "offsideUnder25": {
+            "label": "Moins de 2.5 hors-jeu",
+            "desc": "Gagné si le match compte 2 hors-jeu maximum au total."
+          },
+          "offsideOver35": {
+            "label": "Plus de 3.5 hors-jeu",
+            "desc": "Gagné si le match compte au moins 4 hors-jeu au total."
+          },
+          "offsideUnder35": {
+            "label": "Moins de 3.5 hors-jeu",
+            "desc": "Gagné si le match compte 3 hors-jeu maximum au total."
+          },
+          "offsideOver45": {
+            "label": "Plus de 4.5 hors-jeu",
+            "desc": "Gagné si le match compte au moins 5 hors-jeu au total."
+          },
+          "offsideUnder45": {
+            "label": "Moins de 4.5 hors-jeu",
+            "desc": "Gagné si le match compte 4 hors-jeu maximum au total."
+          }
+        }
+      },
+      "dctotal": {
+        "label": "Double chance + Total",
+        "subtitle": "Combine une double chance et un nombre de buts.",
+        "markets": {
+          "dc1xover15": {
+            "label": "1X & Plus de 1.5",
+            "desc": "Domicile ou nul, avec au moins 2 buts."
+          },
+          "dc1xunder35": {
+            "label": "1X & Moins de 3.5",
+            "desc": "Domicile ou nul, avec 3 buts maximum."
+          },
+          "dcx2over15": {
+            "label": "X2 & Plus de 1.5",
+            "desc": "Nul ou extérieur, avec au moins 2 buts."
+          },
+          "dcx2under35": {
+            "label": "X2 & Moins de 3.5",
+            "desc": "Nul ou extérieur, avec 3 buts maximum."
+          },
+          "dc12over15": {
+            "label": "12 & Plus de 1.5",
+            "desc": "Pas de match nul, avec au moins 2 buts."
+          },
+          "dc12under35": {
+            "label": "12 & Moins de 3.5",
+            "desc": "Pas de match nul, avec 3 buts maximum."
+          }
+        }
+      },
+      "bttstotal": {
+        "label": "Les 2 marquent + Total",
+        "subtitle": "Combine « les deux équipes marquent » (ou non) et un nombre de buts.",
+        "markets": {
+          "bttsover25": {
+            "label": "Les 2 marquent & Plus de 2.5",
+            "desc": "Les deux équipes marquent et au moins 3 buts."
+          },
+          "bttsunder35": {
+            "label": "Les 2 marquent & Moins de 3.5",
+            "desc": "Les deux équipes marquent et 3 buts maximum."
+          },
+          "nobttsunder25": {
+            "label": "Une équipe ne marque pas & Moins de 2.5",
+            "desc": "Au moins une équipe ne marque pas et 2 buts maximum."
+          },
+          "nobttsover15": {
+            "label": "Une équipe ne marque pas & Plus de 1.5",
+            "desc": "Au moins une équipe ne marque pas et au moins 2 buts."
+          }
+        }
+      },
+      "buteurs": {
+        "label": "Paris joueur",
+        "subtitle": "Le joueur le plus probable du match, d'après ses buts et tirs cadrés récents.",
+        "markets": {
+          "anytimescorer": {
+            "label": "Buteur (à tout moment)",
+            "desc": "Le joueur le plus probable de marquer dans ce match."
+          },
+          "playersot": {
+            "label": "1+ tir cadré (joueur)",
+            "desc": "Le joueur le plus probable de cadrer au moins un tir."
+          }
+        }
+      },
+      "htft": {
+        "label": "Mi-temps / Fin de match",
+        "subtitle": "Le résultat à la pause ET le résultat final, dans le bon ordre.",
+        "markets": {
+          "htft11": {
+            "label": "MT Domicile / FT Domicile",
+            "desc": "Domicile à la mi-temps, puis Domicile à la fin du match."
+          },
+          "htft1X": {
+            "label": "MT Domicile / FT Nul",
+            "desc": "Domicile à la mi-temps, puis Nul à la fin du match."
+          },
+          "htft12": {
+            "label": "MT Domicile / FT Extérieur",
+            "desc": "Domicile à la mi-temps, puis Extérieur à la fin du match."
+          },
+          "htftX1": {
+            "label": "MT Nul / FT Domicile",
+            "desc": "Nul à la mi-temps, puis Domicile à la fin du match."
+          },
+          "htftXX": {
+            "label": "MT Nul / FT Nul",
+            "desc": "Nul à la mi-temps, puis Nul à la fin du match."
+          },
+          "htftX2": {
+            "label": "MT Nul / FT Extérieur",
+            "desc": "Nul à la mi-temps, puis Extérieur à la fin du match."
+          },
+          "htft21": {
+            "label": "MT Extérieur / FT Domicile",
+            "desc": "Extérieur à la mi-temps, puis Domicile à la fin du match."
+          },
+          "htft2X": {
+            "label": "MT Extérieur / FT Nul",
+            "desc": "Extérieur à la mi-temps, puis Nul à la fin du match."
+          },
+          "htft22": {
+            "label": "MT Extérieur / FT Extérieur",
+            "desc": "Extérieur à la mi-temps, puis Extérieur à la fin du match."
+          }
         }
       }
+    },
+    "playerPick": {
+      "scorer": "⚽ {{name}} buteur",
+      "sot": "🎯 {{name}} 1+ cadré"
     }
   },
   "pwa": {
@@ -1400,6 +2183,8 @@
     "refreshing": "Actualisation..."
   },
   "search": {
+    "hintNoTipsters": "Tapez pour rechercher des matchs, équipes ou compétitions",
+    "placeholderNoTipsters": "Rechercher matchs, équipes, compétitions...",
     "open": "Rechercher",
     "placeholder": "Rechercher matchs, tipsters...",
     "noResults": "Aucun résultat pour",
@@ -1468,7 +2253,14 @@
     "backHome": "Retour à l'accueil",
     "serverError": "Erreur serveur",
     "unauthorized": "Accès non autorisé",
-    "sessionExpired": "Session expirée, veuillez vous reconnecter."
+    "sessionExpired": "Session expirée, veuillez vous reconnecter.",
+    "crashTitle": "Oups, un problème est survenu",
+    "crashDesc": "Cette page a rencontré une erreur inattendue. Rechargez la page ; si le problème continue, contactez-nous.",
+    "updateTitle": "Nouvelle version disponible",
+    "updateDesc": "fpronix vient d'être mis à jour. Rechargez la page pour continuer.",
+    "reload": "Recharger",
+    "offline": "Vous êtes hors ligne — vérifiez votre connexion internet.",
+    "serverDown": "Connexion au serveur impossible pour le moment — nouvelle tentative automatique…"
   },
   "notFound": {
     "viewMatches": "Voir les matchs"
@@ -1582,7 +2374,9 @@
         "badge": "Communauté",
         "title": "Pronostics tipsters",
         "description": "Suis les pronostics publiés par les meilleurs tipsters et leur taux de réussite réel.",
-        "cta": "Découvrir"
+        "cta": "Découvrir",
+        "titleNoTipsters": "Pronostics IA",
+        "descriptionNoTipsters": "Les probabilités et le pronostic de l'IA pour chaque match, avec un taux de réussite publié."
       },
       "stats": {
         "badge": "Données",
@@ -1643,11 +2437,26 @@
         "title": "2. Données collectées",
         "intro": "Nous collectons les données suivantes :",
         "items": [
-          { "label": "Données d'inscription :", "text": "adresse e-mail, nom d'utilisateur, mot de passe (chiffré)" },
-          { "label": "Données de profil :", "text": "nom affiché, biographie, équipes et ligues favorites" },
-          { "label": "Données de paiement :", "text": "référence de transaction (nous ne stockons pas vos coordonnées bancaires)" },
-          { "label": "Données d'utilisation :", "text": "pronostics publiés, préférences, historique de navigation sur la Plateforme" },
-          { "label": "Données techniques :", "text": "adresse IP, type de navigateur, données de connexion" }
+          {
+            "label": "Données d'inscription :",
+            "text": "adresse e-mail, nom d'utilisateur, mot de passe (chiffré)"
+          },
+          {
+            "label": "Données de profil :",
+            "text": "nom affiché, biographie, équipes et ligues favorites"
+          },
+          {
+            "label": "Données de paiement :",
+            "text": "référence de transaction (nous ne stockons pas vos coordonnées bancaires)"
+          },
+          {
+            "label": "Données d'utilisation :",
+            "text": "pronostics publiés, préférences, historique de navigation sur la Plateforme"
+          },
+          {
+            "label": "Données techniques :",
+            "text": "adresse IP, type de navigateur, données de connexion"
+          }
         ]
       },
       "s3": {
@@ -1683,11 +2492,26 @@
         "title": "7. Vos droits",
         "intro": "Conformément à la loi sénégalaise sur la protection des données personnelles (loi n°2008-12), vous disposez des droits suivants :",
         "items": [
-          { "label": "Droit d'accès :", "text": "obtenir une copie de vos données" },
-          { "label": "Droit de rectification :", "text": "corriger vos données inexactes" },
-          { "label": "Droit à l'effacement :", "text": "demander la suppression de votre compte et de vos données" },
-          { "label": "Droit d'opposition :", "text": "vous opposer à certains traitements" },
-          { "label": "Droit à la portabilité :", "text": "recevoir vos données dans un format lisible" }
+          {
+            "label": "Droit d'accès :",
+            "text": "obtenir une copie de vos données"
+          },
+          {
+            "label": "Droit de rectification :",
+            "text": "corriger vos données inexactes"
+          },
+          {
+            "label": "Droit à l'effacement :",
+            "text": "demander la suppression de votre compte et de vos données"
+          },
+          {
+            "label": "Droit d'opposition :",
+            "text": "vous opposer à certains traitements"
+          },
+          {
+            "label": "Droit à la portabilité :",
+            "text": "recevoir vos données dans un format lisible"
+          }
         ],
         "contactPrefix": "Pour exercer ces droits, contactez-nous à",
         "responseTime": "Nous répondons dans un délai de 30 jours."
@@ -1778,7 +2602,8 @@
     "sections": {
       "s1": {
         "title": "1. Objet",
-        "body": "Les présentes Conditions Générales de Vente (CGV) régissent la vente des abonnements payants proposés sur fpronix (abonnement Premium et abonnements aux plans payants de tipsters), éditée par Ibrahim-Tresor MABIALA-MULHO. Elles complètent les Conditions Générales d'Utilisation."
+        "body": "Les présentes Conditions Générales de Vente (CGV) régissent la vente des abonnements payants proposés sur fpronix (abonnement Premium et abonnements aux plans payants de tipsters), éditée par Ibrahim-Tresor MABIALA-MULHO. Elles complètent les Conditions Générales d'Utilisation.",
+        "bodyNoTipsters": "Les présentes Conditions Générales de Vente (CGV) régissent la vente des abonnements payants proposés sur fpronix (abonnement Premium et Pass Jour), éditée par Ibrahim-Tresor MABIALA-MULHO. Elles complètent les Conditions Générales d'Utilisation."
       },
       "s2": {
         "title": "2. Produits et tarifs",
@@ -1787,11 +2612,12 @@
       },
       "s3": {
         "title": "3. Modalités de paiement",
-        "body": "Le paiement s'effectue via Mobile Money (Wave, Orange Money, Free Money, E-Money) par l'intermédiaire de notre prestataire SenePay, ou par carte bancaire internationale pour les devises étrangères. Le montant facturé correspond exactement au prix affiché avant confirmation ; aucun frais caché n'est ajouté par fpronix."
+        "body": "Le paiement s'effectue en FCFA par Mobile Money (Wave, Orange Money, Free Money, E-Money, et selon le pays MTN, Moov ou T-Money) par l'intermédiaire de notre prestataire SenePay. Le paiement par carte bancaire n'est pas encore proposé. Le montant facturé correspond exactement au prix affiché avant confirmation ; aucun frais caché n'est ajouté par fpronix."
       },
       "s4": {
         "title": "4. Accès au service",
-        "body": "L'accès aux fonctionnalités Premium ou au contenu du tipster est activé automatiquement et immédiatement dès confirmation du paiement par le prestataire de paiement. Aucune livraison physique n'est effectuée, le service étant entièrement numérique."
+        "body": "L'accès aux fonctionnalités Premium ou au contenu du tipster est activé automatiquement et immédiatement dès confirmation du paiement par le prestataire de paiement. Aucune livraison physique n'est effectuée, le service étant entièrement numérique.",
+        "bodyNoTipsters": "L'accès aux fonctionnalités Premium est activé automatiquement et immédiatement dès confirmation du paiement par le prestataire de paiement. Aucune livraison physique n'est effectuée, le service étant entièrement numérique."
       },
       "s5": {
         "title": "5. Droit de rétractation",
@@ -1876,6 +2702,7 @@
     "clearSearch": "Effacer la recherche",
     "noResults": "Aucun résultat pour « {{query}} ».",
     "categories": {
+      "aiOnly": "Analyse IA",
       "general": "Général",
       "account": "Compte & Abonnement",
       "matches": "Matchs & Données",
@@ -1887,7 +2714,8 @@
       "general": {
         "whatIsFpronix": {
           "q": "C'est quoi fpronix ?",
-          "a": "fpronix va bien au-delà des simples statistiques : c'est un écosystème complet dédié au football. Tu y trouves des pronostics générés par IA à partir de données réelles (forme des équipes, confrontations directes, cotes), un générateur de tickets personnalisables avec sauvegarde, historique et partage, un coach IA qui analyse tes paris pour t'aider à progresser, une marketplace de tipsters avec profils publics et abonnements, une analyse IA en direct pendant les matchs, un comparateur d'équipes, un blog généré automatiquement après chaque rencontre, et une page de transparence publique qui affiche notre taux de réussite réel. Le tout est disponible en plusieurs langues et devises."
+          "a": "fpronix va bien au-delà des simples statistiques : c'est un écosystème complet dédié au football. Tu y trouves des pronostics générés par IA à partir de données réelles (forme des équipes, confrontations directes, cotes), un générateur de tickets personnalisables avec sauvegarde, historique et partage, un coach IA qui analyse tes paris pour t'aider à progresser, une marketplace de tipsters avec profils publics et abonnements, une analyse IA en direct pendant les matchs, un comparateur d'équipes, un blog généré automatiquement après chaque rencontre, et une page de transparence publique qui affiche notre taux de réussite réel. Le tout est disponible en plusieurs langues et devises.",
+          "aNoTipsters": "fpronix va bien au-delà des simples statistiques : c'est un écosystème complet dédié au football. Tu y trouves des pronostics générés par IA à partir de données réelles (forme des équipes, confrontations directes, cotes, météo), un générateur de tickets personnalisables avec sauvegarde, historique et partage, un coach IA qui analyse tes paris pour t'aider à progresser, une analyse IA en direct pendant les matchs, un comparateur d'équipes, un blog généré automatiquement après chaque rencontre, et une page de transparence publique qui affiche notre taux de réussite réel. Le tout est disponible en plusieurs langues et devises."
         },
         "sportsBetting": {
           "q": "fpronix propose-t-il des paris sportifs ?",
@@ -2167,8 +2995,8 @@
   "transparency": {
     "badge": "Transparence totale",
     "title": "Transparence & fiabilité",
-    "intro": "Nous croyons que la confiance se gagne avec des chiffres vérifiables, pas des promesses. Voici le bilan réel — bon ou mauvais — de nos tipsters et de notre IA de pronostics.",
-    "metaDesc": "Découvrez le taux de réussite réel des tipsters et de l'IA de pronostics de fpronix, mis à jour en continu.",
+    "intro": "Nous croyons que la confiance se gagne avec des chiffres vérifiables, pas des promesses. Voici le bilan réel — bon ou mauvais — de nos pronostics.",
+    "metaDesc": "Découvrez le taux de réussite réel des pronostics fpronix, mis à jour en continu.",
     "tipstersTitle": "Tipsters de la communauté",
     "tipstersDesc": "Bilan cumulé de tous les pronostics publiés par nos tipsters, tous plans confondus (les picks annulés/reportés ne sont pas comptés).",
     "aiTitle": "Machine à pronostics (IA)",
@@ -2195,7 +3023,8 @@
     "privacyLink": "Politique de confidentialité",
     "faqLink": "FAQ",
     "newsletterLink": "Newsletter",
-    "contactLink": "Contact"
+    "contactLink": "Contact",
+    "deleteAccountLink": "Supprimer mon compte"
   },
   "trialBanner": {
     "lastDay": "Dernier jour de ton essai gratuit !",
@@ -2222,7 +3051,7 @@
         "aiCoach": "Coach Personnel IA",
         "aiCoachDesc": "Conseils IA selon tes stats",
         "aiPronostics": "Pronostics IA",
-        "aiPronosticsDesc": "Picks générés par le Tipster IA",
+        "aiPronosticsDesc": "Pronostics générés par l'IA fpronix",
         "blog": "Blog",
         "blogDesc": "Analyses et conseils football",
         "news": "Actualités",
@@ -2233,7 +3062,7 @@
   "bottomNav": {
     "standingsDesc": "Classements des ligues",
     "tipstersDesc": "Top pronostiqueurs",
-    "transparencyDesc": "Taux de réussite réel, tipsters et IA",
+    "transparencyDesc": "Taux de réussite réel et vérifiable",
     "betTrackerDesc": "Suis tes pronostics et ton ROI",
     "blogDesc": "Analyses et conseils football",
     "newsDesc": "Dernières infos football",
@@ -2280,5 +3109,38 @@
     "doneDesc": "Tu ne recevras plus la newsletter fpronix. Tu peux te réinscrire à tout moment.",
     "errorDesc": "Impossible de traiter cette demande. Contacte le support si le problème persiste.",
     "backHome": "Retour à l'accueil"
+  },
+  "maintenance": {
+    "title": "Maintenance en cours",
+    "defaultMessage": "fpronix est en cours d'amélioration. Nous revenons très vite.",
+    "backAt": "Retour prévu vers {{time}} ({{date}})",
+    "retry": "Réessayer",
+    "note": "Vos données et abonnements sont conservés. Merci de votre patience."
+  },
+  "deleteAccountPage": {
+    "title": "Supprimer votre compte fpronix",
+    "intro": "Vous pouvez supprimer votre compte fpronix et les données associées à tout moment, depuis l'application ou par email.",
+    "option1Title": "Depuis l'application ou le site",
+    "option1Step1": "Connectez-vous à votre compte.",
+    "option1Step2": "Ouvrez Profil, rubrique « Compte ».",
+    "option1Step3": "Appuyez sur « Supprimer mon compte » et confirmez. La suppression est immédiate.",
+    "option1Link": "Aller à mon profil",
+    "option2Title": "Par email (si vous ne pouvez plus vous connecter)",
+    "option2Body": "Écrivez depuis l'adresse email de votre compte, avec l'objet « Suppression de compte », à :",
+    "option2Delay": "Nous traitons la demande sous 7 jours et vous confirmons la suppression par email.",
+    "deletedTitle": "Données supprimées",
+    "deletedItems": [
+      "Votre profil : pseudo, email, téléphone, photo, mot de passe",
+      "Vos préférences, favoris et notifications",
+      "Vos tickets, paris suivis et historique dans l'application",
+      "Vos sessions de connexion et appareils enregistrés"
+    ],
+    "keptTitle": "Données conservées",
+    "keptItems": [
+      "L'historique des paiements, conservé pendant la durée légale imposée par les obligations comptables",
+      "Une trace de la suppression (email et pseudo), conservée à des fins administratives et de prévention de la fraude"
+    ],
+    "subscriptionNote": "La suppression du compte met fin à l'accès Premium sans remboursement de la période en cours. Plus de détails :",
+    "privacyLink": "Politique de confidentialité"
   }
 }

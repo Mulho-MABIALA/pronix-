@@ -7,6 +7,7 @@ import api from '../services/api';
 import SuccessRateBar from '../components/ui/SuccessRateBar';
 import { SkeletonCard } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 function rateColor(pct) {
   return pct >= 65 ? 'bg-primary-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500';
@@ -122,14 +123,17 @@ export default function Transparency() {
         </div>
       ) : (
         <>
-          <div className="grid md:grid-cols-2 gap-4">
-            <BilanSection
-              icon={Users}
-              title={t('transparency.tipstersTitle')}
-              desc={t('transparency.tipstersDesc')}
-              data={stats.tipsters}
-              locale={locale}
-            />
+          <div className={`grid gap-4 ${TIPSTERS_ENABLED ? 'md:grid-cols-2' : 'max-w-xl mx-auto'}`}>
+            {/* Bilan tipsters masqué au lancement (cf. config/features.js) */}
+            {TIPSTERS_ENABLED && (
+              <BilanSection
+                icon={Users}
+                title={t('transparency.tipstersTitle')}
+                desc={t('transparency.tipstersDesc')}
+                data={stats.tipsters}
+                locale={locale}
+              />
+            )}
             <BilanSection
               icon={Bot}
               title={t('transparency.aiTitle')}

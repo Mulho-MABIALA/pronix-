@@ -18,6 +18,7 @@ import { OddsChip, ValueBetBadge } from '../components/ui/OddsChip';
 import { getOddsPanel, isValueBet, getValueEdge, getMock1X2 } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import { sharePredictionImage, hasShareablePrediction } from '../utils/predictionCanvas';
+import { TIPSTERS_ENABLED, AI_TIPSTER_USERNAME } from '../config/features';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { addRecentlyViewed, getRecentlyViewed } from '../utils/recentlyViewed';
@@ -114,6 +115,47 @@ function WeatherSection({ weather }) {
         <p className="text-xs text-ink-4">{t('matchDetail.weather.disclaimer')}</p>
       </div>
     </section>
+  );
+}
+
+// ── Buteurs probables / tirs cadrés (backend utils/playerMarkets.js) ───────
+function PlayersSection({ match }) {
+  const { t } = useTranslation();
+  const p = match.predictions;
+  if (match.status !== 'SCHEDULED' || match.locked || !p?.hasPlayerData || !Array.isArray(p.players) || p.players.length === 0) return null;
+  const players = p.players.slice(0, 6);
+
+  return (
+    <section className="px-4 pb-1">
+      <div className="bento-card p-4 space-y-3">
+        <h2 className="text-xs font-semibold text-ink-4 uppercase tracking-wider flex items-center gap-2">
+          <span className="w-1 h-3.5 rounded-full bg-emerald-400 shrink-0" />
+          {t('matchDetail.players.title')}
+        </h2>
+        <div className="grid grid-cols-[1fr_auto_auto] gap-x-4 gap-y-2 items-center text-sm">
+          <span />
+          <span className="text-[11px] text-ink-4 text-right">{t('matchDetail.players.goal')}</span>
+          <span className="text-[11px] text-ink-4 text-right">{t('matchDetail.players.sot')}</span>
+          {players.map((pl) => (
+            <PlayerRow key={pl.id} pl={pl} team={pl.side === 'home' ? match.homeTeam : match.awayTeam} />
+          ))}
+        </div>
+        <p className="text-xs text-ink-4">{t('matchDetail.players.note')}</p>
+      </div>
+    </section>
+  );
+}
+
+function PlayerRow({ pl, team }) {
+  return (
+    <>
+      <div className="min-w-0">
+        <p className="text-ink-1 font-medium truncate">{pl.name}</p>
+        <p className="text-[11px] text-ink-4 truncate">{team}</p>
+      </div>
+      <span className="font-display font-bold text-emerald-300 tabular-nums text-right">{pl.goal}%</span>
+      <span className="font-display font-bold text-ink-2 tabular-nums text-right">{pl.sot}%</span>
+    </>
   );
 }
 
@@ -633,7 +675,10 @@ export default function MatchDetail() {
   });
 
   const match = data?.data;
-  const tips  = tipsData?.data || [];
+  // Tipsters masqués (cf. config/features.js) → on ne garde que le pronostic
+  // du tipster IA officiel fpronix, pas ceux de la communauté.
+  const allTips = tipsData?.data || [];
+  const tips  = TIPSTERS_ENABLED ? allTips : allTips.filter((tip) => tip.user?.username === AI_TIPSTER_USERNAME);
 
   // Historique de consultation — enregistré côté client dès que le match est chargé.
   // Sert aussi à l'onboarding progressif : le hint Comparateur n'apparaît
@@ -828,6 +873,9 @@ export default function MatchDetail() {
       {/* ── Météo au coup d'envoi ─────────────────────────────────────── */}
       <WeatherSection weather={match.weather} />
 
+      {/* ── Buteurs probables ─────────────────────────────────────────── */}
+      <PlayersSection match={match} />
+
       {/* ── Scénarios de score ────────────────────────────────────────── */}
       <ScorelineSection match={match} />
 
@@ -888,7 +936,7 @@ export default function MatchDetail() {
           {isFinishedOrLive && (
             <Tab label={t('matchDetail.tabEvents')} active={activeTab === 'events'} onClick={() => setActiveTab('events')} />
           )}
-          <Tab label={`${t('matchDetail.tabTips')}${tips.length ? ` (${tips.length})` : ''}`} active={activeTab === 'tips'} onClick={() => setActiveTab('tips')} />
+          <Tab label={`${t('matchDetail.tabTips')}${TIPSTERS_ENABLED && tips.length ? ` (${tips.length})` : ''}`} active={activeTab === 'tips'} onClick={() => setActiveTab('tips')} />
           <Tab label={t('matchDetail.tabForm')} active={activeTab === 'form'} onClick={() => setActiveTab('form')} />
           {match.competition?.id && (
             <Tab label={t('matchDetail.tabStandings')} active={activeTab === 'standings'} onClick={() => setActiveTab('standings')} />
@@ -1009,7 +1057,7 @@ export default function MatchDetail() {
             )}
 
             {/* Invitation à se connecter pour publier */}
-            {!user && isScheduled && (
+            {TIPSTERS_ENABLED && !user && isScheduled && (
               <section className="card p-4 flex items-center justify-between gap-3">
                 <div>
                   <p className="text-sm font-semibold text-ink-1">{t('matchDetail.publishPromptTitle')}</p>
@@ -1021,8 +1069,8 @@ export default function MatchDetail() {
               </section>
             )}
 
-            {/* Formulaire de pronostic — ouvert à tous les inscrits */}
-            {user && isScheduled && (
+            {/* Formulaire de pronostic — ouvert à tous les inscrits (tipsters activés uniquement) */}
+            {TIPSTERS_ENABLED && user && isScheduled && (
               <section className="card p-4 space-y-4">
                 <h2 className="font-semibold text-ink-1 text-sm">{t('matchDetail.publishTipTitle')}</h2>
 
@@ -1098,10 +1146,11 @@ export default function MatchDetail() {
               </section>
             )}
 
-            {/* Liste des pronostics */}
+            {/* Liste des pronostics — sans tipsters : uniquement celui de l'IA, et rien s'il n'y en a pas */}
+            {(TIPSTERS_ENABLED || tips.length > 0) && (
             <section>
               <h2 className="font-semibold text-ink-1 text-sm mb-3">
-                {t('matchDetail.tipstersPicksTitle')}{tips.length > 0 ? ` (${tips.length})` : ''}
+                {TIPSTERS_ENABLED ? t('matchDetail.tipstersPicksTitle') : t('matchDetail.aiPickTitle')}{TIPSTERS_ENABLED && tips.length > 0 ? ` (${tips.length})` : ''}
               </h2>
               <div className="space-y-3">
                 {tips.map((tip) => {
@@ -1112,7 +1161,10 @@ export default function MatchDetail() {
                   return (
                     <div key={tip.id} className="card p-4 space-y-3">
                       <div className="flex items-center justify-between">
-                        <Link to={`/tipsters/${tip.userId}`} className="flex items-center gap-2 hover:text-primary-300 transition-colors">
+                        <Link
+                          to={TIPSTERS_ENABLED ? `/tipsters/${tip.userId}` : '/transparence'}
+                          className="flex items-center gap-2 hover:text-primary-300 transition-colors"
+                        >
                           <div className="h-8 w-8 rounded-full bg-primary-500/20 flex items-center justify-center text-primary-400 text-sm font-bold">
                             {displayName?.charAt(0).toUpperCase()}
                           </div>
@@ -1147,8 +1199,8 @@ export default function MatchDetail() {
                         </div>
                       )}
 
-                      {/* Signalement */}
-                      {user && tip.userId !== user.id && (
+                      {/* Signalement (tipsters activés uniquement — la route est coupée sinon) */}
+                      {TIPSTERS_ENABLED && user && tip.userId !== user.id && (
                         <div className="pt-2">
                           {reportedTips.has(tip.id) ? (
                             <p className="text-xs text-ink-4">{t('matchDetail.reportSent')}</p>
@@ -1180,6 +1232,7 @@ export default function MatchDetail() {
                 )}
               </div>
             </section>
+            )}
           </>
         )}
 

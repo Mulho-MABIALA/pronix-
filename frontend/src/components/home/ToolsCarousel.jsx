@@ -5,6 +5,10 @@ import {
   ChevronLeft, ChevronRight, SlidersHorizontal, Zap, TrendingUp, BarChart2,
   ClipboardList, Trophy, ArrowLeftRight,
 } from 'lucide-react';
+import { TIPSTERS_ENABLED } from '../../config/features';
+
+// Carte « pronostics » : textes sans tipsters quand ils sont masqués
+const noTip = (id, key) => (!TIPSTERS_ENABLED && id === 'pronostics' ? `${key}NoTipsters` : key);
 
 const TOOLS = [
   {
@@ -148,10 +152,10 @@ export default function ToolsCarousel() {
 
                 <div>
                   <h3 className="font-display font-bold text-xl text-white mb-1.5 leading-snug">
-                    {t(`toolsCarousel.tools.${tool.id}.title`)}
+                    {t(`toolsCarousel.tools.${tool.id}.${noTip(tool.id, 'title')}`)}
                   </h3>
                   <p className="text-sm text-overlay/70 leading-relaxed mb-4 line-clamp-2">
-                    {t(`toolsCarousel.tools.${tool.id}.description`)}
+                    {t(`toolsCarousel.tools.${tool.id}.${noTip(tool.id, 'description')}`)}
                   </p>
                   <span className="inline-flex items-center gap-1.5 bg-white text-surface-900 text-sm font-semibold px-4 py-2 rounded-xl group-hover:gap-2.5 transition-all">
                     {t(`toolsCarousel.tools.${tool.id}.cta`)}
@@ -170,7 +174,7 @@ export default function ToolsCarousel() {
           <button
             key={tool.id}
             onClick={() => scrollToIndex(i)}
-            aria-label={t('toolsCarousel.goTo', { title: t(`toolsCarousel.tools.${tool.id}.title`) })}
+            aria-label={t('toolsCarousel.goTo', { title: t(`toolsCarousel.tools.${tool.id}.${noTip(tool.id, 'title')}`) })}
             className={`h-1.5 rounded-full transition-all ${
               i === activeIndex ? 'w-6 bg-primary-500' : 'w-1.5 bg-surface-600'
             }`}

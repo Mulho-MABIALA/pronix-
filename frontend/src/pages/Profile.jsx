@@ -22,6 +22,7 @@ import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { COUNTRIES } from '../data/countries';
 import { PHONE_CODES, matchPhoneCode } from '../data/phoneCodes';
 import PasswordField from '../components/ui/PasswordField';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 const LANGUAGES = [
   { code: 'fr', label: '🇫🇷 Français' },
@@ -1320,6 +1321,7 @@ export default function Profile() {
   const { data: myTipsData } = useQuery({
     queryKey: ['my-tips'],
     queryFn:  () => api.get('/tips/my?limit=5').then((r) => r.data),
+    enabled:  TIPSTERS_ENABLED, // route coupée sans tipsters (cf. config/features.js)
   });
 
   /* ── Mutation PATCH profil ────────────────────────────────────────────────── */
@@ -1648,7 +1650,7 @@ export default function Profile() {
       </Section>
 
       {/* ── Statistiques tipster ──────────────────────────────────────────────── */}
-      {stats && (
+      {TIPSTERS_ENABLED && stats && (
         <Section title={t('profile.myStats')} icon={TrendingUp} color="primary">
           <div className="grid grid-cols-3 gap-3 text-center">
             <div className="bento-card py-3">
@@ -1678,7 +1680,7 @@ export default function Profile() {
       )}
 
       {/* ── Pronostics récents ────────────────────────────────────────────────── */}
-      {myTips.length > 0 && (
+      {TIPSTERS_ENABLED && myTips.length > 0 && (
         <section>
           <h2 className="font-semibold text-ink-1 text-sm mb-3 flex items-center gap-2">
             <TrendingUp size={14} className="text-ink-3" />

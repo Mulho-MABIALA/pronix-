@@ -7,6 +7,7 @@ import { ChevronLeft, Eye, Calendar, User } from 'lucide-react';
 import api from '../services/api';
 import { SkeletonCard, SkeletonText } from '../components/ui/SkeletonLoader';
 import { usePageMeta } from '../hooks/usePageMeta';
+import { renderSafeMarkdown } from '../utils/safeMarkdown';
 
 export default function BlogPost() {
   const { t, i18n } = useTranslation();
@@ -106,11 +107,11 @@ export default function BlogPost() {
         </p>
       )}
 
-      {/* Contenu — rendu comme HTML simple ou texte brut */}
+      {/* Contenu — Markdown converti en HTML SÛR (tout est échappé, cf. utils/safeMarkdown.js) */}
       <div
         className="prose-fpronix text-ink-3 text-sm leading-relaxed space-y-4"
         style={{ lineHeight: '1.75' }}
-        dangerouslySetInnerHTML={{ __html: post.content.replace(/\n/g, '<br/>') }}
+        dangerouslySetInnerHTML={{ __html: renderSafeMarkdown(post.content) }}
       />
 
       {/* Retour */}

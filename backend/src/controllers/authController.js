@@ -4,6 +4,8 @@ const crypto = require('crypto');
 const { z } = require('zod');
 const { OAuth2Client } = require('google-auth-library');
 const prisma = require('../config/database');
+const { toSelfUser } = require('../utils/publicUser');
+const { hashToken, tokenLookup } = require('../utils/tokenHash');
 const env = require('../config/env');
 const { AppError } = require('../middleware/errorHandler');
 const { sendWelcomeEmail, sendPasswordResetEmail, sendEmailVerification } = require('../services/emailService');
@@ -28,8 +30,27 @@ async function autoSubscribeToNewsletter(user, source = 'signup') {
 const googleClient = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 // ─── Schémas de validation ──────────────────────────────────────────────────
+// Email normalisé (espaces retirés, minuscules) : « Moussa@Gmail.com » et
+// « moussa@gmail.com » sont le même compte — sans ça, deux comptes pouvaient
+// coexister et la connexion échouait selon la casse tapée.
+const emailSchema = z.string().trim().toLowerCase().email('Email invalide').max(254);
+
+// Recherche insensible à la casse : couvre aussi les comptes créés avant la
+// normalisation, dont l'email peut contenir des majuscules en base.
+function findUserByEmail(email, include) {
+  return prisma.user.findFirst({
+    where: { email: { equals: email, mode: 'insensitive' } },
+    ...(include ? { include } : {}),
+  });
+}
+
+// Empreinte bcrypt factice : comparée quand l'email n'existe pas, pour que la
+// réponse prenne le même temps qu'avec un vrai compte (sinon la différence
+// de temps de réponse révèle quels emails sont inscrits).
+const DUMMY_HASH = bcrypt.hashSync('fpronix-dummy-password', 10);
+
 const registerSchema = z.object({
-  email: z.string().email('Email invalide'),
+  email: emailSchema,
   password: z.string().min(8, 'Mot de passe min. 8 caractères')
     .regex(/[A-Z]/, 'Le mot de passe doit contenir une majuscule')
     .regex(/[0-9]/, 'Le mot de passe doit contenir un chiffre'),
@@ -52,8 +73,8 @@ const registerSchema = z.object({
 });
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(1),
+  email: emailSchema,
+  password: z.string().min(1).max(200),
 });
 
 // ─── Helpers JWT ────────────────────────────────────────────────────────────
@@ -111,6 +132,12 @@ async function register(req, res, next) {
   try {
     const { email, password, username, language, currency } = registerSchema.parse(req.body);
 
+    // Même email avec une autre casse déjà inscrit (comptes créés avant la
+    // normalisation) : on refuse le doublon.
+    if (await findUserByEmail(email)) {
+      throw new AppError('Cette adresse email est déjà utilisée', 409, 'EMAIL_TAKEN');
+    }
+
     const hashedPassword = await bcrypt.hash(password, env.BCRYPT_ROUNDS);
     const freePlan = await prisma.plan.findUnique({ where: { code: 'FREE' } });
     if (!freePlan) {
@@ -153,14 +180,14 @@ async function register(req, res, next) {
     await prisma.refreshToken.create({
       data: {
         userId: user.id,
-        token: refreshTokenValue,
+        token: hashToken(refreshTokenValue),
         expiresAt: refreshExpiresAt,
       },
     });
 
     setAuthCookies(res, { accessToken, refreshToken: refreshTokenValue, refreshExpiresAt });
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.status(201).json({
       success: true,
       message: 'Compte créé avec succès',
@@ -176,12 +203,10 @@ async function login(req, res, next) {
   try {
     const { email, password } = loginSchema.parse(req.body);
 
-    const user = await prisma.user.findUnique({
-      where: { email },
-      include: { profile: true, subscription: { include: { plan: true } } },
-    });
+    const user = await findUserByEmail(email, { profile: true, subscription: { include: { plan: true } } });
 
     if (!user || !user.isActive) {
+      await bcrypt.compare(password, DUMMY_HASH); // même durée qu'un vrai compte
       throw new AppError('Email ou mot de passe incorrect', 401, 'INVALID_CREDENTIALS');
     }
 
@@ -216,14 +241,14 @@ async function login(req, res, next) {
     const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.$transaction([
       prisma.refreshToken.create({
-        data: { userId: user.id, token: refreshTokenValue, expiresAt: refreshExpiresAt },
+        data: { userId: user.id, token: hashToken(refreshTokenValue), expiresAt: refreshExpiresAt },
       }),
       prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }),
     ]);
 
     setAuthCookies(res, { accessToken, refreshToken: refreshTokenValue, refreshExpiresAt });
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({
       success: true,
       data: {
@@ -249,8 +274,8 @@ async function refreshToken(req, res, next) {
       throw new AppError('Refresh token manquant', 401, 'INVALID_REFRESH_TOKEN');
     }
 
-    const stored = await prisma.refreshToken.findUnique({
-      where: { token },
+    const stored = await prisma.refreshToken.findFirst({
+      where: { token: tokenLookup(token) },
       include: { user: { include: { subscription: { include: { plan: true } }, profile: true } } },
     });
 
@@ -265,7 +290,7 @@ async function refreshToken(req, res, next) {
     const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.$transaction([
       prisma.refreshToken.create({
-        data: { userId: stored.userId, token: newRefreshToken, expiresAt: refreshExpiresAt },
+        data: { userId: stored.userId, token: hashToken(newRefreshToken), expiresAt: refreshExpiresAt },
       }),
       prisma.user.update({ where: { id: stored.userId }, data: { lastLoginAt: new Date() } }),
     ]);
@@ -273,7 +298,7 @@ async function refreshToken(req, res, next) {
     const accessToken = generateAccessToken(stored.userId);
     setAuthCookies(res, { accessToken, refreshToken: newRefreshToken, refreshExpiresAt });
 
-    const { password: _, ...userSafe } = stored.user;
+    const userSafe = toSelfUser(stored.user);
     res.json({
       success: true,
       data: { user: userSafe },
@@ -288,7 +313,7 @@ async function logout(req, res, next) {
   try {
     const token = req.cookies?.[REFRESH_COOKIE];
     if (token) {
-      await prisma.refreshToken.deleteMany({ where: { token } });
+      await prisma.refreshToken.deleteMany({ where: { token: tokenLookup(token) } });
     }
     clearAuthCookies(res);
     res.json({ success: true, message: 'Déconnecté avec succès' });
@@ -300,15 +325,15 @@ async function logout(req, res, next) {
 // ─── Demande de réinitialisation de mot de passe ──────────────────────────────
 async function forgotPassword(req, res, next) {
   try {
-    const { email } = z.object({ email: z.string().email() }).parse(req.body);
-    const user = await prisma.user.findUnique({ where: { email } });
+    const { email } = z.object({ email: emailSchema }).parse(req.body);
+    const user = await findUserByEmail(email);
 
     // Réponse identique même si l'email n'existe pas (évite l'énumération)
     if (user) {
       const token = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 heure
 
-      await prisma.passwordReset.create({ data: { userId: user.id, token, expiresAt } });
+      await prisma.passwordReset.create({ data: { userId: user.id, token: hashToken(token), expiresAt } });
       sendPasswordResetEmail(user, token).catch(console.error);
     }
 
@@ -326,8 +351,8 @@ async function resetPassword(req, res, next) {
       password: z.string().min(8).regex(/[A-Z]/).regex(/[0-9]/),
     }).parse(req.body);
 
-    const reset = await prisma.passwordReset.findUnique({
-      where: { token },
+    const reset = await prisma.passwordReset.findFirst({
+      where: { token: tokenLookup(token) },
       include: { user: true },
     });
 
@@ -371,16 +396,19 @@ async function googleAuth(req, res, next) {
     }
 
     const payload = ticket.getPayload();
-    const { email, name, sub: googleId, picture } = payload;
+    const { name, sub: googleId, picture } = payload;
+    const email = payload.email ? payload.email.trim().toLowerCase() : null;
 
     if (!email) {
       throw new AppError('Impossible de récupérer l\'email depuis Google', 400, 'GOOGLE_NO_EMAIL');
     }
+    // Sans email vérifié par Google, quelqu'un pourrait se connecter au compte
+    // fpronix existant d'une autre personne en déclarant son adresse.
+    if (payload.email_verified !== true) {
+      throw new AppError('Votre adresse Google n\'est pas vérifiée.', 401, 'GOOGLE_EMAIL_NOT_VERIFIED');
+    }
 
-    let user = await prisma.user.findUnique({
-      where: { email },
-      include: { profile: true, subscription: { include: { plan: true } } },
-    });
+    let user = await findUserByEmail(email, { profile: true, subscription: { include: { plan: true } } });
 
     if (user) {
       if (!user.isActive) {
@@ -431,12 +459,12 @@ async function googleAuth(req, res, next) {
     const refreshTokenValue = generateRefreshToken();
     const refreshExpiresAt = getRefreshExpiryDate();
     await prisma.refreshToken.create({
-      data: { userId: user.id, token: refreshTokenValue, expiresAt: refreshExpiresAt },
+      data: { userId: user.id, token: hashToken(refreshTokenValue), expiresAt: refreshExpiresAt },
     });
 
     setAuthCookies(res, { accessToken, refreshToken: refreshTokenValue, refreshExpiresAt });
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({
       success: true,
       data: { user: userSafe },
@@ -448,7 +476,7 @@ async function googleAuth(req, res, next) {
 
 // ─── Profil de l'utilisateur connecté ────────────────────────────────────────
 async function me(req, res) {
-  const { password: _, ...userSafe } = req.user;
+  const userSafe = toSelfUser(req.user);
   // Le hash n'est jamais renvoyé, mais le frontend a besoin de savoir si un
   // mot de passe existe (compte Google pur vs compte avec mot de passe défini)
   // pour savoir si l'ancien mot de passe doit être demandé avant d'en changer.
@@ -485,7 +513,7 @@ async function sendVerificationEmail(req, res, next) {
     const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24h
 
     await prisma.emailVerification.create({
-      data: { userId: req.user.id, token, expiresAt },
+      data: { userId: req.user.id, token: hashToken(token), expiresAt },
     });
 
     await sendEmailVerification(req.user, token);
@@ -501,8 +529,8 @@ async function verifyEmail(req, res, next) {
   try {
     const { token } = z.object({ token: z.string() }).parse(req.params);
 
-    const verification = await prisma.emailVerification.findUnique({
-      where: { token },
+    const verification = await prisma.emailVerification.findFirst({
+      where: { token: tokenLookup(token) },
       include: { user: true },
     });
 
@@ -521,7 +549,20 @@ async function verifyEmail(req, res, next) {
   }
 }
 
+// Ferme TOUTES les sessions d'un utilisateur puis en rouvre une seule pour
+// l'appareil qui fait la demande (changement de mot de passe : un intrus
+// éventuellement connecté ailleurs est déconnecté, l'utilisateur ne l'est pas).
+async function resetSessions(res, userId) {
+  const refreshTokenValue = generateRefreshToken();
+  const refreshExpiresAt = getRefreshExpiryDate();
+  await prisma.$transaction([
+    prisma.refreshToken.deleteMany({ where: { userId } }),
+    prisma.refreshToken.create({ data: { userId, token: hashToken(refreshTokenValue), expiresAt: refreshExpiresAt } }),
+  ]);
+  setAuthCookies(res, { accessToken: generateAccessToken(userId), refreshToken: refreshTokenValue, refreshExpiresAt });
+}
+
 module.exports = {
   register, login, refreshToken, logout, forgotPassword, resetPassword, me, googleAuth,
-  sendVerificationEmail, verifyEmail, markAppInstalled,
+  sendVerificationEmail, verifyEmail, markAppInstalled, resetSessions,
 };

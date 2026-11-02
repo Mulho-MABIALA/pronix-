@@ -3,6 +3,19 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import './i18n'; // Initialise i18next avant le rendu de l'app
 import App from './App';
+import { reloadOnceForNewVersion } from './components/errors/ErrorBoundary';
+import { detectAndroidApp } from './utils/platform';
+
+// Avant le premier rendu : l'URL de lancement (?source=twa) est perdue dès
+// la première navigation interne.
+detectAndroidApp();
+
+// Après une mise à jour du site, un onglet ouvert peut réclamer un fichier de
+// l'ancienne version qui n'existe plus : on recharge une fois, en silence,
+// pour passer sur la nouvelle version (au lieu d'un écran blanc).
+window.addEventListener('vite:preloadError', (event) => {
+  if (reloadOnceForNewVersion()) event.preventDefault();
+});
 
 // Suivi d'erreurs production — chargement différé (dynamic import) : le SDK
 // Sentry (~60-90 Ko gzip avec le tracing) ne fait plus partie du chunk

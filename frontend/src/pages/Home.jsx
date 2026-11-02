@@ -19,6 +19,7 @@ import { getOdd, isValueBet } from '../utils/mockOdds';
 import { getPickColor } from '../utils/marketColors';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import AiBadge from '../components/ui/AiBadge';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 // ── Vus récemment — historique client (localStorage) ────────────────────────
 function RecentlyViewedRow({ m }) {
@@ -52,7 +53,9 @@ function RecentlyViewedRow({ m }) {
 
 export default function Home() {
   const { t } = useTranslation();
-  usePageMeta(null, 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.');
+  usePageMeta(null, TIPSTERS_ENABLED
+    ? 'Statistiques football en direct, pronostics et analyse des matchs. Suivez vos tipsters favoris sur fpronix.'
+    : 'Statistiques football en direct, probabilités et analyse IA de chaque match sur fpronix.');
   const { user, isPremium } = useAuth();
   const navigate = useNavigate();
   const [searchOpen, setSearchOpen] = useState(false);
@@ -152,6 +155,7 @@ export default function Home() {
   const { data: leaderboardData, isLoading: leaderboardLoading } = useQuery({
     queryKey: ['leaderboard-home'],
     queryFn: () => api.get('/tips/leaderboard?limit=5').then((r) => r.data),
+    enabled: TIPSTERS_ENABLED,
   });
 
   const matches   = matchesData?.data    || [];
@@ -413,9 +417,10 @@ export default function Home() {
       </section>
 
       {/* ── Grille : tipsters + premium ─────────────────────────── */}
-      <div className="grid md:grid-cols-2 gap-6 items-start">
+      <div className={`grid gap-6 items-start ${TIPSTERS_ENABLED ? 'md:grid-cols-2' : 'max-w-2xl mx-auto w-full'}`}>
 
-        {/* Top tipsters */}
+        {/* Top tipsters (masqué au lancement, cf. config/features.js) */}
+        {TIPSTERS_ENABLED && (
         <section className="min-w-0">
           <div className="flex items-center justify-between gap-2 mb-3">
             <h2 className="section-title flex items-center gap-2 min-w-0">
@@ -442,6 +447,7 @@ export default function Home() {
             }
           </div>
         </section>
+        )}
 
         {/* Premium CTA ou activité */}
         {!isPremium ? (

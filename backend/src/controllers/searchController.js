@@ -1,4 +1,6 @@
 const prisma = require('../config/database');
+const { PUBLIC_USER_SELECT, PUBLIC_USER_WITH_STATS_SELECT } = require('../utils/publicUser');
+const env = require('../config/env');
 
 // ─── Recherche globale ────────────────────────────────────────────────────────
 // GET /api/search?q=...&type=matches|tipsters|competitions
@@ -36,7 +38,8 @@ async function globalSearch(req, res, next) {
         : [],
 
       // ── Tipsters ─────────────────────────────────────────────────────
-      (type === 'all' || type === 'tipsters')
+      // Tipsters masqués tant que FEATURE_TIPSTERS est désactivé
+      env.FEATURE_TIPSTERS && (type === 'all' || type === 'tipsters')
         ? prisma.user.findMany({
             where: {
               OR: [
@@ -45,10 +48,7 @@ async function globalSearch(req, res, next) {
               ],
               tipsterStats: { isNot: null },
             },
-            include: {
-              profile: true,
-              tipsterStats: true,
-            },
+            select: PUBLIC_USER_WITH_STATS_SELECT,
             take: 6,
           })
         : [],
@@ -87,7 +87,7 @@ async function globalSearch(req, res, next) {
     ]);
 
     // Sanitiser les tipsters (pas de password)
-    const tipstersSafe = tipsters.map(({ password, ...u }) => u);
+    const tipstersSafe = tipsters; // déjà restreints aux champs publics (select)
 
     // Dédupliquer les équipes par teamId (une seule ligne par équipe trouvée)
     const teamsMap = new Map();

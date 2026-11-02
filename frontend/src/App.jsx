@@ -15,6 +15,10 @@ import Layout from './components/layout/Layout';
 // sur le bundle principal, en grande partie des pages jamais visitées par la
 // plupart des utilisateurs (back-office admin en tête).
 import Home from './pages/Home';
+import { TIPSTERS_ENABLED } from './config/features';
+import MaintenanceGate from './components/maintenance/MaintenanceGate';
+import ErrorBoundary from './components/errors/ErrorBoundary';
+import ConnectionBanner from './components/errors/ConnectionBanner';
 
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 
@@ -40,6 +44,7 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 const CGU = lazy(() => import('./pages/CGU'));
 const CGV = lazy(() => import('./pages/CGV'));
 const MentionsLegales = lazy(() => import('./pages/MentionsLegales'));
+const SuppressionCompte = lazy(() => import('./pages/SuppressionCompte'));
 const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'));
 const FAQ = lazy(() => import('./pages/FAQ'));
 const Transparency = lazy(() => import('./pages/Transparency'));
@@ -167,8 +172,16 @@ function RouteTracker() {
   return null;
 }
 
+// Plantage d'une page : écran « Oups » à la place de la page, et nouvel essai
+// automatique dès que l'utilisateur change de page.
+function RouteErrorBoundary({ children }) {
+  const { pathname } = useLocation();
+  return <ErrorBoundary resetKey={pathname}>{children}</ErrorBoundary>;
+}
+
 export default function App() {
   return (
+    <ErrorBoundary>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ''}>
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -177,6 +190,9 @@ export default function App() {
           <ToastProvider>
           <BrowserRouter>
             <RouteTracker />
+            <ConnectionBanner />
+            <MaintenanceGate>
+            <RouteErrorBoundary>
             <Suspense fallback={<RouteFallback />}>
             <Routes>
               {/* Routes publiques avec layout principal */}
@@ -184,8 +200,9 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/matchs" element={<Matches />} />
                 <Route path="/matchs/:id" element={<MatchDetail />} />
-                <Route path="/tipsters" element={<Tipsters />} />
-                <Route path="/tipsters/:userId" element={<TipsterProfile />} />
+                {/* Tipsters masqués au lancement (cf. config/features.js) — les anciens liens renvoient à l'accueil */}
+                <Route path="/tipsters" element={TIPSTERS_ENABLED ? <Tipsters /> : <Navigate to="/" replace />} />
+                <Route path="/tipsters/:userId" element={TIPSTERS_ENABLED ? <TipsterProfile /> : <Navigate to="/" replace />} />
                 <Route path="/abonnement" element={<Subscription />} />
                 <Route path="/abonnement/confirmation" element={<PaymentConfirmation />} />
                 <Route path="/abonnement/erreur" element={<PaymentConfirmation error />} />
@@ -201,6 +218,7 @@ export default function App() {
                 <Route path="/cgu" element={<CGU />} />
                 <Route path="/cgv" element={<CGV />} />
                 <Route path="/mentions-legales" element={<MentionsLegales />} />
+                <Route path="/suppression-compte" element={<SuppressionCompte />} />
                 <Route path="/politique-confidentialite" element={<PolitiqueConfidentialite />} />
                 <Route path="/faq" element={<FAQ />} />
                 <Route path="/transparence" element={<Transparency />} />
@@ -248,6 +266,8 @@ export default function App() {
 
             </Routes>
             </Suspense>
+            </RouteErrorBoundary>
+            </MaintenanceGate>
           </BrowserRouter>
           </ToastProvider>
           </AppGate>
@@ -255,5 +275,6 @@ export default function App() {
       </ThemeProvider>
     </QueryClientProvider>
     </GoogleOAuthProvider>
+    </ErrorBoundary>
   );
 }

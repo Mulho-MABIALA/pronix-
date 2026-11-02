@@ -11,6 +11,7 @@ import { TeamLogo } from '../matches/MatchCard';
 import { OddsChip } from '../ui/OddsChip';
 import { SkeletonCard } from '../ui/SkeletonLoader';
 import { drawTicketCanvas } from '../../utils/ticketCanvas';
+import { pickDisplayLabel } from '../../utils/markets';
 
 const RESULT_STYLES = {
   WON:     { label: 'won',     bg: 'bg-primary-500/15 text-primary-400 border-primary-500/25', Icon: CheckCircle2 },
@@ -216,7 +217,7 @@ export default function TicketHistory({ onCreateNew }) {
                     )}
                     <div className={`shrink-0 text-center px-2 py-1 rounded-lg border ${ls.bg}`}>
                       <span className={`block text-[11px] font-bold ${ls.color}`}>
-                        {t(`machine.pickLabels.${e.prediction}`, { defaultValue: e.prediction })}
+                        {pickDisplayLabel(t, e.prediction)}
                       </span>
                       <span className={`flex items-center justify-center gap-0.5 text-[9px] font-semibold ${ls.color}`}>
                         <LegIcon size={9} />

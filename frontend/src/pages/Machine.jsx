@@ -20,7 +20,7 @@ import { hapticSuccess, hapticImpact, hapticError } from '../utils/haptics';
 import { incrementUsageCounter, getUsageCounter } from '../utils/featureDiscovery';
 import FeatureHint from '../components/ui/FeatureHint';
 import AiBadge from '../components/ui/AiBadge';
-import { MARKET_GROUPS, LIVE_MARKET_GROUPS, getProb, getLiveProb } from '../utils/markets';
+import { MARKET_GROUPS, LIVE_MARKET_GROUPS, getProb, getLiveProb, pickDisplayLabel } from '../utils/markets';
 import CompetitionLabel from '../components/ui/CompetitionLabel';
 
 // ─── Templates prédéfinis ──────────────────────────────────────────────────────
@@ -451,7 +451,7 @@ export default function Machine() {
     if (!ticket) return;
     const lines = ticket.map((row, i) => {
       const time = format(new Date(row.match.scheduledAt), 'dd/MM HH:mm');
-      const pickLabel = t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type });
+      const pickLabel = pickDisplayLabel(t, row.pick.type);
       return `${i + 1}. ${row.match.homeTeam} vs ${row.match.awayTeam} — ${pickLabel} (${row.pick.prob}% · ${formatOdd(row.odd)}${row.value ? ' ⚡value' : ''}) — ${time}`;
     });
     if (totalOdds) lines.push(`\n${t('machine.totalOddSimulated', { odds: totalOdds })}`);
@@ -1102,7 +1102,7 @@ export default function Machine() {
                       </p>
                     </div>
                     <div className={`shrink-0 text-center px-2.5 py-1 rounded-lg border ${c.bg}`}>
-                      <span className={`block text-xs font-bold ${getPickColor(row.pick.type).text}`}>{t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type })}</span>
+                      <span className={`block text-xs font-bold ${getPickColor(row.pick.type).text}`}>{pickDisplayLabel(t, row.pick.type)}</span>
                       <span className={`block text-[10px] font-semibold ${c.text}`}>{row.pick.prob}%</span>
                     </div>
                     <div className="shrink-0 flex flex-col items-center gap-1">

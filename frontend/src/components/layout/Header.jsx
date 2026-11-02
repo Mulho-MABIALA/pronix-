@@ -8,6 +8,7 @@ import { useTheme } from '../../context/ThemeContext';
 import NotificationBell from '../ui/NotificationBell';
 import SearchBar from '../ui/SearchBar';
 import { usePWAInstall } from '../../hooks/usePWAInstall';
+import { TIPSTERS_ENABLED } from '../../config/features';
 
 function FootballLogo() {
   return (
@@ -200,7 +201,7 @@ export default function Header() {
     { to: '/matchs',      label: t('nav.matches') },
     { to: '/pronostics',  label: t('nav.pronostics') },
     { to: '/classements', label: t('nav.standings') },
-    { to: '/tipsters',    label: t('nav.tipsters') },
+    ...(TIPSTERS_ENABLED ? [{ to: '/tipsters',    label: t('nav.tipsters') }] : []),
   ];
 
   return (

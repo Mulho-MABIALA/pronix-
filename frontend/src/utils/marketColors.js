@@ -16,6 +16,11 @@ const FAMILY_COLORS = {
   combo:          { text: 'text-lime-400',    bg: 'bg-lime-500/10',   border: 'border-lime-500/20' },
   exactscore:     { text: 'text-yellow-400',  bg: 'bg-yellow-500/10', border: 'border-yellow-500/20' },
   corners:        { text: 'text-orange-300',  bg: 'bg-orange-400/10', border: 'border-orange-400/20' },
+  cards:          { text: 'text-yellow-300',  bg: 'bg-yellow-400/10', border: 'border-yellow-400/20' },
+  shots:          { text: 'text-red-400',     bg: 'bg-red-500/10',    border: 'border-red-500/20' },
+  fouls:          { text: 'text-stone-300',   bg: 'bg-stone-400/10',  border: 'border-stone-400/20' },
+  offsides:       { text: 'text-indigo-300',  bg: 'bg-indigo-400/10', border: 'border-indigo-400/20' },
+  players:        { text: 'text-emerald-300', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20' },
 };
 const DEFAULT_COLOR = { text: 'text-ink-3', bg: 'bg-surface-700/50', border: 'border-overlay/[0.08]' };
 
@@ -24,6 +29,14 @@ export function getMarketFamily(type) {
   if (['1', 'X', '2'].includes(type)) return '1x2';
   if (['1X', 'X2', '12'].includes(type)) return 'doublechance';
   if (['dnb1', 'dnb2'].includes(type)) return 'dnb';
+  // Stats de match (avant les tests génériques over/under)
+  if (/^card(1|X|2|Over|Under)/.test(type)) return 'cards';
+  if (/^sot(1|X|2|Over|Under)/.test(type)) return 'shots';
+  if (/^foul(1|X|2|Over|Under)/.test(type)) return 'fouls';
+  if (/^offside(1|X|2|Over|Under)/.test(type)) return 'offsides';
+  if (/^(scorer|psot):/.test(type)) return 'players';
+  // Combinaisons (avant le test générique over/under)
+  if (/^(dc1x|dcx2|dc12|btts|nobtts|res1|res2|resX)(over|under)/.test(type)) return 'combo';
   if (type.startsWith('ht')) return 'mitemps';
   if (type === 'btts' || type === 'nobtts') return 'btts';
   if (type.includes('over') || type.includes('under')) return 'overunder';
@@ -60,6 +73,11 @@ const FAMILY_HEX = {
   combo:         '#a3e635',
   exactscore:    '#facc15',
   corners:       '#fdba74',
+  cards:         '#fde047',
+  shots:         '#f87171',
+  fouls:         '#d6d3d1',
+  offsides:      '#a5b4fc',
+  players:       '#6ee7b7',
 };
 const DEFAULT_HEX = '#9a9fa6';
 

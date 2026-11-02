@@ -13,7 +13,7 @@ export default defineConfig({
       // façon bloquante et retardait le premier rendu (~1,2s mesurés).
       injectRegister: null,
       // Inclure l'icône SVG et tous les PNG dans le précache
-      includeAssets: ['favicon.ico', 'icons/*.svg', 'icons/*.png', 'imgfpronix.png', 'icon-192.png', 'icon-512.png'],
+      includeAssets: ['favicon.ico', 'icons/*.svg', 'icons/*.png', 'imgfpronix.png', 'icon-192.png', 'icon-512.png', 'icon-512-maskable.png'],
       manifest: {
         name: 'fpronix — Pronostics Football IA',
         short_name: 'fpronix',
@@ -22,6 +22,7 @@ export default defineConfig({
         background_color: '#111315',
         display: 'standalone',
         orientation: 'portrait-primary',
+        id: '/',
         start_url: '/',
         scope: '/',
         lang: 'fr',
@@ -38,19 +39,12 @@ export default defineConfig({
             type: 'image/png',
           },
           {
-            src: '/icon-512.png',
+            // Logo dans la zone de sécurité (80 %) : Android découpe l'icône
+            // en rond / carré arrondi sans rogner le texte.
+            src: '/icon-512-maskable.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
-          },
-        ],
-        screenshots: [
-          {
-            src: '/screenshots/home.png',
-            sizes: '390x844',
-            type: 'image/png',
-            form_factor: 'narrow',
-            label: 'Pronostics du jour',
           },
         ],
       },

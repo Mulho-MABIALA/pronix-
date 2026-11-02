@@ -9,10 +9,13 @@ const router = express.Router();
 const { lancerAgent, orchestrer } = require('../agents/orchestrateur');
 const { authenticate, requireAdmin } = require('../middleware/auth');
 
-// Support : tous les utilisateurs connectés peuvent poser une question
-router.post('/support', authenticate, async (req, res) => {
+// Agent support : utilisé uniquement depuis l'admin (pages/admin/Agents.jsx).
+// Réservé aux admins — ouvert à tous les connectés, il permettait de poser
+// n'importe quelle question (sans limite de longueur ni de débit) aux frais
+// du crédit API. Les utilisateurs passent par le chatbot /api/support/chat.
+router.post('/support', authenticate, requireAdmin, async (req, res) => {
   const { question } = req.body;
-  if (!question || typeof question !== 'string' || question.trim().length < 3) {
+  if (!question || typeof question !== 'string' || question.trim().length < 3 || question.length > 1000) {
     return res.status(400).json({ success: false, message: 'Question requise (min 3 caractères)' });
   }
 

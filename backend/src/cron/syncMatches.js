@@ -41,22 +41,44 @@ function matchIconUrl(homeLogo, awayLogo) {
 // pour les marchés corners live. Fire-and-forget : un échec ne doit jamais
 // bloquer le reste du cycle de sync.
 async function captureCornerStats(matchId, externalId) {
+  // Une seule requête /fixtures?id= : elle renvoie, en plus des stats
+  // d'équipe utilisées jusqu'ici (corners, cartons, tirs…), le score à la
+  // mi-temps et les stats de chaque joueur (paris buteur / tir cadré).
+  // Même coût de quota qu'avant (/fixtures/statistics), plus de données.
   try {
-    const stats = await footballApi.getFixtureStatistics(externalId);
-    if (!stats) return;
-
-    const corner = stats.find((s) => s.key === 'corner_kicks');
-    await prisma.match.update({
-      where: { id: matchId },
-      data: {
-        statistics:   stats, // cache — évite un second appel API si le visiteur ouvre la fiche match
-        homeCorners:  corner ? corner.home : undefined,
-        awayCorners:  corner ? corner.away : undefined,
-      },
-    });
+    const full = await footballApi.getFixtureById(externalId);
+    const d = footballApi.extractFixtureDetails(full);
+    if (!d) return;
+    await saveFixtureDetails(matchId, d);
   } catch (err) {
     console.error('[Cron syncLive] captureCornerStats:', err.message);
   }
+}
+
+// Enregistre le détail d'un match (stats d'équipe, mi-temps, joueurs).
+// Réutilisé par scripts/backfillPlayerStats.js. Les stats joueurs sont
+// remplacées en bloc (un passage en direct puis en fin de match ne crée pas
+// de doublons, la dernière version gagne).
+async function saveFixtureDetails(matchId, d) {
+  const ops = [
+    prisma.match.update({
+      where: { id: matchId },
+      data: {
+        ...(d.statistics ? { statistics: d.statistics } : {}), // cache aussi pour la fiche match
+        homeCorners: d.homeCorners,
+        awayCorners: d.awayCorners,
+        htHomeScore: d.htHomeScore,
+        htAwayScore: d.htAwayScore,
+      },
+    }),
+  ];
+  if (d.players?.length) {
+    ops.push(
+      prisma.playerMatchStat.deleteMany({ where: { matchId } }),
+      prisma.playerMatchStat.createMany({ data: d.players.map((p) => ({ ...p, matchId })), skipDuplicates: true }),
+    );
+  }
+  await prisma.$transaction(ops);
 }
 
 function evaluateTip(prediction, homeScore, awayScore) {
@@ -381,4 +403,4 @@ function startSyncMatchesCron() {
   syncMatchesForDate(today).catch((e) => console.error('[Cron] Sync initiale:', e.message));
 }
 
-module.exports = { startSyncMatchesCron, syncMatchesForDate, cleanupStaleMatches, captureCornerStats };
+module.exports = { startSyncMatchesCron, syncMatchesForDate, cleanupStaleMatches, captureCornerStats, saveFixtureDetails };

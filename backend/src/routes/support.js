@@ -15,14 +15,26 @@ const supportLimiter = rateLimit({
   message: { success: false, code: 'RATE_LIMITED', message: 'Trop de messages. Réessayez dans 5 minutes.' },
 });
 
+// Plafond journalier par IP — le chatbot est public (visiteurs non connectés),
+// sans ce plafond une seule IP pouvait envoyer ~2 900 messages/jour payants.
+const supportDailyLimiter = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  max: 40,
+  message: { success: false, code: 'RATE_LIMITED', message: 'Limite de messages atteinte pour aujourd\'hui. Pour une aide personnalisée, ouvrez un ticket.' },
+});
+
 // POST /api/support/chat — chatbot IA automatique
-router.post('/chat', supportLimiter, async (req, res, next) => {
+router.post('/chat', supportDailyLimiter, supportLimiter, async (req, res, next) => {
   try {
-    const { message, history } = req.body;
-    if (!message || typeof message !== 'string') {
+    const { message, history, lang } = req.body;
+    if (!message || typeof message !== 'string' || message.trim().length < 2) {
       return res.status(400).json({ success: false, message: 'Message requis.' });
     }
-    const result = await answerSupportQuestion(message.slice(0, 500), history || []);
+    const result = await answerSupportQuestion(
+      message.slice(0, 500),
+      Array.isArray(history) ? history : [],
+      typeof lang === 'string' ? lang : 'fr',
+    );
     res.json({ success: true, data: result });
   } catch (err) { next(err); }
 });

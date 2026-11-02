@@ -186,17 +186,117 @@
     },
     "pickShort": {
       "1": "Victoria Loc.",
-      "X": "Empate",
       "2": "Victoria Vis.",
+      "12": "Local o Vis.",
+      "X": "Empate",
       "over25": "Más de 2.5",
       "over15": "Más de 1.5",
       "btts": "BTTS Sí",
       "1X": "Doble 1X",
       "X2": "Doble X2",
-      "12": "Local o Vis.",
       "under25": "Menos de 2.5",
       "nobtts": "BTTS No",
-      "over35": "Más de 3.5"
+      "over35": "Más de 3.5",
+      "card1": "Local +tarj.",
+      "cardX": "Emp. tarj.",
+      "card2": "Visit. +tarj.",
+      "cardOver25": "+2.5 tarj.",
+      "cardUnder25": "-2.5 tarj.",
+      "cardOver35": "+3.5 tarj.",
+      "cardUnder35": "-3.5 tarj.",
+      "cardOver45": "+4.5 tarj.",
+      "cardUnder45": "-4.5 tarj.",
+      "cardOver55": "+5.5 tarj.",
+      "cardUnder55": "-5.5 tarj.",
+      "sot1": "Local +a puerta",
+      "sotX": "Emp. a puerta",
+      "sot2": "Visit. +a puerta",
+      "sotOver65": "+6.5 a puerta",
+      "sotUnder65": "-6.5 a puerta",
+      "sotOver75": "+7.5 a puerta",
+      "sotUnder75": "-7.5 a puerta",
+      "sotOver85": "+8.5 a puerta",
+      "sotUnder85": "-8.5 a puerta",
+      "sotOver95": "+9.5 a puerta",
+      "sotUnder95": "-9.5 a puerta",
+      "foulOver195": "+19.5 faltas",
+      "foulUnder195": "-19.5 faltas",
+      "foulOver215": "+21.5 faltas",
+      "foulUnder215": "-21.5 faltas",
+      "foulOver235": "+23.5 faltas",
+      "foulUnder235": "-23.5 faltas",
+      "foulOver255": "+25.5 faltas",
+      "foulUnder255": "-25.5 faltas",
+      "offsideOver25": "+2.5 F. juego",
+      "offsideUnder25": "-2.5 F. juego",
+      "offsideOver35": "+3.5 F. juego",
+      "offsideUnder35": "-3.5 F. juego",
+      "offsideOver45": "+4.5 F. juego",
+      "offsideUnder45": "-4.5 F. juego",
+      "htft11": "D/F 1/1",
+      "htft1X": "D/F 1/X",
+      "htft12": "D/F 1/2",
+      "htftX1": "D/F X/1",
+      "htftXX": "D/F X/X",
+      "htftX2": "D/F X/2",
+      "htft21": "D/F 2/1",
+      "htft2X": "D/F 2/X",
+      "htft22": "D/F 2/2",
+      "dc1xover15": "1X +1.5",
+      "dc1xunder35": "1X -3.5",
+      "dcx2over15": "X2 +1.5",
+      "dcx2under35": "X2 -3.5",
+      "dc12over15": "12 +1.5",
+      "dc12under35": "12 -3.5",
+      "bttsover25": "AM +2.5",
+      "bttsunder35": "AM -3.5",
+      "nobttsunder25": "AM No -2.5",
+      "nobttsover15": "AM No +1.5",
+      "res1over15": "1 y +1.5",
+      "res2over15": "2 y +1.5",
+      "dnb1": "DNB1",
+      "dnb2": "DNB2",
+      "over05": "O0.5",
+      "over45": "O4.5",
+      "under15": "U1.5",
+      "under35": "U3.5",
+      "under45": "U4.5",
+      "ht1": "HT1",
+      "htX": "HTX",
+      "ht2": "HT2",
+      "htover15": "HT+1.5",
+      "htunder15": "HT-1.5",
+      "h1m1": "Loc.-1",
+      "h2m1": "Vis.-1",
+      "mb1_2plus": "Loc.2+",
+      "mb2_2plus": "Vis.2+",
+      "cleansheet1": "Loc.0enc.",
+      "cleansheet2": "Vis.0enc.",
+      "res1over25": "1+O2.5",
+      "res1under25": "1+U2.5",
+      "resXover25": "X+O2.5",
+      "resXunder25": "X+U2.5",
+      "res2over25": "2+O2.5",
+      "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS",
+      "resXbtts": "X+BTTS",
+      "res2btts": "2+BTTS",
+      "dc1xbtts": "1X+BTTS",
+      "dcx2btts": "X2+BTTS",
+      "dc12btts": "12+BTTS",
+      "totalpair": "Par",
+      "totalimpair": "Impar",
+      "corner1": "Corn.Loc",
+      "cornerX": "Corn.Emp",
+      "corner2": "Corn.Vis",
+      "cornerOver85": "CO8.5",
+      "cornerUnder85": "CU8.5",
+      "cornerOver95": "CO9.5",
+      "cornerUnder95": "CU9.5",
+      "cornerOver105": "CO10.5",
+      "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Loc-3",
+      "cornerHandAway25": "CH Vis-3"
     },
     "liveLabel": "En directo",
     "allPicks": "Ver todos los picks",
@@ -222,7 +322,13 @@
       "handicap": "Hándicap",
       "multibuts": "Multi-goles",
       "corners": "Córners",
-      "live": "🔴 En directo"
+      "live": "🔴 En directo",
+      "cards": "Tarjetas",
+      "shots": "Tiros a puerta",
+      "fouls": "Faltas",
+      "offsides": "Fueras de juego",
+      "scorers": "Goleadores",
+      "combos": "Combinadas"
     },
     "filtersToggle": "Filtros",
     "marketGlossary": "1X2: victoria local (1), empate (X) o victoria visitante (2).\nBTTS: ambos equipos marcan.\nDoble oportunidad: combina dos resultados (ej. 1X = local o empate).\nValue: la cuota ofrecida se considera mejor que la probabilidad real estimada.",
@@ -252,6 +358,7 @@
     "disclaimerAuto": "Estos pronósticos se generan automáticamente. No constituyen asesoramiento financiero. Juega de forma responsable."
   },
   "matchDetail": {
+    "aiPickTitle": "Pronóstico IA de fpronix",
     "shareImage": {
       "button": "Compartir imagen",
       "pickTitle": "Pronóstico fpronix",
@@ -336,11 +443,18 @@
     "oddsComparatorSimulated": "Comparador de cuotas (simulado)",
     "oddsInfoDisclaimer": "Cuotas proporcionadas a título informativo — no es un consejo de apuesta.",
     "pickMarketLabels": {
-      "1": "Victoria local", "X": "Empate", "2": "Victoria visitante",
-      "1X": "Doble oportunidad 1X", "X2": "Doble oportunidad X2", "12": "Local o Visitante",
-      "over25": "Más de 2.5 goles", "over15": "Más de 1.5 goles", "over35": "Más de 3.5 goles",
+      "1": "Victoria local",
+      "2": "Victoria visitante",
+      "12": "Local o Visitante",
+      "X": "Empate",
+      "1X": "Doble oportunidad 1X",
+      "X2": "Doble oportunidad X2",
+      "over25": "Más de 2.5 goles",
+      "over15": "Más de 1.5 goles",
+      "over35": "Más de 3.5 goles",
       "under25": "Menos de 2.5 goles",
-      "btts": "Ambos equipos marcan", "nobtts": "No ambos equipos marcan"
+      "btts": "Ambos equipos marcan",
+      "nobtts": "No ambos equipos marcan"
     },
     "predictions": {
       "HOME_WIN": "1 — Victoria local",
@@ -415,7 +529,13 @@
     "sending": "Enviando…",
     "sendReport": "Enviar reporte",
     "aiGenerationError": "Error al generar la respuesta IA",
-    "formDataNotAvailable": "Datos de forma no disponibles"
+    "formDataNotAvailable": "Datos de forma no disponibles",
+    "players": {
+      "title": "Goleadores probables",
+      "goal": "Goleador",
+      "sot": "1+ tiro a puerta",
+      "note": "Según los goles y tiros a puerta recientes de cada jugador. Indicativo: las alineaciones oficiales se conocen antes del inicio."
+    }
   },
   "chat": {
     "title": "Chat IA",
@@ -458,7 +578,7 @@
     "titleHighlight": "con datos reales",
     "description": "Forma reciente, enfrentamientos directos, clasificaciones, lesiones — todo analizado por IA para pronósticos fiables.",
     "metaTitle": "Suscripción Premium",
-    "metaDesc": "Pásate a fpronix Premium — pronósticos IA, value bets, datos en tiempo real. Pago seguro vía Wave, Orange Money, tarjeta.",
+    "metaDesc": "Pásate a fpronix Premium — pronósticos IA, value bets, datos en tiempo real. Pago seguro por Mobile Money: Wave, Orange Money, Free Money.",
     "badgeRecommended": "⭐ Recomendado",
     "badgeBestValue": "🏆 Mejor valor",
     "unitYear": "año",
@@ -493,7 +613,8 @@
       },
       "tools": {
         "title": "Herramientas, no solo mensajes",
-        "desc": "Registro de apuestas con tu propia tasa de acierto, comparador de equipos, ranking de tipsters con su balance real — no un flujo que tienes que ordenar tú mismo."
+        "desc": "Registro de apuestas con tu propia tasa de acierto, comparador de equipos, ranking de tipsters con su balance real — no un flujo que tienes que ordenar tú mismo.",
+        "descNoTipsters": "Registro de apuestas con tu propia tasa de acierto, comparador de equipos, filtros estadísticos y la Máquina de tickets — no un flujo que tienes que ordenar tú mismo."
       },
       "serious": {
         "title": "La seriedad ante todo",
@@ -555,7 +676,19 @@
       "a5": "Porque un grupo gratuito no prueba nada: nadie verifica si realmente acierta, y los mensajes fallidos simplemente desaparecen. En fpronix, el balance de cada pronóstico es público y no se puede falsear — eso es lo que pagas: la prueba, no solo el tip."
     },
     "disclaimer": "fpronix no garantiza ninguna ganancia. Los pronósticos se ofrecen únicamente con fines informativos. Juega de forma responsable —",
-    "disclaimerLink": "ayuda para jugadores"
+    "disclaimerLink": "ayuda para jugadores",
+    "mobileMoneyOnly": {
+      "title": "Pago solo por Mobile Money",
+      "desc": "Por ahora las suscripciones se pagan en FCFA mediante Wave, Orange Money, Free Money, MTN o Moov (Senegal, Malí, Burkina Faso, Togo, Congo, Gabón). El pago con tarjeta llegará pronto.",
+      "modal": "Por ahora, pago en FCFA solo por Mobile Money: el pago con tarjeta aún no está disponible."
+    },
+    "androidApp": {
+      "title": "Suscripción fpronix",
+      "notAvailable": "La suscripción no está disponible en la aplicación. Si ya tienes una suscripción, inicia sesión con la misma cuenta para recuperar tu acceso.",
+      "activeTitle": "Tu suscripción está activa",
+      "activeUntil": "Válida hasta el {{date}}",
+      "login": "Iniciar sesión"
+    }
   },
   "auth": {
     "email": "Correo electrónico",
@@ -662,14 +795,14 @@
     "leaguesNoResults": "No se encontró ninguna liga.",
     "preferencesLabel": "Idioma y moneda",
     "leagues": {
-      "61": "Ligue 1 (Francia)",
-      "140": "La Liga (España)",
-      "39": "Premier League",
-      "135": "Serie A",
-      "78": "Bundesliga",
       "2": "Champions League",
-      "892": "Liga Senegalesa 1",
-      "529": "Copa Africana de Naciones"
+      "39": "Premier League",
+      "61": "Ligue 1 (Francia)",
+      "78": "Bundesliga",
+      "135": "Serie A",
+      "140": "La Liga (España)",
+      "529": "Copa Africana de Naciones",
+      "892": "Liga Senegalesa 1"
     }
   },
   "profile": {
@@ -678,7 +811,19 @@
     "favorites": "Mis favoritos",
     "settings": "Ajustes",
     "editProfile": "Editar perfil",
-    "changePassword": "Cambiar contraseña",
+    "changePassword": {
+      "title": "Cambiar contraseña",
+      "setTitle": "Definir una contraseña",
+      "currentPlaceholder": "Contraseña actual",
+      "newPlaceholder": "Nueva contraseña (mín. 8 caracteres)",
+      "confirmPlaceholder": "Confirmar nueva contraseña",
+      "tooShortError": "Mínimo 8 caracteres",
+      "mismatchError": "Las contraseñas no coinciden",
+      "submitCta": "Guardar",
+      "savingCta": "Guardando...",
+      "successToast": "Contraseña actualizada",
+      "genericError": "Error al cambiar la contraseña"
+    },
     "changePhoto": "Cambiar",
     "premium": "Premium",
     "googleConnected": "Conectado con Google",
@@ -751,19 +896,6 @@
       "sendingCta": "Enviando...",
       "successToast": "Correo actualizado — revisa tu bandeja para confirmarlo",
       "genericError": "Error al cambiar el correo"
-    },
-    "changePassword": {
-      "title": "Cambiar contraseña",
-      "setTitle": "Definir una contraseña",
-      "currentPlaceholder": "Contraseña actual",
-      "newPlaceholder": "Nueva contraseña (mín. 8 caracteres)",
-      "confirmPlaceholder": "Confirmar nueva contraseña",
-      "tooShortError": "Mínimo 8 caracteres",
-      "mismatchError": "Las contraseñas no coinciden",
-      "submitCta": "Guardar",
-      "savingCta": "Guardando...",
-      "successToast": "Contraseña actualizada",
-      "genericError": "Error al cambiar la contraseña"
     },
     "logoutBtn": "Cerrar sesión",
     "avatarUploadError": "Error al subir la foto. Inténtalo de nuevo.",
@@ -919,10 +1051,10 @@
     "today": "Hoy",
     "tomorrow": "Mañ.",
     "marketOptions": {
-      "all": "Todos los mercados",
       "1": "1 — Local",
-      "X": "X — Empate",
       "2": "2 — Visitante",
+      "all": "Todos los mercados",
+      "X": "X — Empate",
       "1X": "Doble oportunidad 1X",
       "X2": "Doble oportunidad X2",
       "over25": "Más de 2.5 goles",
@@ -936,9 +1068,18 @@
       "low": "⚪ Baja (<58%)"
     },
     "pickLabels": {
-      "1": "Local", "X": "Empate", "2": "Visitante",
-      "over25": "O2.5", "over15": "O1.5", "btts": "BTTS", "1X": "1X", "X2": "X2",
-      "12": "12", "under25": "U2.5", "nobtts": "BTTS No", "over35": "O3.5"
+      "1": "Local",
+      "2": "Visitante",
+      "12": "12",
+      "X": "Empate",
+      "over25": "O2.5",
+      "over15": "O1.5",
+      "btts": "BTTS",
+      "1X": "1X",
+      "X2": "X2",
+      "under25": "U2.5",
+      "nobtts": "BTTS No",
+      "over35": "O3.5"
     },
     "aiSectionTitle": "Refinar con nuestros pronósticos IA",
     "advancedSectionTitle": "Filtros estadísticos avanzados",
@@ -1165,219 +1306,861 @@
     },
     "allLeagues": "Todas las ligas",
     "pickLabels": {
-      "1": "Loc.", "X": "Empate", "2": "Vis.",
-      "1X": "1X", "X2": "X2", "12": "12",
-      "dnb1": "DNB1", "dnb2": "DNB2",
-      "over05": "O0.5", "over15": "O1.5", "over25": "O2.5", "over35": "O3.5", "over45": "O4.5",
-      "under15": "U1.5", "under25": "U2.5", "under35": "U3.5", "under45": "U4.5",
-      "btts": "BTTS✓", "nobtts": "BTTSx",
-      "ht1": "HT1", "htX": "HTX", "ht2": "HT2", "htover15": "HT+1.5", "htunder15": "HT-1.5",
-      "h1m1": "Loc.-1", "h2m1": "Vis.-1",
-      "mb1_2plus": "Loc.2+", "mb2_2plus": "Vis.2+", "cleansheet1": "Loc.0enc.", "cleansheet2": "Vis.0enc.",
-      "totalpair": "Par", "totalimpair": "Impar",
-      "res1over25": "1+O2.5", "res1under25": "1+U2.5", "resXover25": "X+O2.5", "resXunder25": "X+U2.5", "res2over25": "2+O2.5", "res2under25": "2+U2.5",
-      "res1btts": "1+BTTS", "resXbtts": "X+BTTS", "res2btts": "2+BTTS", "dc1xbtts": "1X+BTTS", "dcx2btts": "X2+BTTS", "dc12btts": "12+BTTS",
-      "corner1": "Corn.Loc", "cornerX": "Corn.Emp", "corner2": "Corn.Vis",
-      "cornerOver85": "CO8.5", "cornerUnder85": "CU8.5", "cornerOver95": "CO9.5", "cornerUnder95": "CU9.5", "cornerOver105": "CO10.5", "cornerUnder105": "CU10.5",
-      "cornerHandHome25": "CH Loc-3", "cornerHandAway25": "CH Vis-3",
-      "live1": "🔴Loc.", "liveX": "🔴Emp.", "live2": "🔴Vis.",
-      "liveOver05": "🔴O0.5", "liveUnder05": "🔴U0.5", "liveOver15": "🔴O1.5", "liveUnder15": "🔴U1.5",
-      "liveOver25": "🔴O2.5", "liveUnder25": "🔴U2.5", "liveOver35": "🔴O3.5", "liveUnder35": "🔴U3.5",
-      "liveCornerOver75": "🔴CO7.5", "liveCornerUnder75": "🔴CU7.5", "liveCornerOver85": "🔴CO8.5", "liveCornerUnder85": "🔴CU8.5",
-      "liveCornerOver95": "🔴CO9.5", "liveCornerUnder95": "🔴CU9.5", "liveCornerOver105": "🔴CO10.5", "liveCornerUnder105": "🔴CU10.5"
+      "1": "Loc.",
+      "2": "Vis.",
+      "12": "12",
+      "X": "Empate",
+      "1X": "1X",
+      "X2": "X2",
+      "dnb1": "DNB1",
+      "dnb2": "DNB2",
+      "over05": "O0.5",
+      "over15": "O1.5",
+      "over25": "O2.5",
+      "over35": "O3.5",
+      "over45": "O4.5",
+      "under15": "U1.5",
+      "under25": "U2.5",
+      "under35": "U3.5",
+      "under45": "U4.5",
+      "btts": "BTTS✓",
+      "nobtts": "BTTSx",
+      "ht1": "HT1",
+      "htX": "HTX",
+      "ht2": "HT2",
+      "htover15": "HT+1.5",
+      "htunder15": "HT-1.5",
+      "h1m1": "Loc.-1",
+      "h2m1": "Vis.-1",
+      "mb1_2plus": "Loc.2+",
+      "mb2_2plus": "Vis.2+",
+      "cleansheet1": "Loc.0enc.",
+      "cleansheet2": "Vis.0enc.",
+      "totalpair": "Par",
+      "totalimpair": "Impar",
+      "res1over25": "1+O2.5",
+      "res1under25": "1+U2.5",
+      "resXover25": "X+O2.5",
+      "resXunder25": "X+U2.5",
+      "res2over25": "2+O2.5",
+      "res2under25": "2+U2.5",
+      "res1btts": "1+BTTS",
+      "resXbtts": "X+BTTS",
+      "res2btts": "2+BTTS",
+      "dc1xbtts": "1X+BTTS",
+      "dcx2btts": "X2+BTTS",
+      "dc12btts": "12+BTTS",
+      "corner1": "Corn.Loc",
+      "cornerX": "Corn.Emp",
+      "corner2": "Corn.Vis",
+      "cornerOver85": "CO8.5",
+      "cornerUnder85": "CU8.5",
+      "cornerOver95": "CO9.5",
+      "cornerUnder95": "CU9.5",
+      "cornerOver105": "CO10.5",
+      "cornerUnder105": "CU10.5",
+      "cornerHandHome25": "CH Loc-3",
+      "cornerHandAway25": "CH Vis-3",
+      "live1": "🔴Loc.",
+      "liveX": "🔴Emp.",
+      "live2": "🔴Vis.",
+      "liveOver05": "🔴O0.5",
+      "liveUnder05": "🔴U0.5",
+      "liveOver15": "🔴O1.5",
+      "liveUnder15": "🔴U1.5",
+      "liveOver25": "🔴O2.5",
+      "liveUnder25": "🔴U2.5",
+      "liveOver35": "🔴O3.5",
+      "liveUnder35": "🔴U3.5",
+      "liveCornerOver75": "🔴CO7.5",
+      "liveCornerUnder75": "🔴CU7.5",
+      "liveCornerOver85": "🔴CO8.5",
+      "liveCornerUnder85": "🔴CU8.5",
+      "liveCornerOver95": "🔴CO9.5",
+      "liveCornerUnder95": "🔴CU9.5",
+      "liveCornerOver105": "🔴CO10.5",
+      "liveCornerUnder105": "🔴CU10.5",
+      "card1": "Local +tarj.",
+      "cardX": "Emp. tarj.",
+      "card2": "Visit. +tarj.",
+      "cardOver25": "+2.5 tarj.",
+      "cardUnder25": "-2.5 tarj.",
+      "cardOver35": "+3.5 tarj.",
+      "cardUnder35": "-3.5 tarj.",
+      "cardOver45": "+4.5 tarj.",
+      "cardUnder45": "-4.5 tarj.",
+      "cardOver55": "+5.5 tarj.",
+      "cardUnder55": "-5.5 tarj.",
+      "sot1": "Local +a puerta",
+      "sotX": "Emp. a puerta",
+      "sot2": "Visit. +a puerta",
+      "sotOver65": "+6.5 a puerta",
+      "sotUnder65": "-6.5 a puerta",
+      "sotOver75": "+7.5 a puerta",
+      "sotUnder75": "-7.5 a puerta",
+      "sotOver85": "+8.5 a puerta",
+      "sotUnder85": "-8.5 a puerta",
+      "sotOver95": "+9.5 a puerta",
+      "sotUnder95": "-9.5 a puerta",
+      "foulOver195": "+19.5 faltas",
+      "foulUnder195": "-19.5 faltas",
+      "foulOver215": "+21.5 faltas",
+      "foulUnder215": "-21.5 faltas",
+      "foulOver235": "+23.5 faltas",
+      "foulUnder235": "-23.5 faltas",
+      "foulOver255": "+25.5 faltas",
+      "foulUnder255": "-25.5 faltas",
+      "offsideOver25": "+2.5 F. juego",
+      "offsideUnder25": "-2.5 F. juego",
+      "offsideOver35": "+3.5 F. juego",
+      "offsideUnder35": "-3.5 F. juego",
+      "offsideOver45": "+4.5 F. juego",
+      "offsideUnder45": "-4.5 F. juego",
+      "htft11": "D/F 1/1",
+      "htft1X": "D/F 1/X",
+      "htft12": "D/F 1/2",
+      "htftX1": "D/F X/1",
+      "htftXX": "D/F X/X",
+      "htftX2": "D/F X/2",
+      "htft21": "D/F 2/1",
+      "htft2X": "D/F 2/X",
+      "htft22": "D/F 2/2",
+      "dc1xover15": "1X +1.5",
+      "dc1xunder35": "1X -3.5",
+      "dcx2over15": "X2 +1.5",
+      "dcx2under35": "X2 -3.5",
+      "dc12over15": "12 +1.5",
+      "dc12under35": "12 -3.5",
+      "bttsover25": "AM +2.5",
+      "bttsunder35": "AM -3.5",
+      "nobttsunder25": "AM No -2.5",
+      "nobttsover15": "AM No +1.5",
+      "res1over15": "1 y +1.5",
+      "res2over15": "2 y +1.5"
     },
     "marketGroups": {
       "resultats": {
         "label": "Resultado",
         "subtitle": "¿Quién gana el partido al final del tiempo reglamentario?",
         "markets": {
-          "auto": { "label": "Mejor pick automático", "desc": "Elige automáticamente el mercado con la probabilidad más alta para este partido." },
-          "1": { "label": "1 — Victoria local", "desc": "Gana si el equipo local gana. Pierde si hay empate o victoria visitante." },
-          "X": { "label": "X — Empate", "desc": "Gana si el partido termina en empate. Pierde si un equipo gana." },
-          "2": { "label": "2 — Victoria visitante", "desc": "Gana si el equipo visitante gana. Pierde si hay empate o victoria local." }
+          "1": {
+            "label": "1 — Victoria local",
+            "desc": "Gana si el equipo local gana. Pierde si hay empate o victoria visitante."
+          },
+          "2": {
+            "label": "2 — Victoria visitante",
+            "desc": "Gana si el equipo visitante gana. Pierde si hay empate o victoria local."
+          },
+          "auto": {
+            "label": "Mejor pick automático",
+            "desc": "Elige automáticamente el mercado con la probabilidad más alta para este partido."
+          },
+          "X": {
+            "label": "X — Empate",
+            "desc": "Gana si el partido termina en empate. Pierde si un equipo gana."
+          }
         }
       },
       "doublechance": {
         "label": "Doble oportunidad",
         "subtitle": "Cubres 2 de 3 resultados — más seguro, cuota reducida.",
         "markets": {
-          "1X": { "label": "1X — Local o Empate", "desc": "Gana si el local gana o hay empate. Pierde solo si gana el visitante." },
-          "X2": { "label": "X2 — Empate o Visitante", "desc": "Gana si hay empate o gana el visitante. Pierde solo si gana el local." },
-          "12": { "label": "12 — Local o Visitante (sin empate)", "desc": "Gana si cualquiera de los dos equipos gana. Pierde solo en caso de empate." }
+          "12": {
+            "label": "12 — Local o Visitante (sin empate)",
+            "desc": "Gana si cualquiera de los dos equipos gana. Pierde solo en caso de empate."
+          },
+          "1X": {
+            "label": "1X — Local o Empate",
+            "desc": "Gana si el local gana o hay empate. Pierde solo si gana el visitante."
+          },
+          "X2": {
+            "label": "X2 — Empate o Visitante",
+            "desc": "Gana si hay empate o gana el visitante. Pierde solo si gana el local."
+          }
         }
       },
       "dnb": {
         "label": "Resultado sin empate",
         "subtitle": "Draw No Bet — tu apuesta se reembolsa si hay empate.",
         "markets": {
-          "dnb1": { "label": "DNB Local — Apuesta anulada si empate", "desc": "Gana si el local gana. Reembolsado si hay empate. Pierde si gana el visitante." },
-          "dnb2": { "label": "DNB Visitante — Apuesta anulada si empate", "desc": "Gana si el visitante gana. Reembolsado si hay empate. Pierde si gana el local." }
+          "dnb1": {
+            "label": "DNB Local — Apuesta anulada si empate",
+            "desc": "Gana si el local gana. Reembolsado si hay empate. Pierde si gana el visitante."
+          },
+          "dnb2": {
+            "label": "DNB Visitante — Apuesta anulada si empate",
+            "desc": "Gana si el visitante gana. Reembolsado si hay empate. Pierde si gana el local."
+          }
         }
       },
       "overunder": {
         "label": "Total de goles",
         "subtitle": "Apuesta al número total de goles marcados en el partido.",
         "markets": {
-          "over05": { "label": "Más de 0.5 gol — Al menos 1 gol", "desc": "Gana en cuanto se marca 1 gol en el partido (~97% de los partidos)." },
-          "over15": { "label": "Más de 1.5 goles — Al menos 2 goles", "desc": "Gana si el partido tiene al menos 2 goles en total." },
-          "over25": { "label": "Más de 2.5 goles — Al menos 3 goles", "desc": "Gana si el partido tiene al menos 3 goles en total (ej. 2-1, 3-0)." },
-          "over35": { "label": "Más de 3.5 goles — Al menos 4 goles", "desc": "Gana si el partido tiene al menos 4 goles en total (ej. 2-2, 3-1)." },
-          "over45": { "label": "Más de 4.5 goles — Al menos 5 goles", "desc": "Gana si el partido tiene al menos 5 goles en total." },
-          "under15": { "label": "Menos de 1.5 gol — Máximo 1 gol", "desc": "Gana si el partido tiene 0 o 1 gol en total." },
-          "under25": { "label": "Menos de 2.5 goles — Máximo 2 goles", "desc": "Gana si el partido tiene 2 goles como máximo en total." },
-          "under35": { "label": "Menos de 3.5 goles — Máximo 3 goles", "desc": "Gana si el partido tiene 3 goles como máximo en total." },
-          "under45": { "label": "Menos de 4.5 goles — Máximo 4 goles", "desc": "Gana si el partido tiene 4 goles como máximo en total." }
+          "over05": {
+            "label": "Más de 0.5 gol — Al menos 1 gol",
+            "desc": "Gana en cuanto se marca 1 gol en el partido (~97% de los partidos)."
+          },
+          "over15": {
+            "label": "Más de 1.5 goles — Al menos 2 goles",
+            "desc": "Gana si el partido tiene al menos 2 goles en total."
+          },
+          "over25": {
+            "label": "Más de 2.5 goles — Al menos 3 goles",
+            "desc": "Gana si el partido tiene al menos 3 goles en total (ej. 2-1, 3-0)."
+          },
+          "over35": {
+            "label": "Más de 3.5 goles — Al menos 4 goles",
+            "desc": "Gana si el partido tiene al menos 4 goles en total (ej. 2-2, 3-1)."
+          },
+          "over45": {
+            "label": "Más de 4.5 goles — Al menos 5 goles",
+            "desc": "Gana si el partido tiene al menos 5 goles en total."
+          },
+          "under15": {
+            "label": "Menos de 1.5 gol — Máximo 1 gol",
+            "desc": "Gana si el partido tiene 0 o 1 gol en total."
+          },
+          "under25": {
+            "label": "Menos de 2.5 goles — Máximo 2 goles",
+            "desc": "Gana si el partido tiene 2 goles como máximo en total."
+          },
+          "under35": {
+            "label": "Menos de 3.5 goles — Máximo 3 goles",
+            "desc": "Gana si el partido tiene 3 goles como máximo en total."
+          },
+          "under45": {
+            "label": "Menos de 4.5 goles — Máximo 4 goles",
+            "desc": "Gana si el partido tiene 4 goles como máximo en total."
+          }
         }
       },
       "btts": {
         "label": "Ambos marcan",
         "subtitle": "Both Teams To Score — ¿marca cada equipo al menos una vez?",
         "markets": {
-          "btts": { "label": "BTTS Sí — Ambos equipos marcan", "desc": "Gana si ambos equipos marcan al menos 1 gol cada uno." },
-          "nobtts": { "label": "BTTS No — Al menos un equipo no marca", "desc": "Gana si al menos un equipo no marca." }
+          "btts": {
+            "label": "BTTS Sí — Ambos equipos marcan",
+            "desc": "Gana si ambos equipos marcan al menos 1 gol cada uno."
+          },
+          "nobtts": {
+            "label": "BTTS No — Al menos un equipo no marca",
+            "desc": "Gana si al menos un equipo no marca."
+          }
         }
       },
       "mitemps": {
         "label": "1er tiempo",
         "subtitle": "Resultado y goles solo en los primeros 45 minutos.",
         "markets": {
-          "ht1": { "label": "1T 1 — Local va ganando al descanso", "desc": "Gana si el equipo local va ganando al descanso." },
-          "htX": { "label": "1T X — Empate al descanso", "desc": "Gana si ambos equipos están empatados al descanso." },
-          "ht2": { "label": "1T 2 — Visitante va ganando al descanso", "desc": "Gana si el equipo visitante va ganando al descanso." },
-          "htover15": { "label": "1T +1.5 goles — Al menos 2 goles antes del descanso", "desc": "Gana si se marcan al menos 2 goles antes del descanso." },
-          "htunder15": { "label": "1T -1.5 gol — Máximo 1 gol antes del descanso", "desc": "Gana si se marca 0 o 1 gol antes del descanso." }
+          "ht1": {
+            "label": "1T 1 — Local va ganando al descanso",
+            "desc": "Gana si el equipo local va ganando al descanso."
+          },
+          "htX": {
+            "label": "1T X — Empate al descanso",
+            "desc": "Gana si ambos equipos están empatados al descanso."
+          },
+          "ht2": {
+            "label": "1T 2 — Visitante va ganando al descanso",
+            "desc": "Gana si el equipo visitante va ganando al descanso."
+          },
+          "htover15": {
+            "label": "1T +1.5 goles — Al menos 2 goles antes del descanso",
+            "desc": "Gana si se marcan al menos 2 goles antes del descanso."
+          },
+          "htunder15": {
+            "label": "1T -1.5 gol — Máximo 1 gol antes del descanso",
+            "desc": "Gana si se marca 0 o 1 gol antes del descanso."
+          }
         }
       },
       "scoreexact": {
         "label": "Resultado exacto",
         "subtitle": "El marcador final exacto calculado como el más probable por nuestro modelo.",
         "markets": {
-          "exactscore": { "label": "Resultado exacto más probable", "desc": "Gana solo si el marcador final coincide exactamente con el resultado más probable calculado para este partido." }
+          "exactscore": {
+            "label": "Resultado exacto más probable",
+            "desc": "Gana solo si el marcador final coincide exactamente con el resultado más probable calculado para este partido."
+          }
         }
       },
       "handicap": {
         "label": "Hándicap europeo",
         "subtitle": "Un equipo debe ganar con al menos 2 goles de diferencia.",
         "markets": {
-          "h1m1": { "label": "Local -1 — Gana con 2 goles de diferencia o más", "desc": "Gana si el equipo local gana con al menos 2 goles de diferencia (ej. 2-0, 3-1)." },
-          "h2m1": { "label": "Visitante -1 — Gana con 2 goles de diferencia o más", "desc": "Gana si el equipo visitante gana con al menos 2 goles de diferencia." }
+          "h1m1": {
+            "label": "Local -1 — Gana con 2 goles de diferencia o más",
+            "desc": "Gana si el equipo local gana con al menos 2 goles de diferencia (ej. 2-0, 3-1)."
+          },
+          "h2m1": {
+            "label": "Visitante -1 — Gana con 2 goles de diferencia o más",
+            "desc": "Gana si el equipo visitante gana con al menos 2 goles de diferencia."
+          }
         }
       },
       "multibuts": {
         "label": "Multi-goles",
         "subtitle": "Un equipo marca varios goles, o gana sin encajar.",
         "markets": {
-          "mb1_2plus": { "label": "Local marca 2 goles o más", "desc": "Gana si el equipo local marca al menos 2 goles en el partido, sin importar el resultado final." },
-          "mb2_2plus": { "label": "Visitante marca 2 goles o más", "desc": "Gana si el equipo visitante marca al menos 2 goles en el partido, sin importar el resultado final." },
-          "cleansheet1": { "label": "Local gana sin encajar", "desc": "Gana si el equipo local gana el partido sin que el visitante marque." },
-          "cleansheet2": { "label": "Visitante gana sin encajar", "desc": "Gana si el equipo visitante gana el partido sin que el local marque." }
+          "mb1_2plus": {
+            "label": "Local marca 2 goles o más",
+            "desc": "Gana si el equipo local marca al menos 2 goles en el partido, sin importar el resultado final."
+          },
+          "mb2_2plus": {
+            "label": "Visitante marca 2 goles o más",
+            "desc": "Gana si el equipo visitante marca al menos 2 goles en el partido, sin importar el resultado final."
+          },
+          "cleansheet1": {
+            "label": "Local gana sin encajar",
+            "desc": "Gana si el equipo local gana el partido sin que el visitante marque."
+          },
+          "cleansheet2": {
+            "label": "Visitante gana sin encajar",
+            "desc": "Gana si el equipo visitante gana el partido sin que el local marque."
+          }
         }
       },
       "resulttotal": {
         "label": "Resultado + Total de goles",
         "subtitle": "Combina el resultado del partido y el número total de goles.",
         "markets": {
-          "res1over25": { "label": "1 y Más de 2.5 goles", "desc": "Gana si el equipo local gana Y el partido tiene al menos 3 goles." },
-          "res1under25": { "label": "1 y Menos de 2.5 goles", "desc": "Gana si el equipo local gana Y el partido tiene 2 goles como máximo." },
-          "resXover25": { "label": "X y Más de 2.5 goles", "desc": "Gana si el partido termina en empate Y tiene al menos 3 goles." },
-          "resXunder25": { "label": "X y Menos de 2.5 goles", "desc": "Gana si el partido termina en empate Y tiene 2 goles como máximo." },
-          "res2over25": { "label": "2 y Más de 2.5 goles", "desc": "Gana si el equipo visitante gana Y el partido tiene al menos 3 goles." },
-          "res2under25": { "label": "2 y Menos de 2.5 goles", "desc": "Gana si el equipo visitante gana Y el partido tiene 2 goles como máximo." }
+          "res1over25": {
+            "label": "1 y Más de 2.5 goles",
+            "desc": "Gana si el equipo local gana Y el partido tiene al menos 3 goles."
+          },
+          "res1under25": {
+            "label": "1 y Menos de 2.5 goles",
+            "desc": "Gana si el equipo local gana Y el partido tiene 2 goles como máximo."
+          },
+          "resXover25": {
+            "label": "X y Más de 2.5 goles",
+            "desc": "Gana si el partido termina en empate Y tiene al menos 3 goles."
+          },
+          "resXunder25": {
+            "label": "X y Menos de 2.5 goles",
+            "desc": "Gana si el partido termina en empate Y tiene 2 goles como máximo."
+          },
+          "res2over25": {
+            "label": "2 y Más de 2.5 goles",
+            "desc": "Gana si el equipo visitante gana Y el partido tiene al menos 3 goles."
+          },
+          "res2under25": {
+            "label": "2 y Menos de 2.5 goles",
+            "desc": "Gana si el equipo visitante gana Y el partido tiene 2 goles como máximo."
+          },
+          "res1over15": {
+            "label": "Gana local y Más de 1.5",
+            "desc": "Gana el local y hay al menos 2 goles."
+          },
+          "res2over15": {
+            "label": "Gana visitante y Más de 1.5",
+            "desc": "Gana el visitante y hay al menos 2 goles."
+          }
         }
       },
       "resultbtts": {
         "label": "Resultado + BTTS",
         "subtitle": "Combina el resultado (o doble oportunidad) con ambos equipos marcando.",
         "markets": {
-          "res1btts": { "label": "1 y BTTS Sí", "desc": "Gana si el equipo local gana Y ambos equipos marcan." },
-          "resXbtts": { "label": "X y BTTS Sí", "desc": "Gana si el partido termina en empate Y ambos equipos marcan." },
-          "res2btts": { "label": "2 y BTTS Sí", "desc": "Gana si el equipo visitante gana Y ambos equipos marcan." },
-          "dc1xbtts": { "label": "1X y BTTS Sí", "desc": "Gana si el local gana o hay empate Y ambos equipos marcan." },
-          "dcx2btts": { "label": "X2 y BTTS Sí", "desc": "Gana si hay empate o gana el visitante Y ambos equipos marcan." },
-          "dc12btts": { "label": "12 y BTTS Sí", "desc": "Gana si cualquiera de los dos equipos gana (sin empate) Y ambos equipos marcan." }
+          "res1btts": {
+            "label": "1 y BTTS Sí",
+            "desc": "Gana si el equipo local gana Y ambos equipos marcan."
+          },
+          "resXbtts": {
+            "label": "X y BTTS Sí",
+            "desc": "Gana si el partido termina en empate Y ambos equipos marcan."
+          },
+          "res2btts": {
+            "label": "2 y BTTS Sí",
+            "desc": "Gana si el equipo visitante gana Y ambos equipos marcan."
+          },
+          "dc1xbtts": {
+            "label": "1X y BTTS Sí",
+            "desc": "Gana si el local gana o hay empate Y ambos equipos marcan."
+          },
+          "dcx2btts": {
+            "label": "X2 y BTTS Sí",
+            "desc": "Gana si hay empate o gana el visitante Y ambos equipos marcan."
+          },
+          "dc12btts": {
+            "label": "12 y BTTS Sí",
+            "desc": "Gana si cualquiera de los dos equipos gana (sin empate) Y ambos equipos marcan."
+          }
         }
       },
       "totalpair": {
         "label": "Total par/impar",
         "subtitle": "¿El número total de goles del partido es par o impar?",
         "markets": {
-          "totalpair": { "label": "Total par — 0, 2, 4 goles...", "desc": "Gana si el número total de goles del partido es par (0, 2, 4...)." },
-          "totalimpair": { "label": "Total impar — 1, 3, 5 goles...", "desc": "Gana si el número total de goles del partido es impar (1, 3, 5...)." }
+          "totalpair": {
+            "label": "Total par — 0, 2, 4 goles...",
+            "desc": "Gana si el número total de goles del partido es par (0, 2, 4...)."
+          },
+          "totalimpair": {
+            "label": "Total impar — 1, 3, 5 goles...",
+            "desc": "Gana si el número total de goles del partido es impar (1, 3, 5...)."
+          }
         }
       },
       "corners1x2": {
         "label": "Córners — Equipo con más",
         "subtitle": "¿Qué equipo consigue más córners en el partido? Requiere historial de córners por equipo — se vuelve más fiable con el tiempo.",
         "markets": {
-          "corner1": { "label": "Local — Más córners", "desc": "Gana si el equipo local consigue más córners que el visitante en todo el partido." },
-          "cornerX": { "label": "Empate — Mismo número de córners", "desc": "Gana si ambos equipos consiguen exactamente el mismo número de córners." },
-          "corner2": { "label": "Visitante — Más córners", "desc": "Gana si el equipo visitante consigue más córners que el local en todo el partido." }
+          "corner1": {
+            "label": "Local — Más córners",
+            "desc": "Gana si el equipo local consigue más córners que el visitante en todo el partido."
+          },
+          "cornerX": {
+            "label": "Empate — Mismo número de córners",
+            "desc": "Gana si ambos equipos consiguen exactamente el mismo número de córners."
+          },
+          "corner2": {
+            "label": "Visitante — Más córners",
+            "desc": "Gana si el equipo visitante consigue más córners que el local en todo el partido."
+          }
         }
       },
       "cornerstotal": {
         "label": "Total de córners",
         "subtitle": "Apuesta al número total de córners del partido.",
         "markets": {
-          "cornerOver85": { "label": "Más de 8.5 córners", "desc": "Gana si el partido tiene al menos 9 córners en total." },
-          "cornerUnder85": { "label": "Menos de 8.5 córners", "desc": "Gana si el partido tiene 8 córners como máximo en total." },
-          "cornerOver95": { "label": "Más de 9.5 córners", "desc": "Gana si el partido tiene al menos 10 córners en total." },
-          "cornerUnder95": { "label": "Menos de 9.5 córners", "desc": "Gana si el partido tiene 9 córners como máximo en total." },
-          "cornerOver105": { "label": "Más de 10.5 córners", "desc": "Gana si el partido tiene al menos 11 córners en total." },
-          "cornerUnder105": { "label": "Menos de 10.5 córners", "desc": "Gana si el partido tiene 10 córners como máximo en total." }
+          "cornerOver85": {
+            "label": "Más de 8.5 córners",
+            "desc": "Gana si el partido tiene al menos 9 córners en total."
+          },
+          "cornerUnder85": {
+            "label": "Menos de 8.5 córners",
+            "desc": "Gana si el partido tiene 8 córners como máximo en total."
+          },
+          "cornerOver95": {
+            "label": "Más de 9.5 córners",
+            "desc": "Gana si el partido tiene al menos 10 córners en total."
+          },
+          "cornerUnder95": {
+            "label": "Menos de 9.5 córners",
+            "desc": "Gana si el partido tiene 9 córners como máximo en total."
+          },
+          "cornerOver105": {
+            "label": "Más de 10.5 córners",
+            "desc": "Gana si el partido tiene al menos 11 córners en total."
+          },
+          "cornerUnder105": {
+            "label": "Menos de 10.5 córners",
+            "desc": "Gana si el partido tiene 10 córners como máximo en total."
+          }
         }
       },
       "cornershandicap": {
         "label": "Hándicap de córners",
         "subtitle": "Un equipo debe dominar claramente el conteo de córners (3 o más de diferencia).",
         "markets": {
-          "cornerHandHome25": { "label": "Local -2.5 córners", "desc": "Gana si el equipo local consigue al menos 3 córners más que el visitante." },
-          "cornerHandAway25": { "label": "Visitante -2.5 córners", "desc": "Gana si el equipo visitante consigue al menos 3 córners más que el local." }
+          "cornerHandHome25": {
+            "label": "Local -2.5 córners",
+            "desc": "Gana si el equipo local consigue al menos 3 córners más que el visitante."
+          },
+          "cornerHandAway25": {
+            "label": "Visitante -2.5 córners",
+            "desc": "Gana si el equipo visitante consigue al menos 3 córners más que el local."
+          }
         }
       },
       "liveresultats": {
         "label": "🔴 Resultado en vivo",
         "subtitle": "Resultado final probable, recalculado según el marcador y el tiempo restante.",
         "markets": {
-          "live1": { "label": "1 — Gana el local (en vivo)", "desc": "Recalculado continuamente a partir del marcador actual y el tiempo de juego restante." },
-          "liveX": { "label": "X — Empate (en vivo)", "desc": "Recalculado continuamente a partir del marcador actual y el tiempo de juego restante." },
-          "live2": { "label": "2 — Gana el visitante (en vivo)", "desc": "Recalculado continuamente a partir del marcador actual y el tiempo de juego restante." }
+          "live1": {
+            "label": "1 — Gana el local (en vivo)",
+            "desc": "Recalculado continuamente a partir del marcador actual y el tiempo de juego restante."
+          },
+          "liveX": {
+            "label": "X — Empate (en vivo)",
+            "desc": "Recalculado continuamente a partir del marcador actual y el tiempo de juego restante."
+          },
+          "live2": {
+            "label": "2 — Gana el visitante (en vivo)",
+            "desc": "Recalculado continuamente a partir del marcador actual y el tiempo de juego restante."
+          }
         }
       },
       "liveoverunder": {
         "label": "🔴 Total de goles en vivo",
         "subtitle": "Total de goles al final del partido, recalculado desde el marcador actual.",
         "markets": {
-          "liveOver05": { "label": "Más de 0.5 gol (en vivo)", "desc": "Gana en cuanto se marca un gol más en el partido." },
-          "liveUnder05": { "label": "Menos de 0.5 gol (en vivo)", "desc": "Gana si no se marca ningún gol más." },
-          "liveOver15": { "label": "Más de 1.5 goles (en vivo)", "desc": "Probabilidad recalculada desde el marcador actual." },
-          "liveUnder15": { "label": "Menos de 1.5 gol (en vivo)", "desc": "Probabilidad recalculada desde el marcador actual." },
-          "liveOver25": { "label": "Más de 2.5 goles (en vivo)", "desc": "Probabilidad recalculada desde el marcador actual." },
-          "liveUnder25": { "label": "Menos de 2.5 goles (en vivo)", "desc": "Probabilidad recalculada desde el marcador actual." },
-          "liveOver35": { "label": "Más de 3.5 goles (en vivo)", "desc": "Probabilidad recalculada desde el marcador actual." },
-          "liveUnder35": { "label": "Menos de 3.5 goles (en vivo)", "desc": "Probabilidad recalculada desde el marcador actual." }
+          "liveOver05": {
+            "label": "Más de 0.5 gol (en vivo)",
+            "desc": "Gana en cuanto se marca un gol más en el partido."
+          },
+          "liveUnder05": {
+            "label": "Menos de 0.5 gol (en vivo)",
+            "desc": "Gana si no se marca ningún gol más."
+          },
+          "liveOver15": {
+            "label": "Más de 1.5 goles (en vivo)",
+            "desc": "Probabilidad recalculada desde el marcador actual."
+          },
+          "liveUnder15": {
+            "label": "Menos de 1.5 gol (en vivo)",
+            "desc": "Probabilidad recalculada desde el marcador actual."
+          },
+          "liveOver25": {
+            "label": "Más de 2.5 goles (en vivo)",
+            "desc": "Probabilidad recalculada desde el marcador actual."
+          },
+          "liveUnder25": {
+            "label": "Menos de 2.5 goles (en vivo)",
+            "desc": "Probabilidad recalculada desde el marcador actual."
+          },
+          "liveOver35": {
+            "label": "Más de 3.5 goles (en vivo)",
+            "desc": "Probabilidad recalculada desde el marcador actual."
+          },
+          "liveUnder35": {
+            "label": "Menos de 3.5 goles (en vivo)",
+            "desc": "Probabilidad recalculada desde el marcador actual."
+          }
         }
       },
       "livescoreexact": {
         "label": "🔴 Resultado exacto en vivo",
         "subtitle": "Resultado final más probable a partir de ahora.",
         "markets": {
-          "livescoreexact": { "label": "Resultado exacto más probable (en vivo)", "desc": "Recalculado continuamente a partir del marcador actual y el tiempo restante." }
+          "livescoreexact": {
+            "label": "Resultado exacto más probable (en vivo)",
+            "desc": "Recalculado continuamente a partir del marcador actual y el tiempo restante."
+          }
         }
       },
       "livecorners": {
         "label": "🔴 Córners en vivo",
         "subtitle": "Total de córners al final del partido, recalculado desde el conteo actual. Solo disponible si el seguimiento de córners en vivo está activado para este partido.",
         "markets": {
-          "liveCornerOver75": { "label": "Más de 7.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerUnder75": { "label": "Menos de 7.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerOver85": { "label": "Más de 8.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerUnder85": { "label": "Menos de 8.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerOver95": { "label": "Más de 9.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerUnder95": { "label": "Menos de 9.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerOver105": { "label": "Más de 10.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." },
-          "liveCornerUnder105": { "label": "Menos de 10.5 córners (en vivo)", "desc": "Probabilidad recalculada desde los córners ya jugados." }
+          "liveCornerOver75": {
+            "label": "Más de 7.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerUnder75": {
+            "label": "Menos de 7.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerOver85": {
+            "label": "Más de 8.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerUnder85": {
+            "label": "Menos de 8.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerOver95": {
+            "label": "Más de 9.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerUnder95": {
+            "label": "Menos de 9.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerOver105": {
+            "label": "Más de 10.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          },
+          "liveCornerUnder105": {
+            "label": "Menos de 10.5 córners (en vivo)",
+            "desc": "Probabilidad recalculada desde los córners ya jugados."
+          }
+        }
+      },
+      "cards1x2": {
+        "label": "Tarjetas — Equipo con más",
+        "subtitle": "¿Qué equipo recibirá más tarjetas (amarillas + rojas)? Basado en el historial disciplinario de ambos equipos.",
+        "markets": {
+          "card1": {
+            "label": "Local — Más tarjetas",
+            "desc": "Se gana si el equipo local tiene más tarjetas que el otro en todo el partido."
+          },
+          "cardX": {
+            "label": "Empate — Mismo número de tarjetas",
+            "desc": "Se gana si ambos equipos tienen exactamente el mismo número de tarjetas."
+          },
+          "card2": {
+            "label": "Visitante — Más tarjetas",
+            "desc": "Se gana si el equipo visitante tiene más tarjetas que el otro en todo el partido."
+          }
+        }
+      },
+      "cardstotal": {
+        "label": "Total de tarjetas",
+        "subtitle": "Número total de tarjetas del partido (amarillas + rojas, cada tarjeta cuenta 1).",
+        "markets": {
+          "cardOver25": {
+            "label": "Más de 2.5 tarjetas",
+            "desc": "Se gana si el partido tiene al menos 3 tarjetas en total."
+          },
+          "cardUnder25": {
+            "label": "Menos de 2.5 tarjetas",
+            "desc": "Se gana si el partido tiene como máximo 2 tarjetas en total."
+          },
+          "cardOver35": {
+            "label": "Más de 3.5 tarjetas",
+            "desc": "Se gana si el partido tiene al menos 4 tarjetas en total."
+          },
+          "cardUnder35": {
+            "label": "Menos de 3.5 tarjetas",
+            "desc": "Se gana si el partido tiene como máximo 3 tarjetas en total."
+          },
+          "cardOver45": {
+            "label": "Más de 4.5 tarjetas",
+            "desc": "Se gana si el partido tiene al menos 5 tarjetas en total."
+          },
+          "cardUnder45": {
+            "label": "Menos de 4.5 tarjetas",
+            "desc": "Se gana si el partido tiene como máximo 4 tarjetas en total."
+          },
+          "cardOver55": {
+            "label": "Más de 5.5 tarjetas",
+            "desc": "Se gana si el partido tiene al menos 6 tarjetas en total."
+          },
+          "cardUnder55": {
+            "label": "Menos de 5.5 tarjetas",
+            "desc": "Se gana si el partido tiene como máximo 5 tarjetas en total."
+          }
+        }
+      },
+      "sot1x2": {
+        "label": "Tiros a puerta — Equipo con más",
+        "subtitle": "¿Qué equipo tendrá más tiros a puerta? Basado en el historial ofensivo y defensivo de ambos equipos.",
+        "markets": {
+          "sot1": {
+            "label": "Local — Más tiros a puerta",
+            "desc": "Se gana si el equipo local tiene más tiros a puerta que el otro en todo el partido."
+          },
+          "sotX": {
+            "label": "Empate — Mismo número de tiros a puerta",
+            "desc": "Se gana si ambos equipos tienen exactamente el mismo número de tiros a puerta."
+          },
+          "sot2": {
+            "label": "Visitante — Más tiros a puerta",
+            "desc": "Se gana si el equipo visitante tiene más tiros a puerta que el otro en todo el partido."
+          }
+        }
+      },
+      "sottotal": {
+        "label": "Total de tiros a puerta",
+        "subtitle": "Número total de tiros a puerta del partido.",
+        "markets": {
+          "sotOver65": {
+            "label": "Más de 6.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene al menos 7 tiros a puerta en total."
+          },
+          "sotUnder65": {
+            "label": "Menos de 6.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene como máximo 6 tiros a puerta en total."
+          },
+          "sotOver75": {
+            "label": "Más de 7.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene al menos 8 tiros a puerta en total."
+          },
+          "sotUnder75": {
+            "label": "Menos de 7.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene como máximo 7 tiros a puerta en total."
+          },
+          "sotOver85": {
+            "label": "Más de 8.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene al menos 9 tiros a puerta en total."
+          },
+          "sotUnder85": {
+            "label": "Menos de 8.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene como máximo 8 tiros a puerta en total."
+          },
+          "sotOver95": {
+            "label": "Más de 9.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene al menos 10 tiros a puerta en total."
+          },
+          "sotUnder95": {
+            "label": "Menos de 9.5 tiros a puerta",
+            "desc": "Se gana si el partido tiene como máximo 9 tiros a puerta en total."
+          }
+        }
+      },
+      "foulstotal": {
+        "label": "Total de faltas",
+        "subtitle": "Número total de faltas del partido.",
+        "markets": {
+          "foulOver195": {
+            "label": "Más de 19.5 faltas",
+            "desc": "Se gana si el partido tiene al menos 20 faltas en total."
+          },
+          "foulUnder195": {
+            "label": "Menos de 19.5 faltas",
+            "desc": "Se gana si el partido tiene como máximo 19 faltas en total."
+          },
+          "foulOver215": {
+            "label": "Más de 21.5 faltas",
+            "desc": "Se gana si el partido tiene al menos 22 faltas en total."
+          },
+          "foulUnder215": {
+            "label": "Menos de 21.5 faltas",
+            "desc": "Se gana si el partido tiene como máximo 21 faltas en total."
+          },
+          "foulOver235": {
+            "label": "Más de 23.5 faltas",
+            "desc": "Se gana si el partido tiene al menos 24 faltas en total."
+          },
+          "foulUnder235": {
+            "label": "Menos de 23.5 faltas",
+            "desc": "Se gana si el partido tiene como máximo 23 faltas en total."
+          },
+          "foulOver255": {
+            "label": "Más de 25.5 faltas",
+            "desc": "Se gana si el partido tiene al menos 26 faltas en total."
+          },
+          "foulUnder255": {
+            "label": "Menos de 25.5 faltas",
+            "desc": "Se gana si el partido tiene como máximo 25 faltas en total."
+          }
+        }
+      },
+      "offsidestotal": {
+        "label": "Total de fueras de juego",
+        "subtitle": "Número total de fueras de juego del partido.",
+        "markets": {
+          "offsideOver25": {
+            "label": "Más de 2.5 fueras de juego",
+            "desc": "Se gana si el partido tiene al menos 3 fueras de juego en total."
+          },
+          "offsideUnder25": {
+            "label": "Menos de 2.5 fueras de juego",
+            "desc": "Se gana si el partido tiene como máximo 2 fueras de juego en total."
+          },
+          "offsideOver35": {
+            "label": "Más de 3.5 fueras de juego",
+            "desc": "Se gana si el partido tiene al menos 4 fueras de juego en total."
+          },
+          "offsideUnder35": {
+            "label": "Menos de 3.5 fueras de juego",
+            "desc": "Se gana si el partido tiene como máximo 3 fueras de juego en total."
+          },
+          "offsideOver45": {
+            "label": "Más de 4.5 fueras de juego",
+            "desc": "Se gana si el partido tiene al menos 5 fueras de juego en total."
+          },
+          "offsideUnder45": {
+            "label": "Menos de 4.5 fueras de juego",
+            "desc": "Se gana si el partido tiene como máximo 4 fueras de juego en total."
+          }
+        }
+      },
+      "dctotal": {
+        "label": "Doble oportunidad + Total",
+        "subtitle": "Combina una doble oportunidad con un número de goles.",
+        "markets": {
+          "dc1xover15": {
+            "label": "1X y Más de 1.5",
+            "desc": "Local o empate, con al menos 2 goles."
+          },
+          "dc1xunder35": {
+            "label": "1X y Menos de 3.5",
+            "desc": "Local o empate, con 3 goles como máximo."
+          },
+          "dcx2over15": {
+            "label": "X2 y Más de 1.5",
+            "desc": "Empate o visitante, con al menos 2 goles."
+          },
+          "dcx2under35": {
+            "label": "X2 y Menos de 3.5",
+            "desc": "Empate o visitante, con 3 goles como máximo."
+          },
+          "dc12over15": {
+            "label": "12 y Más de 1.5",
+            "desc": "Sin empate, con al menos 2 goles."
+          },
+          "dc12under35": {
+            "label": "12 y Menos de 3.5",
+            "desc": "Sin empate, con 3 goles como máximo."
+          }
+        }
+      },
+      "bttstotal": {
+        "label": "Ambos marcan + Total",
+        "subtitle": "Combina «ambos marcan» (o no) con un número de goles.",
+        "markets": {
+          "bttsover25": {
+            "label": "Ambos marcan y Más de 2.5",
+            "desc": "Ambos equipos marcan y al menos 3 goles."
+          },
+          "bttsunder35": {
+            "label": "Ambos marcan y Menos de 3.5",
+            "desc": "Ambos equipos marcan y 3 goles como máximo."
+          },
+          "nobttsunder25": {
+            "label": "No ambos marcan y Menos de 2.5",
+            "desc": "Al menos un equipo no marca y 2 goles como máximo."
+          },
+          "nobttsover15": {
+            "label": "No ambos marcan y Más de 1.5",
+            "desc": "Al menos un equipo no marca y al menos 2 goles."
+          }
+        }
+      },
+      "buteurs": {
+        "label": "Apuestas de jugador",
+        "subtitle": "El jugador más probable del partido, según sus goles y tiros a puerta recientes.",
+        "markets": {
+          "anytimescorer": {
+            "label": "Goleador (en cualquier momento)",
+            "desc": "El jugador con más probabilidades de marcar en este partido."
+          },
+          "playersot": {
+            "label": "1+ tiro a puerta (jugador)",
+            "desc": "El jugador con más probabilidades de hacer al menos un tiro a puerta."
+          }
+        }
+      },
+      "htft": {
+        "label": "Descanso / Final",
+        "subtitle": "El resultado al descanso Y al final del partido, en ese orden.",
+        "markets": {
+          "htft11": {
+            "label": "Desc. Local / Final Local",
+            "desc": "Local al descanso y luego Local al final."
+          },
+          "htft1X": {
+            "label": "Desc. Local / Final Empate",
+            "desc": "Local al descanso y luego Empate al final."
+          },
+          "htft12": {
+            "label": "Desc. Local / Final Visitante",
+            "desc": "Local al descanso y luego Visitante al final."
+          },
+          "htftX1": {
+            "label": "Desc. Empate / Final Local",
+            "desc": "Empate al descanso y luego Local al final."
+          },
+          "htftXX": {
+            "label": "Desc. Empate / Final Empate",
+            "desc": "Empate al descanso y luego Empate al final."
+          },
+          "htftX2": {
+            "label": "Desc. Empate / Final Visitante",
+            "desc": "Empate al descanso y luego Visitante al final."
+          },
+          "htft21": {
+            "label": "Desc. Visitante / Final Local",
+            "desc": "Visitante al descanso y luego Local al final."
+          },
+          "htft2X": {
+            "label": "Desc. Visitante / Final Empate",
+            "desc": "Visitante al descanso y luego Empate al final."
+          },
+          "htft22": {
+            "label": "Desc. Visitante / Final Visitante",
+            "desc": "Visitante al descanso y luego Visitante al final."
+          }
         }
       }
+    },
+    "playerPick": {
+      "scorer": "⚽ Marca {{name}}",
+      "sot": "🎯 {{name}} 1+ a puerta"
     }
   },
   "pwa": {
@@ -1400,6 +2183,8 @@
     "refreshing": "Actualizando..."
   },
   "search": {
+    "hintNoTipsters": "Escribe para buscar partidos, equipos o competiciones",
+    "placeholderNoTipsters": "Buscar partidos, equipos, competiciones...",
     "open": "Buscar",
     "placeholder": "Buscar partidos, tipsters...",
     "noResults": "Ningún resultado para",
@@ -1468,7 +2253,14 @@
     "backHome": "Volver al inicio",
     "serverError": "Error del servidor",
     "unauthorized": "Acceso no autorizado",
-    "sessionExpired": "Sesión expirada, por favor inicia sesión de nuevo."
+    "sessionExpired": "Sesión expirada, por favor inicia sesión de nuevo.",
+    "crashTitle": "Vaya, algo salió mal",
+    "crashDesc": "Esta página encontró un error inesperado. Recarga la página; si el problema continúa, contáctanos.",
+    "updateTitle": "Nueva versión disponible",
+    "updateDesc": "fpronix se acaba de actualizar. Recarga la página para continuar.",
+    "reload": "Recargar",
+    "offline": "Estás sin conexión — revisa tu conexión a internet.",
+    "serverDown": "No se puede conectar con el servidor por ahora — reintentando automáticamente…"
   },
   "notFound": {
     "viewMatches": "Ver los partidos"
@@ -1582,7 +2374,9 @@
         "badge": "Comunidad",
         "title": "Pronósticos de tipsters",
         "description": "Sigue los pronósticos publicados por los mejores tipsters y su tasa de acierto real.",
-        "cta": "Descubrir"
+        "cta": "Descubrir",
+        "titleNoTipsters": "Pronósticos IA",
+        "descriptionNoTipsters": "Las probabilidades y el pronóstico de la IA para cada partido, con una tasa de acierto publicada."
       },
       "stats": {
         "badge": "Datos",
@@ -1643,11 +2437,26 @@
         "title": "2. Datos recopilados",
         "intro": "Recopilamos los siguientes datos:",
         "items": [
-          { "label": "Datos de registro:", "text": "dirección de correo, nombre de usuario, contraseña (encriptada)" },
-          { "label": "Datos de perfil:", "text": "nombre mostrado, biografía, equipos y ligas favoritas" },
-          { "label": "Datos de pago:", "text": "referencia de transacción (no almacenamos tus datos bancarios)" },
-          { "label": "Datos de uso:", "text": "pronósticos publicados, preferencias, historial de navegación en la Plataforma" },
-          { "label": "Datos técnicos:", "text": "dirección IP, tipo de navegador, datos de conexión" }
+          {
+            "label": "Datos de registro:",
+            "text": "dirección de correo, nombre de usuario, contraseña (encriptada)"
+          },
+          {
+            "label": "Datos de perfil:",
+            "text": "nombre mostrado, biografía, equipos y ligas favoritas"
+          },
+          {
+            "label": "Datos de pago:",
+            "text": "referencia de transacción (no almacenamos tus datos bancarios)"
+          },
+          {
+            "label": "Datos de uso:",
+            "text": "pronósticos publicados, preferencias, historial de navegación en la Plataforma"
+          },
+          {
+            "label": "Datos técnicos:",
+            "text": "dirección IP, tipo de navegador, datos de conexión"
+          }
         ]
       },
       "s3": {
@@ -1683,11 +2492,26 @@
         "title": "7. Tus derechos",
         "intro": "De acuerdo con la ley senegalesa de protección de datos personales (ley n.º 2008-12), tienes los siguientes derechos:",
         "items": [
-          { "label": "Derecho de acceso:", "text": "obtener una copia de tus datos" },
-          { "label": "Derecho de rectificación:", "text": "corregir tus datos inexactos" },
-          { "label": "Derecho de supresión:", "text": "solicitar la eliminación de tu cuenta y tus datos" },
-          { "label": "Derecho de oposición:", "text": "oponerte a ciertos tratamientos" },
-          { "label": "Derecho a la portabilidad:", "text": "recibir tus datos en un formato legible" }
+          {
+            "label": "Derecho de acceso:",
+            "text": "obtener una copia de tus datos"
+          },
+          {
+            "label": "Derecho de rectificación:",
+            "text": "corregir tus datos inexactos"
+          },
+          {
+            "label": "Derecho de supresión:",
+            "text": "solicitar la eliminación de tu cuenta y tus datos"
+          },
+          {
+            "label": "Derecho de oposición:",
+            "text": "oponerte a ciertos tratamientos"
+          },
+          {
+            "label": "Derecho a la portabilidad:",
+            "text": "recibir tus datos en un formato legible"
+          }
         ],
         "contactPrefix": "Para ejercer estos derechos, contáctanos en",
         "responseTime": "Respondemos en un plazo de 30 días."
@@ -1778,7 +2602,8 @@
     "sections": {
       "s1": {
         "title": "1. Objeto",
-        "body": "Las presentes Condiciones Generales de Venta (CGV) rigen la venta de las suscripciones de pago ofrecidas en fpronix (suscripción Premium y suscripciones a planes de pago de tipsters), editada por Ibrahim-Tresor MABIALA-MULHO. Complementan los Términos y Condiciones de Uso."
+        "body": "Las presentes Condiciones Generales de Venta (CGV) rigen la venta de las suscripciones de pago ofrecidas en fpronix (suscripción Premium y suscripciones a planes de pago de tipsters), editada por Ibrahim-Tresor MABIALA-MULHO. Complementan los Términos y Condiciones de Uso.",
+        "bodyNoTipsters": "Las presentes Condiciones Generales de Venta (CGV) rigen la venta de las suscripciones de pago ofrecidas en fpronix (suscripción Premium y Pase Día), editada por Ibrahim-Tresor MABIALA-MULHO. Complementan los Términos y Condiciones de Uso."
       },
       "s2": {
         "title": "2. Productos y tarifas",
@@ -1787,11 +2612,12 @@
       },
       "s3": {
         "title": "3. Modalidades de pago",
-        "body": "El pago se realiza mediante Mobile Money (Wave, Orange Money, Free Money, E-Money) a través de nuestro proveedor SenePay, o con tarjeta internacional para divisas extranjeras. El importe facturado corresponde exactamente al precio mostrado antes de la confirmación; fpronix no añade ningún cargo oculto."
+        "body": "El pago se realiza en FCFA mediante Mobile Money (Wave, Orange Money, Free Money, E-Money y, según el país, MTN, Moov o T-Money) a través de nuestro proveedor SenePay. El pago con tarjeta aún no está disponible. El importe facturado corresponde exactamente al precio mostrado antes de la confirmación; fpronix no añade ningún cargo oculto."
       },
       "s4": {
         "title": "4. Acceso al servicio",
-        "body": "El acceso a las funcionalidades Premium o al contenido del tipster se activa automática e inmediatamente tras la confirmación del pago por parte del proveedor de pago. No se realiza entrega física, ya que el servicio es totalmente digital."
+        "body": "El acceso a las funcionalidades Premium o al contenido del tipster se activa automática e inmediatamente tras la confirmación del pago por parte del proveedor de pago. No se realiza entrega física, ya que el servicio es totalmente digital.",
+        "bodyNoTipsters": "El acceso a las funcionalidades Premium se activa automática e inmediatamente tras la confirmación del pago por parte del proveedor de pago. No se realiza entrega física, ya que el servicio es totalmente digital."
       },
       "s5": {
         "title": "5. Derecho de desistimiento",
@@ -1876,6 +2702,7 @@
     "clearSearch": "Borrar búsqueda",
     "noResults": "Sin resultados para «{{query}}».",
     "categories": {
+      "aiOnly": "Análisis IA",
       "general": "General",
       "account": "Cuenta y suscripción",
       "matches": "Partidos y datos",
@@ -1887,7 +2714,8 @@
       "general": {
         "whatIsFpronix": {
           "q": "¿Qué es fpronix?",
-          "a": "fpronix va mucho más allá de las simples estadísticas: es un ecosistema completo dedicado al fútbol. Encontrarás pronósticos generados por IA a partir de datos reales (forma de los equipos, enfrentamientos directos, cuotas), un generador de tickets personalizables con guardado, historial y opción de compartir, un coach de IA que analiza tus apuestas para ayudarte a mejorar, un mercado de tipsters con perfiles públicos y suscripciones, análisis de IA en vivo durante los partidos, un comparador de equipos, un blog generado automáticamente después de cada partido, y una página de transparencia pública que muestra nuestra tasa de acierto real. Todo disponible en varios idiomas y monedas."
+          "a": "fpronix va mucho más allá de las simples estadísticas: es un ecosistema completo dedicado al fútbol. Encontrarás pronósticos generados por IA a partir de datos reales (forma de los equipos, enfrentamientos directos, cuotas), un generador de tickets personalizables con guardado, historial y opción de compartir, un coach de IA que analiza tus apuestas para ayudarte a mejorar, un mercado de tipsters con perfiles públicos y suscripciones, análisis de IA en vivo durante los partidos, un comparador de equipos, un blog generado automáticamente después de cada partido, y una página de transparencia pública que muestra nuestra tasa de acierto real. Todo disponible en varios idiomas y monedas.",
+          "aNoTipsters": "fpronix va mucho más allá de las simples estadísticas: es un ecosistema completo dedicado al fútbol. Encontrarás pronósticos generados por IA a partir de datos reales (forma de los equipos, enfrentamientos directos, cuotas, clima), un generador de tickets personalizables con guardado, historial y opción de compartir, un coach IA que analiza tus apuestas para ayudarte a mejorar, análisis IA en directo durante los partidos, un comparador de equipos, un blog generado automáticamente después de cada partido y una página de transparencia pública que muestra nuestra tasa de acierto real. Todo está disponible en varios idiomas y monedas."
         },
         "sportsBetting": {
           "q": "¿fpronix ofrece apuestas deportivas?",
@@ -2167,8 +2995,8 @@
   "transparency": {
     "badge": "Transparencia total",
     "title": "Transparencia y fiabilidad",
-    "intro": "Creemos que la confianza se gana con cifras verificables, no con promesas. Aquí está el balance real — bueno o malo — de nuestros tipsters y de nuestra IA de pronósticos.",
-    "metaDesc": "Descubre la tasa de acierto real de los tipsters y de la IA de pronósticos de fpronix, actualizada continuamente.",
+    "intro": "Creemos que la confianza se gana con cifras verificables, no con promesas. Este es el balance real — bueno o malo — de nuestros pronósticos.",
+    "metaDesc": "Descubre la tasa de acierto real de los pronósticos de fpronix, actualizada continuamente.",
     "tipstersTitle": "Tipsters de la comunidad",
     "tipstersDesc": "Balance acumulado de todos los pronósticos publicados por nuestros tipsters, todos los planes incluidos (los picks anulados/aplazados no se cuentan).",
     "aiTitle": "Máquina de pronósticos (IA)",
@@ -2195,7 +3023,8 @@
     "privacyLink": "Política de privacidad",
     "faqLink": "FAQ",
     "newsletterLink": "Newsletter",
-    "contactLink": "Contacto"
+    "contactLink": "Contacto",
+    "deleteAccountLink": "Eliminar mi cuenta"
   },
   "trialBanner": {
     "lastDay": "¡Último día de tu prueba gratuita!",
@@ -2222,7 +3051,7 @@
         "aiCoach": "Coach Personal IA",
         "aiCoachDesc": "Consejos IA según tus stats",
         "aiPronostics": "Pronósticos IA",
-        "aiPronosticsDesc": "Picks generados por el Tipster IA",
+        "aiPronosticsDesc": "Pronósticos generados por la IA de fpronix",
         "blog": "Blog",
         "blogDesc": "Análisis y consejos de fútbol",
         "news": "Actualidad",
@@ -2233,7 +3062,7 @@
   "bottomNav": {
     "standingsDesc": "Clasificaciones de las ligas",
     "tipstersDesc": "Top pronosticadores",
-    "transparencyDesc": "Tasa de acierto real, tipsters e IA",
+    "transparencyDesc": "Tasa de acierto real y verificable",
     "betTrackerDesc": "Sigue tus pronósticos y tu ROI",
     "blogDesc": "Análisis y consejos de fútbol",
     "newsDesc": "Últimas noticias de fútbol",
@@ -2280,5 +3109,38 @@
     "doneDesc": "Ya no recibirás el boletín de fpronix. Puedes volver a suscribirte cuando quieras.",
     "errorDesc": "No se pudo procesar esta solicitud. Contacta con soporte si el problema persiste.",
     "backHome": "Volver al inicio"
+  },
+  "maintenance": {
+    "title": "Mantenimiento en curso",
+    "defaultMessage": "fpronix se está mejorando. Volvemos muy pronto.",
+    "backAt": "Regreso previsto hacia las {{time}} ({{date}})",
+    "retry": "Reintentar",
+    "note": "Tus datos y suscripciones están a salvo. Gracias por tu paciencia."
+  },
+  "deleteAccountPage": {
+    "title": "Eliminar tu cuenta fpronix",
+    "intro": "Puedes eliminar tu cuenta fpronix y los datos asociados en cualquier momento, desde la aplicación o por email.",
+    "option1Title": "Desde la aplicación o el sitio web",
+    "option1Step1": "Inicia sesión en tu cuenta.",
+    "option1Step2": "Abre Perfil, sección «Cuenta».",
+    "option1Step3": "Pulsa «Eliminar mi cuenta» y confirma. La eliminación es inmediata.",
+    "option1Link": "Ir a mi perfil",
+    "option2Title": "Por email (si ya no puedes iniciar sesión)",
+    "option2Body": "Escribe desde el email de tu cuenta, con el asunto «Eliminación de cuenta», a:",
+    "option2Delay": "Tramitamos la solicitud en un plazo de 7 días y te confirmamos la eliminación por email.",
+    "deletedTitle": "Datos eliminados",
+    "deletedItems": [
+      "Tu perfil: usuario, email, teléfono, foto, contraseña",
+      "Tus preferencias, favoritos y notificaciones",
+      "Tus tickets, apuestas seguidas e historial en la aplicación",
+      "Tus sesiones y dispositivos registrados"
+    ],
+    "keptTitle": "Datos conservados",
+    "keptItems": [
+      "El historial de pagos, conservado durante el plazo legal exigido por las obligaciones contables",
+      "Un registro de la eliminación (email y usuario), conservado con fines administrativos y de prevención del fraude"
+    ],
+    "subscriptionNote": "Eliminar la cuenta pone fin al acceso Premium sin reembolso del periodo en curso. Más detalles:",
+    "privacyLink": "Política de privacidad"
   }
 }

@@ -4,6 +4,9 @@ const { follow, unfollow, checkFollow, listFollowing, getFollowerCount } = requi
 
 const router = express.Router();
 
+// Tipsters désactivés → toutes ces routes répondent 404 (cf. FEATURE_TIPSTERS)
+router.use(require('../middleware/features').requireFeature('tipsters'));
+
 router.get('/following', authenticate, listFollowing);
 router.get('/:tipsterId/status', optionalAuthenticate, checkFollow);
 router.get('/:tipsterId/count', getFollowerCount);

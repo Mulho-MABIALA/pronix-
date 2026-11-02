@@ -3,12 +3,31 @@ const { z } = require('zod');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const prisma = require('../config/database');
+const { toSelfUser } = require('../utils/publicUser');
+const { hashToken, tokenLookup } = require('../utils/tokenHash');
 const env = require('../config/env');
 const { authenticate } = require('../middleware/auth');
 const { AppError } = require('../middleware/errorHandler');
 const { REFRESH_COOKIE, clearAuthCookies } = require('../config/cookies');
+const { resetSessions } = require('../controllers/authController');
 const { notifyAdmin } = require('../services/adminNotificationService');
 const { sendEmailVerification } = require('../services/emailService');
+
+// Mêmes règles que l'inscription (authController registerSchema) — avant, un
+// changement de mot de passe acceptait « 12345678 ».
+const strongPassword = z.string()
+  .min(8, 'Le mot de passe doit contenir au moins 8 caractères')
+  .max(100)
+  .regex(/[A-Z]/, 'Le mot de passe doit contenir une majuscule')
+  .regex(/[0-9]/, 'Le mot de passe doit contenir un chiffre');
+
+// Après un changement de mot de passe, toutes les sessions sont fermées puis
+// une nouvelle est ouverte pour cet appareil : un intrus connecté ailleurs est
+// déconnecté, l'utilisateur reste connecté ici. (Le cookie de session longue
+// n'est envoyé qu'à /api/auth, d'où la réouverture plutôt qu'une exclusion.)
+async function revokeOtherSessions(req, res) {
+  await resetSessions(res, req.user.id);
+}
 
 const router = Router();
 router.use(authenticate);
@@ -94,7 +113,7 @@ router.patch('/me/preferences', async (req, res, next) => {
         ...(country && { country }),
       },
     });
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({ success: true, data: userSafe });
   } catch (err) {
     next(err);
@@ -109,7 +128,7 @@ router.patch('/me/password', async (req, res, next) => {
   try {
     const schema = z.object({
       currentPassword: z.string().optional(),
-      newPassword: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(100),
+      newPassword: strongPassword,
     });
     const { currentPassword, newPassword } = schema.parse(req.body);
 
@@ -125,6 +144,7 @@ router.patch('/me/password', async (req, res, next) => {
 
     const hashed = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS);
     await prisma.user.update({ where: { id: req.user.id }, data: { password: hashed } });
+    await revokeOtherSessions(req, res);
 
     res.json({ success: true, message: 'Mot de passe mis à jour' });
   } catch (err) {
@@ -146,7 +166,7 @@ router.patch('/me/email', async (req, res, next) => {
     const schema = z.object({
       newEmail: z.string().email('Adresse email invalide'),
       currentPassword: z.string().optional(),
-      newPassword: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(100).optional(),
+      newPassword: strongPassword.optional(),
     });
     const { newEmail, currentPassword, newPassword } = schema.parse(req.body);
     const emailLower = newEmail.toLowerCase().trim();
@@ -178,16 +198,17 @@ router.patch('/me/email', async (req, res, next) => {
     if (newPassword) { data.password = await bcrypt.hash(newPassword, env.BCRYPT_ROUNDS); }
 
     const user = await prisma.user.update({ where: { id: req.user.id }, data });
+    if (newPassword) await revokeOtherSessions(req, res);
 
     if (emailChanged) {
       // Best-effort : un échec d'envoi ne doit pas annuler le changement d'email.
       const token = crypto.randomBytes(32).toString('hex');
       prisma.emailVerification.create({
-        data: { userId: user.id, token, expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
+        data: { userId: user.id, token: hashToken(token), expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000) },
       }).then(() => sendEmailVerification(user, token)).catch((err) => console.error('[EmailVerification] échec envoi:', err.message || err));
     }
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({ success: true, data: userSafe, emailChanged, passwordChanged: !!newPassword });
   } catch (err) {
     next(err);
@@ -219,12 +240,51 @@ router.post('/me/self-exclusion', async (req, res, next) => {
       data: { selfExclusionUntil: until },
     });
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({ success: true, data: userSafe });
   } catch (err) {
     next(err);
   }
 });
+
+// Efface toutes les données personnelles d'un compte qu'on ne peut pas
+// supprimer physiquement (paiements à conserver). Identifiants remplacés par
+// des valeurs aléatoires inutilisables : impossible de se reconnecter, et
+// l'email redevient libre pour une nouvelle inscription.
+async function anonymizeUser(userId) {
+  const tag = crypto.randomBytes(6).toString('hex');
+  const where = { userId };
+  await prisma.$transaction([
+    prisma.profile.deleteMany({ where }),
+    prisma.subscription.deleteMany({ where }),
+    prisma.favorite.deleteMany({ where }),
+    prisma.refreshToken.deleteMany({ where }),
+    prisma.passwordReset.deleteMany({ where }),
+    prisma.emailVerification.deleteMany({ where }),
+    prisma.pushSubscription.deleteMany({ where }),
+    prisma.webAuthnCredential.deleteMany({ where }),
+    prisma.betEntry.deleteMany({ where }),
+    prisma.matchReminder.deleteMany({ where }),
+    prisma.oddsAlert.deleteMany({ where }),
+    prisma.user.update({
+      where: { id: userId },
+      data: {
+        email: `supprime-${tag}@deleted.invalid`,
+        username: `supprime_${tag}`,
+        password: null,
+        googleId: null,
+        referralCode: null,
+        isActive: false,
+        emailVerified: false,
+        adminNote: null,
+        currentChallenge: null,
+        country: null,
+        lastLoginAt: null,
+        appInstalledAt: null,
+      },
+    }),
+  ]);
+}
 
 // Suppression définitive du compte (self-service)
 router.delete('/me', async (req, res, next) => {
@@ -241,7 +301,20 @@ router.delete('/me', async (req, res, next) => {
     // On garde username/email avant suppression : plus rien à lire une fois le compte parti.
     const { username, email } = req.user;
 
-    await prisma.user.delete({ where: { id: req.user.id } });
+    // Paiements (comptabilité) ou signalements liés : la ligne ne peut pas
+    // être supprimée (clé étrangère). On ANONYMISE alors le compte — toutes
+    // les données personnelles disparaissent, seul l'historique de paiement
+    // reste rattaché à un compte vide et désactivé. Exigence Google Play :
+    // la suppression doit toujours aboutir, sans passer par le support.
+    const [paymentCount, reportCount] = await Promise.all([
+      prisma.payment.count({ where: { userId: req.user.id } }),
+      prisma.report.count({ where: { reporterId: req.user.id } }),
+    ]);
+    if (paymentCount > 0 || reportCount > 0) {
+      await anonymizeUser(req.user.id);
+    } else {
+      await prisma.user.delete({ where: { id: req.user.id } });
+    }
 
     // Historique admin (table dédiée, indépendante du compte qui vient de disparaître)
     prisma.deletedAccount.create({ data: { email, username, reason: 'self' } })
@@ -262,7 +335,7 @@ router.delete('/me', async (req, res, next) => {
     });
 
     const token = req.cookies?.[REFRESH_COOKIE];
-    if (token) await prisma.refreshToken.deleteMany({ where: { token } });
+    if (token) await prisma.refreshToken.deleteMany({ where: { token: tokenLookup(token) } });
     clearAuthCookies(res);
 
     res.json({ success: true, message: 'Compte supprimé définitivement' });

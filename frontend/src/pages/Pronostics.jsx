@@ -19,7 +19,7 @@ import { usePageMeta } from '../hooks/usePageMeta';
 import { useOdds } from '../hooks/useOdds';
 import { useLiveMarkets } from '../hooks/useLiveMarkets';
 import { useAuth } from '../context/AuthContext';
-import { bestPickInGroup, bestLivePickInGroup } from '../utils/markets';
+import { bestPickInGroup, bestLivePickInGroup, MARKET_GROUPS, statPickIsCorrect, pickDisplayLabel, comboPickIsCorrect } from '../utils/markets';
 
 // Marchés regroupés par catégorie pour les nouveaux filtres Pronostics — même
 // principe que le sélecteur de Machine.jsx (utils/markets.js), mais ici on
@@ -33,6 +33,16 @@ const CATEGORY_MARKETS = {
   multibuts: ['mb1_2plus', 'mb2_2plus', 'cleansheet1', 'cleansheet2'],
   corners: ['corner1', 'cornerX', 'corner2', 'cornerOver85', 'cornerUnder85', 'cornerOver95', 'cornerUnder95', 'cornerOver105', 'cornerUnder105', 'cornerHandHome25', 'cornerHandAway25'],
 };
+// Stats de match : mêmes listes que le générateur (utils/markets.js) — un
+// match sans historique pour la famille n'a aucun pick (getProb → null) et
+// n'apparaît donc pas dans le filtre.
+const groupMarkets = (...ids) => MARKET_GROUPS.filter((g) => ids.includes(g.id)).flatMap((g) => g.markets);
+CATEGORY_MARKETS.cards    = groupMarkets('cards1x2', 'cardstotal');
+CATEGORY_MARKETS.shots    = groupMarkets('sot1x2', 'sottotal');
+CATEGORY_MARKETS.fouls    = groupMarkets('foulstotal');
+CATEGORY_MARKETS.offsides = groupMarkets('offsidestotal');
+CATEGORY_MARKETS.scorers  = groupMarkets('buteurs');
+CATEGORY_MARKETS.combos   = groupMarkets('resulttotal', 'resultbtts', 'dctotal', 'bttstotal', 'htft');
 const LIVE_CATEGORY_MARKETS = ['live1', 'liveX', 'live2', 'liveOver05', 'liveUnder05', 'liveOver15', 'liveUnder15', 'liveOver25', 'liveUnder25', 'liveOver35', 'liveUnder35', 'liveCornerOver75', 'liveCornerUnder75', 'liveCornerOver85', 'liveCornerUnder85', 'liveCornerOver95', 'liveCornerUnder95', 'liveCornerOver105', 'liveCornerUnder105'];
 
 // Groupes affichés dans le panneau "Voir tous les picks" par match (repli du
@@ -49,6 +59,14 @@ const ALL_PICKS_GROUPS = [
   { id: 'handicap',     markets: CATEGORY_MARKETS.handicap },
   { id: 'multibuts',    markets: CATEGORY_MARKETS.multibuts },
   { id: 'corners',      markets: CATEGORY_MARKETS.corners, requireRealCornerData: true },
+  { id: 'cardstotal',    markets: CATEGORY_MARKETS.cards },
+  { id: 'sottotal',      markets: CATEGORY_MARKETS.shots },
+  { id: 'foulstotal',    markets: CATEGORY_MARKETS.fouls },
+  { id: 'offsidestotal', markets: CATEGORY_MARKETS.offsides },
+  { id: 'buteurs',       markets: CATEGORY_MARKETS.scorers },
+  { id: 'dctotal',       markets: groupMarkets('dctotal') },
+  { id: 'bttstotal',     markets: groupMarkets('bttstotal') },
+  { id: 'htft',          markets: groupMarkets('htft') },
 ];
 
 // Meilleure issue live (1X2) à partir de /matches/:id/live-markets — pour
@@ -65,7 +83,7 @@ function bestLiveOutcome(liveData) {
 
 // ─── Constantes ────────────────────────────────────────────────────────────────
 
-const MARKET_KEYS = ['all', '1X2', 'btts', 'goals', 'dc', 'scoreexact', 'handicap', 'multibuts', 'corners', 'live'];
+const MARKET_KEYS = ['all', '1X2', 'btts', 'goals', 'dc', 'scoreexact', 'handicap', 'multibuts', 'combos', 'scorers', 'corners', 'cards', 'shots', 'fouls', 'offsides', 'live'];
 const MARKET_TYPES = {
   all: null, '1X2': ['1', 'X', '2'], btts: ['btts'], goals: ['over25', 'over15'], dc: ['1X', 'X2'],
 };
@@ -118,6 +136,12 @@ function pickIsCorrect(pt, h, a, match) {
     if (pt === 'cornerHandHome25') return hc - ac >= 3;
     if (pt === 'cornerHandAway25') return ac - hc >= 3;
   }
+  // Cartons, tirs cadrés, fautes, hors-jeu (stats de fin de match)
+  const statResult = statPickIsCorrect(pt, match?.statistics);
+  if (statResult !== null) return statResult;
+  // Combinaisons (DC/BTTS + total, résultat + total, mi-temps/fin de match)
+  const comboResult = comboPickIsCorrect(pt, h, a, match);
+  if (comboResult !== null) return comboResult;
   return null;
 }
 
@@ -210,7 +234,7 @@ function PronoRow({ match, index, oddsEnabled = true, activeMarket = 'all' }) {
 
   const pickType  = effectivePick.type;
   const pickLabel = isCategoryPick
-    ? (/^\d+-\d+$/.test(pickType) ? pickType : t(`pronostics.pickShort.${pickType}`, { defaultValue: pickType }))
+    ? pickDisplayLabel(t, pickType, 'pronostics.pickShort')
     : t(`pronostics.pickShort.${pickType}`, { defaultValue: pred.bestPick.label });
   const pickColor = getPickColor(pickType);
   const col       = pickType === '2' ? 'away' : pickType === 'X' ? 'draw' : 'home';
@@ -376,7 +400,7 @@ function PronoRow({ match, index, oddsEnabled = true, activeMarket = 'all' }) {
             <div key={id} className={`px-2 py-1 rounded-lg border text-[11px] ${getPickColor(pick.type).border} ${getPickColor(pick.type).bg}`}>
               <span className="text-ink-4">{t(`machine.marketGroups.${id}.label`)} · </span>
               <span className={`font-semibold ${getPickColor(pick.type).text}`}>
-                {/^\d+-\d+$/.test(pick.type) ? pick.type : t(`pronostics.pickShort.${pick.type}`, { defaultValue: pick.type })} {pick.prob}%
+                {pickDisplayLabel(t, pick.type, 'pronostics.pickShort')} {pick.prob}%
               </span>
             </div>
           ))

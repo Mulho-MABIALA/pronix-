@@ -1,5 +1,6 @@
 const { z } = require('zod');
 const prisma = require('../config/database');
+const { PUBLIC_USER_SELECT, PUBLIC_USER_WITH_STATS_SELECT } = require('../utils/publicUser');
 const { AppError } = require('../middleware/errorHandler');
 const { broadcastNotification } = require('./pushController');
 const { notifyAdmin } = require('../services/adminNotificationService');
@@ -41,7 +42,7 @@ async function createTip(req, res, next) {
       data: { ...data, userId: req.user.id },
       include: {
         match: { include: { competition: true } },
-        user: { include: { profile: true, tipsterStats: true } },
+        user: { select: PUBLIC_USER_WITH_STATS_SELECT },
       },
     });
 
@@ -73,7 +74,7 @@ async function getTipsByMatch(req, res, next) {
       prisma.tip.findMany({
         where: { matchId, isVisible: true },
         include: {
-          user: { include: { profile: true, tipsterStats: true } },
+          user: { select: PUBLIC_USER_WITH_STATS_SELECT },
         },
         orderBy: [{ user: { tipsterStats: { successRate: 'desc' } } }, { createdAt: 'desc' }],
         skip,
@@ -106,7 +107,7 @@ async function getLeaderboard(req, res, next) {
       prisma.tipsterStats.findMany({
         where: { [tipsField]: { gte: minTips } },
         include: {
-          user: { include: { profile: true } },
+          user: { select: PUBLIC_USER_SELECT },
         },
         orderBy: [{ [orderField]: 'desc' }, { [tipsField]: 'desc' }],
         skip,
@@ -133,7 +134,7 @@ async function getTipsterProfile(req, res, next) {
     const [user, stats, recentTips] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
-        include: { profile: true, tipsterStats: true },
+        select: PUBLIC_USER_WITH_STATS_SELECT,
       }),
       prisma.tipsterStats.findUnique({ where: { userId } }),
       prisma.tip.findMany({
@@ -146,8 +147,7 @@ async function getTipsterProfile(req, res, next) {
 
     if (!user) throw new AppError('Tipster introuvable', 404, 'NOT_FOUND');
 
-    const { password: _, ...userSafe } = user;
-    res.json({ success: true, data: { user: userSafe, stats, recentTips } });
+    res.json({ success: true, data: { user, stats, recentTips } });
   } catch (err) {
     next(err);
   }

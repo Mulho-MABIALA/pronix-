@@ -9,6 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCurrency } from '../hooks/useCurrency';
 import CompetitionLogo from '../components/ui/CompetitionLogo';
 import { COUNTRIES } from '../data/countries';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 const LANGUAGE_OPTIONS = [
   { code: 'fr', label: '🇫🇷 Français' },
@@ -37,7 +38,7 @@ const INTRO_FEATURES = [
   { Icon: Radio,         key: 'liveMarkets' },
   { Icon: Ticket,        key: 'ticketGenerator' },
   { Icon: MessageCircle, key: 'aiCoach' },
-  { Icon: Trophy,        key: 'tipsterMarketplace' },
+  ...(TIPSTERS_ENABLED ? [{ Icon: Trophy,        key: 'tipsterMarketplace' }] : []),
   { Icon: ShieldCheck,   key: 'transparency' },
 ];
 

@@ -12,6 +12,15 @@ class AppError extends Error {
 
 // Middleware de gestion globale des erreurs
 function errorHandler(err, req, res, next) {
+  // Corps de requête mal formé ou trop gros (refusé par express.json) :
+  // erreur du client (400/413), pas une panne serveur (500).
+  if (err.type === 'entity.parse.failed') {
+    return res.status(400).json({ success: false, code: 'INVALID_JSON', message: 'Requête mal formée' });
+  }
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, code: 'PAYLOAD_TOO_LARGE', message: 'Données trop volumineuses' });
+  }
+
   // Erreurs de validation Zod
   if (err instanceof ZodError) {
     return res.status(400).json({

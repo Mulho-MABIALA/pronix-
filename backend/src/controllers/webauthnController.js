@@ -2,6 +2,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { z } = require('zod');
 const prisma = require('../config/database');
+const { toSelfUser } = require('../utils/publicUser');
+const { hashToken, tokenLookup } = require('../utils/tokenHash');
 const env = require('../config/env');
 const { AppError } = require('../middleware/errorHandler');
 const { setAuthCookies } = require('../config/cookies');
@@ -46,7 +48,7 @@ async function issueSession(res, user) {
   const refreshExpiresAt = getRefreshExpiryDate();
   await prisma.$transaction([
     prisma.refreshToken.create({
-      data: { userId: user.id, token: refreshTokenValue, expiresAt: refreshExpiresAt },
+      data: { userId: user.id, token: hashToken(refreshTokenValue), expiresAt: refreshExpiresAt },
     }),
     prisma.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } }),
   ]);
@@ -99,7 +101,7 @@ async function loginVerify(req, res, next) {
     const user = await webauthnService.verifyAuthentication(challengeId, response);
     await issueSession(res, user);
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({ success: true, data: { user: userSafe } });
   } catch (err) {
     next(err);
@@ -142,7 +144,7 @@ async function adminStepUpVerify(req, res, next) {
 
     await issueSession(res, user);
 
-    const { password: _, ...userSafe } = user;
+    const userSafe = toSelfUser(user);
     res.json({ success: true, data: { user: userSafe } });
   } catch (err) {
     next(err);

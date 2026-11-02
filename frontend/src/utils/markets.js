@@ -15,13 +15,38 @@ export const MARKET_GROUPS = [
   { id: 'scoreexact',   emoji: '🎯', markets: ['exactscore'] },
   { id: 'handicap',     emoji: '📐', markets: ['h1m1', 'h2m1'] },
   { id: 'multibuts',    emoji: '🔥', markets: ['mb1_2plus', 'mb2_2plus', 'cleansheet1', 'cleansheet2'] },
-  { id: 'resulttotal',  emoji: '➕', markets: ['res1over25', 'res1under25', 'resXover25', 'resXunder25', 'res2over25', 'res2under25'] },
+  { id: 'resulttotal',  emoji: '➕', markets: ['res1over15', 'res1over25', 'res1under25', 'resXover25', 'resXunder25', 'res2over15', 'res2over25', 'res2under25'] },
   { id: 'resultbtts',   emoji: '🧩', markets: ['res1btts', 'resXbtts', 'res2btts', 'dc1xbtts', 'dcx2btts', 'dc12btts'] },
   { id: 'totalpair',    emoji: '🔢', markets: ['totalpair', 'totalimpair'] },
+  // Combinaisons supplémentaires (backend predictionService.deriveComboMarkets)
+  { id: 'dctotal',      emoji: '🔀', markets: ['dc1xover15', 'dc1xunder35', 'dcx2over15', 'dcx2under35', 'dc12over15', 'dc12under35'] },
+  { id: 'bttstotal',    emoji: '🥅', markets: ['bttsover25', 'bttsunder35', 'nobttsunder25', 'nobttsover15'] },
+  { id: 'htft',         emoji: '⏱️', markets: ['htft11', 'htft1X', 'htft12', 'htftX1', 'htftXX', 'htftX2', 'htft21', 'htft2X', 'htft22'] },
+  // Paris par joueur (backend utils/playerMarkets.js) — le joueur le plus probable du match
+  { id: 'buteurs',      emoji: '⚽', markets: ['anytimescorer', 'playersot'] },
   { id: 'corners1x2',      emoji: '🚩', markets: ['corner1', 'cornerX', 'corner2'] },
   { id: 'cornerstotal',    emoji: '🚩', markets: ['cornerOver85', 'cornerUnder85', 'cornerOver95', 'cornerUnder95', 'cornerOver105', 'cornerUnder105'] },
   { id: 'cornershandicap', emoji: '🚩', markets: ['cornerHandHome25', 'cornerHandAway25'] },
+  // Stats de match (backend utils/statMarkets.js) — présentes seulement quand
+  // les deux équipes ont assez d'historique ; sinon le marché est ignoré.
+  { id: 'cards1x2',        emoji: '🟨', markets: ['card1', 'cardX', 'card2'] },
+  { id: 'cardstotal',      emoji: '🟨', markets: ['cardOver25', 'cardUnder25', 'cardOver35', 'cardUnder35', 'cardOver45', 'cardUnder45', 'cardOver55', 'cardUnder55'] },
+  { id: 'sot1x2',          emoji: '👟', markets: ['sot1', 'sotX', 'sot2'] },
+  { id: 'sottotal',        emoji: '👟', markets: ['sotOver65', 'sotUnder65', 'sotOver75', 'sotUnder75', 'sotOver85', 'sotUnder85', 'sotOver95', 'sotUnder95'] },
+  { id: 'foulstotal',      emoji: '🛑', markets: ['foulOver195', 'foulUnder195', 'foulOver215', 'foulUnder215', 'foulOver235', 'foulUnder235', 'foulOver255', 'foulUnder255'] },
+  { id: 'offsidestotal',   emoji: '📏', markets: ['offsideOver25', 'offsideUnder25', 'offsideOver35', 'offsideUnder35', 'offsideOver45', 'offsideUnder45'] },
 ];
+
+// Familles « stats de match » → drapeau de présence des données dans
+// m.predictions. Pas de valeur de repli inventée pour ces marchés : sans
+// historique réel, getProb renvoie null et le match est simplement ignoré
+// (Machine) ou non affiché (Pronostics).
+const STAT_FAMILY_FLAGS = { card: 'hasCardData', sot: 'hasSotData', foul: 'hasFoulData', offside: 'hasOffsideData' };
+const STAT_MARKET_RE = /^(card|sot|foul|offside)(1|X|2|Over\d+|Under\d+)$/;
+
+// Combinaisons ajoutées après coup : pas de valeur de repli — absentes des
+// pronostics calculés avant leur ajout, le match est alors ignoré.
+const STRICT_COMBO_RE = /^(dc1x|dcx2|dc12)(over15|under35)$|^(btts|nobtts)(over\d+|under\d+)$|^res[12]over15$|^htft[1X2][1X2]$/;
 
 // ─── Marchés LIVE (matchs en cours, mode "Direct") ─────────────────────────
 // Contrairement à MARKET_GROUPS, les valeurs ne viennent pas de m.predictions
@@ -42,6 +67,28 @@ export const LIVE_MARKET_GROUPS = [
 // bestPickInGroup() pour un filtrage plus strict (ex: corners réels uniquement).
 export function getProb(pred, market) {
   if (market === 'auto' || !market) return pred.bestPick;
+
+  if (STRICT_COMBO_RE.test(market)) {
+    return pred[market] == null ? null : { type: market, prob: pred[market] };
+  }
+
+  // Paris par joueur : le joueur le plus probable du match. Le type encode
+  // l'id et le nom ("scorer:<id>:<nom>") pour régler le pari et l'afficher.
+  if (market === 'anytimescorer' || market === 'playersot') {
+    const players = pred.hasPlayerData && Array.isArray(pred.players) ? pred.players : [];
+    if (players.length === 0) return null;
+    const field = market === 'anytimescorer' ? 'goal' : 'sot';
+    const best = players.reduce((b, p) => (p[field] > (b?.[field] ?? -1) ? p : b), null);
+    if (!best) return null;
+    return { type: `${market === 'anytimescorer' ? 'scorer' : 'psot'}:${best.id}:${best.name}`, prob: best[field] };
+  }
+
+  // Cartons / tirs cadrés / fautes / hors-jeu : données réelles uniquement
+  const stat = STAT_MARKET_RE.exec(market);
+  if (stat) {
+    if (!pred[STAT_FAMILY_FLAGS[stat[1]]] || pred[market] == null) return null;
+    return { type: market, prob: pred[market] };
+  }
 
   // Score exact : cas particulier, le "type" affiché est le score lui-même
   // (ex. "2-1") et non une clé i18n fixe — géré à part du probMap ci-dessous.
@@ -201,4 +248,60 @@ export function bestLivePickInGroup(liveData, marketKeys) {
     if (pick && (best === null || pick.prob > best.prob)) best = pick;
   }
   return best;
+}
+
+// Résultat d'un pick stat (cartons, tirs cadrés, fautes, hors-jeu) une fois
+// le match terminé, d'après le JSON `statistics` du match — même règle que le
+// backend (utils/statMarkets.js resolveStatPick). true / false, ou null si
+// ce n'est pas un marché stat ou si la stat est indisponible pour ce match.
+const STAT_KEYS = {
+  card: ['yellow_cards', 'red_cards'],
+  sot: ['shots_on_goal'],
+  foul: ['fouls'],
+  offside: ['offsides'],
+};
+export function statPickIsCorrect(type, statistics) {
+  const m = /^(card|sot|foul|offside)(1|X|2|Over|Under)(\d+)?$/.exec(type || '');
+  if (!m || !Array.isArray(statistics)) return null;
+  const [, family, kind, digits] = m;
+  let home = 0, away = 0, found = false;
+  for (const key of STAT_KEYS[family]) {
+    const s = statistics.find((x) => x.key === key);
+    if (!s) continue;
+    found = true;
+    home += Number(s.home) || 0;
+    away += Number(s.away) || 0;
+  }
+  if (!found) return null;
+  if (kind === '1') return home > away;
+  if (kind === 'X') return home === away;
+  if (kind === '2') return away > home;
+  if (!digits) return null;
+  const line = Number(`${digits.slice(0, -1)}.${digits.slice(-1)}`);
+  return kind === 'Over' ? home + away > line : home + away < line;
+}
+
+// Libellé affichable d'un pick, y compris les paris joueur dont le type est
+// dynamique ("scorer:<id>:<nom>"). ns = clé i18n des libellés courts.
+export function pickDisplayLabel(t, type, ns = 'machine.pickLabels', fallback) {
+  const m = /^(scorer|psot):([^:]+):(.*)$/.exec(type || '');
+  if (m) return t(m[1] === 'scorer' ? 'machine.playerPick.scorer' : 'machine.playerPick.sot', { name: m[3] });
+  if (/^\d+-\d+$/.test(type || '')) return type; // score exact
+  return t(`${ns}.${type}`, { defaultValue: fallback ?? type });
+}
+
+// Résultat (Pronostics) des combinaisons ajoutées — score final + mi-temps.
+export function comboPickIsCorrect(type, h, a, match) {
+  const total = h + a;
+  const r = (x, y) => (x > y ? '1' : x === y ? 'X' : '2');
+  const ht = /^htft([1X2])([1X2])$/.exec(type || '');
+  if (ht) {
+    if (match?.htHomeScore == null || match?.htAwayScore == null) return null;
+    return ht[1] === r(match.htHomeScore, match.htAwayScore) && ht[2] === r(h, a);
+  }
+  const c = /^(dc1x|dcx2|dc12|btts|nobtts|res1|resX|res2)(over15|under35|over25|under25|btts)$/.exec(type || '');
+  if (!c) return null;
+  const left = { dc1x: h >= a, dcx2: a >= h, dc12: h !== a, btts: h > 0 && a > 0, nobtts: !(h > 0 && a > 0), res1: h > a, resX: h === a, res2: a > h }[c[1]];
+  const right = { over15: total > 1.5, under35: total < 3.5, over25: total > 2.5, under25: total < 2.5, btts: h > 0 && a > 0 }[c[2]];
+  return left && right;
 }

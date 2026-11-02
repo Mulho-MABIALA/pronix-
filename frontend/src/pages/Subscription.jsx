@@ -12,6 +12,9 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useCurrency } from '../hooks/useCurrency';
+import { CARD_PAYMENTS_ENABLED } from '../config/features';
+import { TIPSTERS_ENABLED } from '../config/features';
+import { isAndroidApp } from '../utils/platform';
 
 // Logos dessinés en local (SVG inline, couleurs officielles de chaque marque)
 // — pas de dépendance à un service externe (Clearbit ne renvoyait plus rien
@@ -74,9 +77,9 @@ const PAYMENT_METHODS = [
   { name: 'Orange Money', Icon: OrangeMoneyIcon, bg: 'bg-[#FF7900]/10' },
   { name: 'Free Money',   Icon: FreeMoneyIcon,   bg: 'bg-[#E2001A]/10' },
   { name: 'MTN',          Icon: MtnIcon,         bg: 'bg-[#FFCB05]/10' },
-  { name: 'Visa',         Icon: VisaIcon,        bg: 'bg-[#1A1F71]/10' },
-  { name: 'Mastercard',   Icon: MastercardIcon,  bg: 'bg-overlay/[0.05]' },
-];
+  { name: 'Visa',         Icon: VisaIcon,        bg: 'bg-[#1A1F71]/10', card: true },
+  { name: 'Mastercard',   Icon: MastercardIcon,  bg: 'bg-overlay/[0.05]', card: true },
+].filter((m) => CARD_PAYMENTS_ENABLED || !m.card);
 
 // Couleurs par plan (le libellé du badge est traduit dans PricingCard, pas ici —
 // cet objet est défini hors composant donc sans accès à useTranslation)
@@ -180,7 +183,9 @@ function PricingCard({ plan, billingCycle, isCurrentPlan, onSelect, loading, pre
 
       {/* Features */}
       <ul className="space-y-2.5 flex-1">
-        {(plan.features || []).map((feat, i) => (
+        {/* Les fonctionnalités de plan (en base) qui citent les tipsters sont
+            masquées tant que les tipsters sont désactivés */}
+        {(plan.features || []).filter((f) => TIPSTERS_ENABLED || !/tipster/i.test(f)).map((feat, i) => (
           <li key={i} className="flex items-start gap-2.5 text-sm text-ink-3">
             <Check size={15} className="text-primary-400 mt-0.5 shrink-0" />
             <span>{feat}</span>
@@ -286,7 +291,7 @@ function DailyPassCard({ plan, activePassEnd, passesThisWeek, onBuy, onSeeWeekly
 }
 
 /* ─── Modale de confirmation — rappel jeu responsable juste avant paiement ─── */
-function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, onCancel, onConfirm, loading }) {
+function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, onCancel, onConfirm, loading, mobileMoneyOnly }) {
   const { t, i18n } = useTranslation();
   const unitLabel = billingCycle === 'DAILY' ? t('subscription.dailyPass.title') : billingCycle === 'YEARLY' ? t('subscription.billing.yearly') : billingCycle === 'WEEKLY' ? t('subscription.billing.weekly') : t('subscription.billing.monthly');
   // Devise de paiement effective (peut différer de la devise détectée si elle
@@ -313,6 +318,9 @@ function ConfirmPaymentModal({ plan, billingCycle, price, currency, formatIn, on
 
         {currency && (
           <p className="text-[11px] text-ink-4 -mt-2">{t('subscription.confirmModal.cardPayment')}</p>
+        )}
+        {mobileMoneyOnly && (
+          <p className="text-[11px] text-amber-300/90 -mt-2 leading-relaxed">{t('subscription.mobileMoneyOnly.modal')}</p>
         )}
 
         <div className="flex items-start gap-2.5 bg-amber-500/10 border border-amber-500/25 rounded-xl px-3 py-2.5">
@@ -378,7 +386,7 @@ export default function Subscription() {
     { icon: ShieldCheck,    title: t('subscription.diff.proof.title'),  desc: t('subscription.diff.proof.desc'),  link: '/transparence', linkLabel: t('subscription.diff.proof.link') },
     { icon: MessageCircle,  title: t('subscription.diff.reason.title'), desc: t('subscription.diff.reason.desc') },
     { icon: Radio,          title: t('subscription.diff.live.title'),   desc: t('subscription.diff.live.desc') },
-    { icon: TrendingUp,     title: t('subscription.diff.tools.title'),  desc: t('subscription.diff.tools.desc') },
+    { icon: TrendingUp,     title: t('subscription.diff.tools.title'),  desc: t(TIPSTERS_ENABLED ? 'subscription.diff.tools.desc' : 'subscription.diff.tools.descNoTipsters') },
     { icon: HeartHandshake, title: t('subscription.diff.serious.title'), desc: t('subscription.diff.serious.desc') },
   ];
 
@@ -439,7 +447,12 @@ export default function Subscription() {
   // PAYTECH_CURRENCIES côté backend. Une devise détectée hors de cette
   // liste (BRL/MXN/ZAR) retombe sur USD plutôt que de bloquer le paiement.
   const PAYTECH_CURRENCIES = ['EUR', 'USD', 'GBP', 'CAD'];
-  const payCurrency = currency ? (PAYTECH_CURRENCIES.includes(currency) ? currency : 'USD') : null;
+  const payCurrency = CARD_PAYMENTS_ENABLED && currency
+    ? (PAYTECH_CURRENCIES.includes(currency) ? currency : 'USD')
+    : null;
+  // Visiteur hors zone FCFA sans paiement carte disponible → on le prévient
+  // clairement que seul le Mobile Money en FCFA est accepté pour l'instant.
+  const mobileMoneyOnly = !!currency && !CARD_PAYMENTS_ENABLED;
 
   // Pass Jour en cours (fin affichée sur la carte, bouton « Prolonger »)
   const sub = user?.subscription;
@@ -475,6 +488,35 @@ export default function Subscription() {
       setLoading(false);
     }
   };
+
+  // App Android (Play Store) : aucun prix, aucun achat, aucun lien vers un
+  // paiement externe — règle Google Play (cf. utils/platform.js).
+  if (isAndroidApp()) {
+    const endDate = sub?.endDate && new Date(sub.endDate) > new Date() && userPlan !== 'LIFETIME'
+      ? format(new Date(sub.endDate), 'd MMMM yyyy', { locale: dateLocale })
+      : null;
+    return (
+      <div className="max-w-md mx-auto px-4 py-10 space-y-5 text-center">
+        <div className="w-12 h-12 mx-auto rounded-full bg-primary-500/15 text-primary-400 flex items-center justify-center">
+          <Star size={22} />
+        </div>
+        <h1 className="font-display font-bold text-2xl text-ink-1">{t('subscription.androidApp.title')}</h1>
+        {user && hasPaidPlan ? (
+          <div className="bento-card space-y-1">
+            <p className="text-sm font-semibold text-ink-1">{t('subscription.androidApp.activeTitle')}</p>
+            {endDate && <p className="text-xs text-ink-3">{t('subscription.androidApp.activeUntil', { date: endDate })}</p>}
+          </div>
+        ) : (
+          <p className="text-sm text-ink-3 leading-relaxed">{t('subscription.androidApp.notAvailable')}</p>
+        )}
+        {!user && (
+          <Link to="/connexion" className="btn-primary inline-flex items-center gap-2 px-5 py-2.5 text-sm">
+            {t('subscription.androidApp.login')} <ArrowRight size={14} />
+          </Link>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8 space-y-10">
@@ -533,7 +575,7 @@ export default function Subscription() {
           </div>
           <div className="bento-card text-center py-4">
             <p className="text-2xl font-display font-bold text-primary-400">
-              {statsLoading ? '—' : new Intl.NumberFormat(i18n.language).format((trStats?.ai?.totalPicks ?? 0) + (trStats?.tipsters?.totalPicks ?? 0))}
+              {statsLoading ? '—' : new Intl.NumberFormat(i18n.language).format((trStats?.ai?.totalPicks ?? 0) + (TIPSTERS_ENABLED ? (trStats?.tipsters?.totalPicks ?? 0) : 0))}
             </p>
             <p className="text-xs text-ink-3 mt-1">{t('subscription.stats.pronostics')}</p>
           </div>
@@ -596,6 +638,16 @@ export default function Subscription() {
       {error && (
         <div role="alert" className="bg-red-500/10 border border-red-500/30 text-red-400 text-sm rounded-xl px-4 py-3 text-center">
           {error}
+        </div>
+      )}
+
+      {mobileMoneyOnly && (
+        <div className="flex items-start gap-3 rounded-xl border border-amber-500/25 bg-amber-500/[0.07] px-4 py-3">
+          <AlertTriangle size={16} className="text-amber-400 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <p className="text-sm font-semibold text-ink-1">{t('subscription.mobileMoneyOnly.title')}</p>
+            <p className="text-xs text-ink-3 leading-relaxed">{t('subscription.mobileMoneyOnly.desc')}</p>
+          </div>
         </div>
       )}
 
@@ -677,6 +729,7 @@ export default function Subscription() {
               : pendingPlan.priceMonthly
           }
           currency={pendingCycle === 'DAILY' ? null : payCurrency}
+          mobileMoneyOnly={mobileMoneyOnly}
           formatIn={formatIn}
           loading={loading}
           onCancel={() => setPendingPlan(null)}

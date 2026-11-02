@@ -136,6 +136,10 @@ async function getTicketHistory(req, res, next) {
                 id: true, homeTeam: true, awayTeam: true,
                 homeTeamLogo: true, awayTeamLogo: true,
                 scheduledAt: true, status: true, homeScore: true, awayScore: true,
+                homeCorners: true, awayCorners: true, statistics: true,
+                htHomeScore: true, htAwayScore: true,
+                // stats joueurs : seulement ce qu'il faut pour régler buteur / tir cadré
+                playerStats: { select: { playerId: true, minutes: true, goals: true, shotsOnTarget: true } },
                 competition: { select: { name: true } },
               },
             },
@@ -148,8 +152,10 @@ async function getTicketHistory(req, res, next) {
       const entries = combo.entries.map((e) => {
         const m = e.match;
         const finished = m.status === 'FINISHED' && m.homeScore != null && m.awayScore != null;
-        const legResult = finished ? resolvePick(e.prediction, m.homeScore, m.awayScore) : null;
-        return { ...e, legResult };
+        const legResult = finished ? resolvePick(e.prediction, m.homeScore, m.awayScore, m) : null;
+        // Données de règlement non renvoyées au client (volumineuses, inutiles à l'affichage)
+        const { playerStats, statistics, ...match } = m; // eslint-disable-line no-unused-vars
+        return { ...e, match, legResult };
       });
 
       let result = 'PENDING';

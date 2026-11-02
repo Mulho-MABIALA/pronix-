@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Search, X, Trophy, Users, Calendar } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import api from '../../services/api';
+import { TIPSTERS_ENABLED } from '../../config/features';
 
 function debounce(fn, delay) {
   let timer;
@@ -103,7 +104,7 @@ export default function SearchBar({ onClose }) {
               type="text"
               value={query}
               onChange={handleChange}
-              placeholder={t('search.placeholder', 'Rechercher matchs, tipsters...')}
+              placeholder={TIPSTERS_ENABLED ? t('search.placeholder') : t('search.placeholderNoTipsters')}
               className="flex-1 bg-transparent text-ink-1 placeholder-ph-b text-[15px] outline-none"
               autoComplete="off"
               spellCheck={false}
@@ -251,7 +252,7 @@ export default function SearchBar({ onClose }) {
           {!query && (
             <div className="px-4 py-4 text-center">
               <p className="text-[12px] text-ink-4">
-                {t('search.hint', 'Tapez pour rechercher des matchs, tipsters ou compétitions')}
+                {TIPSTERS_ENABLED ? t('search.hint') : t('search.hintNoTipsters')}
               </p>
             </div>
           )}

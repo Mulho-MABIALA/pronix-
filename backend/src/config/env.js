@@ -83,6 +83,15 @@ const envSchema = z.object({
   // Sentry — suivi d'erreurs en production. Optionnel : si absent, Sentry.init()
   // tourne en mode "enabled: false" (aucun envoi, aucun overhead réseau).
   SENTRY_DSN: z.string().optional(),
+  // Interrupteur des tipsters (communauté, publication de pronostics,
+  // abonnements payants aux tipsters, follows, commentaires). Désactivé au
+  // lancement : code et données conservés, réactivable avec
+  // FEATURE_TIPSTERS=true (+ VITE_FEATURE_TIPSTERS=true côté frontend).
+  FEATURE_TIPSTERS: z.string().default('false').transform((v) => v === 'true'),
+  // Paiement par carte / devise étrangère (PayTech, Flutterwave) — désactivé
+  // tant qu'aucun de ces comptes n'est validé en production (cf. frontend
+  // config/features.js). Mobile Money FCFA (SenePay) non concerné.
+  FEATURE_CARD_PAYMENTS: z.string().default('false').transform((v) => v === 'true'),
 });
 
 const parsed = envSchema.safeParse(process.env);

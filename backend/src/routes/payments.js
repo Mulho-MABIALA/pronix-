@@ -14,6 +14,9 @@ const {
 } = require('../controllers/paymentController');
 
 const router = Router();
+const tipstersOn = require('../middleware/features').requireFeature('tipsters');
+// Paiement carte (PayTech/Flutterwave) coupé tant que non validé en production
+const cardOn = require('../middleware/features').requireFeature('card_payments');
 
 // Rate limit strict sur l'initiation de paiement (3 tentatives/10min par IP)
 const paymentLimit = rateLimit({
@@ -32,15 +35,15 @@ router.post('/flutterwave/webhook', handleFlutterwaveWebhook);
 // Paiements initiés par l'utilisateur (authentifié)
 router.use(authenticate);
 router.post('/wave/init',      paymentLimit, blockIfSelfExcluded, initiateWavePayment);
-router.post('/paytech/init',   paymentLimit, blockIfSelfExcluded, initiatePaytechPayment);
+router.post('/paytech/init',   cardOn, paymentLimit, blockIfSelfExcluded, initiatePaytechPayment);
 router.post('/senepay/init',   paymentLimit, blockIfSelfExcluded, initiateSenepayPayment);
 router.post('/fedapay/init',   paymentLimit, blockIfSelfExcluded, initiateFedapayPayment);
 // Abonnement payant à un tipster (même provider PayTech, webhook partagé)
-router.post('/tipster/paytech/init', paymentLimit, blockIfSelfExcluded, initiateTipsterPaytechPayment);
-router.post('/tipster/senepay/init', paymentLimit, blockIfSelfExcluded, initiateTipsterSenepayPayment);
+router.post('/tipster/paytech/init', tipstersOn, cardOn, paymentLimit, blockIfSelfExcluded, initiateTipsterPaytechPayment);
+router.post('/tipster/senepay/init', tipstersOn, paymentLimit, blockIfSelfExcluded, initiateTipsterSenepayPayment);
 // Flutterwave — carte internationale / devise étrangère (second processeur)
-router.post('/flutterwave/init',        paymentLimit, blockIfSelfExcluded, initiateFlutterwavePayment);
-router.post('/tipster/flutterwave/init', paymentLimit, blockIfSelfExcluded, initiateTipsterFlutterwavePayment);
+router.post('/flutterwave/init',        cardOn, paymentLimit, blockIfSelfExcluded, initiateFlutterwavePayment);
+router.post('/tipster/flutterwave/init', tipstersOn, cardOn, paymentLimit, blockIfSelfExcluded, initiateTipsterFlutterwavePayment);
 router.get('/verify',          verifyPayment);
 
 module.exports = router;

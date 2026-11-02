@@ -14,6 +14,7 @@ import { fr } from 'date-fns/locale';
 import api from '../../services/api';
 import { useCountUp } from '../../hooks/useCountUp';
 import AdminNotificationBell from '../../components/admin/AdminNotificationBell';
+import MaintenanceCard from '../../components/admin/MaintenanceCard';
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -658,6 +659,9 @@ export default function AdminDashboard() {
           <AdminNotificationBell />
         </div>
       </div>
+
+      {/* ── Mode maintenance ─────────────────────────────────────────────────── */}
+      <MaintenanceCard />
 
       {/* ── Navigation rapide ────────────────────────────────────────────────── */}
       <NavShortcuts />

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { ChevronDown, Search, HelpCircle, CreditCard, Calendar, Trophy, Bell, Wrench, X, Mail, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 // Même convention de contact que Profile.jsx (ContactSection) : email + WhatsApp
 // en parallèle, car mailto: seul ne fonctionne pas sans client mail configuré.
@@ -11,7 +12,8 @@ const FAQ_STRUCTURE = [
   { id: 'general',       items: ['whatIsFpronix', 'sportsBetting', 'whoCanUse'] },
   { id: 'account',       items: ['createAccount', 'freeVsPremium', 'howToPay', 'cancelSub', 'forgotPassword'] },
   { id: 'matches',       items: ['dataSource', 'noStats', 'leaguesAvailable'] },
-  { id: 'tipsters',      items: ['howToPublish', 'rankingWorks', 'aiAnalysis', 'reliablePicks', 'reportAbuse'] },
+  // Sans tipsters (cf. config/features.js) : seule la question sur l'analyse IA reste
+  { id: 'tipsters',      items: TIPSTERS_ENABLED ? ['howToPublish', 'rankingWorks', 'aiAnalysis', 'reliablePicks', 'reportAbuse'] : ['aiAnalysis'] },
   { id: 'notifications', items: ['enableNotifs', 'mobileNotifs'] },
   { id: 'technical',     items: ['siteNotLoading', 'paymentFailed'] },
 ];
@@ -72,11 +74,11 @@ export default function FAQ() {
   const sections = useMemo(() => {
     return FAQ_STRUCTURE.map((section) => ({
       id: section.id,
-      label: t(`faq.categories.${section.id}`),
+      label: section.id === 'tipsters' && !TIPSTERS_ENABLED ? t('faq.categories.aiOnly') : t(`faq.categories.${section.id}`),
       items: section.items.map((itemId) => ({
         id: itemId,
         q: t(`faq.questions.${section.id}.${itemId}.q`),
-        a: t(`faq.questions.${section.id}.${itemId}.a`),
+        a: t(`faq.questions.${section.id}.${itemId}.${!TIPSTERS_ENABLED && itemId === 'whatIsFpronix' ? 'aNoTipsters' : 'a'}`),
       })),
     }));
   }, [t]);

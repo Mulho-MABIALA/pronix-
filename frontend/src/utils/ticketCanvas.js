@@ -3,6 +3,7 @@ import api from '../services/api';
 import { formatOdd } from './mockOdds';
 import { getPickHexColor } from './marketColors';
 import { competitionLabelParts } from './competitionLabel';
+import { pickDisplayLabel } from './markets';
 
 // Passe une URL de logo externe (media.api-sports.io) par notre proxy same-origin
 // pour éviter de "tainted" le canvas (sinon canvas.toBlob() plante silencieusement
@@ -275,7 +276,7 @@ export async function drawTicketCanvas(rows, totalOdds, t) {
     ctx.fillStyle = hasProb ? getPickHexColor(row.pick.type) : text;
     ctx.font = 'bold 12px system-ui';
     ctx.textAlign = 'center';
-    ctx.fillText(t(`machine.pickLabels.${row.pick.type}`, { defaultValue: row.pick.type }), badgeX + badgeW / 2, badgeY + 20);
+    ctx.fillText(fitText(ctx, pickDisplayLabel(t, row.pick.type), badgeW - 6), badgeX + badgeW / 2, badgeY + 20);
 
     ctx.fillStyle = text;
     ctx.font = 'bold 16px system-ui';

@@ -402,6 +402,10 @@ model Match {
   // fourni cette statistique pour ce match (championnats moins couverts).
   homeCorners   Int?
   awayCorners   Int?
+  // Score à la mi-temps (API-Football score.halftime) — règle les paris
+  // mi-temps et mi-temps/fin de match. Capturé en fin de match.
+  htHomeScore   Int?
+  htAwayScore   Int?
   status        MatchStatus @default(SCHEDULED)
   minute        String?     // ex: "67'", "HT", "45+2'" — null si non commencé
   scheduledAt   DateTime
@@ -424,6 +428,7 @@ model Match {
   matchReminders MatchReminder[]
   comboEntries   TipComboEntry[]
   virtualBets    VirtualBet[]
+  playerStats    PlayerMatchStat[]
 
   @@index([scheduledAt])
   @@index([status])
@@ -994,4 +999,42 @@ model DeletedAccount {
 
   @@index([deletedAt])
   @@map("deleted_accounts")
+}
+
+// ─── Stats joueurs par match ──────────────────────────────────────────────────
+// Capturées en fin de match avec la même requête API que les stats d'équipe
+// (/fixtures?id= renvoie aussi les joueurs). Servent aux paris par joueur
+// (buteur, tir cadré) : taux par 90 minutes sur les derniers matchs de l'équipe.
+model PlayerMatchStat {
+  id            String   @id @default(uuid())
+  matchId       String
+  match         Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  playerId      String   // id API-Football du joueur
+  playerName    String
+  teamId        String   // id API-Football de l'équipe (= Match.homeTeamId / awayTeamId)
+  position      String?  // G, D, M, F
+  minutes       Int      @default(0)
+  goals         Int      @default(0)
+  assists       Int      @default(0)
+  shots         Int      @default(0)
+  shotsOnTarget Int      @default(0)
+  substitute    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  @@unique([matchId, playerId])
+  @@index([teamId])
+  @@index([playerId])
+  @@map("player_match_stats")
+}
+
+// ─── Réglages globaux de l'application ────────────────────────────────────────
+// Clé / valeur partagée par tous les processus PM2 (ex. mode maintenance) —
+// un réglage en mémoire ne serait vu que par un seul des processus du cluster.
+model AppSetting {
+  key       String   @id
+  value     Json
+  updatedBy String?  // email de l'admin à l'origine du dernier changement
+  updatedAt DateTime @updatedAt
+
+  @@map("app_settings")
 }

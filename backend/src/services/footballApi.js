@@ -206,6 +206,61 @@ async function getFixtureById(externalId) {
   }
 }
 
+// ─── 3b. Plusieurs matchs complets en UNE requête (jusqu'à 20 ids) ────────────
+// /fixtures?ids=1-2-3 renvoie pour chaque match : score (dont mi-temps),
+// stats d'équipe, et stats de chaque joueur. Utilisé par le rattrapage
+// d'historique (scripts/backfillPlayerStats.js) : 20 matchs = 1 requête.
+async function getFixturesFullByIds(externalIds) {
+  const ids = (externalIds || []).filter((id) => id && !String(id).startsWith('mock')).slice(0, 20);
+  if (!env.FOOTBALL_API_KEY || ids.length === 0) return [];
+  try {
+    return await apiFetch('/fixtures', { ids: ids.join('-') });
+  } catch (err) {
+    console.error('[FootballAPI] getFixturesFullByIds:', err.message);
+    return [];
+  }
+}
+
+// Extrait d'un match complet (/fixtures?id= ou ids=) tout ce qu'on garde en
+// base en fin de match : stats d'équipe (format normalizeStatistics), corners,
+// score à la mi-temps, et stats par joueur.
+function extractFixtureDetails(full) {
+  if (!full) return null;
+  const statistics = normalizeStatistics(full.statistics);
+  const corner = statistics?.find((s) => s.key === 'corner_kicks');
+  const ht = full.score?.halftime || {};
+  const players = [];
+  for (const team of full.players || []) {
+    const teamId = team.team?.id != null ? String(team.team.id) : null;
+    if (!teamId) continue;
+    for (const p of team.players || []) {
+      const st = p.statistics?.[0] || {};
+      if (p.player?.id == null) continue;
+      players.push({
+        playerId:      String(p.player.id),
+        playerName:    p.player.name || '?',
+        teamId,
+        position:      st.games?.position || null,
+        minutes:       Number(st.games?.minutes) || 0,
+        goals:         Number(st.goals?.total) || 0,
+        assists:       Number(st.goals?.assists) || 0,
+        shots:         Number(st.shots?.total) || 0,
+        shotsOnTarget: Number(st.shots?.on) || 0,
+        substitute:    !!st.games?.substitute,
+      });
+    }
+  }
+  return {
+    externalId:  String(full.fixture?.id ?? ''),
+    statistics,
+    homeCorners: corner ? corner.home : undefined,
+    awayCorners: corner ? corner.away : undefined,
+    htHomeScore: Number.isInteger(ht.home) ? ht.home : undefined,
+    htAwayScore: Number.isInteger(ht.away) ? ht.away : undefined,
+    players,
+  };
+}
+
 // ─── 4. Statistiques d'un match (possession, tirs, fautes…) ──────────────────
 async function getFixtureStatistics(externalId) {
   if (!env.FOOTBALL_API_KEY || !externalId || String(externalId).startsWith('mock')) return null;
@@ -391,6 +446,8 @@ module.exports = {
   getFixtureById,
   // Stats & données enrichies
   getFixtureStatistics,
+  getFixturesFullByIds,
+  extractFixtureDetails,
   getFixtureLineups,
   getHeadToHead,
   getTeamRecentForm,

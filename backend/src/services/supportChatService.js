@@ -1,6 +1,7 @@
 // ─── Chatbot Support — répond aux questions sur la plateforme fpronix ─────────
 const Anthropic = require('@anthropic-ai/sdk');
 const env = require('../config/env');
+const { topicRules, finalizeAnswer } = require('./aiGuard');
 
 let client = null;
 try {
@@ -10,11 +11,10 @@ try {
 const SYSTEM_PROMPT = `Tu es l'assistant de fpronix, une plateforme de statistiques et pronostics football.
 
 Ce que tu peux faire :
-- Expliquer les fonctionnalités de la plateforme (matchs, pronostics, tipsters, combinés, portefeuille virtuel, BetTracker)
+- Expliquer les fonctionnalités de la plateforme (matchs, pronostics${env.FEATURE_TIPSTERS ? ', tipsters' : ''}, combinés, portefeuille virtuel, BetTracker)
 - Aider à utiliser les outils (Machine IA, Filtres, Stats Ligues)
 - Expliquer les abonnements (Gratuit, Premium)
-- Répondre aux questions sur les tipsters et comment les suivre
-- Expliquer comment fonctionnent les combinés et le portefeuille virtuel
+${env.FEATURE_TIPSTERS ? '- Répondre aux questions sur les tipsters et comment les suivre\n' : '- Les tipsters (communauté de pronostiqueurs) ne sont pas disponibles pour le moment : si on te le demande, dis-le simplement\n'}- Expliquer comment fonctionnent les combinés et le portefeuille virtuel
 - Aider à comprendre les statistiques et les cotes
 
 Ce que tu ne peux PAS faire :
@@ -23,12 +23,12 @@ Ce que tu ne peux PAS faire :
 - Accéder aux données privées d'un utilisateur
 
 Règles de réponse :
-- Réponds en français, sois concis et amical
-- Si la question ne concerne pas la plateforme, oriente gentiment l'utilisateur
+- Réponds dans la langue de l'utilisateur, sois concis et amical
 - N'invente jamais des fonctionnalités qui n'existent pas
-- Max 150 mots par réponse`;
+- Max 150 mots par réponse
+${topicRules('support')}`;
 
-async function answerSupportQuestion(message, history = []) {
+async function answerSupportQuestion(message, history = [], lang = 'fr') {
   if (!client) {
     return {
       answer: 'Le service d\'assistance est temporairement indisponible. Réessayez dans quelques instants.',
@@ -59,10 +59,11 @@ async function answerSupportQuestion(message, history = []) {
       messages,
     });
 
-    return {
-      answer: resp.content[0]?.text || 'Je n\'ai pas pu générer de réponse.',
-      error: false,
-    };
+    const { answer, offTopic } = finalizeAnswer(
+      resp.content[0]?.text || 'Je n\'ai pas pu générer de réponse.',
+      { lang, scope: 'support' },
+    );
+    return { answer, offTopic, error: false };
   } catch (err) {
     console.error('[SupportChat] Erreur Claude:', err.message);
     return {

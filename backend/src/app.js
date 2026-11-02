@@ -56,11 +56,33 @@ const currencyRoutes     = require('./routes/currency');
 const newsletterRoutes   = require('./routes/newsletter');
 const suggestionsRoutes  = require('./routes/suggestions');
 const reviewsRoutes      = require('./routes/reviews');
+const maintenanceRoutes  = require('./routes/maintenance');
+const { maintenanceGuard } = require('./middleware/maintenance');
 
 // Tâches cron
 const { startAllCronJobs } = require('./cron');
 
 const app = express();
+
+// ─── Vraie IP du visiteur derrière nginx ──────────────────────────────────────
+// L'API n'est jamais exposée directement : nginx (même machine) relaie les
+// requêtes. Sans ce réglage, req.ip valait 127.0.0.1 pour TOUT le monde, donc
+// chaque limite « par IP » (connexion 10/15 min, paiement 3/10 min, chatbot…)
+// était en réalité partagée par l'ensemble des visiteurs : au lancement, 10
+// tentatives de connexion cumulées bloquaient tout le monde 15 minutes.
+// On ne fait confiance aux en-têtes de proxy QUE si la connexion vient de la
+// machine elle-même (nginx) — un client externe ne peut pas usurper une IP.
+// deploy/nginx-fpronix.conf envoie X-Real-IP (pas X-Forwarded-For) : on le
+// recopie pour qu'Express le prenne en compte.
+app.set('trust proxy', 'loopback');
+app.use((req, res, next) => {
+  const remote = req.socket?.remoteAddress || '';
+  const fromLocalProxy = remote === '127.0.0.1' || remote === '::1' || remote === '::ffff:127.0.0.1';
+  if (fromLocalProxy && !req.headers['x-forwarded-for'] && req.headers['x-real-ip']) {
+    req.headers['x-forwarded-for'] = String(req.headers['x-real-ip']);
+  }
+  next();
+});
 
 // ─── Sécurité & middleware globaux ─────────────────────────────────────────────
 app.use(helmet());
@@ -103,6 +125,10 @@ app.use('/api/payments/senepay/webhook', express.raw({ type: 'application/json' 
 app.use('/api/profiles', express.json({ limit: '2mb' }));
 app.use(express.json({ limit: '10kb' }));
 app.use(express.urlencoded({ extended: true, limit: '2mb' }));
+
+// ─── Mode maintenance (bouton admin) — avant toutes les routes ────────────────
+app.use(maintenanceGuard);
+app.use('/api/maintenance', maintenanceRoutes);
 
 // ─── Routes API ────────────────────────────────────────────────────────────────
 app.use('/api/auth', authLimiter, authRoutes);

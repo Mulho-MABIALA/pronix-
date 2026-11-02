@@ -31,6 +31,8 @@ function FooterLinks() {
         <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/mentions-legales" className={linkClass}>{t('disclaimer.legalNoticeLink')}</a>
         <span className="text-ink-4" aria-hidden="true">·</span>
+        <a href="/suppression-compte" className={linkClass}>{t('disclaimer.deleteAccountLink')}</a>
+        <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/faq" className={linkClass}>{t('disclaimer.faqLink')}</a>
         <span className="text-ink-4" aria-hidden="true">·</span>
         <a href="/newsletter" className={linkClass}>{t('disclaimer.newsletterLink')}</a>

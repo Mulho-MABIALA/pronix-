@@ -1,5 +1,6 @@
 const { z } = require('zod');
 const prisma = require('../config/database');
+const { PUBLIC_USER_SELECT, PUBLIC_USER_WITH_STATS_SELECT } = require('../utils/publicUser');
 const { AppError } = require('../middleware/errorHandler');
 const { syncMatchesForDate } = require('../cron/syncMatches');
 const footballApi = require('../services/footballApi');
@@ -116,7 +117,12 @@ async function getMatches(req, res, next) {
       }),
     ]);
 
-    const data = applyPredictionsPaywall(matches, { userPlan: req.userPlan, skip: (page - 1) * limit });
+    // La liste n'a pas besoin des données lourdes / Premium (compositions,
+    // confrontations, blessures) : elles ne sont servies que par la fiche
+    // match, qui applique le paywall. `statistics` reste : stats de fin de
+    // match, utilisées pour afficher le résultat des pronos corners/cartons/tirs.
+    const light = matches.map(({ lineups, headToHead, injuries, ...m }) => m); // eslint-disable-line no-unused-vars
+    const data = applyPredictionsPaywall(light, { userPlan: req.userPlan, skip: (page - 1) * limit });
 
     res.json({
       success: true,
@@ -138,7 +144,7 @@ async function getMatchById(req, res, next) {
         tips: {
           where: { isVisible: true },
           include: {
-            user: { include: { profile: true, tipsterStats: true } },
+            user: { select: PUBLIC_USER_WITH_STATS_SELECT },
           },
           orderBy: { createdAt: 'desc' },
           take: 10,

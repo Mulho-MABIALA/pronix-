@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 export default function CGV() {
   const { t } = useTranslation();
@@ -11,12 +12,12 @@ export default function CGV() {
       </div>
 
       <Section title={t('cgv.sections.s1.title')}>
-        <p>{t('cgv.sections.s1.body')}</p>
+        <p>{t(TIPSTERS_ENABLED ? 'cgv.sections.s1.body' : 'cgv.sections.s1.bodyNoTipsters')}</p>
       </Section>
 
       <Section title={t('cgv.sections.s2.title')}>
         <p>{t('cgv.sections.s2.body1')}</p>
-        <p>{t('cgv.sections.s2.body2')}</p>
+        {TIPSTERS_ENABLED && <p>{t('cgv.sections.s2.body2')}</p>}
       </Section>
 
       <Section title={t('cgv.sections.s3.title')}>
@@ -24,7 +25,7 @@ export default function CGV() {
       </Section>
 
       <Section title={t('cgv.sections.s4.title')}>
-        <p>{t('cgv.sections.s4.body')}</p>
+        <p>{t(TIPSTERS_ENABLED ? 'cgv.sections.s4.body' : 'cgv.sections.s4.bodyNoTipsters')}</p>
       </Section>
 
       <Section title={t('cgv.sections.s5.title')}>

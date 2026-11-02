@@ -11,6 +11,9 @@ const {
 
 const router = Router();
 
+// Tipsters désactivés → toutes ces routes répondent 404 (cf. FEATURE_TIPSTERS)
+router.use(require('../middleware/features').requireFeature('tipsters'));
+
 // Tipster : créer/modifier son plan
 router.post('/', authenticate, upsertPlan);
 

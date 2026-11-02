@@ -39,10 +39,35 @@ function processQueue(error) {
   failedQueue = [];
 }
 
+// Bandeau « serveur injoignable » (components/errors/ConnectionBanner.jsx)
+let serverDownSignaled = false;
+function signalServer(down) {
+  if (down === serverDownSignaled) return;
+  serverDownSignaled = down;
+  window.dispatchEvent(new Event(down ? 'fpronix:server-down' : 'fpronix:server-up'));
+}
+
 api.interceptors.response.use(
-  (res) => res,
+  (res) => { signalServer(false); return res; },
   async (error) => {
     const original = error.config;
+
+    // Pas de réponse du tout (coupure, délai dépassé) avec internet actif, ou
+    // passerelle en erreur (502/504, 503 hors maintenance) : serveur injoignable.
+    const status = error.response?.status;
+    const isMaintenance = status === 503 && error.response?.data?.code === 'MAINTENANCE';
+    if ((!error.response && navigator.onLine !== false) || status === 502 || status === 504 || (status === 503 && !isMaintenance)) {
+      signalServer(true);
+    } else if (error.response) {
+      signalServer(false);
+    }
+
+    // Site passé en maintenance pendant la navigation : on prévient
+    // MaintenanceGate, qui affiche aussitôt l'écran de maintenance.
+    if (error.response?.status === 503 && error.response?.data?.code === 'MAINTENANCE') {
+      window.dispatchEvent(new Event('fpronix:maintenance'));
+      return Promise.reject(error);
+    }
 
     // TOKEN_EXPIRED : le JWT a expiré mais le cookie était encore présent.
     // UNAUTHORIZED : cas le plus fréquent en pratique — le cookie d'access

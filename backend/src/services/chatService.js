@@ -4,13 +4,17 @@
  *
  * Quotas :
  *  - FREE          → 3 questions / jour
- *  - PREMIUM / PRO / LIFETIME → illimité
+ *  - PREMIUM / PRO / LIFETIME → 30 questions / jour (usage équitable)
+ *
+ * Football uniquement : toute question hors sujet reçoit un refus fixe (cf.
+ * services/aiGuard.js) et compte dans le quota — elle coûte des tokens aussi.
  */
 
 const Anthropic = require('@anthropic-ai/sdk');
 const prisma    = require('../config/database');
 const env       = require('../config/env');
 const { getUserPlanCode } = require('../middleware/subscription');
+const { topicRules, finalizeAnswer } = require('./aiGuard');
 
 let client = null;
 try {
@@ -20,6 +24,9 @@ try {
 } catch { /* SDK absent */ }
 
 const FREE_DAILY_LIMIT = 3;
+// Premium affiché « illimité », mais plafonné pour protéger le crédit API
+// contre un usage abusif (script, spam). Largement au-dessus d'un usage normal.
+const PREMIUM_DAILY_LIMIT = 30;
 
 function today() {
   return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
@@ -30,8 +37,7 @@ function today() {
  * Retourne { allowed, used, limit }
  */
 async function checkAndIncrementQuota(userId, isPremium) {
-  if (isPremium) return { allowed: true, used: null, limit: null };
-
+  const limit = isPremium ? PREMIUM_DAILY_LIMIT : FREE_DAILY_LIMIT;
   const date = today();
 
   // upsert : crée l'enregistrement si inexistant, puis incrémente
@@ -42,15 +48,15 @@ async function checkAndIncrementQuota(userId, isPremium) {
   });
 
   // Si après incrément on dépasse la limite, on décrémente et refuse
-  if (quota.count > FREE_DAILY_LIMIT) {
+  if (quota.count > limit) {
     await prisma.chatQuota.update({
       where:  { userId_date: { userId, date } },
       data:   { count: { decrement: 1 } },
     });
-    return { allowed: false, used: FREE_DAILY_LIMIT, limit: FREE_DAILY_LIMIT };
+    return { allowed: false, used: limit, limit };
   }
 
-  return { allowed: true, used: quota.count, limit: FREE_DAILY_LIMIT };
+  return { allowed: true, used: quota.count, limit };
 }
 
 /**
@@ -73,8 +79,9 @@ async function askAboutMatch(matchId, question, user) {
   // Vérifier et incrémenter le quota en DB
   const quota = await checkAndIncrementQuota(user.id, isPremium);
   if (!quota.allowed) {
-    const err = new Error(
-      `Quota journalier atteint (${FREE_DAILY_LIMIT} questions/jour sur le plan gratuit). Passez Premium pour des questions illimitées.`
+    const err = new Error(isPremium
+      ? `Limite d'usage atteinte (${PREMIUM_DAILY_LIMIT} questions aujourd'hui). Réessayez demain.`
+      : `Quota journalier atteint (${FREE_DAILY_LIMIT} questions/jour sur le plan gratuit). Passez Premium pour plus de questions.`
     );
     err.statusCode = 429;
     throw err;
@@ -123,7 +130,8 @@ ${pred.scorelines?.length ? `- Scénarios probables : ${pred.scorelines.slice(0,
   const systemPrompt = `Tu es un assistant expert en analyse footballistique pour le site fpronix.com.
 Tu analyses les matchs de football et réponds aux questions des utilisateurs de façon concise, honnête et éclairée.
 Tu rappelles toujours que tes analyses sont indicatives et non des conseils de paris.
-Réponds en français, de façon conversationnelle et concise (3-5 phrases max sauf si plus de détails sont demandés).`;
+Réponds dans la langue de la question, de façon conversationnelle et concise (3-5 phrases max sauf si plus de détails sont demandés).
+${topicRules('football')}`;
 
   const userPrompt = `Match : ${match.homeTeam} vs ${match.awayTeam}
 Compétition : ${match.competition?.name || 'Inconnue'}
@@ -140,10 +148,14 @@ Question de l'utilisateur : ${question}`;
     messages:   [{ role: 'user', content: userPrompt }],
   });
 
-  const answer = response.content[0]?.text?.trim() || 'Je n\'ai pas pu générer une réponse.';
+  const { answer, offTopic } = finalizeAnswer(
+    response.content[0]?.text?.trim() || 'Je n\'ai pas pu générer une réponse.',
+    { lang: user.language, scope: 'football' },
+  );
 
   return {
     answer,
+    offTopic,
     quota: isPremium
       ? { used: null, limit: null, unlimited: true }
       : { used: quota.used, limit: FREE_DAILY_LIMIT, unlimited: false },

@@ -5,6 +5,8 @@ const prisma = require('../config/database');
 const { Prisma } = require('@prisma/client');
 const { generateAIPrediction } = require('./aiPredictionService');
 const { getMatchContext } = require('./footballContextService');
+const { deriveStatMarkets } = require('../utils/statMarkets');
+const { derivePlayerMarkets } = require('../utils/playerMarkets');
 
 const HOME_ADV = 0.10; // avantage domicile
 
@@ -149,6 +151,9 @@ async function calculateMatchPredictions(match) {
       homeTeam: true, awayTeam: true,
       homeScore: true, awayScore: true,
       homeCorners: true, awayCorners: true,
+      // Stats de fin de match (cartons, tirs cadrés, fautes, hors-jeu) —
+      // cf. utils/statMarkets.js
+      statistics: true,
     },
   };
 
@@ -238,6 +243,9 @@ async function calculateMatchPredictions(match) {
     sampleSize: Math.min(hs.sampleSize, as.sampleSize),
     scorelines,
     ...(cornerMarkets || {}),
+    // Cartons, tirs cadrés, fautes, hors-jeu — uniquement les familles pour
+    // lesquelles les deux équipes ont un historique suffisant.
+    ...deriveStatMarkets(match.homeTeam, match.awayTeam, homeMatches, awayMatches),
   };
 }
 
@@ -415,6 +423,68 @@ function deriveGoalMarkets(pred) {
     res1btts: pct(res1btts), resXbtts: pct(resXbtts), res2btts: pct(res2btts),
     dc1xbtts: pct(res1btts + resXbtts), dcx2btts: pct(resXbtts + res2btts), dc12btts: pct(res1btts + res2btts),
   };
+}
+
+// Buts attendus de chaque équipe, retrouvés depuis 1X2 + Over 2.5 (même
+// méthode que deriveGoalMarkets) — utilisable quelle que soit la source.
+function impliedTeamLambdas(pred) {
+  const home = pred.home ?? 33, draw = pred.draw ?? 34, away = pred.away ?? 33;
+  const lambdaTotal = impliedTotalLambda(pred.over25);
+  return {
+    lambdaHome: Math.max(0.2, lambdaTotal * ((home + draw / 2) / 100)),
+    lambdaAway: Math.max(0.2, lambdaTotal * ((away + draw / 2) / 100)),
+  };
+}
+
+// ── Combinaisons (style 1xBet) ────────────────────────────────────────────────
+// Double chance + total, BTTS + total, Résultat + plus de 1.5, et Mi-temps /
+// Fin de match (9 issues). Le match est découpé en 2 mi-temps indépendantes
+// (44 % des buts en 1re, 56 % en 2e — cf. HT_GOAL_SHARE) pour que le score à
+// la pause et le score final soient cohérents entre eux.
+function deriveComboMarkets(pred) {
+  const { lambdaHome, lambdaAway } = impliedTeamLambdas(pred);
+  const h1 = lambdaHome * HT_GOAL_SHARE, a1 = lambdaAway * HT_GOAL_SHARE;
+  const h2 = lambdaHome * (1 - HT_GOAL_SHARE), a2 = lambdaAway * (1 - HT_GOAL_SHARE);
+  const MAX = 6;
+  const P = (l) => Array.from({ length: MAX + 1 }, (_, k) => poisson(l, k));
+  const pH1 = P(h1), pA1 = P(a1), pH2 = P(h2), pA2 = P(a2);
+
+  const res = (x, y) => (x > y ? '1' : x === y ? 'X' : '2');
+  const acc = {};
+  const add = (k, p) => { acc[k] = (acc[k] || 0) + p; };
+
+  for (let x1 = 0; x1 <= MAX; x1++) for (let y1 = 0; y1 <= MAX; y1++) {
+    const pHalf = pH1[x1] * pA1[y1];
+    if (pHalf < 1e-7) continue;
+    for (let x2 = 0; x2 <= MAX; x2++) for (let y2 = 0; y2 <= MAX; y2++) {
+      const p = pHalf * pH2[x2] * pA2[y2];
+      if (p < 1e-9) continue;
+      const H = x1 + x2, A = y1 + y2, T = H + A;
+      const ft = res(H, A), ht = res(x1, y1);
+      const btts = H > 0 && A > 0;
+      add(`htft${ht}${ft}`, p);
+      if (ft !== '2' && T > 1.5) add('dc1xover15', p);
+      if (ft !== '2' && T < 3.5) add('dc1xunder35', p);
+      if (ft !== '1' && T > 1.5) add('dcx2over15', p);
+      if (ft !== '1' && T < 3.5) add('dcx2under35', p);
+      if (ft !== 'X' && T > 1.5) add('dc12over15', p);
+      if (ft !== 'X' && T < 3.5) add('dc12under35', p);
+      if (btts && T > 2.5) add('bttsover25', p);
+      if (btts && T < 3.5) add('bttsunder35', p);
+      if (!btts && T < 2.5) add('nobttsunder25', p);
+      if (!btts && T > 1.5) add('nobttsover15', p);
+      if (ft === '1' && T > 1.5) add('res1over15', p);
+      if (ft === '2' && T > 1.5) add('res2over15', p);
+    }
+  }
+
+  const pct = (x) => Math.max(1, Math.min(98, Math.round((x || 0) * 100)));
+  const keys = [
+    'dc1xover15', 'dc1xunder35', 'dcx2over15', 'dcx2under35', 'dc12over15', 'dc12under35',
+    'bttsover25', 'bttsunder35', 'nobttsunder25', 'nobttsover15', 'res1over15', 'res2over15',
+    ...['1', 'X', '2'].flatMap((a) => ['1', 'X', '2'].map((b) => `htft${a}${b}`)),
+  ];
+  return Object.fromEntries(keys.map((k) => [k, pct(acc[k])]));
 }
 
 // ── Marchés live (minute par minute) ───────────────────────────────────────
@@ -616,6 +686,10 @@ async function calculateAndSavePredictions(matchId) {
   if (predictions && predictions.home != null) {
     predictions = { ...predictions, ...deriveHalfTimeMarkets(predictions) };
     predictions = { ...predictions, ...deriveGoalMarkets(predictions) };
+    predictions = { ...predictions, ...deriveComboMarkets(predictions) };
+    // Paris par joueur (buteur, tir cadré) — si l'historique joueurs suffit
+    const { lambdaHome, lambdaAway } = impliedTeamLambdas(predictions);
+    predictions = { ...predictions, ...(await derivePlayerMarkets(match, lambdaHome, lambdaAway)) };
   }
 
   await prisma.match.update({ where: { id: matchId }, data: { predictions } });
@@ -646,4 +720,4 @@ async function calculatePredictionsForDate(dateStr) {
   return matches.length;
 }
 
-module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets, deriveCornerMarkets, deriveLiveMarkets };
+module.exports = { calculateMatchPredictions, calculateAndSavePredictions, calculatePredictionsForDate, deriveHalfTimeMarkets, deriveGoalMarkets, deriveComboMarkets, impliedTeamLambdas, deriveCornerMarkets, deriveLiveMarkets };

@@ -1,8 +1,11 @@
 import { useTranslation } from 'react-i18next';
+import { TIPSTERS_ENABLED } from '../config/features';
 
 export default function CGU() {
   const { t } = useTranslation();
-  const s3Items = t('cgu.sections.s3.items', { returnObjects: true });
+  // Tipsters masqués (cf. config/features.js) : on retire la ligne qui les cite
+  const s3All = t('cgu.sections.s3.items', { returnObjects: true });
+  const s3Items = Array.isArray(s3All) && !TIPSTERS_ENABLED ? s3All.filter((item) => !/tipster/i.test(item)) : s3All;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10 space-y-8">
@@ -40,7 +43,7 @@ export default function CGU() {
       </Section>
 
       <Section title={t('cgu.sections.s6.title')}>
-        <p>{t('cgu.sections.s6.body1')}</p>
+        {TIPSTERS_ENABLED && <p>{t('cgu.sections.s6.body1')}</p>}
         <p>{t('cgu.sections.s6.body2')}</p>
       </Section>
 

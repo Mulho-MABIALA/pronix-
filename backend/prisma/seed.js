@@ -171,7 +171,10 @@ async function main() {
   console.log(`✅ ${COMPETITIONS.length} compétitions créées/mises à jour (IDs FotMob)`);
 
   // ── Compte admin ─────────────────────────────────────────────────────────────
-  const adminPassword = await bcrypt.hash('Admin@2024!', 12);
+  // Mot de passe fourni via SEED_ADMIN_PASSWORD, sinon généré aléatoirement
+  const generated = !process.env.SEED_ADMIN_PASSWORD;
+  const plainAdminPassword = process.env.SEED_ADMIN_PASSWORD || require('crypto').randomBytes(12).toString('base64url');
+  const adminPassword = await bcrypt.hash(plainAdminPassword, 12);
   const premiumPlan = await prisma.plan.findUnique({ where: { code: 'PREMIUM' } });
   await prisma.user.upsert({
     where: { email: 'admin@statistiquefoot.sn' },
@@ -185,7 +188,8 @@ async function main() {
       subscription: { create: { planId: premiumPlan.id, status: 'ACTIVE' } },
     },
   });
-  console.log('✅ Compte admin créé (admin@statistiquefoot.sn / Admin@2024!)');
+  console.log('✅ Compte admin créé (admin@statistiquefoot.sn)');
+  if (generated) console.log(`   Mot de passe généré (à noter) : ${plainAdminPassword}`);
 }
 
 main()

@@ -8,3 +8,8 @@ build/
 IDENTIFIANTS-HETZNER.md
 "backend/data/push-subscriptions.json" 
 .claude/
+
+# Documents privés (business plan, dépenses)
+business plan.pdf
+business_plan_*.html
+document-depenses.*
